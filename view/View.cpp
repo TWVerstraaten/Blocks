@@ -37,7 +37,7 @@ view::View::~View() {
     SDL_DestroyWindow(m_window);
 }
 
-void view::View::draw(const model::Model& model) {
+void view::View::draw(const model::Model& model)  {
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
     SDL_RenderClear(m_renderer);
 
@@ -65,7 +65,7 @@ void view::View::drawClusters(const std::vector<model::Cluster>& clusters) const
     }
 }
 
-void view::View::drawGridLines() {
+void view::View::drawGridLines() const {
     int w, h;
     SDL_GetWindowSize(m_window, &w, &h);
     SDL_SetRenderDrawColor(m_renderer, 180, 180, 180, 255);

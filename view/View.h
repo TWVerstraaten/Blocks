@@ -31,11 +31,11 @@ namespace view {
       private:
         void drawClusters(const std::vector<model::Cluster>& clusters) const;
         void drawLevel(const model::Level& level) const;
-        void drawGridLines();
+        void drawGridLines() const;
 
         int           m_zoomParameter = 0;
-        SDL_Window*   m_window        = 0;
-        SDL_Renderer* m_renderer      = 0;
+        SDL_Window*   m_window        = nullptr;
+        SDL_Renderer* m_renderer      = nullptr;
         Grid          m_grid;
     };
 } // namespace view
