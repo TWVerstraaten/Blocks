@@ -5,6 +5,7 @@
 #ifndef BLOCKS_CLUSTER_H
 #define BLOCKS_CLUSTER_H
 
+#include "ClusterAction.h"
 #include "Enums.h"
 #include "Level.h"
 
@@ -28,29 +29,32 @@ namespace model {
         void                       update(double fractionOfPhase);
         bool                       empty() const;
         bool                       intersects(const IndexPair& indexPair) const;
+        double                     angle() const;
         int                        rowOffset() const;
         int                        columnOffset() const;
         double                     dynamicRowOffset() const;
         double                     dynamicColumnOffset() const;
         enums::DIRECTION           adjacent(const IndexPair& indexPair) const;
         const std::set<IndexPair>& localIndexPairs() const;
+        const IndexPair&           rotationPivot() const;
 
-        enum class Action { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
-        void addAction(Action action);
+        void addAction(ClusterAction action);
 
       private:
         void rotateClockWiseAbout(const IndexPair& pivotIndexPair);
         void rotateCounterClockWiseAbout(const IndexPair& pivotIndexPair);
 
-        static Action rotateActionClockWise(Action action);
-        static Action rotateActionCounterClockWise(Action action);
+        static ClusterAction rotateActionClockWise(ClusterAction action);
+        static ClusterAction rotateActionCounterClockWise(ClusterAction action);
 
-        double              m_fractionOfPhase = 1.0;
-        size_t              m_actionIndex     = 0;
-        IndexPair           m_offset;
-        IndexPair           m_previousOffset;
-        std::set<IndexPair> m_localIndexPairs;
-        std::vector<Action> m_actions;
+        double                     m_fractionOfPhase    = 0.0;
+        size_t                     m_clusterActionIndex = 0;
+        double                     m_angle              = 0.0;
+        IndexPair                  m_rotationPivot;
+        IndexPair                  m_offset;
+        IndexPair                  m_previousOffset;
+        std::set<IndexPair>        m_localIndexPairs;
+        std::vector<ClusterAction> m_clusterActions;
 
         typedef std::pair<const IndexPair&, Level::DYNAMIC_BLOCK_TYPE> Block;
         std::vector<Block>                                             m_pendingOperations;

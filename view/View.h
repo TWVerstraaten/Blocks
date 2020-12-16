@@ -5,6 +5,7 @@
 #ifndef BLOCKS_VIEW_H
 #define BLOCKS_VIEW_H
 
+#include "AssetHandler.h"
 #include "Grid.h"
 
 #include <iostream>
@@ -37,6 +38,7 @@ namespace view {
         SDL_Window*   m_window        = nullptr;
         SDL_Renderer* m_renderer      = nullptr;
         Grid          m_grid;
+        AssetHandler  m_assetsHandler;
     };
 } // namespace view
 

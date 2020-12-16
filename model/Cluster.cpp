@@ -23,27 +23,27 @@ namespace model {
     }
 
     void Cluster::doAction() {
-        if (m_actions.empty()) {
+        if (m_clusterActions.empty()) {
             return;
         }
         m_previousOffset  = m_offset;
         m_fractionOfPhase = 1.0;
-        switch (m_actions[m_actionIndex]) {
-            case Action::MOVE_UP:
+        switch (m_clusterActions[m_clusterActionIndex].m_action) {
+            case ClusterAction::ACTION::MOVE_UP:
                 m_offset = m_offset.adjacent(enums::DIRECTION::UP);
                 break;
-            case Action::MOVE_DOWN:
+            case ClusterAction::ACTION::MOVE_DOWN:
                 m_offset = m_offset.adjacent(enums::DIRECTION::DOWN);
                 break;
-            case Action::MOVE_LEFT:
+            case ClusterAction::ACTION::MOVE_LEFT:
                 m_offset = m_offset.adjacent(enums::DIRECTION::LEFT);
                 break;
-            case Action::MOVE_RIGHT:
+            case ClusterAction::ACTION::MOVE_RIGHT:
                 m_offset = m_offset.adjacent(enums::DIRECTION::RIGHT);
                 break;
         }
-        ++m_actionIndex;
-        m_actionIndex %= m_actions.size();
+        ++m_clusterActionIndex;
+        m_clusterActionIndex %= m_clusterActions.size();
     }
 
     void Cluster::rotateClockWiseAbout(const IndexPair& pivotIndexPair) {
@@ -54,7 +54,8 @@ namespace model {
         }
         assert(m_localIndexPairs.size() == rotatedIndexPairs.size());
         std::swap(rotatedIndexPairs, m_localIndexPairs);
-        std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionClockWise);
+        std::transform(m_clusterActions.begin(), m_clusterActions.end(), m_clusterActions.begin(),
+                       rotateActionClockWise);
     }
 
     void Cluster::rotateCounterClockWiseAbout(const IndexPair& pivotIndexPair) {
@@ -65,41 +66,42 @@ namespace model {
         }
         assert(m_localIndexPairs.size() == rotatedIndexPairs.size());
         std::swap(rotatedIndexPairs, m_localIndexPairs);
-        std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionCounterClockWise);
+        std::transform(m_clusterActions.begin(), m_clusterActions.end(), m_clusterActions.begin(),
+                       rotateActionCounterClockWise);
     }
 
-    Cluster::Action Cluster::rotateActionClockWise(Cluster::Action action) {
-        switch (action) {
-            case Action::MOVE_UP:
-                return Action::MOVE_RIGHT;
-            case Action::MOVE_DOWN:
-                return Action::MOVE_LEFT;
-            case Action::MOVE_LEFT:
-                return Action::MOVE_UP;
-            case Action::MOVE_RIGHT:
-                return Action::MOVE_DOWN;
+    ClusterAction Cluster::rotateActionClockWise(ClusterAction action) {
+        switch (action.m_action) {
+            case ClusterAction::ACTION::MOVE_UP:
+                return {ClusterAction::ACTION::MOVE_RIGHT, action.m_modifier};
+            case ClusterAction::ACTION::MOVE_DOWN:
+                return {ClusterAction::ACTION::MOVE_LEFT, action.m_modifier};
+            case ClusterAction::ACTION::MOVE_LEFT:
+                return {ClusterAction::ACTION::MOVE_UP, action.m_modifier};
+            case ClusterAction::ACTION::MOVE_RIGHT:
+                return {ClusterAction::ACTION::MOVE_DOWN, action.m_modifier};
             default:
                 return action;
         }
     }
 
-    Cluster::Action Cluster::rotateActionCounterClockWise(Cluster::Action action) {
-        switch (action) {
-            case Action::MOVE_UP:
-                return Action::MOVE_LEFT;
-            case Action::MOVE_DOWN:
-                return Action::MOVE_RIGHT;
-            case Action::MOVE_LEFT:
-                return Action::MOVE_DOWN;
-            case Action::MOVE_RIGHT:
-                return Action::MOVE_UP;
+    ClusterAction Cluster::rotateActionCounterClockWise(ClusterAction action) {
+        switch (action.m_action) {
+            case ClusterAction::ACTION::MOVE_UP:
+                return {ClusterAction::ACTION::MOVE_LEFT, action.m_modifier};
+            case ClusterAction::ACTION::MOVE_DOWN:
+                return {ClusterAction::ACTION::MOVE_RIGHT, action.m_modifier};
+            case ClusterAction::ACTION::MOVE_LEFT:
+                return {ClusterAction::ACTION::MOVE_DOWN, action.m_modifier};
+            case ClusterAction::ACTION::MOVE_RIGHT:
+                return {ClusterAction::ACTION::MOVE_UP, action.m_modifier};
             default:
                 return action;
         }
     }
 
-    void Cluster::addAction(Cluster::Action action) {
-        m_actions.push_back(action);
+    void Cluster::addAction(ClusterAction action) {
+        m_clusterActions.push_back(action);
     }
 
     void Cluster::removeBLock(const IndexPair& indexPair) {
@@ -138,14 +140,27 @@ namespace model {
 
     void Cluster::performPendingOperation() {
         assert(m_pendingOperations.size() <= 1);
-        if (m_pendingOperations.empty()) {
+        if (m_pendingOperations.empty() ||
+            m_clusterActions.at(m_clusterActionIndex).m_modifier == ClusterAction::MODIFIER::IGNORE) {
+            doAction();
+            m_pendingOperations.clear();
             return;
+        }
+        if (m_clusterActions.at(m_clusterActionIndex).m_modifier == ClusterAction::MODIFIER::SKIP) {
+            ++m_clusterActionIndex;
+            m_clusterActionIndex %= m_clusterActions.size();
         }
         switch (m_pendingOperations.front().second) {
             case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
+                m_fractionOfPhase = 1.0;
+                m_angle           = -90.0;
+                m_rotationPivot   = m_pendingOperations.front().first;
                 rotateClockWiseAbout(m_pendingOperations.front().first);
                 break;
             case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
+                m_fractionOfPhase = 1.0;
+                m_angle           = 90.0;
+                m_rotationPivot   = m_pendingOperations.front().first;
                 rotateCounterClockWiseAbout(m_pendingOperations.front().first);
                 break;
             case Level::DYNAMIC_BLOCK_TYPE::NONE:
@@ -160,6 +175,7 @@ namespace model {
         if (m_fractionOfPhase <= 0.0) {
             m_fractionOfPhase = 0.0;
             m_previousOffset  = m_offset;
+            m_angle           = 0.0;
         }
     }
 
@@ -169,6 +185,14 @@ namespace model {
 
     double Cluster::dynamicColumnOffset() const {
         return m_offset.column() + m_fractionOfPhase * (-m_offset.column() + m_previousOffset.column());
+    }
+
+    double Cluster::angle() const {
+        return m_fractionOfPhase * m_angle;
+    }
+
+    const IndexPair& Cluster::rotationPivot() const {
+        return m_rotationPivot;
     }
 
 } // namespace model

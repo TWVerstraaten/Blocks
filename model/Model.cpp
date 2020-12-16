@@ -12,9 +12,13 @@ namespace model {
 
     Model::Model() {
         m_clusters.emplace_back(Cluster{{{0, 1}, {1, 0}, {1, 1}, {1, 2}}, {9, 1}});
-        m_clusters.back().addAction(Cluster::Action::MOVE_DOWN);
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_UP, ClusterAction::MODIFIER::NONE});
         m_clusters.emplace_back(Cluster{{{0, 0}, {1, 0}, {2, 0}}, {10, 7}});
-        m_clusters.back().addAction(Cluster::Action::MOVE_LEFT);
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::NONE});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::SKIP});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::SKIP});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::SKIP});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::IGNORE});
     }
 
     const std::vector<model::Cluster>& Model::clusters() const {
@@ -61,6 +65,7 @@ namespace model {
     const model::Level& Model::level() const {
         return m_level;
     }
+
     void Model::moveClusters() {
         for (auto& cluster : m_clusters) {
             cluster.doAction();

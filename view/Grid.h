@@ -13,15 +13,14 @@ namespace view {
       public:
         Grid() = default;
 
-        size_t blockSize() const;
-        void   setBlockSize(int scaleParameter);
-
+        void setBlockSize(int scaleParameter);
         void update(size_t width, size_t height);
 
-        int xAt(double column) const;
-        int yAt(double row) const;
-        int firstColumnInView() const;
-        int firstRowInView() const;
+        size_t blockSize() const;
+        int    xAt(double column) const;
+        int    yAt(double row) const;
+        int    firstColumnInView() const;
+        int    firstRowInView() const;
 
       private:
         size_t m_blockSize = 100;

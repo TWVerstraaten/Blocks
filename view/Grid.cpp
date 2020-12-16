@@ -21,11 +21,11 @@ namespace view {
     }
 
     int Grid::firstColumnInView() const {
-        return m_xOffset / m_blockSize;
+        return -m_xOffset / static_cast<int>(m_blockSize);
     }
 
     int Grid::firstRowInView() const {
-        return m_yOffset / m_blockSize;
+        return -m_yOffset / static_cast<int>(m_blockSize);
     }
 
     void Grid::update(size_t width, size_t height) {

@@ -12,19 +12,12 @@ Application::Application() {
 }
 
 void Application::loop() {
-    bool   isRunning = true;
-    size_t phase     = 0;
+    bool isRunning = true;
     while (isRunning) {
-        if (phase == 0 && m_timeSinceLastStep > m_phaseDurationInMilliSeconds) {
-            m_model.interactClustersWithInstantBlocks();
-            m_model.moveClusters();
-            ++phase;
-        }
         if (m_timeSinceLastStep > m_stepTimeInMilliSeconds) {
             m_model.interactClustersWithInstantBlocks();
             m_model.interactClustersWithDynamicBlocks();
             m_timeSinceLastStep %= m_stepTimeInMilliSeconds;
-            phase = 0;
         }
         while (SDL_PollEvent(&m_event) > 0) {
             switch (m_event.type) {
@@ -42,6 +35,7 @@ void Application::loop() {
                     {
                         int xMouse, yMouse;
                         SDL_GetMouseState(&xMouse, &yMouse);
+                        std::cout << xMouse << ", " << yMouse << '\n';
                     }
                 } break;
                 case SDL_MOUSEWHEEL: {
@@ -50,7 +44,7 @@ void Application::loop() {
             }
         }
         const auto dt = SDL_GetTicks() - m_lastTime;
-        update(2.0 * dt / m_stepTimeInMilliSeconds);
+        update(static_cast<double>(1.1 * dt) / m_stepTimeInMilliSeconds);
         m_lastTime = SDL_GetTicks();
         m_view.draw(m_model);
         if (!m_isPaused) {
