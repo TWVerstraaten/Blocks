@@ -34,4 +34,9 @@ namespace view {
     void Grid::setBlockSize(int scaleParameter) {
         m_blockSize = 100 * std::exp(scaleParameter / 10.0);
     }
+
+    void Grid::translate(int dx, int dy) {
+        m_xOffset += dx;
+        m_yOffset += dy;
+    }
 } // namespace view

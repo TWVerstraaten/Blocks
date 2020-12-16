@@ -31,13 +31,15 @@ void Application::loop() {
                 case SDL_WINDOWEVENT:
                     if (m_event.window.event == SDL_WINDOWEVENT_RESIZED) {}
                     break;
-                case SDL_MOUSEMOTION: {
-                    {
-                        int xMouse, yMouse;
-                        SDL_GetMouseState(&xMouse, &yMouse);
-                        std::cout << xMouse << ", " << yMouse << '\n';
-                    }
-                } break;
+                case SDL_MOUSEBUTTONDOWN:
+                    mouseClickEvent();
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    mouseReleaseEvent();
+                    break;
+                case SDL_MOUSEMOTION:
+                    mouseMoveEvent();
+                    break;
                 case SDL_MOUSEWHEEL: {
                     mouseWheelEvent();
                 }
@@ -96,4 +98,34 @@ void Application::keyEvent() {
             m_pressedKeys.erase(m_pressedKeys.find(m_event.key.keysym.sym));
             break;
     }
+}
+
+void Application::mouseClickEvent() {
+    switch (m_event.button.button) {
+        case SDL_BUTTON_RIGHT:
+            m_mousePressed          = true;
+            m_previousMousePosition = getMouseCoordinates();
+            break;
+        default:
+            break;
+    }
+}
+
+void Application::mouseReleaseEvent() {
+    m_mousePressed = false;
+}
+
+void Application::mouseMoveEvent() {
+    if (m_mousePressed) {
+        const auto mouseCoordinates = getMouseCoordinates();
+        m_view.translate((mouseCoordinates.x - m_previousMousePosition.x),
+                         mouseCoordinates.y - m_previousMousePosition.y);
+        m_previousMousePosition = mouseCoordinates;
+    }
+}
+
+SDL_Point Application::getMouseCoordinates() {
+    int xMouse, yMouse;
+    SDL_GetMouseState(&xMouse, &yMouse);
+    return {xMouse, yMouse};
 }

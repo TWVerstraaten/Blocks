@@ -16,7 +16,7 @@ class AssetHandler {
   public:
     void init(SDL_Renderer* renderer);
 
-    enum class TEXTURE_ENUM { ONE, TWO, ARROW_CW, ARROW_CCW, CLUSTER, KILL };
+    enum class TEXTURE_ENUM { ERROR, ARROW_CW, ARROW_CCW, CLUSTER, KILL };
     enum class FONT_ENUM { ONE, TWO };
 
     bool renderTexture(TEXTURE_ENUM textureEnum, const SDL_Rect& destination, SDL_Renderer* renderer,

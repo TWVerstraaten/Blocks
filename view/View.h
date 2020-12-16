@@ -28,6 +28,9 @@ namespace view {
 
         void draw(const model::Model& model);
         void zoom(int amount);
+        void translate(int dx, int dy);
+
+        std::pair<int, int> windowSize() const;
 
       private:
         void drawClusters(const std::vector<model::Cluster>& clusters) const;

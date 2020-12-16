@@ -22,8 +22,15 @@ class Application {
   private:
     void mouseWheelEvent();
     void keyEvent();
+    void mouseClickEvent();
+    void mouseReleaseEvent();
+    void mouseMoveEvent();
 
-    bool                  m_isPaused = true;
+    static SDL_Point getMouseCoordinates();
+
+    bool                  m_isPaused     = true;
+    bool                  m_mousePressed = false;
+    SDL_Point             m_previousMousePosition;
     model::Model          m_model;
     view::View            m_view;
     SDL_Event             m_event;

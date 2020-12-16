@@ -29,28 +29,25 @@ namespace view {
         m_window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, initialWidth,
                                     initialHeight, SDL_WINDOW_RESIZABLE);
         if (!m_window) {
-            std::cout << "Failed to create window\n";
-            std::cout << "SDL2 Error: " << SDL_GetError() << "\n";
+            std::cout << "Failed to create window, SDL2 Error: " << SDL_GetError() << "\n";
             return;
         }
         m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
         if (!m_renderer) {
-            std::cout << "Failed to get window's surface\n";
-            std::cout << "SDL2 Error: " << SDL_GetError() << "\n";
+            std::cout << "Failed to get window's surface, "
+                      << "SDL2 Error: " << SDL_GetError() << "\n";
             return;
         }
         SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
 
-        // Initialize PNG loading
         int imgFlags = IMG_INIT_PNG;
         if (!(IMG_Init(imgFlags) & imgFlags)) {
-            std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << '\n';
+            std::cout << "SDL_image could not initialize, SDL_image Error: " << IMG_GetError() << '\n';
         }
 
-        // Initialize SDL_ttf
         if (TTF_Init() == -1) {
-            std::cout << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << '\n';
+            std::cout << "SDL_ttf could not initialize, SDL_ttf Error: " << TTF_GetError() << '\n';
         }
 
         SDL_StartTextInput();
@@ -183,4 +180,14 @@ namespace view {
         m_zoomParameter += amount;
         m_grid.setBlockSize(m_zoomParameter);
     }
+    void View::translate(int dx, int dy) {
+        m_grid.translate(dx, dy);
+    }
+
+    std::pair<int, int> View::windowSize() const {
+        int windowWidth, windowHeight;
+        SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
+        return {windowWidth, windowHeight};
+    }
+
 } // namespace view

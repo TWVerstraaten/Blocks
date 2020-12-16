@@ -14,6 +14,7 @@ namespace model {
         m_dynamicBLocks[IndexPair(5, 4)]  = DYNAMIC_BLOCK_TYPE::ROTATE_CCW;
 
         m_instantBLocks[IndexPair(5, 6)] = INSTANT_BLOCK_TYPE::KILL;
+        m_instantBLocks[IndexPair(7, 2)] = INSTANT_BLOCK_TYPE::KILL;
         m_instantBLocks[IndexPair(4, 4)] = INSTANT_BLOCK_TYPE::KILL;
     }
 

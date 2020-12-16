@@ -22,6 +22,8 @@ namespace view {
         int    firstColumnInView() const;
         int    firstRowInView() const;
 
+        void translate(int dx, int dy);
+
       private:
         size_t m_blockSize = 100;
         int    m_xOffset   = 0;
