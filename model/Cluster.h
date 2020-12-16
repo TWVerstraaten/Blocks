@@ -37,7 +37,7 @@ namespace model {
         enums::DIRECTION           adjacent(const IndexPair& indexPair) const;
         const std::set<IndexPair>& localIndexPairs() const;
         const IndexPair&           rotationPivot() const;
-
+        const std::vector<ClusterAction>& clusterActions() const;
         void addAction(ClusterAction action);
 
       private:

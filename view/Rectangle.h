@@ -16,6 +16,9 @@ namespace view {
         Rectangle(int left, int top, size_t width, size_t height, const SDL_Color& outlineColor);
         Rectangle(int left, int top, size_t width, size_t height, const SDL_Color& outlineColor,
                   const SDL_Color& fillColor);
+        Rectangle(SDL_Rect rect , const SDL_Color& outlineColor);
+        Rectangle(SDL_Rect rect, const SDL_Color& outlineColor,
+                  const SDL_Color& fillColor);
 
         void render(SDL_Renderer* renderer) const;
         void setRect(int left, int top, int width, int height);

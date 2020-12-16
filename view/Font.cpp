@@ -7,25 +7,33 @@
 #include <cassert>
 #include <iostream>
 
-Font::Font(const std::string& path) : m_font(TTF_OpenFont(path.c_str(), 28)), m_loadedCorrectly(m_font != nullptr) {
-    if (m_font == nullptr) {
-        std::cout << "Could not load font! SDL_ttf Error: " << TTF_GetError() << '\n';
+namespace view {
+
+    Font::Font(const std::string& path, size_t fontSize)
+        : m_font(TTF_OpenFont(path.c_str(), fontSize)), m_loadedCorrectly(m_font != nullptr) {
+        if (m_font == nullptr) {
+            std::cout << "Could not load font! SDL_ttf Error: " << TTF_GetError() << '\n';
+        }
+
+        if (m_loadedCorrectly) {
+            assert(m_font != nullptr);
+        }
     }
 
-    if (m_loadedCorrectly) {
-        assert(m_font != nullptr);
+    TTF_Font* Font::font() const {
+        assert(m_loadedCorrectly);
+        return m_font;
     }
-}
 
-TTF_Font* Font::font() const {
-    return m_font;
-}
+    bool Font::loadedCorrectly() const {
+        return m_loadedCorrectly;
+    }
 
-bool Font::loadedCorrectly() const {
-    return m_loadedCorrectly;
-}
-
-Font::~Font() {
-    TTF_CloseFont(m_font);
-    m_font = nullptr;
-}
+    Font::~Font() {
+        std::cout << "Closing font " << m_font << '\n';
+        if (m_loadedCorrectly) {
+            TTF_CloseFont(m_font);
+            m_font = nullptr;
+        }
+    }
+} // namespace view

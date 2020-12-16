@@ -195,4 +195,8 @@ namespace model {
         return m_rotationPivot;
     }
 
+    const std::vector<ClusterAction>& Cluster::clusterActions() const {
+        return m_clusterActions;
+    }
+
 } // namespace model

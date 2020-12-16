@@ -16,7 +16,7 @@ namespace model {
     class Level {
 
       public:
-        Level();
+        Level() = default;
 
         enum class DYNAMIC_BLOCK_TYPE { NONE, ROTATE_CW, ROTATE_CCW };
         enum class INSTANT_BLOCK_TYPE { NONE, KILL };
@@ -25,6 +25,9 @@ namespace model {
         const std::map<IndexPair, DYNAMIC_BLOCK_TYPE>& dynamicBlocks() const;
         INSTANT_BLOCK_TYPE                             instantBlockAt(const IndexPair& indexPair);
         const std::map<IndexPair, INSTANT_BLOCK_TYPE>& instantBlocks() const;
+
+        void addBlock(const IndexPair& indexPair, DYNAMIC_BLOCK_TYPE blockType);
+        void addBlock(const IndexPair& indexPair, INSTANT_BLOCK_TYPE blockType);
 
       private:
         std::map<IndexPair, DYNAMIC_BLOCK_TYPE> m_dynamicBLocks;

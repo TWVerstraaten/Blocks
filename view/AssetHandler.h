@@ -12,23 +12,33 @@
 #include <map>
 #include <memory>
 
-class AssetHandler {
-  public:
-    void init(SDL_Renderer* renderer);
+namespace view {
 
-    enum class TEXTURE_ENUM { ERROR, ARROW_CW, ARROW_CCW, CLUSTER, KILL };
-    enum class FONT_ENUM { ONE, TWO };
+    class AssetHandler {
+      public:
+        AssetHandler()                          = default;
+        AssetHandler(const AssetHandler& other) = delete;
 
-    bool renderTexture(TEXTURE_ENUM textureEnum, const SDL_Rect& destination, SDL_Renderer* renderer,
-                       double angle = 0.0, const SDL_Point* center = nullptr,
-                       SDL_RendererFlip flip = SDL_FLIP_NONE) const;
+        void init(SDL_Renderer* renderer);
 
-    static TEXTURE_ENUM getTextureEnum(model::Level::DYNAMIC_BLOCK_TYPE type);
-    static TEXTURE_ENUM getTextureEnum(model::Level::INSTANT_BLOCK_TYPE type);
+        enum class TEXTURE_ENUM { ERROR, ARROW_CW, ARROW_CCW, CLUSTER, KILL };
+        enum class FONT_ENUM { MAIN };
 
-  private:
-    std::map<TEXTURE_ENUM, std::unique_ptr<Texture>> m_textures;
-    std::map<FONT_ENUM, Font>                        m_fonts;
-};
+        bool        renderTexture(TEXTURE_ENUM textureEnum, const SDL_Rect& destination, SDL_Renderer* renderer,
+                                  double angle = 0.0, const SDL_Point* center = nullptr,
+                                  SDL_RendererFlip flip = SDL_FLIP_NONE) const;
+        static bool renderTexture(Texture* texture, const SDL_Rect& destination, SDL_Renderer* renderer,
+                                  double angle = 0.0, const SDL_Point* center = nullptr,
+                                  SDL_RendererFlip flip = SDL_FLIP_NONE);
 
+        const Font* font(FONT_ENUM fontEnum) const;
+
+        static TEXTURE_ENUM getTextureEnum(model::Level::DYNAMIC_BLOCK_TYPE type);
+        static TEXTURE_ENUM getTextureEnum(model::Level::INSTANT_BLOCK_TYPE type);
+
+      private:
+        std::map<TEXTURE_ENUM, std::unique_ptr<Texture>> m_textures;
+        std::map<FONT_ENUM, std::unique_ptr<Font>>       m_fonts;
+    };
+} // namespace view
 #endif // BLOCKS_ASSETHANDLER_H

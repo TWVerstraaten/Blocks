@@ -8,17 +8,21 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 
-class Font {
-  public:
-    Font(const std::string& path);
-    ~Font();
+namespace view {
 
-    [[nodiscard]] bool      loadedCorrectly() const;
-    [[nodiscard]] TTF_Font* font() const;
+    class Font {
+      public:
+        Font(const std::string& path, size_t fontSize);
+        ~Font();
 
-  private:
-    TTF_Font* m_font;
-    bool      m_loadedCorrectly;
-};
+        Font(const Font& other) = delete;
 
+        bool      loadedCorrectly() const;
+        TTF_Font* font() const;
+
+      private:
+        TTF_Font* m_font;
+        bool      m_loadedCorrectly = false;
+    };
+} // namespace view
 #endif // BLOCKS_FONT_H

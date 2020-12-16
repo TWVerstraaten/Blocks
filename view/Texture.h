@@ -10,37 +10,40 @@
 #include <memory>
 #include <string>
 
-class Texture {
+namespace view {
 
-  public:
-    Texture();
-    ~Texture();
+    class Texture {
 
-    static Texture                  buildFromImagePath(const std::string& path, SDL_Renderer* renderer);
-    static std::unique_ptr<Texture> createFromImagePath(const std::string& path, SDL_Renderer* renderer);
-    static Texture buildFromText(const std::string& textureText, SDL_Color textColor, SDL_Renderer* renderer,
-                                 TTF_Font* font);
+      public:
+        Texture();
+        ~Texture();
 
-    void free();
+        static Texture                  buildFromImagePath(const std::string& path, SDL_Renderer* renderer);
+        static std::unique_ptr<Texture> createFromImagePath(const std::string& path, SDL_Renderer* renderer);
+        static std::unique_ptr<Texture> buildFromText(const std::string& textureText, SDL_Color textColor, SDL_Renderer* renderer,
+                                     TTF_Font* font);
 
-    void setColor(Uint8 red, Uint8 green, Uint8 blue);
+        void free();
 
-    void setBlendMode(SDL_BlendMode blending);
+        void setColor(Uint8 red, Uint8 green, Uint8 blue);
 
-    void setAlpha(Uint8 alpha);
+        void setBlendMode(SDL_BlendMode blending);
 
-    void render(const SDL_Rect& destination, SDL_Renderer* renderer, double angle = 0.0, const SDL_Point* center = nullptr,
-                SDL_RendererFlip flip = SDL_FLIP_NONE);
+        void setAlpha(Uint8 alpha);
 
-    int  width() const;
-    int  height() const;
-    bool loadedCorrectly() const;
+        void render(const SDL_Rect& destination, SDL_Renderer* renderer, double angle = 0.0,
+                    const SDL_Point* center = nullptr, SDL_RendererFlip flip = SDL_FLIP_NONE);
 
-  private:
-    bool         m_loadedCorrectly;
-    SDL_Texture* m_texture;
-    size_t       m_width;
-    size_t       m_height;
-};
+        int  width() const;
+        int  height() const;
+        bool loadedCorrectly() const;
+
+      private:
+        bool         m_loadedCorrectly;
+        SDL_Texture* m_texture;
+        size_t       m_width;
+        size_t       m_height;
+    };
+} // namespace view
 
 #endif // BLOCKS_TEXTURE_H

@@ -9,10 +9,15 @@
 Application::Application() {
     m_lastTime          = SDL_GetTicks();
     m_timeSinceLastStep = 0;
+
+    for (const auto& cluster : m_model.clusters()) {
+        m_view.addActionEditBox(cluster);
+    }
 }
 
 void Application::loop() {
     bool isRunning = true;
+    SDL_StartTextInput();
     while (isRunning) {
         if (m_timeSinceLastStep > m_stepTimeInMilliSeconds) {
             m_model.interactClustersWithInstantBlocks();
@@ -24,6 +29,8 @@ void Application::loop() {
                 case SDL_QUIT:
                     isRunning = false;
                     break;
+                case SDL_TEXTEDITING:
+                case SDL_TEXTINPUT:
                 case SDL_KEYDOWN:
                 case SDL_KEYUP:
                     keyEvent();
@@ -46,13 +53,16 @@ void Application::loop() {
             }
         }
         const auto dt = SDL_GetTicks() - m_lastTime;
-        update(static_cast<double>(1.1 * dt) / m_stepTimeInMilliSeconds);
+        if (not m_isPaused) {
+            update(static_cast<double>(1.1 * dt) / m_stepTimeInMilliSeconds);
+        }
         m_lastTime = SDL_GetTicks();
         m_view.draw(m_model);
         if (!m_isPaused) {
             m_timeSinceLastStep += dt;
         }
     }
+    SDL_StopTextInput();
 }
 
 void Application::update(double fractionOfPhase) {
@@ -65,29 +75,40 @@ void Application::mouseWheelEvent() {
 
 void Application::keyEvent() {
     switch (m_event.type) {
+        case SDL_TEXTINPUT:
+            for (auto& actionEditBox : m_view.actionEditBoxes()) {
+                if (actionEditBox->hasFocus()) {
+                    actionEditBox->handleKeyEvent(m_event);
+                    return;
+                }
+            }
+            break;
         case SDL_KEYDOWN:
             if (m_pressedKeys.find(m_event.key.keysym.sym) != m_pressedKeys.end()) {
-                return;
+                if (m_event.key.keysym.sym != SDLK_DELETE) {
+                    return;
+                }
             }
             m_pressedKeys.insert(m_event.key.keysym.sym);
+            for (auto& actionEditBox : m_view.actionEditBoxes()) {
+                if (actionEditBox->hasFocus()) {
+                    actionEditBox->handleKeyEvent(m_event);
+                    return;
+                }
+            }
+
             switch (m_event.key.keysym.sym) {
                 case SDLK_SPACE:
                     m_isPaused = !m_isPaused;
                     break;
                 case SDLK_1:
-                    m_stepTimeInMilliSeconds      = 1000;
-                    m_phaseDurationInMilliSeconds = m_stepTimeInMilliSeconds / 2;
-                    m_isPaused                    = false;
+                    setTimeStep(1000);
                     break;
                 case SDLK_2:
-                    m_stepTimeInMilliSeconds      = 300;
-                    m_phaseDurationInMilliSeconds = m_stepTimeInMilliSeconds / 2;
-                    m_isPaused                    = false;
+                    setTimeStep(300);
                     break;
                 case SDLK_3:
-                    m_stepTimeInMilliSeconds      = 100;
-                    m_phaseDurationInMilliSeconds = m_stepTimeInMilliSeconds / 2;
-                    m_isPaused                    = false;
+                    setTimeStep(100);
                     break;
                 default:
                     break;
@@ -101,10 +122,24 @@ void Application::keyEvent() {
 }
 
 void Application::mouseClickEvent() {
+    const auto mousePosition = getMouseCoordinates();
+
+    for (auto& actionEditBox : m_view.actionEditBoxes()) {
+        actionEditBox->loseFocus();
+    }
+
+    for (auto& actionEditBox : m_view.actionEditBoxes()) {
+        if (actionEditBox->pointIsOverWidget(mousePosition)) {
+            actionEditBox->getFocus();
+            actionEditBox->handleMouseClickEvent(m_event);
+            return;
+        }
+    }
+
     switch (m_event.button.button) {
         case SDL_BUTTON_RIGHT:
-            m_mousePressed          = true;
-            m_previousMousePosition = getMouseCoordinates();
+            m_rightMouseButtonPressed = true;
+            m_previousMousePosition   = mousePosition;
             break;
         default:
             break;
@@ -112,11 +147,17 @@ void Application::mouseClickEvent() {
 }
 
 void Application::mouseReleaseEvent() {
-    m_mousePressed = false;
+    switch (m_event.button.button) {
+        case SDL_BUTTON_RIGHT:
+            m_rightMouseButtonPressed = false;
+            break;
+        default:
+            break;
+    }
 }
 
 void Application::mouseMoveEvent() {
-    if (m_mousePressed) {
+    if (m_rightMouseButtonPressed) {
         const auto mouseCoordinates = getMouseCoordinates();
         m_view.translate((mouseCoordinates.x - m_previousMousePosition.x),
                          mouseCoordinates.y - m_previousMousePosition.y);
@@ -128,4 +169,9 @@ SDL_Point Application::getMouseCoordinates() {
     int xMouse, yMouse;
     SDL_GetMouseState(&xMouse, &yMouse);
     return {xMouse, yMouse};
+}
+
+void Application::setTimeStep(Uint32 timeStep) {
+    m_stepTimeInMilliSeconds = timeStep;
+    m_isPaused               = false;
 }

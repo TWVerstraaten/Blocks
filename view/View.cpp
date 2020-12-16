@@ -50,14 +50,14 @@ namespace view {
             std::cout << "SDL_ttf could not initialize, SDL_ttf Error: " << TTF_GetError() << '\n';
         }
 
+        m_assetsHandler->init(m_renderer);
         SDL_StartTextInput();
-        m_assetsHandler.init(m_renderer);
     }
 
     View::~View() {
         SDL_DestroyRenderer(m_renderer);
         SDL_DestroyWindow(m_window);
-
+        m_assetsHandler.reset(nullptr); // Release font before we close subsystems
         TTF_Quit();
         IMG_Quit();
         SDL_Quit();
@@ -71,6 +71,10 @@ namespace view {
         drawClusters(model.clusters());
         drawLevel(model.level());
 
+        for (auto& actionEditBox : m_actionEditBoxes) {
+            actionEditBox->render(m_renderer);
+        }
+
         SDL_RenderPresent(m_renderer);
     }
 
@@ -80,12 +84,12 @@ namespace view {
                 const SDL_Point center = {
                     static_cast<int>(m_grid.blockSize() * (0.5 + cluster.rotationPivot().column() - it->column())),
                     static_cast<int>(m_grid.blockSize() * (0.5 + cluster.rotationPivot().row() - it->row()))};
-                if (m_assetsHandler.renderTexture(AssetHandler::TEXTURE_ENUM::CLUSTER,
-                                                  {m_grid.xAt(it->column() + cluster.dynamicColumnOffset()),
-                                                   m_grid.yAt(it->row() + cluster.dynamicRowOffset()),
-                                                   static_cast<int>(m_grid.blockSize()),
-                                                   static_cast<int>(m_grid.blockSize())},
-                                                  m_renderer, cluster.angle(), &center)) {
+                if (m_assetsHandler->renderTexture(AssetHandler::TEXTURE_ENUM::CLUSTER,
+                                                   {m_grid.xAt(it->column() + cluster.dynamicColumnOffset()),
+                                                    m_grid.yAt(it->row() + cluster.dynamicRowOffset()),
+                                                    static_cast<int>(m_grid.blockSize()),
+                                                    static_cast<int>(m_grid.blockSize())},
+                                                   m_renderer, cluster.angle(), &center)) {
                     continue;
                 } else {
                     Rectangle rect = {m_grid.xAt(it->column() + cluster.dynamicColumnOffset()),
@@ -120,11 +124,11 @@ namespace view {
 
     void View::drawLevel(const model::Level& level) const {
         for (const auto& block : level.dynamicBlocks()) {
-            if (m_assetsHandler.renderTexture(AssetHandler::getTextureEnum(block.second),
-                                              {m_grid.xAt(block.first.column()), m_grid.yAt(block.first.row()),
-                                               static_cast<int>(m_grid.blockSize()),
-                                               static_cast<int>(m_grid.blockSize())},
-                                              m_renderer, 0)) {
+            if (m_assetsHandler->renderTexture(AssetHandler::getTextureEnum(block.second),
+                                               {m_grid.xAt(block.first.column()), m_grid.yAt(block.first.row()),
+                                                static_cast<int>(m_grid.blockSize()),
+                                                static_cast<int>(m_grid.blockSize())},
+                                               m_renderer, 0)) {
                 continue;
             } else {
                 Rectangle rect = {m_grid.xAt(block.first.column()),
@@ -149,14 +153,13 @@ namespace view {
         }
 
         for (const auto& block : level.instantBlocks()) {
-            if (m_assetsHandler.renderTexture(AssetHandler::getTextureEnum(block.second),
-                                              {m_grid.xAt(block.first.column()), m_grid.yAt(block.first.row()),
-                                               static_cast<int>(m_grid.blockSize()),
-                                               static_cast<int>(m_grid.blockSize())},
-                                              m_renderer, 0)) {
+            if (m_assetsHandler->renderTexture(AssetHandler::getTextureEnum(block.second),
+                                               {m_grid.xAt(block.first.column()), m_grid.yAt(block.first.row()),
+                                                static_cast<int>(m_grid.blockSize()),
+                                                static_cast<int>(m_grid.blockSize())},
+                                               m_renderer, 0)) {
                 continue;
             } else {
-
                 Rectangle rect = {m_grid.xAt(block.first.column()),
                                   m_grid.yAt(block.first.row()),
                                   m_grid.blockSize(),
@@ -188,6 +191,15 @@ namespace view {
         int windowWidth, windowHeight;
         SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
         return {windowWidth, windowHeight};
+    }
+
+    void View::addActionEditBox(const model::Cluster& cluster) {
+        m_actionEditBoxes.emplace_back(
+            new ActionEditBox(0, m_actionEditBoxes.size() * 200, 200, 200, m_assetsHandler.get(), cluster));
+    }
+
+    const std::vector<std::unique_ptr<ActionEditBox>>& View::actionEditBoxes() const {
+        return m_actionEditBoxes;
     }
 
 } // namespace view

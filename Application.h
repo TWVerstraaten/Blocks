@@ -18,6 +18,7 @@ class Application {
 
     void loop();
     void update(double delta_time);
+    static SDL_Point getMouseCoordinates();
 
   private:
     void mouseWheelEvent();
@@ -25,19 +26,18 @@ class Application {
     void mouseClickEvent();
     void mouseReleaseEvent();
     void mouseMoveEvent();
+    void setTimeStep(Uint32 timeStep);
 
-    static SDL_Point getMouseCoordinates();
 
-    bool                  m_isPaused     = true;
-    bool                  m_mousePressed = false;
+    bool                  m_isPaused                = true;
+    bool                  m_rightMouseButtonPressed = false;
     SDL_Point             m_previousMousePosition;
     model::Model          m_model;
     view::View            m_view;
     SDL_Event             m_event;
     Uint32                m_lastTime;
     Uint32                m_timeSinceLastStep;
-    Uint32                m_stepTimeInMilliSeconds      = 500;
-    Uint32                m_phaseDurationInMilliSeconds = m_stepTimeInMilliSeconds / 2;
+    Uint32                m_stepTimeInMilliSeconds = 300;
     std::set<SDL_Keycode> m_pressedKeys;
 };
 

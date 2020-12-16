@@ -19,6 +19,15 @@ namespace model {
         m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::SKIP});
         m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::SKIP});
         m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::IGNORE});
+
+        m_level.addBlock({5, 1}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
+        m_level.addBlock({10, 6}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW);
+        m_level.addBlock({5, 4}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
+
+        m_level.addBlock({5, 6}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({3, 1}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({7, 2}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({4, 4}, Level::INSTANT_BLOCK_TYPE::KILL);
     }
 
     const std::vector<model::Cluster>& Model::clusters() const {
