@@ -5,7 +5,6 @@
 #ifndef BLOCKS_CLUSTER_H
 #define BLOCKS_CLUSTER_H
 
-#include "../model/Matrix.h"
 #include "Enums.h"
 #include "Level.h"
 
@@ -20,37 +19,41 @@ namespace model {
     class Cluster {
 
       public:
-        Cluster(Matrix&& matrix, size_t rowOffset, size_t columnOffset);
+        Cluster(std::set<IndexPair>&& indexPairs, const IndexPair& offset);
 
-        void                       doStep();
         void                       doAction();
-        void                       rotateClockWiseAbout(const IndexPair& pivotIndexPair);
+        void                       addPendingOperation(const IndexPair& indexPair, Level::DYNAMIC_BLOCK_TYPE blockType);
+        void                       performPendingOperation();
         void                       removeBLock(const IndexPair& indexPair);
-        void                       rotateCounterClockWiseAbout(const IndexPair& pivotIndexPair);
-        void                       interactWithBlock(const IndexPair& indexPair, Level::BLOCK_TYPE blockType);
-        void                       performPendingActions();
+        void                       update(double fractionOfPhase);
         bool                       empty() const;
         bool                       intersects(const IndexPair& indexPair) const;
         int                        rowOffset() const;
         int                        columnOffset() const;
+        double                     dynamicRowOffset() const;
+        double                     dynamicColumnOffset() const;
         enums::DIRECTION           adjacent(const IndexPair& indexPair) const;
-        const std::set<IndexPair>& indexPairs() const;
+        const std::set<IndexPair>& localIndexPairs() const;
 
         enum class Action { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
         void addAction(Action action);
 
       private:
+        void rotateClockWiseAbout(const IndexPair& pivotIndexPair);
+        void rotateCounterClockWiseAbout(const IndexPair& pivotIndexPair);
+
         static Action rotateActionClockWise(Action action);
         static Action rotateActionCounterClockWise(Action action);
 
-        int                 m_rowOffset    = 0;
-        int                 m_columnOffset = 0;
-        size_t              m_actionIndex  = 0;
-        std::set<IndexPair> m_indexPairs;
+        double              m_fractionOfPhase = 1.0;
+        size_t              m_actionIndex     = 0;
+        IndexPair           m_offset;
+        IndexPair           m_previousOffset;
+        std::set<IndexPair> m_localIndexPairs;
         std::vector<Action> m_actions;
 
-        typedef std::pair<const IndexPair&, Level::BLOCK_TYPE> Block;
-        std::vector<Block>                                     m_pendingOperations;
+        typedef std::pair<const IndexPair&, Level::DYNAMIC_BLOCK_TYPE> Block;
+        std::vector<Block>                                             m_pendingOperations;
     };
 } // namespace model
 

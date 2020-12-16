@@ -14,7 +14,7 @@ namespace model {
     class IndexPair {
 
       public:
-        explicit IndexPair(int row = 0, int column = 0);
+        IndexPair(int row = 0, int column = 0);
 
         void      set(int row, int column);
         int       row() const;

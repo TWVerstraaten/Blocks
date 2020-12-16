@@ -18,8 +18,8 @@ namespace view {
 
         void update(size_t width, size_t height);
 
-        int xAt(int column) const;
-        int yAt(int row) const;
+        int xAt(double column) const;
+        int yAt(double row) const;
         int firstColumnInView() const;
         int firstRowInView() const;
 

@@ -12,12 +12,19 @@ Application::Application() {
 }
 
 void Application::loop() {
-    bool isRunning = true;
+    bool   isRunning = true;
+    size_t phase     = 0;
     while (isRunning) {
-        if (m_timeSinceLastStep > m_stepTimeInMilliSeconds) {
+        if (phase == 0 && m_timeSinceLastStep > m_phaseDurationInMilliSeconds) {
+            m_model.interactClustersWithInstantBlocks();
             m_model.moveClusters();
-            m_model.interactClustersWithLevel();
+            ++phase;
+        }
+        if (m_timeSinceLastStep > m_stepTimeInMilliSeconds) {
+            m_model.interactClustersWithInstantBlocks();
+            m_model.interactClustersWithDynamicBlocks();
             m_timeSinceLastStep %= m_stepTimeInMilliSeconds;
+            phase = 0;
         }
         while (SDL_PollEvent(&m_event) > 0) {
             switch (m_event.type) {
@@ -29,9 +36,7 @@ void Application::loop() {
                     keyEvent();
                     break;
                 case SDL_WINDOWEVENT:
-                    if (m_event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                        //                        m_model.upda
-                    }
+                    if (m_event.window.event == SDL_WINDOWEVENT_RESIZED) {}
                     break;
                 case SDL_MOUSEMOTION: {
                     {
@@ -45,7 +50,7 @@ void Application::loop() {
             }
         }
         const auto dt = SDL_GetTicks() - m_lastTime;
-        update(dt);
+        update(2.0 * dt / m_stepTimeInMilliSeconds);
         m_lastTime = SDL_GetTicks();
         m_view.draw(m_model);
         if (!m_isPaused) {
@@ -54,8 +59,8 @@ void Application::loop() {
     }
 }
 
-void Application::update(double delta_time) {
-    //    m_level.interactClustersWithLevel();
+void Application::update(double fractionOfPhase) {
+    m_model.update(fractionOfPhase);
 }
 
 void Application::mouseWheelEvent() {
@@ -74,16 +79,19 @@ void Application::keyEvent() {
                     m_isPaused = !m_isPaused;
                     break;
                 case SDLK_1:
-                    m_stepTimeInMilliSeconds = 1000;
-                    m_isPaused               = false;
+                    m_stepTimeInMilliSeconds      = 1000;
+                    m_phaseDurationInMilliSeconds = m_stepTimeInMilliSeconds / 2;
+                    m_isPaused                    = false;
                     break;
                 case SDLK_2:
-                    m_stepTimeInMilliSeconds = 300;
-                    m_isPaused               = false;
+                    m_stepTimeInMilliSeconds      = 300;
+                    m_phaseDurationInMilliSeconds = m_stepTimeInMilliSeconds / 2;
+                    m_isPaused                    = false;
                     break;
                 case SDLK_3:
-                    m_stepTimeInMilliSeconds = 100;
-                    m_isPaused               = false;
+                    m_stepTimeInMilliSeconds      = 100;
+                    m_phaseDurationInMilliSeconds = m_stepTimeInMilliSeconds / 2;
+                    m_isPaused                    = false;
                     break;
                 default:
                     break;

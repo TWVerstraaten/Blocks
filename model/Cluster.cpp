@@ -10,45 +10,36 @@
 
 namespace model {
 
-    Cluster::Cluster(Matrix&& matrix, size_t rowOffset, size_t columnOffset)
-        : m_rowOffset(rowOffset), m_columnOffset(columnOffset) {
-        for (size_t i = 0; i != matrix.rowCount(); ++i) {
-            for (size_t j = 0; j != matrix.columnCount(); ++j) {
-                if (matrix.at(i, j)) {
-                    m_indexPairs.emplace(i, j);
-                }
-            }
-        }
-    }
-
-    void Cluster::doStep() {
-        doAction();
+    Cluster::Cluster(std::set<IndexPair>&& indexPairs, const IndexPair& offset)
+        : m_offset(offset), m_previousOffset(m_offset), m_localIndexPairs(indexPairs) {
     }
 
     int Cluster::rowOffset() const {
-        return m_rowOffset;
+        return m_offset.row();
     }
 
     int Cluster::columnOffset() const {
-        return m_columnOffset;
+        return m_offset.column();
     }
 
     void Cluster::doAction() {
         if (m_actions.empty()) {
             return;
         }
+        m_previousOffset  = m_offset;
+        m_fractionOfPhase = 1.0;
         switch (m_actions[m_actionIndex]) {
             case Action::MOVE_UP:
-                m_rowOffset -= 1;
+                m_offset = m_offset.adjacent(enums::DIRECTION::UP);
                 break;
             case Action::MOVE_DOWN:
-                m_rowOffset += 1;
+                m_offset = m_offset.adjacent(enums::DIRECTION::DOWN);
                 break;
             case Action::MOVE_LEFT:
-                m_columnOffset -= 1;
+                m_offset = m_offset.adjacent(enums::DIRECTION::LEFT);
                 break;
             case Action::MOVE_RIGHT:
-                m_columnOffset += 1;
+                m_offset = m_offset.adjacent(enums::DIRECTION::RIGHT);
                 break;
         }
         ++m_actionIndex;
@@ -57,23 +48,23 @@ namespace model {
 
     void Cluster::rotateClockWiseAbout(const IndexPair& pivotIndexPair) {
         std::set<IndexPair> rotatedIndexPairs;
-        for (auto m_indexPair : m_indexPairs) {
+        for (auto& m_indexPair : m_localIndexPairs) {
             rotatedIndexPairs.emplace(pivotIndexPair.row() - pivotIndexPair.column() + m_indexPair.column(),
                                       pivotIndexPair.column() + pivotIndexPair.row() - m_indexPair.row());
         }
-        assert(m_indexPairs.size() == rotatedIndexPairs.size());
-        std::swap(rotatedIndexPairs, m_indexPairs);
+        assert(m_localIndexPairs.size() == rotatedIndexPairs.size());
+        std::swap(rotatedIndexPairs, m_localIndexPairs);
         std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionClockWise);
     }
 
     void Cluster::rotateCounterClockWiseAbout(const IndexPair& pivotIndexPair) {
         std::set<IndexPair> rotatedIndexPairs;
-        for (auto m_indexPair : m_indexPairs) {
+        for (auto m_indexPair : m_localIndexPairs) {
             rotatedIndexPairs.emplace(pivotIndexPair.row() + pivotIndexPair.column() - m_indexPair.column(),
                                       pivotIndexPair.column() - pivotIndexPair.row() + m_indexPair.row());
         }
-        assert(m_indexPairs.size() == rotatedIndexPairs.size());
-        std::swap(rotatedIndexPairs, m_indexPairs);
+        assert(m_localIndexPairs.size() == rotatedIndexPairs.size());
+        std::swap(rotatedIndexPairs, m_localIndexPairs);
         std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionCounterClockWise);
     }
 
@@ -112,20 +103,20 @@ namespace model {
     }
 
     void Cluster::removeBLock(const IndexPair& indexPair) {
-        assert(m_indexPairs.find(indexPair) != m_indexPairs.end());
-        m_indexPairs.erase(m_indexPairs.find(indexPair));
+        assert(m_localIndexPairs.find(indexPair) != m_localIndexPairs.end());
+        m_localIndexPairs.erase(m_localIndexPairs.find(indexPair));
     }
 
     bool Cluster::empty() const {
-        return m_indexPairs.empty();
+        return m_localIndexPairs.empty();
     }
 
-    const std::set<IndexPair>& Cluster::indexPairs() const {
-        return m_indexPairs;
+    const std::set<IndexPair>& Cluster::localIndexPairs() const {
+        return m_localIndexPairs;
     }
 
     bool Cluster::intersects(const IndexPair& indexPair) const {
-        return m_indexPairs.find(indexPair) != m_indexPairs.end();
+        return m_localIndexPairs.find(indexPair) != m_localIndexPairs.end();
     }
 
     enums::DIRECTION Cluster::adjacent(const IndexPair& indexPair) const {
@@ -138,32 +129,46 @@ namespace model {
         return enums::DIRECTION::NONE;
     }
 
-    void Cluster::interactWithBlock(const IndexPair& indexPair, Level::BLOCK_TYPE blockType) {
-        if (blockType != Level::BLOCK_TYPE::NONE) {
-            m_pendingOperations.emplace_back(indexPair, blockType);
+    void Cluster::addPendingOperation(const IndexPair& indexPair, Level::DYNAMIC_BLOCK_TYPE blockType) {
+        if (blockType == Level::DYNAMIC_BLOCK_TYPE::NONE) {
+            return;
         }
+        m_pendingOperations.emplace_back(indexPair, blockType);
     }
 
-    void Cluster::performPendingActions() {
+    void Cluster::performPendingOperation() {
         assert(m_pendingOperations.size() <= 1);
         if (m_pendingOperations.empty()) {
             return;
         }
         switch (m_pendingOperations.front().second) {
-            case Level::BLOCK_TYPE::ROTATE_CW:
+            case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
                 rotateClockWiseAbout(m_pendingOperations.front().first);
                 break;
-            case Level::BLOCK_TYPE::ROTATE_CCW:
+            case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
                 rotateCounterClockWiseAbout(m_pendingOperations.front().first);
                 break;
-            case Level::BLOCK_TYPE::KILL:
-                removeBLock(m_pendingOperations.front().first);
-                break;
-            case Level::BLOCK_TYPE::NONE:
+            case Level::DYNAMIC_BLOCK_TYPE::NONE:
                 break;
         }
 
         m_pendingOperations.clear();
+    }
+
+    void Cluster::update(double fractionOfPhase) {
+        m_fractionOfPhase -= fractionOfPhase;
+        if (m_fractionOfPhase <= 0.0) {
+            m_fractionOfPhase = 0.0;
+            m_previousOffset  = m_offset;
+        }
+    }
+
+    double Cluster::dynamicRowOffset() const {
+        return m_offset.row() + m_fractionOfPhase * (-m_offset.row() + m_previousOffset.row());
+    }
+
+    double Cluster::dynamicColumnOffset() const {
+        return m_offset.column() + m_fractionOfPhase * (-m_offset.column() + m_previousOffset.column());
     }
 
 } // namespace model

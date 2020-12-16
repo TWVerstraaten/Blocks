@@ -52,9 +52,9 @@ namespace view {
 
     void View::drawClusters(const std::vector<model::Cluster>& clusters) const {
         for (const auto& cluster : clusters) {
-            for (auto it = cluster.indexPairs().begin(); it != cluster.indexPairs().end(); ++it) {
-                Rectangle rect = {m_grid.xAt(it->column() + cluster.columnOffset()),
-                                  m_grid.yAt(it->row() + cluster.rowOffset()),
+            for (auto it = cluster.localIndexPairs().begin(); it != cluster.localIndexPairs().end(); ++it) {
+                Rectangle rect = {m_grid.xAt(it->column() + cluster.dynamicColumnOffset()),
+                                  m_grid.yAt(it->row() + cluster.dynamicRowOffset()),
                                   m_grid.blockSize(),
                                   m_grid.blockSize(),
                                   {0, 0, 0, 255},
@@ -83,7 +83,7 @@ namespace view {
     }
 
     void View::drawLevel(const model::Level& level) const {
-        for (const auto& block : level.blocks()) {
+        for (const auto& block : level.dynamicBlocks()) {
             Rectangle rect = {m_grid.xAt(block.first.column()),
                               m_grid.yAt(block.first.row()),
                               m_grid.blockSize(),
@@ -92,15 +92,30 @@ namespace view {
             rect.setLineThickNess(4);
 
             switch (block.second) {
-                case model::Level::BLOCK_TYPE::ROTATE_CW:
+                case model::Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
                     rect.setFillColor({100, 255, 255, 100});
                     break;
-                case model::Level::BLOCK_TYPE::ROTATE_CCW:
+                case model::Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
                     rect.setFillColor({255, 100, 255, 100});
                     break;
-                case model::Level::BLOCK_TYPE::NONE:
+                case model::Level::DYNAMIC_BLOCK_TYPE::NONE:
                     break;
-                case model::Level::BLOCK_TYPE::KILL:
+            }
+            rect.render(m_renderer);
+        }
+
+        for (const auto& block : level.instantBlocks()) {
+            Rectangle rect = {m_grid.xAt(block.first.column()),
+                              m_grid.yAt(block.first.row()),
+                              m_grid.blockSize(),
+                              m_grid.blockSize(),
+                              {0, 0, 0, 255}};
+            rect.setLineThickNess(4);
+
+            switch (block.second) {
+                case model::Level::INSTANT_BLOCK_TYPE::NONE:
+                    break;
+                case model::Level::INSTANT_BLOCK_TYPE::KILL:
                     rect.setFillColor({90, 90, 90, 180});
                     break;
             }

@@ -12,11 +12,11 @@ namespace view {
         return m_blockSize;
     }
 
-    int Grid::xAt(int column) const {
+    int Grid::xAt(double column) const {
         return m_xOffset + column * m_blockSize;
     }
 
-    int Grid::yAt(int row) const {
+    int Grid::yAt(double row) const {
         return m_yOffset + row * m_blockSize;
     }
 

@@ -20,13 +20,15 @@ namespace model {
         Model();
 
         void                        moveClusters();
-        void                        interactClustersWithLevel();
-        const std::vector<Cluster>& clusters() const;
+        void                        interactClustersWithDynamicBlocks();
+        void                        interactClustersWithInstantBlocks();
+        void                        update(double fractionOfPhase);
         const Level&                level() const;
+        const std::vector<Cluster>& clusters() const;
 
       private:
-        std::vector<Cluster> m_clusters;
         Level                m_level;
+        std::vector<Cluster> m_clusters;
     };
 
 } // namespace model

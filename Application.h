@@ -29,7 +29,8 @@ class Application {
     SDL_Event             m_event;
     Uint32                m_lastTime;
     Uint32                m_timeSinceLastStep;
-    Uint32                m_stepTimeInMilliSeconds = 500;
+    Uint32                m_stepTimeInMilliSeconds      = 500;
+    Uint32                m_phaseDurationInMilliSeconds = m_stepTimeInMilliSeconds / 2;
     std::set<SDL_Keycode> m_pressedKeys;
 };
 
