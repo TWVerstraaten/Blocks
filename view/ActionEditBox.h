@@ -40,8 +40,9 @@ namespace view {
         void deleteHighlightedLine();
         void insertBeforeHighlightedLine();
 
-        size_t                                m_highlightIndex = std::numeric_limits<size_t>::max();
-        bool                                  m_needsUpdate    = true;
+        size_t                                m_stringIndex = std::numeric_limits<size_t>::max();
+        size_t                                m_positionInString;
+        bool                                  m_needsUpdate = true;
         const AssetHandler*                   m_assetHandler;
         std::vector<std::string>              m_strings;
         std::vector<std::unique_ptr<Texture>> m_textures;

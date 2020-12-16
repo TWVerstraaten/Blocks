@@ -39,7 +39,7 @@ namespace view {
                     str += "LFT";
                     break;
                 case model::ClusterAction::ACTION::MOVE_RIGHT:
-                    str += "RHT";
+                    str += "RIT";
                     break;
             }
             m_strings.push_back(str);
@@ -73,12 +73,11 @@ namespace view {
         backGround.setLineThickNess(8);
         backGround.render(renderer);
 
-        if (m_highlightIndex != std::numeric_limits<size_t>::max()) {
-            view::Rectangle highLight{{m_rect.x, static_cast<int>(m_rect.y + m_verticalDelimiters.at(m_highlightIndex)),
-                                       m_rect.w,
-                                       static_cast<int>(m_verticalDelimiters.at(m_highlightIndex + 1) -
-                                                        m_verticalDelimiters.at(m_highlightIndex))},
-                                      {200, 200, 250, 255}};
+        if (m_stringIndex != std::numeric_limits<size_t>::max()) {
+            view::Rectangle highLight{
+                {m_rect.x, static_cast<int>(m_rect.y + m_verticalDelimiters.at(m_stringIndex)), m_rect.w,
+                 static_cast<int>(m_verticalDelimiters.at(m_stringIndex + 1) - m_verticalDelimiters.at(m_stringIndex))},
+                {200, 200, 250, 255}};
             highLight.setFillColor({241, 241, 250, 255});
             highLight.setLineThickNess(0);
             highLight.render(renderer);
@@ -92,11 +91,11 @@ namespace view {
     }
 
     void ActionEditBox::handleKeyEvent(const SDL_Event& e) {
-        if (m_highlightIndex == std::numeric_limits<size_t>::max()) {
+        if (m_stringIndex == std::numeric_limits<size_t>::max()) {
             return;
         } else {
-            assert(m_highlightIndex < m_strings.size());
-            auto& str = m_strings[m_highlightIndex];
+            assert(m_stringIndex < m_strings.size());
+            auto& str = m_strings[m_stringIndex];
             switch (e.type) {
                 case SDL_KEYDOWN:
                     switch (e.key.keysym.sym) {
@@ -115,7 +114,7 @@ namespace view {
                         case SDLK_v:
                             if (SDL_GetModState() & KMOD_CTRL) {
                                 insertBeforeHighlightedLine();
-                                m_strings[m_highlightIndex] = SDL_GetClipboardText();
+                                m_strings[m_stringIndex] = SDL_GetClipboardText();
                                 incrementHighlightIndex();
                                 m_needsUpdate = true;
                             }
@@ -131,17 +130,17 @@ namespace view {
                             if (SDL_GetModState() & KMOD_SHIFT) {
                                 insertBeforeHighlightedLine();
                             } else {
-                                m_strings.insert(m_strings.begin() + m_highlightIndex + 1, "");
-                                ++m_highlightIndex;
+                                m_strings.insert(m_strings.begin() + m_stringIndex + 1, "");
+                                ++m_stringIndex;
                                 m_needsUpdate = true;
                             }
                             break;
                         case SDLK_UP:
-                            m_highlightIndex -= m_highlightIndex == 0 ? 0 : 1;
+                            m_stringIndex -= m_stringIndex == 0 ? 0 : 1;
                             break;
                         case SDLK_DOWN:
-                            if (m_highlightIndex + 1 < m_strings.size()) {
-                                ++m_highlightIndex;
+                            if (m_stringIndex + 1 < m_strings.size()) {
+                                ++m_stringIndex;
                             } else {
                                 if (not m_strings.back().empty()) {
                                     incrementHighlightIndex();
@@ -153,7 +152,7 @@ namespace view {
                 case SDL_TEXTINPUT:
                     if (!(SDL_GetModState() & KMOD_CTRL && (e.text.text[0] == 'c' || e.text.text[0] == 'C' ||
                                                             e.text.text[0] == 'v' || e.text.text[0] == 'V'))) {
-                        str += e.text.text;
+                        str = str.substr(0, m_positionInString) + e.text.text + str.substr(m_positionInString);
                         m_needsUpdate = true;
                     }
                     break;
@@ -168,13 +167,25 @@ namespace view {
 
         xMouse -= m_rect.x;
         yMouse -= m_rect.y;
-        m_highlightIndex = 0;
+        m_stringIndex = 0;
 
-        while (m_highlightIndex < m_verticalDelimiters.size() &&
-               static_cast<size_t>(yMouse) > m_verticalDelimiters.at(m_highlightIndex)) {
-            ++m_highlightIndex;
+        while (m_stringIndex < m_verticalDelimiters.size() &&
+               static_cast<size_t>(yMouse) > m_verticalDelimiters.at(m_stringIndex)) {
+            ++m_stringIndex;
         }
-        --m_highlightIndex;
+        --m_stringIndex;
+
+        const auto& selected = m_strings.at(m_stringIndex);
+        if (selected.empty()) {
+            std::cout << 0 << "\n";
+        }
+        m_positionInString = selected.length();
+        while (
+            m_assetHandler->font(AssetHandler::FONT_ENUM::MAIN)->widthOfString(selected.substr(0, m_positionInString)) >
+            xMouse) {
+            --m_positionInString;
+        }
+        std::cout << m_positionInString << "\n";
     }
 
     const std::vector<std::string>& ActionEditBox::strings() const {
@@ -183,32 +194,32 @@ namespace view {
 
     void ActionEditBox::loseFocus() {
         Widget::loseFocus();
-        m_highlightIndex = std::numeric_limits<size_t>::max();
+        m_stringIndex = std::numeric_limits<size_t>::max();
     }
 
     void ActionEditBox::incrementHighlightIndex() {
-        ++m_highlightIndex;
-        if (m_highlightIndex >= m_strings.size()) {
-            assert(m_highlightIndex == m_strings.size());
+        ++m_stringIndex;
+        if (m_stringIndex >= m_strings.size()) {
+            assert(m_stringIndex == m_strings.size());
             m_strings.emplace_back("");
             m_needsUpdate = true;
         }
     }
 
     void ActionEditBox::deleteHighlightedLine() {
-        m_strings.erase(m_strings.begin() + m_highlightIndex);
+        m_strings.erase(m_strings.begin() + m_stringIndex);
         if (m_strings.empty()) {
             m_strings.emplace_back("");
         }
-        if (m_highlightIndex >= m_strings.size()) {
-            assert(m_highlightIndex == m_strings.size());
-            --m_highlightIndex;
+        if (m_stringIndex >= m_strings.size()) {
+            assert(m_stringIndex == m_strings.size());
+            --m_stringIndex;
         }
         m_needsUpdate = true;
     }
 
     void ActionEditBox::insertBeforeHighlightedLine() {
-        m_strings.insert(m_strings.begin() + m_highlightIndex, "");
+        m_strings.insert(m_strings.begin() + m_stringIndex, "");
         m_needsUpdate = true;
     }
 } // namespace view

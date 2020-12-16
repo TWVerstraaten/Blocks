@@ -36,4 +36,10 @@ namespace view {
             m_font = nullptr;
         }
     }
+
+    int Font::widthOfString(const std::string& str) const{
+        int w;
+        TTF_SizeText(m_font, str.c_str(), &w, nullptr);
+        return w;
+    }
 } // namespace view

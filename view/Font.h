@@ -19,6 +19,7 @@ namespace view {
 
         bool      loadedCorrectly() const;
         TTF_Font* font() const;
+        int       widthOfString(const std::string& str)const;
 
       private:
         TTF_Font* m_font;
