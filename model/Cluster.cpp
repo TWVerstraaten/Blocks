@@ -88,7 +88,7 @@ namespace model {
             case Action::MOVE_RIGHT:
                 return Action::MOVE_DOWN;
             default:
-                assert(false);
+                return action;
         }
     }
 
@@ -103,7 +103,7 @@ namespace model {
             case Action::MOVE_RIGHT:
                 return Action::MOVE_UP;
             default:
-                assert(false);
+                return action;
         }
     }
 
@@ -122,6 +122,20 @@ namespace model {
 
     const std::set<IndexPair>& Cluster::indexPairs() const {
         return m_indexPairs;
+    }
+
+    bool Cluster::intersects(const IndexPair& indexPair) const {
+        return m_indexPairs.find(indexPair) != m_indexPairs.end();
+    }
+
+    enums::DIRECTION Cluster::adjacent(const IndexPair& indexPair) const {
+        for (auto dir :
+             {enums::DIRECTION::UP, enums::DIRECTION::DOWN, enums::DIRECTION::LEFT, enums::DIRECTION::RIGHT}) {
+            if (intersects(indexPair.adjacent(dir))) {
+                return dir;
+            }
+        }
+        return enums::DIRECTION::NONE;
     }
 
 } // namespace model

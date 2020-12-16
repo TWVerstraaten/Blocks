@@ -7,6 +7,7 @@
 
 #include "IndexPair.h"
 
+#include <map>
 #include <tuple>
 #include <vector>
 
@@ -18,15 +19,12 @@ namespace model {
         Level();
 
         enum class BLOCK_TYPE { NONE, ROTATE_CW, ROTATE_CCW, KILL };
-        typedef std::pair<IndexPair, BLOCK_TYPE> Block;
 
-        BLOCK_TYPE   blockAt(int row, int column);
-        BLOCK_TYPE   blockAt(const IndexPair& indexPair);
-        size_t       blockCount() const;
-        const Block& blockAt(size_t index) const;
+        BLOCK_TYPE                             blockAt(const IndexPair& indexPair);
+        const std::map<IndexPair, BLOCK_TYPE>& blocks() const;
 
       private:
-        std::vector<Block> m_blocks;
+        std::map<IndexPair, BLOCK_TYPE> m_blocks;
     };
 } // namespace model
 #endif // BLOCKS_LEVEL_H

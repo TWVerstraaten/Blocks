@@ -83,9 +83,8 @@ namespace view {
     }
 
     void View::drawLevel(const model::Level& level) const {
-        for (size_t i = 0; i != level.blockCount(); ++i) {
-            const auto& block = level.blockAt(i);
-            Rectangle   rect  = {m_grid.xAt(block.first.column()),
+        for (const auto& block : level.blocks()) {
+            Rectangle rect = {m_grid.xAt(block.first.column()),
                               m_grid.yAt(block.first.row()),
                               m_grid.blockSize(),
                               m_grid.blockSize(),

@@ -6,6 +6,7 @@
 #define BLOCKS_CLUSTER_H
 
 #include "../model/Matrix.h"
+#include "Enums.h"
 
 #include <set>
 #include <tuple>
@@ -26,6 +27,8 @@ namespace model {
         void                       removeBLock(const IndexPair& indexPair);
         void                       rotateCounterClockWiseAbout(const IndexPair& pivotIndexPair);
         bool                       empty() const;
+        bool                       intersects(const IndexPair& indexPair) const;
+        enums::DIRECTION           adjacent(const IndexPair& indexPair) const;
         int                        rowOffset() const;
         int                        columnOffset() const;
         const std::set<IndexPair>& indexPairs() const;

@@ -26,6 +26,7 @@ namespace model {
         for (auto& cluster : m_clusters) {
             cluster.doStep();
         }
+
         for (auto& cluster : m_clusters) {
             bool updateDone = false;
             for (auto it = cluster.indexPairs().begin(); it != cluster.indexPairs().end() && not updateDone; ++it) {
@@ -50,6 +51,7 @@ namespace model {
         m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(),
                                         [](const Cluster& cluster) { return cluster.empty(); }),
                          m_clusters.end());
+        std::cout << m_clusters.size();
     }
 
     const model::Level& Model::level() const {

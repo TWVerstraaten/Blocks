@@ -8,32 +8,20 @@
 
 namespace model {
     Level::Level() {
-        m_blocks.emplace_back(IndexPair(5, 1), BLOCK_TYPE::ROTATE_CW);
-        m_blocks.emplace_back(IndexPair(10, 6), BLOCK_TYPE::ROTATE_CW);
-        m_blocks.emplace_back(IndexPair(5, 6), BLOCK_TYPE::KILL);
-    }
-
-    size_t Level::blockCount() const {
-        return m_blocks.size();
-    }
-
-    const Level::Block& Level::blockAt(size_t index) const {
-        assert(index < blockCount());
-        return m_blocks.at(index);
-    }
-
-    Level::BLOCK_TYPE Level::blockAt(int row, int column) {
-        for (const auto& block : m_blocks) {
-            if (block.first.row() == row && block.first.column() == column) {
-                return block.second;
-            }
-        }
-
-        return Level::BLOCK_TYPE::NONE;
+        m_blocks[IndexPair(5, 1)]  = BLOCK_TYPE::ROTATE_CW;
+        m_blocks[IndexPair(10, 6)] = BLOCK_TYPE::ROTATE_CW;
+        m_blocks[IndexPair(5, 6)]  = BLOCK_TYPE::KILL;
     }
 
     Level::BLOCK_TYPE Level::blockAt(const IndexPair& indexPair) {
-        return blockAt(indexPair.row(), indexPair.column());
+        if (m_blocks.find(indexPair) == m_blocks.end()) {
+            return BLOCK_TYPE::NONE;
+        }
+        return m_blocks[indexPair];
+    }
+
+    const std::map<IndexPair, Level::BLOCK_TYPE>& Level::blocks() const {
+        return m_blocks;
     }
 
 } // namespace model

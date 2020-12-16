@@ -5,6 +5,8 @@
 #ifndef BLOCKS_INDEXPAIR_H
 #define BLOCKS_INDEXPAIR_H
 
+#include "Enums.h"
+
 #include <cstddef>
 
 namespace model {
@@ -13,9 +15,12 @@ namespace model {
 
       public:
         explicit IndexPair(int row = 0, int column = 0);
-        int  row() const;
-        int  column() const;
-        void set(int row, int column);
+
+        void      set(int row, int column);
+        int       row() const;
+        int       column() const;
+        size_t    manhattanDistance(const IndexPair& other) const;
+        IndexPair adjacent(enums::DIRECTION direction) const;
 
         friend bool operator<(const IndexPair& lhs, const IndexPair& rhs);
 
