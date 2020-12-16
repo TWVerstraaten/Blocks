@@ -19,7 +19,8 @@ namespace model {
       public:
         Model();
 
-        void                        doStep();
+        void                        moveClusters();
+        void                        interactClustersWithLevel();
         const std::vector<Cluster>& clusters() const;
         const Level&                level() const;
 

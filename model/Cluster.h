@@ -7,6 +7,7 @@
 
 #include "../model/Matrix.h"
 #include "Enums.h"
+#include "Level.h"
 
 #include <set>
 #include <tuple>
@@ -26,11 +27,13 @@ namespace model {
         void                       rotateClockWiseAbout(const IndexPair& pivotIndexPair);
         void                       removeBLock(const IndexPair& indexPair);
         void                       rotateCounterClockWiseAbout(const IndexPair& pivotIndexPair);
+        void                       interactWithBlock(const IndexPair& indexPair, Level::BLOCK_TYPE blockType);
+        void                       performPendingActions();
         bool                       empty() const;
         bool                       intersects(const IndexPair& indexPair) const;
-        enums::DIRECTION           adjacent(const IndexPair& indexPair) const;
         int                        rowOffset() const;
         int                        columnOffset() const;
+        enums::DIRECTION           adjacent(const IndexPair& indexPair) const;
         const std::set<IndexPair>& indexPairs() const;
 
         enum class Action { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
@@ -45,6 +48,9 @@ namespace model {
         size_t              m_actionIndex  = 0;
         std::set<IndexPair> m_indexPairs;
         std::vector<Action> m_actions;
+
+        typedef std::pair<const IndexPair&, Level::BLOCK_TYPE> Block;
+        std::vector<Block>                                     m_pendingOperations;
     };
 } // namespace model
 

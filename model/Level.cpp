@@ -9,6 +9,7 @@
 namespace model {
     Level::Level() {
         m_blocks[IndexPair(5, 1)]  = BLOCK_TYPE::ROTATE_CW;
+        m_blocks[IndexPair(4, 2)]  = BLOCK_TYPE::ROTATE_CW;
         m_blocks[IndexPair(10, 6)] = BLOCK_TYPE::ROTATE_CW;
         m_blocks[IndexPair(5, 6)]  = BLOCK_TYPE::KILL;
     }

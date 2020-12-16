@@ -138,4 +138,32 @@ namespace model {
         return enums::DIRECTION::NONE;
     }
 
+    void Cluster::interactWithBlock(const IndexPair& indexPair, Level::BLOCK_TYPE blockType) {
+        if (blockType != Level::BLOCK_TYPE::NONE) {
+            m_pendingOperations.emplace_back(indexPair, blockType);
+        }
+    }
+
+    void Cluster::performPendingActions() {
+        assert(m_pendingOperations.size() <= 1);
+        if (m_pendingOperations.empty()) {
+            return;
+        }
+        switch (m_pendingOperations.front().second) {
+            case Level::BLOCK_TYPE::ROTATE_CW:
+                rotateClockWiseAbout(m_pendingOperations.front().first);
+                break;
+            case Level::BLOCK_TYPE::ROTATE_CCW:
+                rotateCounterClockWiseAbout(m_pendingOperations.front().first);
+                break;
+            case Level::BLOCK_TYPE::KILL:
+                removeBLock(m_pendingOperations.front().first);
+                break;
+            case Level::BLOCK_TYPE::NONE:
+                break;
+        }
+
+        m_pendingOperations.clear();
+    }
+
 } // namespace model

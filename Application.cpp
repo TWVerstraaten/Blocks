@@ -15,7 +15,8 @@ void Application::loop() {
     bool isRunning = true;
     while (isRunning) {
         if (m_timeSinceLastStep > m_stepTimeInMilliSeconds) {
-            m_model.doStep();
+            m_model.moveClusters();
+            m_model.interactClustersWithLevel();
             m_timeSinceLastStep %= m_stepTimeInMilliSeconds;
         }
         while (SDL_PollEvent(&m_event) > 0) {
@@ -54,7 +55,7 @@ void Application::loop() {
 }
 
 void Application::update(double delta_time) {
-    //    m_level.doStep();
+    //    m_level.interactClustersWithLevel();
 }
 
 void Application::mouseWheelEvent() {

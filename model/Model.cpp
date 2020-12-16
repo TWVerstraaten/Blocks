@@ -21,40 +21,28 @@ namespace model {
         return m_clusters;
     }
 
-    void Model::doStep() {
-        std::cout << "Step" << '\n';
+    void Model::interactClustersWithLevel() {
         for (auto& cluster : m_clusters) {
-            cluster.doStep();
-        }
-
-        for (auto& cluster : m_clusters) {
-            bool updateDone = false;
-            for (auto it = cluster.indexPairs().begin(); it != cluster.indexPairs().end() && not updateDone; ++it) {
-                switch (m_level.blockAt(
-                    IndexPair(it->row() + cluster.rowOffset(), it->column() + cluster.columnOffset()))) {
-                    case Level::BLOCK_TYPE::NONE:
-                        break;
-                    case Level::BLOCK_TYPE::ROTATE_CW:
-                        cluster.rotateClockWiseAbout(*it);
-                        updateDone = true;
-                        break;
-                    case Level::BLOCK_TYPE::ROTATE_CCW:
-                        cluster.rotateCounterClockWiseAbout(*it);
-                        updateDone = true;
-                        break;
-                    case Level::BLOCK_TYPE::KILL:
-                        cluster.removeBLock(*it);
-                        break;
-                }
+            for (auto it = cluster.indexPairs().begin(); it != cluster.indexPairs().end(); ++it) {
+                cluster.interactWithBlock(*it, m_level.blockAt(IndexPair(it->row() + cluster.rowOffset(),
+                                                                         it->column() + cluster.columnOffset())));
             }
+        }
+        for (auto& cluster : m_clusters) {
+            cluster.performPendingActions();
         }
         m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(),
                                         [](const Cluster& cluster) { return cluster.empty(); }),
                          m_clusters.end());
-        std::cout << m_clusters.size();
     }
 
     const model::Level& Model::level() const {
         return m_level;
+    }
+
+    void Model::moveClusters() {
+        for (auto& cluster : m_clusters) {
+            cluster.doStep();
+        }
     }
 } // namespace model
