@@ -4,14 +4,21 @@
 
 #include "Cluster.h"
 
+#include <algorithm>
 #include <cassert>
-#include <iostream>
 #include <queue>
 
 namespace model {
 
     Cluster::Cluster(Matrix&& matrix, size_t rowOffset, size_t columnOffset)
-        : m_rowOffset(rowOffset), m_columnOffset(columnOffset), m_matrix(matrix) {
+        : m_rowOffset(rowOffset), m_columnOffset(columnOffset) {
+        for (size_t i = 0; i != matrix.rowCount(); ++i) {
+            for (size_t j = 0; j != matrix.columnCount(); ++j) {
+                if (matrix.at(i, j)) {
+                    m_indexPairs.emplace(i, j);
+                }
+            }
+        }
     }
 
     void Cluster::doStep() {
@@ -48,26 +55,26 @@ namespace model {
         m_actionIndex %= m_actions.size();
     }
 
-    void Cluster::rotateClockWiseAbout(const IndexPair& indexPair) {
-        m_rowOffset += indexPair.row() - indexPair.column();
-        m_columnOffset += indexPair.column() - m_matrix.rowCount() + 1 + indexPair.row();
-        for (auto& action : m_actions) {
-            action = rotateActionClockWise(action);
+    void Cluster::rotateClockWiseAbout(const IndexPair& pivotIndexPair) {
+        std::set<IndexPair> rotatedIndexPairs;
+        for (auto m_indexPair : m_indexPairs) {
+            rotatedIndexPairs.emplace(pivotIndexPair.row() - pivotIndexPair.column() + m_indexPair.column(),
+                                      pivotIndexPair.column() + pivotIndexPair.row() - m_indexPair.row());
         }
-        m_matrix = m_matrix.rotateClockWise();
+        assert(m_indexPairs.size() == rotatedIndexPairs.size());
+        std::swap(rotatedIndexPairs, m_indexPairs);
+        std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionClockWise);
     }
 
-    const Matrix& Cluster::matrix() const {
-        return m_matrix;
-    }
-
-    void Cluster::rotateCounterClockWiseAbout(const IndexPair& indexPair) {
-        m_rowOffset += indexPair.row() + indexPair.column() - m_matrix.columnCount() + 1;
-        m_columnOffset += indexPair.column() - indexPair.row();
-        for (auto& action : m_actions) {
-            action = rotateActionCounterClockWise(action);
+    void Cluster::rotateCounterClockWiseAbout(const IndexPair& pivotIndexPair) {
+        std::set<IndexPair> rotatedIndexPairs;
+        for (auto m_indexPair : m_indexPairs) {
+            rotatedIndexPairs.emplace(pivotIndexPair.row() + pivotIndexPair.column() - m_indexPair.column(),
+                                      pivotIndexPair.column() - pivotIndexPair.row() + m_indexPair.row());
         }
-        m_matrix = m_matrix.rotateCounterClockWise();
+        assert(m_indexPairs.size() == rotatedIndexPairs.size());
+        std::swap(rotatedIndexPairs, m_indexPairs);
+        std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionCounterClockWise);
     }
 
     Cluster::Action Cluster::rotateActionClockWise(Cluster::Action action) {
@@ -105,12 +112,16 @@ namespace model {
     }
 
     void Cluster::removeBLock(const IndexPair& indexPair) {
-        m_matrix.set(indexPair.row(), indexPair.column(), false);
+        assert(m_indexPairs.find(indexPair) != m_indexPairs.end());
+        m_indexPairs.erase(m_indexPairs.find(indexPair));
     }
 
-
     bool Cluster::empty() const {
-        return m_matrix.begin().isDone();
+        return m_indexPairs.empty();
+    }
+
+    const std::set<IndexPair>& Cluster::indexPairs() const {
+        return m_indexPairs;
     }
 
 } // namespace model

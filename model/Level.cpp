@@ -8,9 +8,9 @@
 
 namespace model {
     Level::Level() {
-        m_blocks.emplace_back(IndexPair(5, 3), BLOCK_TYPE::ROTATE_CW);
-        m_blocks.emplace_back(IndexPair(5, 5), BLOCK_TYPE::ROTATE_CCW);
-        m_blocks.emplace_back(IndexPair(2, 2), BLOCK_TYPE::KILL);
+        m_blocks.emplace_back(IndexPair(5, 1), BLOCK_TYPE::ROTATE_CW);
+        m_blocks.emplace_back(IndexPair(10, 6), BLOCK_TYPE::ROTATE_CW);
+        m_blocks.emplace_back(IndexPair(5, 6), BLOCK_TYPE::KILL);
     }
 
     size_t Level::blockCount() const {

@@ -7,6 +7,8 @@
 
 #include "../model/Matrix.h"
 
+#include <set>
+#include <tuple>
 #include <vector>
 
 class SDL_Renderer;
@@ -18,15 +20,15 @@ namespace model {
       public:
         Cluster(Matrix&& matrix, size_t rowOffset, size_t columnOffset);
 
-        void          doStep();
-        void          doAction();
-        void          rotateClockWiseAbout(const IndexPair& indexPair);
-        void          removeBLock(const IndexPair& indexPair);
-        void          rotateCounterClockWiseAbout(const IndexPair& indexPair);
-        bool          empty() const;
-        int           rowOffset() const;
-        int           columnOffset() const;
-        const Matrix& matrix() const;
+        void                       doStep();
+        void                       doAction();
+        void                       rotateClockWiseAbout(const IndexPair& pivotIndexPair);
+        void                       removeBLock(const IndexPair& indexPair);
+        void                       rotateCounterClockWiseAbout(const IndexPair& pivotIndexPair);
+        bool                       empty() const;
+        int                        rowOffset() const;
+        int                        columnOffset() const;
+        const std::set<IndexPair>& indexPairs() const;
 
         enum class Action { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
         void addAction(Action action);
@@ -38,7 +40,7 @@ namespace model {
         int                 m_rowOffset    = 0;
         int                 m_columnOffset = 0;
         size_t              m_actionIndex  = 0;
-        Matrix              m_matrix;
+        std::set<IndexPair> m_indexPairs;
         std::vector<Action> m_actions;
     };
 } // namespace model

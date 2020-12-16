@@ -18,13 +18,15 @@ namespace model {
       public:
         explicit Matrix(std::vector<Row>&& mat);
 
-        void          set(size_t row, size_t column, bool value);
-        bool          at(size_t row, size_t column) const;
-        size_t        rowCount() const;
-        size_t        columnCount() const;
-        BlockIterator begin() const;
-        Matrix        rotateClockWise() const;
-        Matrix        rotateCounterClockWise() const;
+        void                    set(size_t row, size_t column, bool value);
+        bool                    at(size_t row, size_t column) const;
+        bool                    empty() const;
+        size_t                  rowCount() const;
+        size_t                  columnCount() const;
+        IndexPair               fitToSize();
+        BlockIterator           begin() const;
+        Matrix                  rotateClockWise() const;
+        Matrix                  rotateCounterClockWise() const;
         const std::vector<Row>& rows() const;
 
       private:
