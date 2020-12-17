@@ -47,26 +47,25 @@ namespace view {
             void renderSelection(SDL_Renderer* renderer);
             void drawDashAt(const SelectionData::Data& data, SDL_Renderer* renderer) const;
             enum class HIGHLIGHT_MODE { SOFT, HARD };
-            void        highlightString(size_t stringIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
-            void        highlightStrings(size_t firstStringIndex, size_t lastStringIndex, SDL_Renderer* renderer,
-                                         HIGHLIGHT_MODE mode) const;
-            void        highlightStringPartial(size_t stringIndex, size_t firstCharIndex, size_t lastCharIndex,
-                                               SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
-            void        highlightRange(const SelectionData::Data& first, const SelectionData::Data& last,
-                                       SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
-            int         widthOfString(const std::string& string) const;
-            void        doBackSpace();
-            void        doDelete();
-            void        doReturn(bool shiftPressed = false);
-            void        deleteRange(const SelectionData::Data& first, const SelectionData::Data& last);
-            void        splitAt(SelectionData::Data& data);
-            void        moveUp();
-            void        moveDown();
-            void        moveLeft(bool shiftPressed = false);
-            void        moveRight(bool shiftPressed = false);
-            void        swapIfRangeIsSelected();
+            void highlightString(size_t stringIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
+            void highlightStrings(size_t firstStringIndex, size_t lastStringIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
+            void highlightStringPartial(size_t stringIndex, size_t firstCharIndex, size_t lastCharIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
+            void highlightRange(const SelectionData::Data& first, const SelectionData::Data& last, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
+            int  widthOfString(const std::string& string) const;
+            void doBackSpace();
+            void doDelete();
+            void doReturn(bool shiftPressed = false);
+            void deleteRange(const SelectionData::Data& first, const SelectionData::Data& last);
+            void splitAt(SelectionData::Data& data);
+            void moveUp();
+            void moveDown();
+            void moveLeft(bool shiftPressed = false);
+            void moveRight(bool shiftPressed = false);
+            void swapIfRangeIsSelected();
             std::string selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
             void        copyIfSelectionNotEmpty();
+            void        insertText(const std::string& text);
+            void        concatAt(size_t index);
 
             Uint32 m_blinkTimeOffset;
 
