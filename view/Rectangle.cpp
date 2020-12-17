@@ -8,55 +8,38 @@
 
 namespace view {
 
-    Rectangle::Rectangle(int left, int top, size_t width, size_t height, const SDL_Color& outlineColor)
-        : m_rect{left, top, static_cast<int>(width), static_cast<int>(height)}, m_outlineColor(outlineColor) {
+    Rectangle::Rectangle(int left, int top, size_t width, size_t height, const SDL_Color& color)
+        : m_rect{left, top, static_cast<int>(width), static_cast<int>(height)}, m_color(color) {
     }
 
-    Rectangle::Rectangle(int left, int top, size_t width, size_t height, const SDL_Color& outlineColor,
-                         const SDL_Color& fillColor)
-        : m_rect{left, top, static_cast<int>(width), static_cast<int>(height)}, m_outlineColor(outlineColor),
-          m_fill(true), m_fillColor(fillColor) {
-    }
-
-    Rectangle::Rectangle(SDL_Rect rect, const SDL_Color& outlineColor) : m_rect{rect}, m_outlineColor(outlineColor) {
-    }
-
-    Rectangle::Rectangle(SDL_Rect rect, const SDL_Color& outlineColor, const SDL_Color& fillColor)
-        : m_rect{rect}, m_outlineColor(outlineColor), m_fill(true), m_fillColor(fillColor) {
+    Rectangle::Rectangle(SDL_Rect rect, const SDL_Color& color) : m_rect{rect}, m_color(color) {
     }
 
     void Rectangle::render(SDL_Renderer* renderer) const {
-        if (m_fill) {
-            SDL_SetRenderDrawColor(renderer, m_fillColor.r, m_fillColor.g, m_fillColor.b, m_fillColor.a);
-            SDL_RenderFillRect(renderer, &m_rect);
-        }
-        SDL_SetRenderDrawColor(renderer, m_outlineColor.r, m_outlineColor.g, m_outlineColor.b, m_outlineColor.a);
-        if (m_lineThickness != 0) {
-            {
-                SDL_Rect outlineRect = {m_rect.x, m_rect.y, m_rect.w, static_cast<int>(m_lineThickness)};
-                SDL_RenderFillRect(renderer, &outlineRect);
-                outlineRect.y += m_rect.h - m_lineThickness;
-                SDL_RenderFillRect(renderer, &outlineRect);
-            }
-            {
-                SDL_Rect outlineRect = {m_rect.x, m_rect.y, static_cast<int>(m_lineThickness), m_rect.h};
-                SDL_RenderFillRect(renderer, &outlineRect);
-                outlineRect.x += m_rect.w - m_lineThickness;
-                SDL_RenderFillRect(renderer, &outlineRect);
-            }
-        }
+        SDL_SetRenderDrawColor(renderer, m_color.r, m_color.g, m_color.b, m_color.a);
+        SDL_RenderFillRect(renderer, &m_rect);
     }
 
     void Rectangle::setRect(int left, int top, int width, int height) {
         m_rect = {left, top, width, height};
     }
 
-    void Rectangle::setFillColor(SDL_Color color) {
-        m_fillColor = color;
-        m_fill      = true;
+    void Rectangle::setColor(SDL_Color color) {
+        m_color = color;
     }
 
-    void Rectangle::setLineThickNess(size_t thickness) {
-        m_lineThickness = thickness;
+    void Rectangle::render(int left, int top, size_t width, size_t height, const SDL_Color& color,
+                           SDL_Renderer* renderer) {
+        static Rectangle rectangle(left, top, width, height, color);
+        rectangle.setRect(left, top, width, height);
+        rectangle.setColor(color);
+        rectangle.render(renderer);
+    }
+
+    void Rectangle::render(SDL_Rect rect, const SDL_Color& color, SDL_Renderer* renderer) {
+        Rectangle rectangle(rect, color);
+        rectangle.setRect(rect.x, rect.y, rect.w, rect.h);
+        rectangle.setColor(color);
+        rectangle.render(renderer);
     }
 } // namespace view

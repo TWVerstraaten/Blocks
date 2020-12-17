@@ -96,9 +96,7 @@ namespace view {
                                       m_grid.yAt(it->row() + cluster.dynamicRowOffset()),
                                       m_grid.blockSize(),
                                       m_grid.blockSize(),
-                                      {0, 0, 0, 255},
                                       {210, 212, 210, 100}};
-                    rect.setLineThickNess(8);
                     rect.render(m_renderer);
                 }
             }
@@ -136,14 +134,12 @@ namespace view {
                                   m_grid.blockSize(),
                                   m_grid.blockSize(),
                                   {0, 0, 0, 255}};
-                rect.setLineThickNess(4);
-
                 switch (block.second) {
                     case model::Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
-                        rect.setFillColor({100, 255, 255, 100});
+                        rect.setColor({100, 255, 255, 100});
                         break;
                     case model::Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
-                        rect.setFillColor({255, 100, 255, 100});
+                        rect.setColor({255, 100, 255, 100});
                         break;
                     case model::Level::DYNAMIC_BLOCK_TYPE::NONE:
                         break;
@@ -165,13 +161,12 @@ namespace view {
                                   m_grid.blockSize(),
                                   m_grid.blockSize(),
                                   {0, 0, 0, 255}};
-                rect.setLineThickNess(4);
 
                 switch (block.second) {
                     case model::Level::INSTANT_BLOCK_TYPE::NONE:
                         break;
                     case model::Level::INSTANT_BLOCK_TYPE::KILL:
-                        rect.setFillColor({90, 90, 90, 180});
+                        rect.setColor({90, 90, 90, 180});
                         break;
                 }
                 rect.render(m_renderer);

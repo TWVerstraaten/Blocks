@@ -68,10 +68,7 @@ namespace view {
             m_needsUpdate = false;
         }
 
-        view::Rectangle backGround{aux::pad(m_rect, 20), {200, 200, 250, 255}};
-        backGround.setFillColor({200, 200, 250, 255});
-        backGround.setLineThickNess(8);
-        backGround.render(renderer);
+        Rectangle::render(aux::pad(m_rect, 10), {200, 200, 250, 255}, renderer);
         if (not m_selectionData.empty()) {
             renderSelection(renderer);
         }
@@ -258,16 +255,12 @@ namespace view {
     }
 
     void ActionEditBox::drawDashAt(size_t stringIndex, size_t charIndex, SDL_Renderer* renderer) const {
-        view::Rectangle dash{
-            {static_cast<int>(m_assetHandler->font(AssetHandler::FONT_ENUM::MAIN)
-                                  ->widthOfString(m_strings.at(stringIndex).substr(0, charIndex))),
-             static_cast<int>(m_rect.y + m_verticalDelimiters.at(stringIndex)), 2,
-             static_cast<int>(m_verticalDelimiters.at(stringIndex + 1) - m_verticalDelimiters.at(stringIndex))},
-            {0, 0, 0, 255}};
-
-        dash.setFillColor({0, 0, 0, 255});
-        dash.setLineThickNess(0);
-        dash.render(renderer);
+        Rectangle::render(
+            static_cast<int>(m_assetHandler->font(AssetHandler::FONT_ENUM::MAIN)
+                                 ->widthOfString(m_strings.at(stringIndex).substr(0, charIndex))),
+            static_cast<int>(m_rect.y + m_verticalDelimiters.at(stringIndex)), 2,
+            static_cast<int>(m_verticalDelimiters.at(stringIndex + 1) - m_verticalDelimiters.at(stringIndex)),
+            {0, 0, 0, 255}, renderer);
     }
 
     void ActionEditBox::renderSelection(SDL_Renderer* renderer) {
@@ -297,13 +290,10 @@ namespace view {
 
     void ActionEditBox::highlightString(size_t stringIndex, SDL_Renderer* renderer) const {
         assert(stringIndex < m_strings.size());
-        view::Rectangle highLight{
-            {m_rect.x, static_cast<int>(m_rect.y + m_verticalDelimiters.at(stringIndex)), m_rect.w,
-             static_cast<int>(m_verticalDelimiters.at(stringIndex + 1) - m_verticalDelimiters.at(stringIndex))},
-            {200, 200, 250, 255}};
-        highLight.setFillColor({241, 241, 250, 255});
-        highLight.setLineThickNess(0);
-        highLight.render(renderer);
+        Rectangle::render(
+            m_rect.x, static_cast<int>(m_rect.y + m_verticalDelimiters.at(stringIndex)), m_rect.w,
+            static_cast<int>(m_verticalDelimiters.at(stringIndex + 1) - m_verticalDelimiters.at(stringIndex)),
+            {255, 200, 250, 255}, renderer);
     }
 
     void ActionEditBox::highlightStringPartial(size_t stringIndex, size_t firstChar, size_t lastChar,
@@ -320,14 +310,11 @@ namespace view {
                                    : m_assetHandler->font(AssetHandler::FONT_ENUM::MAIN)
                                          ->widthOfString(m_strings.at(stringIndex).substr(lastChar));
 
-        view::Rectangle highLight{
-            {m_rect.x + leftOffset, static_cast<int>(m_rect.y + m_verticalDelimiters.at(stringIndex)),
-             m_textures.at(stringIndex)->width() - (leftOffset + rightOffset),
-             static_cast<int>(m_verticalDelimiters.at(stringIndex + 1) - m_verticalDelimiters.at(stringIndex))},
-            {200, 200, 250, 255}};
-        highLight.setFillColor({241, 241, 250, 255});
-        highLight.setLineThickNess(0);
-        highLight.render(renderer);
+        Rectangle::render(
+            m_rect.x + leftOffset, static_cast<int>(m_rect.y + m_verticalDelimiters.at(stringIndex)),
+            m_textures.at(stringIndex)->width() - (leftOffset + rightOffset),
+            static_cast<int>(m_verticalDelimiters.at(stringIndex + 1) - m_verticalDelimiters.at(stringIndex)),
+            {255, 200, 250, 255}, renderer);
     }
 
     void ActionEditBox::highlightRange(size_t firstStringIndex, size_t firstCharIndex, size_t secondStringIndex,
