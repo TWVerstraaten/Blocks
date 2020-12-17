@@ -25,7 +25,9 @@ namespace view {
             Data m_first;
             Data m_last;
 
-            bool isReversed() const;
+            bool        isReversed() const;
+            static bool isReversed(const Data& first, const Data& last);
+            bool        isAtStart() const;
 
             enum class MODE { SINGLE, DOUBLE };
             MODE m_mode = MODE::SINGLE;
