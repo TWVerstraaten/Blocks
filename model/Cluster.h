@@ -27,18 +27,18 @@ namespace model {
         void                       performPendingOperation();
         void                       removeBLock(const IndexPair& indexPair);
         void                       update(double fractionOfPhase);
+        void                       addAction(ClusterAction action);
         bool                       empty() const;
         bool                       intersects(const IndexPair& indexPair) const;
-        double                     angle() const;
         int                        rowOffset() const;
         int                        columnOffset() const;
+        double                     angle() const;
         double                     dynamicRowOffset() const;
         double                     dynamicColumnOffset() const;
         enums::DIRECTION           adjacent(const IndexPair& indexPair) const;
         const std::set<IndexPair>& localIndexPairs() const;
         const IndexPair&           rotationPivot() const;
         const std::vector<ClusterAction>& clusterActions() const;
-        void addAction(ClusterAction action);
 
       private:
         void rotateClockWiseAbout(const IndexPair& pivotIndexPair);

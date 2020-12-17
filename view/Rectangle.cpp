@@ -8,8 +8,8 @@
 
 namespace view {
 
-    Rectangle::Rectangle(int left, int top, size_t width, size_t height, const SDL_Color& color)
-        : m_rect{left, top, static_cast<int>(width), static_cast<int>(height)}, m_color(color) {
+    Rectangle::Rectangle(int left, int top, int width, int height, const SDL_Color& color)
+        : m_rect{left, top, width, height}, m_color(color) {
     }
 
     Rectangle::Rectangle(SDL_Rect rect, const SDL_Color& color) : m_rect{rect}, m_color(color) {
@@ -28,8 +28,7 @@ namespace view {
         m_color = color;
     }
 
-    void Rectangle::render(int left, int top, size_t width, size_t height, const SDL_Color& color,
-                           SDL_Renderer* renderer) {
+    void Rectangle::render(int left, int top, int width, int height, const SDL_Color& color, SDL_Renderer* renderer) {
         static Rectangle rectangle(left, top, width, height, color);
         rectangle.setRect(left, top, width, height);
         rectangle.setColor(color);

@@ -5,9 +5,9 @@
 #ifndef BLOCKS_VIEW_H
 #define BLOCKS_VIEW_H
 
-#include "ActionEditBox.h"
 #include "AssetHandler.h"
 #include "Grid.h"
+#include "widget/ActionEditBox.h"
 
 #include <iostream>
 #include <vector>
@@ -33,7 +33,7 @@ namespace view {
         void translate(int dx, int dy);
         void addActionEditBox(const model::Cluster& cluster);
 
-        const std::vector<std::unique_ptr<ActionEditBox>>& actionEditBoxes() const;
+        const std::vector<std::unique_ptr<widget::ActionEditBox>>& actionEditBoxes() const;
 
         std::pair<int, int> windowSize() const;
 
@@ -42,12 +42,12 @@ namespace view {
         void drawLevel(const model::Level& level) const;
         void drawGridLines() const;
 
-        int                                         m_zoomParameter = 0;
-        SDL_Window*                                 m_window        = nullptr;
-        SDL_Renderer*                               m_renderer      = nullptr;
-        Grid                                        m_grid;
-        std::unique_ptr<AssetHandler>               m_assetsHandler{new AssetHandler()};
-        std::vector<std::unique_ptr<ActionEditBox>> m_actionEditBoxes;
+        int                                                 m_zoomParameter = 0;
+        SDL_Window*                                         m_window        = nullptr;
+        SDL_Renderer*                                       m_renderer      = nullptr;
+        Grid                                                m_grid;
+        std::unique_ptr<AssetHandler>                       m_assetsHandler{new AssetHandler()};
+        std::vector<std::unique_ptr<widget::ActionEditBox>> m_actionEditBoxes;
     };
 } // namespace view
 

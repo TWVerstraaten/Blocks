@@ -8,7 +8,7 @@
 
 namespace view {
 
-    size_t Grid::blockSize() const {
+    int Grid::blockSize() const {
         return m_blockSize;
     }
 
@@ -21,14 +21,11 @@ namespace view {
     }
 
     int Grid::firstColumnInView() const {
-        return -m_xOffset / static_cast<int>(m_blockSize);
+        return -m_xOffset / m_blockSize;
     }
 
     int Grid::firstRowInView() const {
-        return -m_yOffset / static_cast<int>(m_blockSize);
-    }
-
-    void Grid::update(size_t width, size_t height) {
+        return -m_yOffset / m_blockSize;
     }
 
     void Grid::setBlockSize(int scaleParameter) {

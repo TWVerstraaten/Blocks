@@ -16,7 +16,6 @@ namespace model {
       public:
         IndexPair(int row = 0, int column = 0);
 
-        void      set(int row, int column);
         int       row() const;
         int       column() const;
         size_t    manhattanDistance(const IndexPair& other) const;

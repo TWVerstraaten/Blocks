@@ -8,13 +8,13 @@
 #include <cmath>
 
 namespace model {
-
     IndexPair::IndexPair(int row, int column) : m_row(row), m_column(column) {
     }
 
     int IndexPair::row() const {
         return m_row;
     }
+
     int IndexPair::column() const {
         return m_column;
     }
@@ -23,28 +23,23 @@ namespace model {
         return lhs.row() == rhs.row() ? lhs.column() < rhs.column() : lhs.row() < rhs.row();
     }
 
-    void IndexPair::set(int row, int column) {
-        m_row    = row;
-        m_column = column;
-    }
-
     size_t IndexPair::manhattanDistance(const IndexPair& other) const {
         return std::abs(other.row() - row()) + std::abs(other.column() - column());
     }
 
     IndexPair IndexPair::adjacent(enums::DIRECTION direction) const {
+        assert(direction != enums::DIRECTION::NONE);
         switch (direction) {
-
             case enums::DIRECTION::UP:
-                return IndexPair(row() - 1, column());
+                return {row() - 1, column()};
             case enums::DIRECTION::DOWN:
-                return IndexPair(row() + 1, column());
+                return {row() + 1, column()};
             case enums::DIRECTION::LEFT:
-                return IndexPair(row(), column() - 1);
+                return {row(), column() - 1};
             case enums::DIRECTION::RIGHT:
-                return IndexPair(row(), column() + 1);
+                return {row(), column() + 1};
             default:
-                assert(false);
+                return {row(), column()};
         }
     }
 } // namespace model

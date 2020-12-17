@@ -10,7 +10,7 @@
 namespace view {
     namespace aux {
 
-        SDL_Rect pad(const SDL_Rect& rect, size_t padding);
+        SDL_Rect pad(const SDL_Rect& rect, int padding);
 
     } // namespace aux
 } // namespace view

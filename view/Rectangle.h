@@ -13,10 +13,10 @@ namespace view {
 
     class Rectangle {
       public:
-        Rectangle(int left, int top, size_t width, size_t height, const SDL_Color& color);
+        Rectangle(int left, int top, int width, int height, const SDL_Color& color);
         Rectangle(SDL_Rect rect, const SDL_Color& color);
 
-        static void render(int left, int top, size_t width, size_t height, const SDL_Color& color,
+        static void render(int left, int top, int width, int height, const SDL_Color& color,
                            SDL_Renderer* renderer);
         static void render(SDL_Rect rect, const SDL_Color& color, SDL_Renderer* renderer);
 
