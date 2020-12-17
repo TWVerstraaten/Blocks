@@ -16,8 +16,8 @@ class Application {
   public:
     Application();
 
-    void loop();
-    void update(double delta_time);
+    void             loop();
+    void             update(double delta_time);
     static SDL_Point getMouseCoordinates();
 
   private:
@@ -28,9 +28,9 @@ class Application {
     void mouseMoveEvent();
     void setTimeStep(Uint32 timeStep);
 
-
     bool                  m_isPaused                = true;
     bool                  m_rightMouseButtonPressed = false;
+    bool                  m_leftMouseButtonPressed  = false;
     SDL_Point             m_previousMousePosition;
     model::Model          m_model;
     view::View            m_view;

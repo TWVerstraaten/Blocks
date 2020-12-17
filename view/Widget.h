@@ -15,7 +15,7 @@ namespace view {
         Widget(SDL_Rect rect);
 
         virtual void handleKeyEvent(const SDL_Event& event)        = 0;
-        virtual void handleMouseClickEvent(const SDL_Event& event) = 0;
+        virtual void handleMouseClickEvent(const SDL_Event& event, bool leftClicked) = 0;
 
         void         getFocus();
         virtual void loseFocus();

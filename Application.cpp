@@ -125,14 +125,15 @@ void Application::mouseClickEvent() {
     const auto mousePosition = getMouseCoordinates();
 
     for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        actionEditBox->loseFocus();
+        if (not actionEditBox->pointIsOverWidget(mousePosition)) {
+            actionEditBox->loseFocus();
+        }
     }
-
     for (auto& actionEditBox : m_view.actionEditBoxes()) {
         if (actionEditBox->pointIsOverWidget(mousePosition)) {
             actionEditBox->getFocus();
-            actionEditBox->handleMouseClickEvent(m_event);
-            return;
+            actionEditBox->handleMouseClickEvent(m_event, m_leftMouseButtonPressed);
+            break;
         }
     }
 
@@ -140,6 +141,10 @@ void Application::mouseClickEvent() {
         case SDL_BUTTON_RIGHT:
             m_rightMouseButtonPressed = true;
             m_previousMousePosition   = mousePosition;
+            break;
+        case SDL_BUTTON_LEFT:
+            m_leftMouseButtonPressed = true;
+            m_previousMousePosition  = mousePosition;
             break;
         default:
             break;
@@ -151,17 +156,31 @@ void Application::mouseReleaseEvent() {
         case SDL_BUTTON_RIGHT:
             m_rightMouseButtonPressed = false;
             break;
+        case SDL_BUTTON_LEFT:
+            m_leftMouseButtonPressed = false;
+            break;
         default:
             break;
     }
 }
 
 void Application::mouseMoveEvent() {
-    if (m_rightMouseButtonPressed) {
-        const auto mouseCoordinates = getMouseCoordinates();
-        m_view.translate((mouseCoordinates.x - m_previousMousePosition.x),
-                         mouseCoordinates.y - m_previousMousePosition.y);
-        m_previousMousePosition = mouseCoordinates;
+    const auto mousePosition = getMouseCoordinates();
+    bool       isDone        = false;
+    for (auto& actionEditBox : m_view.actionEditBoxes()) {
+        if (actionEditBox->hasFocus()) {
+            actionEditBox->handleMouseMoveEvent(mousePosition, m_leftMouseButtonPressed);
+            isDone = true;
+            break;
+        }
+    }
+    if (not isDone) {
+        if (m_rightMouseButtonPressed) {
+            const auto mouseCoordinates = getMouseCoordinates();
+            m_view.translate((mouseCoordinates.x - m_previousMousePosition.x),
+                             mouseCoordinates.y - m_previousMousePosition.y);
+            m_previousMousePosition = mouseCoordinates;
+        }
     }
 }
 

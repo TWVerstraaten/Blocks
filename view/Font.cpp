@@ -30,14 +30,13 @@ namespace view {
     }
 
     Font::~Font() {
-        std::cout << "Closing font " << m_font << '\n';
         if (m_loadedCorrectly) {
             TTF_CloseFont(m_font);
             m_font = nullptr;
         }
     }
 
-    int Font::widthOfString(const std::string& str) const{
+    int Font::widthOfString(const std::string& str) const {
         int w;
         TTF_SizeText(m_font, str.c_str(), &w, nullptr);
         return w;
