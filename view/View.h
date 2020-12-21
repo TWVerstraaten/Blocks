@@ -8,6 +8,7 @@
 #include "AssetHandler.h"
 #include "Grid.h"
 #include "ScreenCoordinates.h"
+#include "ScreenVector.h"
 #include "widget/ActionEditBox.h"
 
 #include <iostream>
@@ -37,16 +38,23 @@ namespace view {
         void                                                       addActionEditBox(const model::Cluster& cluster);
         const std::vector<std::unique_ptr<widget::ActionEditBox>>& actionEditBoxes() const;
         SDL_Renderer*                                              renderer() const;
-        void                                                       render(const ScreenCoordinates& point, int width, int height, const SDL_Color& color);
-
-        void render(const model::WorldCoordinates& point, int widthInWorld, int heightInWorld, const SDL_Color& color);
+        void drawRectangle(const ScreenCoordinates& point, int width, int height, const SDL_Color& color) const;
+        void drawRectangle(const model::WorldCoordinates& point, int widthInWorld, int heightInWorld, const SDL_Color& color) const;
+        void drawPoint(const ScreenCoordinates& point, const SDL_Color& color, int pointSize) const;
+        void drawPoint(const model::WorldCoordinates& point, const SDL_Color& color, int pointSize) const;
+        void drawHorizontalLine(const ScreenCoordinates& point, int length, const SDL_Color& color, size_t lineThickness) const;
+        void drawHorizontalLine(int lengthInWorld, const SDL_Color& color, const model::WorldCoordinates& point,
+                                size_t lineThickness) const;
+        void drawVerticalLine(const ScreenCoordinates& point, int length, const SDL_Color& color, size_t lineThickness) const;
+        void drawVerticalLine(const model::WorldCoordinates& point, int lengthInWorld, const SDL_Color& color, size_t lineThickness) const;
+        const Grid& grid() const;
 
       private:
         SDL_Point windowSize() const;
-
-        void drawClusters(const std::__cxx11::list<model::Cluster>& clusters) const;
-        void drawLevel(const model::Level& level) const;
-        void drawGridLines() const;
+        void      drawClusters(const std::__cxx11::list<model::Cluster>& clusters) const;
+        void      drawLevel(const model::Level& level) const;
+        void      drawGridLines() const;
+        void      setDrawColor(const SDL_Color& color) const;
 
         int                                                 m_zoomParameter = 0;
         SDL_Window*                                         m_window        = nullptr;

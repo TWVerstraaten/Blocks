@@ -8,6 +8,7 @@
 #include "ClusterAction.h"
 #include "Enums.h"
 #include "Level.h"
+#include "WorldVector.h"
 
 #include <list>
 #include <tuple>
@@ -36,6 +37,8 @@ namespace model {
         const std::list<GridCoordinates>& gridCoordinates() const;
         const GridCoordinates&            rotationPivot() const;
         const std::vector<ClusterAction>& clusterActions() const;
+        const WorldVector&                worldOffset() const;
+        WorldVector                       dynamicWorldOffset() const;
 
       private:
         void rotateClockWiseAbout(const GridCoordinates& pivotIndexPair);
@@ -45,10 +48,10 @@ namespace model {
         static ClusterAction rotateActionCounterClockWise(ClusterAction action);
 
         double                     m_fractionOfPhase    = 0.0;
-        size_t                     m_clusterActionIndex = 0;
         double                     m_angle              = 0.0;
+        size_t                     m_clusterActionIndex = 0;
         GridCoordinates            m_rotationPivot;
-        GridCoordinates            m_previousOffset;
+        WorldVector                m_worldOffset;
         std::list<GridCoordinates> m_gridCoordinates;
         std::vector<ClusterAction> m_clusterActions;
 

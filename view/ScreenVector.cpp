@@ -19,5 +19,5 @@ int view::ScreenVector::y() const {
 }
 
 view::ScreenVector view::ScreenVector::fromWorldVector(const model::WorldVector& worldVector, const view::Grid& grid) {
-    return {worldVector.x(), worldVector.y()};
+    return {static_cast<int>(worldVector.x() * grid.scale()), static_cast<int>(worldVector.y() * grid.scale())};
 }

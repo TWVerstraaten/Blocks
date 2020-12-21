@@ -11,6 +11,13 @@
 namespace model {
 
     Model::Model() {
+
+        m_clusters.emplace_back(Cluster{{{0, 0}}, {1, 1}});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_UP, ClusterAction::MODIFIER::NONE});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::NONE});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_DOWN, ClusterAction::MODIFIER::NONE});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_RIGHT, ClusterAction::MODIFIER::NONE});
+
         m_clusters.emplace_back(Cluster{{{0, 1}, {1, 0}, {1, 1}, {1, 2}}, {9, 1}});
         m_clusters.back().addAction({ClusterAction::ACTION::MOVE_UP, ClusterAction::MODIFIER::NONE});
         m_clusters.emplace_back(Cluster{{{0, 0}, {1, 0}, {2, 0}}, {10, 7}});
@@ -43,7 +50,8 @@ namespace model {
         for (auto& cluster : m_clusters) {
             cluster.performPendingOperation();
         }
-        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }), m_clusters.end());
+        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }),
+                         m_clusters.end());
     }
 
     void Model::interactClustersWithInstantBlocks() {
@@ -60,7 +68,8 @@ namespace model {
                 }
             }
         }
-        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }), m_clusters.end());
+        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }),
+                         m_clusters.end());
     }
 
     const model::Level& Model::level() const {

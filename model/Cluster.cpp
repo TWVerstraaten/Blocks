@@ -4,13 +4,16 @@
 
 #include "Cluster.h"
 
+#include "WorldCoordinates.h"
+
 #include <algorithm>
 #include <cassert>
 #include <queue>
 
 namespace model {
 
-    Cluster::Cluster(std::list<GridCoordinates>&& gridCoordinates, const GridCoordinates& offset) : m_gridCoordinates(gridCoordinates) {
+    Cluster::Cluster(std::list<GridCoordinates>&& gridCoordinates, const GridCoordinates& offset)
+        : m_worldOffset(0, 0), m_gridCoordinates(gridCoordinates) {
         for (auto& idx : m_gridCoordinates) {
             idx += offset;
         }
@@ -20,8 +23,6 @@ namespace model {
         if (m_clusterActions.empty()) {
             return;
         }
-        //        m_previousOffset  = m_offset;
-        m_fractionOfPhase = 1.0;
         for (auto& idx : m_gridCoordinates) {
             switch (m_clusterActions[m_clusterActionIndex].m_action) {
                 case ClusterAction::ACTION::MOVE_UP:
@@ -39,18 +40,19 @@ namespace model {
             }
         }
 
+        m_fractionOfPhase = 1.0;
         switch (m_clusterActions[m_clusterActionIndex].m_action) {
             case ClusterAction::ACTION::MOVE_UP:
-                m_previousOffset = {0, 1};
+                m_worldOffset = {0, model::WorldCoordinates::m_blockSizeInWorld};
                 break;
             case ClusterAction::ACTION::MOVE_DOWN:
-                m_previousOffset = {0, -1};
+                m_worldOffset = {0, -model::WorldCoordinates::m_blockSizeInWorld};
                 break;
             case ClusterAction::ACTION::MOVE_LEFT:
-                m_previousOffset = {1, 0};
+                m_worldOffset = {model::WorldCoordinates::m_blockSizeInWorld, 0};
                 break;
             case ClusterAction::ACTION::MOVE_RIGHT:
-                m_previousOffset = {-1, 0};
+                m_worldOffset = {-model::WorldCoordinates::m_blockSizeInWorld, 0};
                 break;
         }
 
@@ -176,17 +178,17 @@ namespace model {
         m_fractionOfPhase -= fractionOfPhase;
         if (m_fractionOfPhase <= 0.0) {
             m_fractionOfPhase = 0.0;
-            m_previousOffset  = {0, 0};
+            m_worldOffset     = {0, 0};
             m_angle           = 0.0;
         }
     }
 
     double Cluster::dynamicRowOffset() const {
-        return m_fractionOfPhase * m_previousOffset.y();
+        return m_fractionOfPhase * m_worldOffset.y();
     }
 
     double Cluster::dynamicColumnOffset() const {
-        return m_fractionOfPhase * m_previousOffset.x();
+        return m_fractionOfPhase * m_worldOffset.x();
     }
 
     double Cluster::angle() const {
@@ -199,6 +201,14 @@ namespace model {
 
     const std::vector<ClusterAction>& Cluster::clusterActions() const {
         return m_clusterActions;
+    }
+
+    const WorldVector& Cluster::worldOffset() const {
+        return m_worldOffset;
+    }
+
+    WorldVector Cluster::dynamicWorldOffset() const {
+        return {static_cast<int>(m_worldOffset.x() * m_fractionOfPhase), static_cast<int>(m_worldOffset.y() * m_fractionOfPhase)};
     }
 
 } // namespace model

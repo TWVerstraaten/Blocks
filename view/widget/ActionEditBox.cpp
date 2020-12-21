@@ -7,6 +7,7 @@
 #include "../../aux/Aux.h"
 #include "../../model/Cluster.h"
 #include "../AssetHandler.h"
+#include "../Color.h"
 #include "../Rectangle.h"
 
 #include <cassert>
@@ -69,7 +70,7 @@ namespace view {
                 m_needsUpdate = false;
             }
 
-            Rectangle::render(aux::pad(m_rect, 10), {200, 200, 250, 255}, renderer);
+            Rectangle::render(aux::pad(m_rect, 10), color::ACTION_EDIT_BACKGROUND, renderer);
             if (not m_selectionData.empty()) {
                 renderSelection(renderer);
             }
@@ -215,7 +216,8 @@ namespace view {
 
         void ActionEditBox::drawDashAt(const SelectionData::Data& data, SDL_Renderer* renderer) const {
             if (not(((SDL_GetTicks() - m_blinkTimeOffset) / 500) % 2)) {
-                Rectangle::render(widthOfString(m_strings.at(data.m_stringIndex).substr(0, data.m_charIndex)), m_rect.y + m_yOffsets.at(data.m_stringIndex), 3,
+                Rectangle::render(widthOfString(m_strings.at(data.m_stringIndex).substr(0, data.m_charIndex)),
+                                  m_rect.y + m_yOffsets.at(data.m_stringIndex), 3,
                                   m_yOffsets.at(data.m_stringIndex + 1) - m_yOffsets.at(data.m_stringIndex), {0, 0, 0, 255}, renderer);
             }
         }
@@ -236,9 +238,9 @@ namespace view {
         void ActionEditBox::highlightString(size_t stringIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const {
             assert(stringIndex < m_strings.size());
 
-            const SDL_Color color = mode == HIGHLIGHT_MODE::HARD ? SDL_Color{255, 200, 250, 255} : SDL_Color{220, 200, 250, 255};
-            Rectangle::render(m_rect.x, m_rect.y + m_yOffsets.at(stringIndex), m_rect.w, m_yOffsets.at(stringIndex + 1) - m_yOffsets.at(stringIndex), color,
-                              renderer);
+            const auto& color = mode == HIGHLIGHT_MODE::HARD ? color::ACTION_EDIT_HIGHLIGHT_HARD : color::ACTION_EDIT_HIGHLIGHT_SOFT;
+            Rectangle::render(m_rect.x, m_rect.y + m_yOffsets.at(stringIndex), m_rect.w,
+                              m_yOffsets.at(stringIndex + 1) - m_yOffsets.at(stringIndex), color, renderer);
         }
 
         void ActionEditBox::highlightStringPartial(size_t stringIndex, size_t firstCharIndex, size_t lastCharIndex, SDL_Renderer* renderer,
@@ -248,11 +250,12 @@ namespace view {
             if (lastCharIndex == firstCharIndex) {
                 return;
             }
-            const auto      leftOffset  = widthOfString(m_strings.at(stringIndex).substr(0, firstCharIndex));
-            const auto      rightOffset = lastCharIndex == std::string ::npos ? -m_rect.w + m_textures.at(stringIndex)->width()
-                                                                              : widthOfString(m_strings.at(stringIndex).substr(lastCharIndex));
-            const SDL_Color color       = mode == HIGHLIGHT_MODE::HARD ? SDL_Color{255, 200, 250, 255} : SDL_Color{220, 200, 250, 255};
-            Rectangle::render(m_rect.x + leftOffset, m_rect.y + m_yOffsets.at(stringIndex), m_textures.at(stringIndex)->width() - (leftOffset + rightOffset),
+            const auto  leftOffset  = widthOfString(m_strings.at(stringIndex).substr(0, firstCharIndex));
+            const auto  rightOffset = lastCharIndex == std::string ::npos ? -m_rect.w + m_textures.at(stringIndex)->width()
+                                                                          : widthOfString(m_strings.at(stringIndex).substr(lastCharIndex));
+            const auto& color       = mode == HIGHLIGHT_MODE::HARD ? color::ACTION_EDIT_HIGHLIGHT_HARD : color::ACTION_EDIT_HIGHLIGHT_SOFT;
+            Rectangle::render(m_rect.x + leftOffset, m_rect.y + m_yOffsets.at(stringIndex),
+                              m_textures.at(stringIndex)->width() - (leftOffset + rightOffset),
                               m_yOffsets.at(stringIndex + 1) - m_yOffsets.at(stringIndex), color, renderer);
         }
 
@@ -273,15 +276,16 @@ namespace view {
             }
         }
 
-        void ActionEditBox::highlightStrings(size_t firstStringIndex, size_t lastStringIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const {
+        void ActionEditBox::highlightStrings(size_t firstStringIndex, size_t lastStringIndex, SDL_Renderer* renderer,
+                                             HIGHLIGHT_MODE mode) const {
             assert(firstStringIndex < m_strings.size());
             assert(lastStringIndex < m_strings.size());
             if (firstStringIndex > lastStringIndex) {
                 return;
             }
-            const SDL_Color color = mode == HIGHLIGHT_MODE::HARD ? SDL_Color{255, 200, 250, 255} : SDL_Color{220, 200, 250, 255};
-            Rectangle::render(m_rect.x, m_rect.y + m_yOffsets.at(firstStringIndex), m_rect.w, m_yOffsets.at(lastStringIndex) - m_yOffsets.at(firstStringIndex),
-                              color, renderer);
+            const auto& color = mode == HIGHLIGHT_MODE::HARD ? color::ACTION_EDIT_HIGHLIGHT_HARD : color::ACTION_EDIT_HIGHLIGHT_SOFT;
+            Rectangle::render(m_rect.x, m_rect.y + m_yOffsets.at(firstStringIndex), m_rect.w,
+                              m_yOffsets.at(lastStringIndex) - m_yOffsets.at(firstStringIndex), color, renderer);
         }
 
         int ActionEditBox::widthOfString(const std::string& string) const {
@@ -334,8 +338,8 @@ namespace view {
                 m_selectionData.m_first.m_stringIndex = first.m_stringIndex;
                 m_selectionData.m_first.m_charIndex   = first.m_charIndex;
             } else {
-                m_strings.insert(m_strings.begin() + first.m_stringIndex,
-                                 m_strings[first.m_stringIndex].substr(0, first.m_charIndex) + m_strings.at(last.m_stringIndex).substr(last.m_charIndex));
+                m_strings.insert(m_strings.begin() + first.m_stringIndex, m_strings[first.m_stringIndex].substr(0, first.m_charIndex) +
+                                                                              m_strings.at(last.m_stringIndex).substr(last.m_charIndex));
                 m_strings.erase(m_strings.begin() + first.m_stringIndex + 1, m_strings.begin() + last.m_stringIndex + 2);
                 m_selectionData.m_mode                = SelectionData::MODE::SINGLE;
                 m_selectionData.m_first.m_stringIndex = first.m_stringIndex;
@@ -376,8 +380,9 @@ namespace view {
         void ActionEditBox::moveUp() {
             swapIfRangeIsSelected();
             m_selectionData.m_first.m_stringIndex -= m_selectionData.m_first.m_stringIndex == 0 ? 0 : 1;
-            m_selectionData.m_first.m_charIndex = std::min(m_selectionData.m_first.m_charIndex, m_strings.at(m_selectionData.m_first.m_stringIndex).length());
-            m_selectionData.m_mode              = SelectionData::MODE::SINGLE;
+            m_selectionData.m_first.m_charIndex =
+                std::min(m_selectionData.m_first.m_charIndex, m_strings.at(m_selectionData.m_first.m_stringIndex).length());
+            m_selectionData.m_mode = SelectionData::MODE::SINGLE;
         }
 
         void ActionEditBox::moveDown() {
@@ -388,8 +393,9 @@ namespace view {
                 m_strings.emplace_back("");
                 m_needsUpdate = true;
             }
-            m_selectionData.m_first.m_charIndex = std::min(m_selectionData.m_first.m_charIndex, m_strings.at(m_selectionData.m_first.m_stringIndex).length());
-            m_selectionData.m_mode              = SelectionData::MODE::SINGLE;
+            m_selectionData.m_first.m_charIndex =
+                std::min(m_selectionData.m_first.m_charIndex, m_strings.at(m_selectionData.m_first.m_stringIndex).length());
+            m_selectionData.m_mode = SelectionData::MODE::SINGLE;
         }
 
         void ActionEditBox::moveRight(bool shiftPressed) {
@@ -463,7 +469,8 @@ namespace view {
             auto& str = m_strings[m_selectionData.m_first.m_stringIndex];
             if (!(SDL_GetModState() & KMOD_CTRL &&
                   (event.text.text[0] == 'c' || event.text.text[0] == 'C' || event.text.text[0] == 'v' || event.text.text[0] == 'V'))) {
-                str           = str.substr(0, m_selectionData.m_first.m_charIndex) + event.text.text + str.substr(m_selectionData.m_first.m_charIndex);
+                str =
+                    str.substr(0, m_selectionData.m_first.m_charIndex) + event.text.text + str.substr(m_selectionData.m_first.m_charIndex);
                 m_needsUpdate = true;
                 ++m_selectionData.m_first.m_charIndex;
             }
@@ -490,7 +497,8 @@ namespace view {
                     buffer << m_strings.at(i);
                 }
                 buffer << "\n";
-                buffer << std::string(m_strings.at(last.m_stringIndex).begin(), m_strings.at(last.m_stringIndex).begin() + last.m_charIndex);
+                buffer << std::string(m_strings.at(last.m_stringIndex).begin(),
+                                      m_strings.at(last.m_stringIndex).begin() + last.m_charIndex);
             }
             return buffer.str();
         }

@@ -14,7 +14,7 @@ namespace view {
         Grid() = default;
 
         double scale() const;
-        int    pixelsPerBlock() const;
+        int    blockSizeInScreen() const;
         int    xAt(double column) const;
         int    yAt(double row) const;
         int    firstColumnInView() const;

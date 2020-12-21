@@ -4,29 +4,30 @@
 
 #include "Grid.h"
 
-#include <algorithm>
+#include "../model/WorldCoordinates.h"
+
 #include <cmath>
 
 namespace view {
 
-    int Grid::pixelsPerBlock() const {
-        return 100 * m_scale;
+    int Grid::blockSizeInScreen() const {
+        return model::WorldCoordinates::m_blockSizeInWorld * m_scale;
     }
 
     int Grid::xAt(double column) const {
-        return m_xOffset + column * pixelsPerBlock();
+        return m_xOffset + column * blockSizeInScreen();
     }
 
     int Grid::yAt(double row) const {
-        return m_yOffset + row * pixelsPerBlock();
+        return m_yOffset + row * blockSizeInScreen();
     }
 
     int Grid::firstColumnInView() const {
-        return -m_xOffset / pixelsPerBlock();
+        return -m_xOffset / blockSizeInScreen();
     }
 
     int Grid::firstRowInView() const {
-        return -m_yOffset / pixelsPerBlock();
+        return -m_yOffset / blockSizeInScreen();
     }
 
     void Grid::setScale(int scaleParameter) {
@@ -37,9 +38,11 @@ namespace view {
         m_xOffset += dx;
         m_yOffset += dy;
     }
+
     int Grid::xOffset() const {
         return m_xOffset;
     }
+
     int Grid::yOffset() const {
         return m_yOffset;
     }

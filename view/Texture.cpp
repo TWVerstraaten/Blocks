@@ -73,7 +73,7 @@ namespace view {
 
         SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
         if (textSurface == nullptr) {
-            printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+            printf("Unable to drawRectangle text surface! SDL_ttf Error: %s\n", TTF_GetError());
             return result;
         }
 

@@ -26,14 +26,16 @@ namespace view {
         enum class TEXTURE_ENUM { ERROR, ARROW_CW, ARROW_CCW, CLUSTER, KILL };
         enum class FONT_ENUM { MAIN };
 
-        bool renderTexture(TEXTURE_ENUM textureEnum, const SDL_Rect& destination, SDL_Renderer* renderer, double angle = 0.0, const SDL_Point* center = nullptr,
-                           SDL_RendererFlip flip = SDL_FLIP_NONE) const;
-        static bool renderTexture(Texture* texture, const SDL_Rect& destination, SDL_Renderer* renderer, double angle = 0.0, const SDL_Point* center = nullptr,
+        bool        renderTexture(TEXTURE_ENUM textureEnum, const SDL_Rect& destination, SDL_Renderer* renderer, double angle = 0.0,
+                                  const SDL_Point* center = nullptr, SDL_RendererFlip flip = SDL_FLIP_NONE) const;
+        static bool renderTexture(Texture* texture, const SDL_Rect& destination, SDL_Renderer* renderer, double angle = 0.0,
+                                  const SDL_Point* center = nullptr, SDL_RendererFlip flip = SDL_FLIP_NONE);
+        bool        renderTexture(TEXTURE_ENUM textureEnum, const ScreenCoordinates& screenCoordinates, int width, int height,
+                                  SDL_Renderer* renderer, double angle = 0.0, const SDL_Point* center = nullptr,
+                                  SDL_RendererFlip flip = SDL_FLIP_NONE) const;
+        static bool renderTexture(Texture* texture, const ScreenCoordinates& screenCoordinates, int width, int height,
+                                  SDL_Renderer* renderer, double angle = 0.0, const SDL_Point* center = nullptr,
                                   SDL_RendererFlip flip = SDL_FLIP_NONE);
-        bool        renderTexture(TEXTURE_ENUM textureEnum, const ScreenCoordinates& screenCoordinates, int width, int height, SDL_Renderer* renderer,
-                                  double angle = 0.0, const SDL_Point* center = nullptr, SDL_RendererFlip flip = SDL_FLIP_NONE) const;
-        static bool renderTexture(Texture* texture, const ScreenCoordinates& screenCoordinates, int width, int height, SDL_Renderer* renderer,
-                                  double angle = 0.0, const SDL_Point* center = nullptr, SDL_RendererFlip flip = SDL_FLIP_NONE);
 
         const Font* font(FONT_ENUM fontEnum) const;
 

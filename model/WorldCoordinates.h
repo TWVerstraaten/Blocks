@@ -5,6 +5,14 @@
 #ifndef BLOCKS_WORLDCOORDINATES_H
 #define BLOCKS_WORLDCOORDINATES_H
 
+#include "GridCoordinates.h"
+
+#include <cstddef>
+
+namespace view {
+    class Grid;
+}
+
 namespace model {
 
     class WorldCoordinates {
@@ -13,6 +21,10 @@ namespace model {
 
         int x() const;
         int y() const;
+
+        static const int m_blockSizeInWorld = 100;
+
+        static model::WorldCoordinates fromGridCoordinates(const model::GridCoordinates& gridCoordinates);
 
       private:
         int m_x;

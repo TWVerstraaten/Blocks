@@ -43,12 +43,12 @@ namespace view {
 
     bool AssetHandler::renderTexture(AssetHandler::TEXTURE_ENUM textureEnum, const ScreenCoordinates& screenCoordinates, int width, int height,
                                      SDL_Renderer* renderer, double angle, const SDL_Point* center, SDL_RendererFlip flip) const {
-        return renderTexture(textureEnum, {screenCoordinates.x(), screenCoordinates.y(), width, height}, renderer, angle, center, flip);
+        return renderTexture(textureEnum, {static_cast<int>(screenCoordinates.x()), static_cast<int>(screenCoordinates.y()), width, height}, renderer, angle, center, flip);
     }
 
     bool AssetHandler::renderTexture(Texture* texture, const ScreenCoordinates& screenCoordinates, int width, int height, SDL_Renderer* renderer, double angle,
                                      const SDL_Point* center, SDL_RendererFlip flip) {
-        return renderTexture(texture, {screenCoordinates.x(), screenCoordinates.y(), width, height}, renderer, angle, center, flip);
+        return renderTexture(texture, {static_cast<int>(screenCoordinates.x()), static_cast<int>(screenCoordinates.y()), width, height}, renderer, angle, center, flip);
     }
 
     AssetHandler::TEXTURE_ENUM AssetHandler::getTextureEnum(model::Level::DYNAMIC_BLOCK_TYPE type) {

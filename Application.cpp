@@ -6,6 +6,7 @@
 
 #include "aux/Aux.h"
 #include "model/WorldCoordinates.h"
+#include "view/Color.h"
 #include "view/Rectangle.h"
 
 #include <cassert>
@@ -58,16 +59,21 @@ void Application::loop() {
         }
         const auto dt = SDL_GetTicks() - m_lastTime;
         if (not m_isPaused) {
-            update(static_cast<double>(1.1 * dt) / m_stepTimeInMilliSeconds);
+            update(static_cast<double>(1.9 * dt) / m_stepTimeInMilliSeconds);
         }
         m_lastTime = SDL_GetTicks();
         m_view.draw(m_model);
         if (!m_isPaused) {
             m_timeSinceLastStep += dt;
         }
-        m_view.render(model::WorldCoordinates{0, 0}, 100, 100, {100, 100, 100, 255});
-        m_view.render(model::WorldCoordinates{50, 50}, 100, 100, {255, 100, 100, 255});
-        m_view.render(model::WorldCoordinates{900, 100}, 100, 100, {255, 100, 100, 255});
+
+        for (const auto& cluster : m_model.clusters()) {
+            for (const auto& it : cluster.gridCoordinates()) {
+                m_view.drawPoint(model::WorldCoordinates::fromGridCoordinates(it), color::RED, 6);
+                m_view.drawPoint(view::ScreenCoordinates::fromGridCoordinates(it, m_view.grid()), color::RED, 6);
+            }
+        }
+
         SDL_RenderPresent(m_view.renderer());
     }
     SDL_StopTextInput();
