@@ -10,64 +10,66 @@
 
 namespace model {
 
-    Cluster::Cluster(std::set<IndexPair>&& indexPairs, const IndexPair& offset)
-        : m_offset(offset), m_previousOffset(m_offset), m_localIndexPairs(indexPairs) {
-    }
-
-    int Cluster::rowOffset() const {
-        return m_offset.row();
-    }
-
-    int Cluster::columnOffset() const {
-        return m_offset.column();
+    Cluster::Cluster(std::list<GridCoordinates>&& gridCoordinates, const GridCoordinates& offset) : m_gridCoordinates(gridCoordinates) {
+        for (auto& idx : m_gridCoordinates) {
+            idx += offset;
+        }
     }
 
     void Cluster::doAction() {
         if (m_clusterActions.empty()) {
             return;
         }
-        m_previousOffset  = m_offset;
+        //        m_previousOffset  = m_offset;
         m_fractionOfPhase = 1.0;
+        for (auto& idx : m_gridCoordinates) {
+            switch (m_clusterActions[m_clusterActionIndex].m_action) {
+                case ClusterAction::ACTION::MOVE_UP:
+                    idx = idx.adjacent(enums::DIRECTION::UP);
+                    break;
+                case ClusterAction::ACTION::MOVE_DOWN:
+                    idx = idx.adjacent(enums::DIRECTION::DOWN);
+                    break;
+                case ClusterAction::ACTION::MOVE_LEFT:
+                    idx = idx.adjacent(enums::DIRECTION::LEFT);
+                    break;
+                case ClusterAction::ACTION::MOVE_RIGHT:
+                    idx = idx.adjacent(enums::DIRECTION::RIGHT);
+                    break;
+            }
+        }
+
         switch (m_clusterActions[m_clusterActionIndex].m_action) {
             case ClusterAction::ACTION::MOVE_UP:
-                m_offset = m_offset.adjacent(enums::DIRECTION::UP);
+                m_previousOffset = {0, 1};
                 break;
             case ClusterAction::ACTION::MOVE_DOWN:
-                m_offset = m_offset.adjacent(enums::DIRECTION::DOWN);
+                m_previousOffset = {0, -1};
                 break;
             case ClusterAction::ACTION::MOVE_LEFT:
-                m_offset = m_offset.adjacent(enums::DIRECTION::LEFT);
+                m_previousOffset = {1, 0};
                 break;
             case ClusterAction::ACTION::MOVE_RIGHT:
-                m_offset = m_offset.adjacent(enums::DIRECTION::RIGHT);
+                m_previousOffset = {-1, 0};
                 break;
         }
+
         ++m_clusterActionIndex;
         m_clusterActionIndex %= m_clusterActions.size();
     }
 
-    void Cluster::rotateClockWiseAbout(const IndexPair& pivotIndexPair) {
-        std::set<IndexPair> rotatedIndexPairs;
-        for (auto& m_indexPair : m_localIndexPairs) {
-            rotatedIndexPairs.emplace(pivotIndexPair.row() - pivotIndexPair.column() + m_indexPair.column(),
-                                      pivotIndexPair.column() + pivotIndexPair.row() - m_indexPair.row());
+    void Cluster::rotateClockWiseAbout(const GridCoordinates& pivotIndexPair) {
+        for (auto& indexPair : m_gridCoordinates) {
+            indexPair = {pivotIndexPair.x() + pivotIndexPair.y() - indexPair.y(), pivotIndexPair.y() - pivotIndexPair.x() + indexPair.x()};
         }
-        assert(m_localIndexPairs.size() == rotatedIndexPairs.size());
-        std::swap(rotatedIndexPairs, m_localIndexPairs);
-        std::transform(m_clusterActions.begin(), m_clusterActions.end(), m_clusterActions.begin(),
-                       rotateActionClockWise);
+        std::transform(m_clusterActions.begin(), m_clusterActions.end(), m_clusterActions.begin(), rotateActionClockWise);
     }
 
-    void Cluster::rotateCounterClockWiseAbout(const IndexPair& pivotIndexPair) {
-        std::set<IndexPair> rotatedIndexPairs;
-        for (auto m_indexPair : m_localIndexPairs) {
-            rotatedIndexPairs.emplace(pivotIndexPair.row() + pivotIndexPair.column() - m_indexPair.column(),
-                                      pivotIndexPair.column() - pivotIndexPair.row() + m_indexPair.row());
+    void Cluster::rotateCounterClockWiseAbout(const GridCoordinates& pivotIndexPair) {
+        for (auto& indexPair : m_gridCoordinates) {
+            indexPair = {pivotIndexPair.x() - pivotIndexPair.y() + indexPair.y(), pivotIndexPair.y() + pivotIndexPair.x() - indexPair.x()};
         }
-        assert(m_localIndexPairs.size() == rotatedIndexPairs.size());
-        std::swap(rotatedIndexPairs, m_localIndexPairs);
-        std::transform(m_clusterActions.begin(), m_clusterActions.end(), m_clusterActions.begin(),
-                       rotateActionCounterClockWise);
+        std::transform(m_clusterActions.begin(), m_clusterActions.end(), m_clusterActions.begin(), rotateActionCounterClockWise);
     }
 
     ClusterAction Cluster::rotateActionClockWise(ClusterAction action) {
@@ -104,44 +106,44 @@ namespace model {
         m_clusterActions.push_back(action);
     }
 
-    void Cluster::removeBLock(const IndexPair& indexPair) {
-        assert(m_localIndexPairs.find(indexPair) != m_localIndexPairs.end());
-        m_localIndexPairs.erase(m_localIndexPairs.find(indexPair));
+    void Cluster::removeBLock(const GridCoordinates& indexPair) {
+        const auto it = std::find(m_gridCoordinates.begin(), m_gridCoordinates.end(), indexPair);
+        assert(it != m_gridCoordinates.end());
+        m_gridCoordinates.erase(it);
     }
 
     bool Cluster::empty() const {
-        return m_localIndexPairs.empty();
+        return m_gridCoordinates.empty();
     }
 
-    const std::set<IndexPair>& Cluster::localIndexPairs() const {
-        return m_localIndexPairs;
+    const std::list<GridCoordinates>& Cluster::gridCoordinates() const {
+        return m_gridCoordinates;
     }
 
-    bool Cluster::intersects(const IndexPair& indexPair) const {
-        return m_localIndexPairs.find(indexPair) != m_localIndexPairs.end();
+    bool Cluster::intersects(const GridCoordinates& gridCoordinates) const {
+        const auto it = std::find(m_gridCoordinates.begin(), m_gridCoordinates.end(), gridCoordinates);
+        return it != m_gridCoordinates.end();
     }
 
-    enums::DIRECTION Cluster::adjacent(const IndexPair& indexPair) const {
-        for (auto dir :
-             {enums::DIRECTION::UP, enums::DIRECTION::DOWN, enums::DIRECTION::LEFT, enums::DIRECTION::RIGHT}) {
-            if (intersects(indexPair.adjacent(dir))) {
+    enums::DIRECTION Cluster::adjacent(const GridCoordinates& gridCoordinates) const {
+        for (auto dir : {enums::DIRECTION::UP, enums::DIRECTION::DOWN, enums::DIRECTION::LEFT, enums::DIRECTION::RIGHT}) {
+            if (intersects(gridCoordinates.adjacent(dir))) {
                 return dir;
             }
         }
         return enums::DIRECTION::NONE;
     }
 
-    void Cluster::addPendingOperation(const IndexPair& indexPair, Level::DYNAMIC_BLOCK_TYPE blockType) {
+    void Cluster::addPendingOperation(const GridCoordinates& gridCoordinates, Level::DYNAMIC_BLOCK_TYPE blockType) {
         if (blockType == Level::DYNAMIC_BLOCK_TYPE::NONE) {
             return;
         }
-        m_pendingOperations.emplace_back(indexPair, blockType);
+        m_pendingOperations.emplace_back(gridCoordinates, blockType);
     }
 
     void Cluster::performPendingOperation() {
         assert(m_pendingOperations.size() <= 1);
-        if (m_pendingOperations.empty() ||
-            m_clusterActions.at(m_clusterActionIndex).m_modifier == ClusterAction::MODIFIER::IGNORE) {
+        if (m_pendingOperations.empty() || m_clusterActions.at(m_clusterActionIndex).m_modifier == ClusterAction::MODIFIER::IGNORE) {
             doAction();
             m_pendingOperations.clear();
             return;
@@ -174,24 +176,24 @@ namespace model {
         m_fractionOfPhase -= fractionOfPhase;
         if (m_fractionOfPhase <= 0.0) {
             m_fractionOfPhase = 0.0;
-            m_previousOffset  = m_offset;
+            m_previousOffset  = {0, 0};
             m_angle           = 0.0;
         }
     }
 
     double Cluster::dynamicRowOffset() const {
-        return m_offset.row() + m_fractionOfPhase * (-m_offset.row() + m_previousOffset.row());
+        return m_fractionOfPhase * m_previousOffset.y();
     }
 
     double Cluster::dynamicColumnOffset() const {
-        return m_offset.column() + m_fractionOfPhase * (-m_offset.column() + m_previousOffset.column());
+        return m_fractionOfPhase * m_previousOffset.x();
     }
 
     double Cluster::angle() const {
         return m_fractionOfPhase * m_angle;
     }
 
-    const IndexPair& Cluster::rotationPivot() const {
+    const GridCoordinates& Cluster::rotationPivot() const {
         return m_rotationPivot;
     }
 

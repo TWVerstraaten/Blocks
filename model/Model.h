@@ -9,7 +9,7 @@
 #include "Cluster.h"
 #include "Level.h"
 
-#include <vector>
+#include <list>
 
 class SDL_Renderer;
 
@@ -25,11 +25,11 @@ namespace model {
         void                        interactClustersWithInstantBlocks();
         void                        update(double fractionOfPhase);
         const Level&                level() const;
-        const std::vector<Cluster>& clusters() const;
+        const std::list<model::Cluster>& clusters() const;
 
       private:
-        Level                m_level;
-        std::vector<Cluster> m_clusters;
+        Level              m_level;
+        std::list<Cluster> m_clusters;
     };
 
 } // namespace model

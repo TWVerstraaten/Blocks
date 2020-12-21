@@ -67,8 +67,7 @@ namespace view {
         return result;
     }
 
-    std::unique_ptr<Texture> Texture::buildFromText(const std::string& textureText, SDL_Color textColor,
-                                                    SDL_Renderer* renderer, TTF_Font* font) {
+    std::unique_ptr<Texture> Texture::buildFromText(const std::string& textureText, SDL_Color textColor, SDL_Renderer* renderer, TTF_Font* font) {
 
         std::unique_ptr<Texture> result{new Texture()};
 
@@ -114,8 +113,7 @@ namespace view {
         SDL_SetTextureAlphaMod(m_texture, alpha);
     }
 
-    void Texture::render(const SDL_Rect& destination, SDL_Renderer* renderer, double angle, const SDL_Point* center,
-                         SDL_RendererFlip flip) {
+    void Texture::render(const SDL_Rect& destination, SDL_Renderer* renderer, double angle, const SDL_Point* center, SDL_RendererFlip flip) {
         assert(m_loadedCorrectly);
         assert(m_texture != nullptr);
 

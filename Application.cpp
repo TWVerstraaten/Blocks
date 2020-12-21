@@ -4,6 +4,10 @@
 
 #include "Application.h"
 
+#include "aux/Aux.h"
+#include "model/WorldCoordinates.h"
+#include "view/Rectangle.h"
+
 #include <cassert>
 
 Application::Application() {
@@ -25,11 +29,11 @@ void Application::loop() {
             m_timeSinceLastStep %= m_stepTimeInMilliSeconds;
         }
         while (SDL_PollEvent(&m_event) > 0) {
+
             switch (m_event.type) {
                 case SDL_QUIT:
                     isRunning = false;
                     break;
-                case SDL_TEXTEDITING:
                 case SDL_TEXTINPUT:
                 case SDL_KEYDOWN:
                 case SDL_KEYUP:
@@ -61,6 +65,10 @@ void Application::loop() {
         if (!m_isPaused) {
             m_timeSinceLastStep += dt;
         }
+        m_view.render(model::WorldCoordinates{0, 0}, 100, 100, {100, 100, 100, 255});
+        m_view.render(model::WorldCoordinates{50, 50}, 100, 100, {255, 100, 100, 255});
+        m_view.render(model::WorldCoordinates{900, 100}, 100, 100, {255, 100, 100, 255});
+        SDL_RenderPresent(m_view.renderer());
     }
     SDL_StopTextInput();
 }
@@ -177,8 +185,7 @@ void Application::mouseMoveEvent() {
     if (not isDone) {
         if (m_rightMouseButtonPressed) {
             const auto mouseCoordinates = getMouseCoordinates();
-            m_view.translate((mouseCoordinates.x - m_previousMousePosition.x),
-                             mouseCoordinates.y - m_previousMousePosition.y);
+            m_view.translate((mouseCoordinates.x - m_previousMousePosition.x), mouseCoordinates.y - m_previousMousePosition.y);
             m_previousMousePosition = mouseCoordinates;
         }
     }

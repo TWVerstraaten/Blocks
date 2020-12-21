@@ -4,8 +4,9 @@
 
 #include "ActionEditBox.h"
 
+#include "../../aux/Aux.h"
+#include "../../model/Cluster.h"
 #include "../AssetHandler.h"
-#include "../Aux.h"
 #include "../Rectangle.h"
 
 #include <cassert>
@@ -161,17 +162,12 @@ namespace view {
         }
 
         void ActionEditBox::handleKeyDownControlPressed(const SDL_Event& event) {
-            //            auto& str = m_strings[m_selectionData.m_first.m_stringIndex];
             switch (event.key.keysym.sym) {
                 case SDLK_c:
                     copyIfSelectionNotEmpty();
                     break;
                 case SDLK_v:
                     insertText(SDL_GetClipboardText());
-                    //                    insertEmptyBeforeLine(0);
-                    //                    m_strings[m_selectionData.m_first.m_stringIndex] = SDL_GetClipboardText();
-                    //                    incrementFirstIndex();
-                    //                    m_needsUpdate = true;
                     break;
                 case SDLK_x:
                     copyIfSelectionNotEmpty();
@@ -511,10 +507,11 @@ namespace view {
                 deleteRange(m_selectionData.m_first, m_selectionData.m_last);
             }
             assert(m_selectionData.m_mode == SelectionData::MODE::SINGLE);
+            if (text.length() == 0) {
+                return;
+            }
             m_needsUpdate = true;
-
             m_strings[m_selectionData.m_first.m_stringIndex].insert(m_selectionData.m_first.m_charIndex, text);
-
             const auto lastNewLine = m_strings[m_selectionData.m_first.m_stringIndex].find_last_of('\n');
             if (lastNewLine == std::string::npos) {
                 m_selectionData.m_first.m_charIndex += text.length();
@@ -532,13 +529,11 @@ namespace view {
                 }
                 --m_selectionData.m_first.m_stringIndex;
             }
-            m_needsUpdate = true;
         }
 
         void ActionEditBox::concatAt(size_t index) {
             m_strings[index] += m_strings[index + 1];
             m_strings.erase(m_strings.begin() + index + 1);
         }
-
     } // namespace widget
 } // namespace view

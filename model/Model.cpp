@@ -30,33 +30,27 @@ namespace model {
         m_level.addBlock({4, 4}, Level::INSTANT_BLOCK_TYPE::KILL);
     }
 
-    const std::vector<model::Cluster>& Model::clusters() const {
+    const std::list<model::Cluster>& Model::clusters() const {
         return m_clusters;
     }
 
     void Model::interactClustersWithDynamicBlocks() {
         for (auto& cluster : m_clusters) {
-            for (auto it = cluster.localIndexPairs().begin(); it != cluster.localIndexPairs().end(); ++it) {
-                cluster.addPendingOperation(*it,
-                                            m_level.dynamicBlockAt(IndexPair(it->row() + cluster.rowOffset(),
-                                                                             it->column() + cluster.columnOffset())));
+            for (auto it = cluster.gridCoordinates().begin(); it != cluster.gridCoordinates().end(); ++it) {
+                cluster.addPendingOperation(*it, m_level.dynamicBlockAt(GridCoordinates(it->x(), it->y())));
             }
         }
         for (auto& cluster : m_clusters) {
             cluster.performPendingOperation();
         }
-        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(),
-                                        [](const Cluster& cluster) { return cluster.empty(); }),
-                         m_clusters.end());
+        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }), m_clusters.end());
     }
 
     void Model::interactClustersWithInstantBlocks() {
         for (auto& cluster : m_clusters) {
             bool isDone = false;
-            for (auto it = cluster.localIndexPairs().begin(); it != cluster.localIndexPairs().end() && not isDone;
-                 ++it) {
-                switch (m_level.instantBlockAt(
-                    IndexPair(it->row() + cluster.rowOffset(), it->column() + cluster.columnOffset()))) {
+            for (auto it = cluster.gridCoordinates().begin(); it != cluster.gridCoordinates().end() && not isDone; ++it) {
+                switch (m_level.instantBlockAt(GridCoordinates(it->x(), it->y()))) {
                     case Level::INSTANT_BLOCK_TYPE::NONE:
                         break;
                     case Level::INSTANT_BLOCK_TYPE::KILL:
@@ -66,9 +60,7 @@ namespace model {
                 }
             }
         }
-        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(),
-                                        [](const Cluster& cluster) { return cluster.empty(); }),
-                         m_clusters.end());
+        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }), m_clusters.end());
     }
 
     const model::Level& Model::level() const {

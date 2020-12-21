@@ -25,8 +25,8 @@ namespace view {
         size_t initialWidth  = 900;
         size_t initialHeight = 700;
 
-        m_window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, initialWidth,
-                                    initialHeight, SDL_WINDOW_RESIZABLE);
+        m_window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, initialWidth, initialHeight,
+                                    SDL_WINDOW_RESIZABLE);
         if (!m_window) {
             std::cout << "Failed to create window, SDL2 Error: " << SDL_GetError() << "\n";
             return;
@@ -73,60 +73,60 @@ namespace view {
         for (auto& actionEditBox : m_actionEditBoxes) {
             actionEditBox->render(m_renderer);
         }
-
-        SDL_RenderPresent(m_renderer);
+        //        SDL_RenderPresent(m_renderer);
     }
 
-    void View::drawClusters(const std::vector<model::Cluster>& clusters) const {
+    void View::drawClusters(const std::list<model::Cluster>& clusters) const {
         for (const auto& cluster : clusters) {
-            for (auto it = cluster.localIndexPairs().begin(); it != cluster.localIndexPairs().end(); ++it) {
-                const SDL_Point center = {
-                    static_cast<int>(m_grid.blockSize() * (0.5 + cluster.rotationPivot().column() - it->column())),
-                    static_cast<int>(m_grid.blockSize() * (0.5 + cluster.rotationPivot().row() - it->row()))};
-                if (m_assetsHandler->renderTexture(AssetHandler::TEXTURE_ENUM::CLUSTER,
-                                                   {m_grid.xAt(it->column() + cluster.dynamicColumnOffset()),
-                                                    m_grid.yAt(it->row() + cluster.dynamicRowOffset()),
-                                                    m_grid.blockSize(), m_grid.blockSize()},
-                                                   m_renderer, cluster.angle(), &center)) {
+            //            const ScreenCoordinates offset = cluster.
+            for (auto it = cluster.gridCoordinates().begin(); it != cluster.gridCoordinates().end(); ++it) {
+                const SDL_Point center = {static_cast<int>(m_grid.pixelsPerBlock() * (0.5 + cluster.rotationPivot().x() - it->x())),
+                                          static_cast<int>(m_grid.pixelsPerBlock() * (0.5 + cluster.rotationPivot().y() - it->y()))};
+                //                if (m_assetsHandler->renderTexture(AssetHandler::TEXTURE_ENUM::CLUSTER,
+                //                                                                   {m_grid.xAt(it->x() + cluster.dynamicColumnOffset()),
+                //                                                   m_grid.yAt(it->y() + cluster.dynamicRowOffset()),
+                //                                                    m_grid.blockSize(), m_grid.pixelsPerBlock()},
+                //                                                   m_renderer, cluster.angle(), &center)) {
+                if (m_assetsHandler->renderTexture(AssetHandler::TEXTURE_ENUM::CLUSTER, ScreenCoordinates::fromGridCoordinates(*it, m_grid),
+                                                   m_grid.pixelsPerBlock(), m_grid.pixelsPerBlock(), m_renderer, cluster.angle(),
+                                                   &center)) {
                     continue;
                 } else {
-                    Rectangle::render(m_grid.xAt(it->column() + cluster.dynamicColumnOffset()),
-                                      m_grid.yAt(it->row() + cluster.dynamicRowOffset()), m_grid.blockSize(),
-                                      m_grid.blockSize(), {82, 122, 28, 100}, m_renderer);
+                    Rectangle::render(m_grid.xAt(it->x() + cluster.dynamicColumnOffset()), m_grid.yAt(it->y() + cluster.dynamicRowOffset()),
+                                      m_grid.pixelsPerBlock(), m_grid.pixelsPerBlock(), {82, 122, 28, 100}, m_renderer);
                 }
             }
         }
     }
 
     void View::drawGridLines() const {
-        int w, h;
-        SDL_GetWindowSize(m_window, &w, &h);
+        const auto size = windowSize();
         SDL_SetRenderDrawColor(m_renderer, 180, 180, 180, 255);
 
         int x = m_grid.xAt(m_grid.firstColumnInView());
-        while (x < w) {
-            SDL_RenderDrawLine(m_renderer, x, 0, x, h);
-            x += m_grid.blockSize();
+        while (x < size.x) {
+            SDL_RenderDrawLine(m_renderer, x, 0, x, size.y);
+            x += m_grid.pixelsPerBlock();
         }
         int y = m_grid.yAt(m_grid.firstRowInView());
-        while (y < h) {
-            SDL_RenderDrawLine(m_renderer, 0, y, w, y);
-            y += m_grid.blockSize();
+        while (y < size.y) {
+            SDL_RenderDrawLine(m_renderer, 0, y, size.x, y);
+            y += m_grid.pixelsPerBlock();
         }
     }
 
     void View::drawLevel(const model::Level& level) const {
         for (const auto& block : level.dynamicBlocks()) {
-            if (m_assetsHandler->renderTexture(AssetHandler::getTextureEnum(block.second),
-                                               {m_grid.xAt(block.first.column()), m_grid.yAt(block.first.row()),
-                                                m_grid.blockSize(), m_grid.blockSize()},
-                                               m_renderer, 0)) {
+            if (m_assetsHandler->renderTexture(
+                    AssetHandler::getTextureEnum(block.second),
+                    {m_grid.xAt(block.first.x()), m_grid.yAt(block.first.y()), m_grid.pixelsPerBlock(), m_grid.pixelsPerBlock()},
+                    m_renderer, 0)) {
                 continue;
             } else {
-                Rectangle rect = {m_grid.xAt(block.first.column()),
-                                  m_grid.yAt(block.first.row()),
-                                  m_grid.blockSize(),
-                                  m_grid.blockSize(),
+                Rectangle rect = {m_grid.xAt(block.first.x()),
+                                  m_grid.yAt(block.first.y()),
+                                  m_grid.pixelsPerBlock(),
+                                  m_grid.pixelsPerBlock(),
                                   {0, 0, 0, 255}};
                 switch (block.second) {
                     case model::Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
@@ -143,16 +143,16 @@ namespace view {
         }
 
         for (const auto& block : level.instantBlocks()) {
-            if (m_assetsHandler->renderTexture(AssetHandler::getTextureEnum(block.second),
-                                               {m_grid.xAt(block.first.column()), m_grid.yAt(block.first.row()),
-                                                m_grid.blockSize(), m_grid.blockSize()},
-                                               m_renderer, 0)) {
+            if (m_assetsHandler->renderTexture(
+                    AssetHandler::getTextureEnum(block.second),
+                    {m_grid.xAt(block.first.x()), m_grid.yAt(block.first.y()), m_grid.pixelsPerBlock(), m_grid.pixelsPerBlock()},
+                    m_renderer, 0)) {
                 continue;
             } else {
-                Rectangle rect = {m_grid.xAt(block.first.column()),
-                                  m_grid.yAt(block.first.row()),
-                                  m_grid.blockSize(),
-                                  m_grid.blockSize(),
+                Rectangle rect = {m_grid.xAt(block.first.x()),
+                                  m_grid.yAt(block.first.y()),
+                                  m_grid.pixelsPerBlock(),
+                                  m_grid.pixelsPerBlock(),
                                   {0, 0, 0, 255}};
 
                 switch (block.second) {
@@ -169,13 +169,16 @@ namespace view {
 
     void View::zoom(int amount) {
         m_zoomParameter += amount;
-        m_grid.setBlockSize(m_zoomParameter);
+        m_zoomParameter = std::max(m_zoomParameter, -28);
+        m_zoomParameter = std::min(m_zoomParameter, 6);
+        m_grid.setScale(m_zoomParameter);
     }
+
     void View::translate(int dx, int dy) {
         m_grid.translate(dx, dy);
     }
 
-    std::pair<int, int> View::windowSize() const {
+    SDL_Point View::windowSize() const {
         int windowWidth, windowHeight;
         SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
         return {windowWidth, windowHeight};
@@ -190,4 +193,18 @@ namespace view {
         return m_actionEditBoxes;
     }
 
+    SDL_Renderer* View::renderer() const {
+        return m_renderer;
+    }
+
+    void View::render(const ScreenCoordinates& point, int width, int height, const SDL_Color& color) {
+        SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+        const SDL_Rect rect{point.x(), point.y(), width, height};
+        SDL_RenderFillRect(m_renderer, &rect);
+    }
+
+    void View::render(const model::WorldCoordinates& point, int widthInWorld, int heightInWorld, const SDL_Color& color) {
+        render(ScreenCoordinates::fromWorldCoordinates(point, m_grid), m_grid.worldToScreenLength(widthInWorld),
+               m_grid.worldToScreenLength(heightInWorld), color);
+    }
 } // namespace view

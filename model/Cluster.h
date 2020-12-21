@@ -9,9 +9,8 @@
 #include "Enums.h"
 #include "Level.h"
 
-#include <set>
+#include <list>
 #include <tuple>
-#include <vector>
 
 class SDL_Renderer;
 
@@ -20,29 +19,27 @@ namespace model {
     class Cluster {
 
       public:
-        Cluster(std::set<IndexPair>&& indexPairs, const IndexPair& offset);
+        Cluster(std::list<GridCoordinates>&& gridCoordinates, const GridCoordinates& offset);
 
-        void                       doAction();
-        void                       addPendingOperation(const IndexPair& indexPair, Level::DYNAMIC_BLOCK_TYPE blockType);
-        void                       performPendingOperation();
-        void                       removeBLock(const IndexPair& indexPair);
-        void                       update(double fractionOfPhase);
-        void                       addAction(ClusterAction action);
-        bool                       empty() const;
-        bool                       intersects(const IndexPair& indexPair) const;
-        int                        rowOffset() const;
-        int                        columnOffset() const;
-        double                     angle() const;
-        double                     dynamicRowOffset() const;
-        double                     dynamicColumnOffset() const;
-        enums::DIRECTION           adjacent(const IndexPair& indexPair) const;
-        const std::set<IndexPair>& localIndexPairs() const;
-        const IndexPair&           rotationPivot() const;
+        void                              doAction();
+        void                              addPendingOperation(const GridCoordinates& indexPair, Level::DYNAMIC_BLOCK_TYPE blockType);
+        void                              performPendingOperation();
+        void                              removeBLock(const GridCoordinates& indexPair);
+        void                              update(double fractionOfPhase);
+        void                              addAction(ClusterAction action);
+        bool                              empty() const;
+        bool                              intersects(const GridCoordinates& indexPair) const;
+        double                            angle() const;
+        double                            dynamicRowOffset() const;
+        double                            dynamicColumnOffset() const;
+        enums::DIRECTION                  adjacent(const GridCoordinates& indexPair) const;
+        const std::list<GridCoordinates>& gridCoordinates() const;
+        const GridCoordinates&            rotationPivot() const;
         const std::vector<ClusterAction>& clusterActions() const;
 
       private:
-        void rotateClockWiseAbout(const IndexPair& pivotIndexPair);
-        void rotateCounterClockWiseAbout(const IndexPair& pivotIndexPair);
+        void rotateClockWiseAbout(const GridCoordinates& pivotIndexPair);
+        void rotateCounterClockWiseAbout(const GridCoordinates& pivotIndexPair);
 
         static ClusterAction rotateActionClockWise(ClusterAction action);
         static ClusterAction rotateActionCounterClockWise(ClusterAction action);
@@ -50,14 +47,13 @@ namespace model {
         double                     m_fractionOfPhase    = 0.0;
         size_t                     m_clusterActionIndex = 0;
         double                     m_angle              = 0.0;
-        IndexPair                  m_rotationPivot;
-        IndexPair                  m_offset;
-        IndexPair                  m_previousOffset;
-        std::set<IndexPair>        m_localIndexPairs;
+        GridCoordinates            m_rotationPivot;
+        GridCoordinates            m_previousOffset;
+        std::list<GridCoordinates> m_gridCoordinates;
         std::vector<ClusterAction> m_clusterActions;
 
-        typedef std::pair<const IndexPair&, Level::DYNAMIC_BLOCK_TYPE> Block;
-        std::vector<Block>                                             m_pendingOperations;
+        typedef std::pair<const GridCoordinates&, Level::DYNAMIC_BLOCK_TYPE> Block;
+        std::vector<Block>                                                   m_pendingOperations;
     };
 } // namespace model
 

@@ -4,28 +4,24 @@
 
 #include "AssetHandler.h"
 
+#include "ScreenCoordinates.h"
+
 #include <cassert>
 #include <memory>
 
 namespace view {
     void AssetHandler::init(SDL_Renderer* renderer) {
-        m_textures[TEXTURE_ENUM::ARROW_CW] =
-            Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/arrow_cw.png", renderer);
-        m_textures[TEXTURE_ENUM::ARROW_CCW] =
-            Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/arrow_ccw.png", renderer);
-        m_textures[TEXTURE_ENUM::CLUSTER] =
-            Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/cluster.png", renderer);
-        m_textures[TEXTURE_ENUM::KILL] =
-            Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/kill.png", renderer);
-        m_textures[TEXTURE_ENUM::ERROR] =
-            Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/error.png", renderer);
+        m_textures[TEXTURE_ENUM::ARROW_CW]  = Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/arrow_cw.png", renderer);
+        m_textures[TEXTURE_ENUM::ARROW_CCW] = Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/arrow_ccw.png", renderer);
+        m_textures[TEXTURE_ENUM::CLUSTER]   = Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/cluster.png", renderer);
+        m_textures[TEXTURE_ENUM::KILL]      = Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/kill.png", renderer);
+        m_textures[TEXTURE_ENUM::ERROR]     = Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/error.png", renderer);
 
         m_fonts[FONT_ENUM::MAIN] = std::unique_ptr<Font>(new Font("/home/pc/Documents/c++/Blocks/assets/font.ttf", 25));
     }
 
-    bool AssetHandler::renderTexture(AssetHandler::TEXTURE_ENUM textureEnum, const SDL_Rect& destination,
-                                     SDL_Renderer* renderer, double angle, const SDL_Point* center,
-                                     SDL_RendererFlip flip) const {
+    bool AssetHandler::renderTexture(AssetHandler::TEXTURE_ENUM textureEnum, const SDL_Rect& destination, SDL_Renderer* renderer, double angle,
+                                     const SDL_Point* center, SDL_RendererFlip flip) const {
         assert(m_textures.find(textureEnum) != m_textures.end());
         if (m_textures.at(textureEnum)->loadedCorrectly()) {
             m_textures.at(textureEnum)->render(destination, renderer, angle, center, flip);
@@ -35,14 +31,24 @@ namespace view {
         }
     }
 
-    bool AssetHandler::renderTexture(Texture* texture, const SDL_Rect& destination, SDL_Renderer* renderer,
-                                     double angle, const SDL_Point* center, SDL_RendererFlip flip) {
+    bool AssetHandler::renderTexture(Texture* texture, const SDL_Rect& destination, SDL_Renderer* renderer, double angle, const SDL_Point* center,
+                                     SDL_RendererFlip flip) {
         if (texture->loadedCorrectly()) {
             texture->render(destination, renderer, angle, center, flip);
             return true;
         } else {
             return false;
         }
+    }
+
+    bool AssetHandler::renderTexture(AssetHandler::TEXTURE_ENUM textureEnum, const ScreenCoordinates& screenCoordinates, int width, int height,
+                                     SDL_Renderer* renderer, double angle, const SDL_Point* center, SDL_RendererFlip flip) const {
+        return renderTexture(textureEnum, {screenCoordinates.x(), screenCoordinates.y(), width, height}, renderer, angle, center, flip);
+    }
+
+    bool AssetHandler::renderTexture(Texture* texture, const ScreenCoordinates& screenCoordinates, int width, int height, SDL_Renderer* renderer, double angle,
+                                     const SDL_Point* center, SDL_RendererFlip flip) {
+        return renderTexture(texture, {screenCoordinates.x(), screenCoordinates.y(), width, height}, renderer, angle, center, flip);
     }
 
     AssetHandler::TEXTURE_ENUM AssetHandler::getTextureEnum(model::Level::DYNAMIC_BLOCK_TYPE type) {
@@ -69,4 +75,5 @@ namespace view {
         assert(m_fonts.find(fontEnum) != m_fonts.end());
         return m_fonts.at(fontEnum).get();
     }
+
 } // namespace view
