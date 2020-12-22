@@ -23,6 +23,8 @@ namespace model {
       public:
         Cluster(std::list<GridCoordinates>&& gridCoordinates, const GridCoordinates& offset);
 
+        Cluster& operator=(const Cluster& other);
+
         void                              doAction();
         void                              addPendingOperation(const GridCoordinates& indexPair, Level::DYNAMIC_BLOCK_TYPE blockType);
         void                              performPendingOperation();

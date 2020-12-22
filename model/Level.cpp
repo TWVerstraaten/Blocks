@@ -69,4 +69,11 @@ namespace model {
         m_dynamicBLocks.clear();
     }
 
+    Level& Level::operator=(const Level& other) {
+        m_dynamicBLocks = other.m_dynamicBLocks;
+        m_instantBLocks = other.m_instantBLocks;
+        m_levelBlocks   = other.m_levelBlocks;
+        return *this;
+    }
+
 } // namespace model

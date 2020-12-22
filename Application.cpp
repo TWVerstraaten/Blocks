@@ -4,15 +4,14 @@
 
 #include "Application.h"
 
-#include "aux/Aux.h"
 #include "model/WorldCoordinates.h"
 #include "view/Color.h"
-#include "view/Rectangle.h"
 
+#include <algorithm>
 #include <cassert>
 
 Application::Application() {
-    resetModel();
+    init();
 }
 
 void Application::loop() {
@@ -207,9 +206,9 @@ void Application::resetModel() {
     m_levelHasStarted   = false;
 
     m_view.clear();
-    m_model.init();
+    m_model = m_initialModel;
 
-    for (const auto& cluster : m_model.clusters()) {
+    for (auto& cluster : m_model.clusters()) {
         m_view.addActionEditBox(cluster);
     }
 
@@ -219,11 +218,11 @@ void Application::resetModel() {
 }
 
 void Application::unpause() {
-    m_isPaused = false;
     if (not m_levelHasStarted) {
         startRun();
+    } else {
+        m_isPaused = false;
     }
-    m_levelHasStarted = true;
 }
 
 void Application::pause() {
@@ -239,7 +238,34 @@ void Application::togglePause() {
 }
 
 void Application::startRun() {
+    assert(m_view.actionEditBoxes().size() == m_initialModel.clusters().size());
+    bool can = canStart();
+    if (not can) {
+        return;
+    }
+    m_isPaused        = false;
+    m_levelHasStarted = true;
+
+    auto it = m_initialModel.clusters().begin();
+    for (auto& actionEditBox : m_view.actionEditBoxes()) {
+        actionEditBox->setCanGetFocus(false);
+        actionEditBox->updateClusterActions(*it);
+        ++it;
+    }
+    resetModel();
     for (auto& actionEditBox : m_view.actionEditBoxes()) {
         actionEditBox->setCanGetFocus(false);
     }
+}
+
+void Application::init() {
+    m_view.clear();
+    m_initialModel.init();
+    resetModel();
+}
+
+bool Application::canStart() {
+    return std::all_of(m_view.actionEditBoxes().begin(),
+                       m_view.actionEditBoxes().end(),
+                       [](const std::unique_ptr<view::widget::ActionEditBox>& box) { return box->canParse(); });
 }

@@ -35,6 +35,8 @@ namespace view {
             void                            handleMouseClickEvent(const SDL_Event& event, bool leftClicked) override;
             void                            handleMouseMoveEvent(const SDL_Point& mousePointInWorld, bool leftClicked);
             void                            loseFocus() override;
+            void                            updateClusterActions(model::Cluster& cluster);
+            bool                            canParse() const;
             const std::vector<std::string>& strings() const;
 
           private:

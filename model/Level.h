@@ -19,6 +19,8 @@ namespace model {
       public:
         Level() = default;
 
+        Level& operator=(const Level& other);
+
         enum class DYNAMIC_BLOCK_TYPE { NONE, ROTATE_CW, ROTATE_CCW };
         enum class INSTANT_BLOCK_TYPE { NONE, KILL };
 

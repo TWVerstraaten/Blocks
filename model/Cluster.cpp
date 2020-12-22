@@ -236,6 +236,7 @@ namespace model {
         m_worldOffset     = {0, 0};
         m_angle           = 0.0;
         m_currentPhase    = CURRENT_PHASE::NONE;
+        m_rotationPivot   = {0, 0};
     }
 
     void Cluster::setRotation(double angle, const GridCoordinates& pivot) {
@@ -250,6 +251,17 @@ namespace model {
     void Cluster::clearActions() {
         m_clusterActions.clear();
         m_clusterActionIndex = 0;
+    }
+
+    Cluster& Cluster::operator=(const Cluster& other) {
+        assert(other.m_currentPhase == CURRENT_PHASE::NONE);
+        clearPhase();
+        m_isAlive            = other.m_isAlive;
+        m_clusterActionIndex = other.m_clusterActionIndex;
+        m_gridCoordinates    = other.m_gridCoordinates;
+        m_clusterActions     = other.m_clusterActions;
+        m_pendingOperations.clear();
+        return *this;
     }
 
 } // namespace model

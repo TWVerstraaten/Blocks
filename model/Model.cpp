@@ -14,7 +14,11 @@ namespace model {
         init();
     }
 
-    const std::list<model::Cluster>& Model::clusters() const {
+    const std::vector<model::Cluster>& Model::clusters() const {
+        return m_clusters;
+    }
+
+    std::vector<model::Cluster>& Model::clusters() {
         return m_clusters;
     }
 
@@ -27,8 +31,7 @@ namespace model {
         for (auto& cluster : m_clusters) {
             cluster.performPendingOperation();
         }
-        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }),
-                         m_clusters.end());
+        clearEmptyClusters();
     }
 
     void Model::interactClustersWithInstantBlocks() {
@@ -45,8 +48,7 @@ namespace model {
                 }
             }
         }
-        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }),
-                         m_clusters.end());
+        clearEmptyClusters();
     }
 
     void Model::interactClustersWithLevel() {
@@ -85,6 +87,7 @@ namespace model {
 
         m_clusters.emplace_back(Cluster{{{0, 1}, {1, 0}, {1, 1}, {1, 2}}, {9, 3}});
         m_clusters.back().addAction({ClusterAction::ACTION::MOVE_UP, ClusterAction::MODIFIER::NONE});
+
         m_clusters.emplace_back(Cluster{{{0, 0}, {1, 0}, {2, 0}}, {10, 7}});
         m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::NONE});
         m_clusters.back().addAction({ClusterAction::ACTION::MOVE_RIGHT, ClusterAction::MODIFIER::SKIP});
@@ -111,5 +114,15 @@ namespace model {
     void Model::clear() {
         m_clusters.clear();
         m_level.clear();
+    }
+
+    Model& Model::operator=(const Model& other) {
+        m_level    = other.m_level;
+        m_clusters = other.m_clusters;
+        return *this;
+    }
+    void Model::clearEmptyClusters() {
+        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }),
+                         m_clusters.end());
     }
 } // namespace model

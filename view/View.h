@@ -53,7 +53,7 @@ namespace view {
 
       private:
         SDL_Point windowSize() const;
-        void      drawClusters(const std::__cxx11::list<model::Cluster>& clusters) const;
+        void      drawClusters(const std::vector<model::Cluster>& clusters) const;
         void      drawLevelBlocks(const model::Level& level) const;
         void      drawBlocks(const model::Level& level) const;
         void      drawGridLines() const;

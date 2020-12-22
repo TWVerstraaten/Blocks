@@ -9,7 +9,7 @@
 #include "Cluster.h"
 #include "Level.h"
 
-#include <list>
+#include <vector>
 
 class SDL_Renderer;
 
@@ -20,18 +20,22 @@ namespace model {
       public:
         Model();
 
-        void                             interactClustersWithDynamicBlocks();
-        void                             interactClustersWithInstantBlocks();
-        void                             interactClustersWithLevel();
-        void                             update(double fractionOfPhase);
-        void                             init();
-        void                             clear();
-        const Level&                     level() const;
-        const std::list<model::Cluster>& clusters() const;
+        Model& operator=(const Model& other);
+
+        void                               interactClustersWithDynamicBlocks();
+        void                               interactClustersWithInstantBlocks();
+        void                               interactClustersWithLevel();
+        void                               update(double fractionOfPhase);
+        void                               init();
+        void                               clear();
+        void                               clearEmptyClusters();
+        const Level&                       level() const;
+        const std::vector<model::Cluster>& clusters() const;
+        std::vector<model::Cluster>&       clusters();
 
       private:
-        Level              m_level;
-        std::list<Cluster> m_clusters;
+        Level                m_level;
+        std::vector<Cluster> m_clusters;
     };
 
 } // namespace model

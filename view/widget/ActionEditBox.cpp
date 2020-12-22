@@ -10,6 +10,7 @@
 #include "../Color.h"
 #include "../Rectangle.h"
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <sstream>
@@ -18,34 +19,13 @@ namespace view {
     namespace widget {
         ActionEditBox::ActionEditBox(int x, int y, int w, int h, const AssetHandler* assetHandler, const model::Cluster& cluster)
             : Widget({x, y, w, h}), m_assetHandler(assetHandler) {
-            for (const auto& action : cluster.clusterActions()) {
-                std::string str;
-                switch (action.m_modifier) {
-                    case model::ClusterAction::MODIFIER::NONE:
-                        str += "  ";
-                        break;
-                    case model::ClusterAction::MODIFIER::IGNORE:
-                        str += "+ ";
-                        break;
-                    case model::ClusterAction::MODIFIER::SKIP:
-                        str += "- ";
-                        break;
+            if (cluster.clusterActions().empty()) {
+                m_strings.emplace_back(" ");
+            } else {
+                for (const auto& action : cluster.clusterActions()) {
+                    m_strings.emplace_back(model::ClusterAction::stringFromModifier(action.m_modifier) + " " +
+                                           model::ClusterAction::stringFromAction(action.m_action));
                 }
-                switch (action.m_action) {
-                    case model::ClusterAction::ACTION::MOVE_UP:
-                        str += "FWD";
-                        break;
-                    case model::ClusterAction::ACTION::MOVE_DOWN:
-                        str += "BCK";
-                        break;
-                    case model::ClusterAction::ACTION::MOVE_LEFT:
-                        str += "LFT";
-                        break;
-                    case model::ClusterAction::ACTION::MOVE_RIGHT:
-                        str += "RIT";
-                        break;
-                }
-                m_strings.push_back(str);
             }
         }
 
@@ -56,8 +36,10 @@ namespace view {
             int yOffset = 0;
             for (const auto& str : m_strings) {
                 m_yOffsets.push_back(yOffset);
+                const auto text     = str.length() == 0 ? " " : str;
+                bool       canParse = model::ClusterAction::canParse(str) || text == " ";
                 m_textures.emplace_back(Texture::buildFromText(
-                    str.length() == 0 ? " " : str, {0, 0, 0, 255}, renderer, m_assetHandler->font(AssetHandler::FONT_ENUM::MAIN)->font()));
+                    text, canParse ? color::BLACK : color::RED, renderer, m_assetHandler->font(AssetHandler::FONT_ENUM::MAIN)->font()));
                 yOffset += m_textures.back()->height();
             }
             m_yOffsets.push_back(yOffset);
@@ -564,6 +546,19 @@ namespace view {
         void ActionEditBox::potentiallyDecrementFirstCharIndex() {
             m_selectionData.m_first.m_charIndex =
                 std::min(m_selectionData.m_first.m_charIndex, m_strings.at(m_selectionData.m_first.m_stringIndex).length());
+        }
+
+        void ActionEditBox::updateClusterActions(model::Cluster& cluster) {
+            cluster.clearActions();
+            for (const auto& str : m_strings) {
+                if (model::ClusterAction::canParse(str)) {
+                    cluster.addAction(model::ClusterAction::fromString(str));
+                }
+            }
+        }
+
+        bool ActionEditBox::canParse() const {
+            return std::all_of(m_strings.begin(), m_strings.end(), &model::ClusterAction::canParse);
         }
     } // namespace widget
 } // namespace view
