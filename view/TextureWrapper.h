@@ -18,11 +18,12 @@ namespace view {
       public:
         enum class TEXTURE_ENUM { ERROR, ARROW_CW, ARROW_CCW, CLUSTER, KILL };
 
-        void init(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
+        TextureWrapper(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
 
-        const Texture* getTexture(int width, int height);
+        Texture* getTexture(int width, int height)const;
 
       private:
+        void                                  init(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
         std::vector<std::unique_ptr<Texture>> m_textures;
     };
 } // namespace view

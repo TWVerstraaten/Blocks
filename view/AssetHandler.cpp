@@ -12,16 +12,11 @@
 
 namespace view {
     void AssetHandler::init(SDL_Renderer* renderer) {
-        m_textures[TextureWrapper::TEXTURE_ENUM::ARROW_CW] =
-            Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/arrow_cw.png", renderer);
-        m_textures[TextureWrapper::TEXTURE_ENUM::ARROW_CCW] =
-            Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/arrow_ccw.png", renderer);
-        m_textures[TextureWrapper::TEXTURE_ENUM::CLUSTER] =
-            Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/cluster_large.png", renderer);
-        m_textures[TextureWrapper::TEXTURE_ENUM::KILL] =
-            Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/kill.png", renderer);
-        m_textures[TextureWrapper::TEXTURE_ENUM::ERROR] =
-            Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/error.png", renderer);
+        loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ARROW_CW, renderer);
+        loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ARROW_CCW, renderer);
+        loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::CLUSTER, renderer);
+        loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::KILL, renderer);
+        loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ERROR, renderer);
 
         m_fonts[FONT_ENUM::MAIN] = std::unique_ptr<Font>(new Font("/home/pc/Documents/c++/Blocks/assets/UbuntuMono-Bold.ttf", 28));
     }
@@ -33,8 +28,9 @@ namespace view {
                                      const SDL_Point*             center,
                                      SDL_RendererFlip             flip) const {
         assert(m_textures.find(textureEnum) != m_textures.end());
-        if (m_textures.at(textureEnum)->loadedCorrectly()) {
-            m_textures.at(textureEnum)->render(aux::pad(destination, 1), renderer, angle, center, flip);
+        auto* texture = m_textures.at(textureEnum).getTexture(destination.w, destination.h);
+        if (texture->loadedCorrectly()) {
+            texture->render(aux::pad(destination, 1), renderer, angle, center, flip);
             return true;
         } else {
             return false;
@@ -110,6 +106,10 @@ namespace view {
     const Font* AssetHandler::font(AssetHandler::FONT_ENUM fontEnum) const {
         assert(m_fonts.find(fontEnum) != m_fonts.end());
         return m_fonts.at(fontEnum).get();
+    }
+
+    void AssetHandler::loadTextureWrapper(TextureWrapper::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
+        m_textures.insert({textureEnum, TextureWrapper(textureEnum, renderer)});
     }
 
 } // namespace view

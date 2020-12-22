@@ -62,8 +62,10 @@ namespace view {
         static TextureWrapper::TEXTURE_ENUM getTextureEnum(model::Level::INSTANT_BLOCK_TYPE type);
 
       private:
-        std::map<TextureWrapper::TEXTURE_ENUM, std::unique_ptr<Texture>> m_textures;
-        std::map<FONT_ENUM, std::unique_ptr<Font>>                       m_fonts;
+        void loadTextureWrapper(TextureWrapper::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
+
+        std::map<TextureWrapper::TEXTURE_ENUM, TextureWrapper> m_textures;
+        std::map<FONT_ENUM, std::unique_ptr<Font>>             m_fonts;
     };
 } // namespace view
 #endif // BLOCKS_ASSETHANDLER_H

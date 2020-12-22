@@ -4,10 +4,10 @@
 
 #include "TextureWrapper.h"
 
-#include <algorithm>
 #include <cassert>
+#include <iostream>
 
-double flipIfSmallerThanOne(double a) {
+static double flipIfSmallerThanOne(double a) {
     assert(a > 0);
     if (a < 1) {
         return 1.0 / a;
@@ -21,10 +21,14 @@ static double score(const view::Texture* texture, int width, int height) {
            flipIfSmallerThanOne(height / static_cast<double>(texture->height()));
 }
 
-const view::Texture* view::TextureWrapper::getTexture(int width, int height) {
+view::TextureWrapper::TextureWrapper(TextureWrapper::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
+    init(textureEnum, renderer);
+}
+
+view::Texture* view::TextureWrapper::getTexture(int width, int height) const {
     assert(!m_textures.empty());
 
-    const Texture* result = m_textures.front().get();
+    Texture* result = m_textures.back().get();
     for (const auto& texture : m_textures) {
         if (score(result, width, height) > score(texture.get(), width, height)) {
             result = texture.get();
@@ -32,6 +36,7 @@ const view::Texture* view::TextureWrapper::getTexture(int width, int height) {
     }
     return result;
 }
+
 void view::TextureWrapper::init(view::TextureWrapper::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
     m_textures.clear();
     switch (textureEnum) {
@@ -45,7 +50,9 @@ void view::TextureWrapper::init(view::TextureWrapper::TEXTURE_ENUM textureEnum, 
             m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/arrow_ccw.png", renderer));
             break;
         case TEXTURE_ENUM::CLUSTER:
-            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/cluster_large.png", renderer));
+            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/large.png", renderer));
+            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/medium.png", renderer));
+            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/small.png", renderer));
             break;
         case TEXTURE_ENUM::KILL:
             m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/kill.png", renderer));
