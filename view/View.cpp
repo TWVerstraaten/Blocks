@@ -69,9 +69,20 @@ namespace view {
         setDrawColor(color::BACKGROUND);
         SDL_RenderClear(m_renderer);
 
+        drawLevelBlocks(model.level());
         drawGridLines();
         drawClusters(model.clusters());
-        drawLevel(model.level());
+        drawBlocks(model.level());
+
+        for (const auto& cluster : model.clusters()) {
+            const auto points = cluster.cornerPoints();
+            for (const auto& it : points) {
+                //                        drawRectangle(model::GridCoordinates::fromWorldCoordinates(it),
+                //                        model::WorldCoordinates::m_blockSizeInWorld,
+                //                                      model::WorldCoordinates::m_blockSizeInWorld, color::BLUE);
+                drawPoint(it, color::RED, 24);
+            }
+        }
 
         for (auto& actionEditBox : m_actionEditBoxes) {
             actionEditBox->render(m_renderer);
@@ -95,67 +106,44 @@ namespace view {
         const auto size = windowSize();
         setDrawColor(color::GRID_LINE_COLOR);
 
-        int x = m_grid.xAt(m_grid.firstColumnInView());
-        while (x < size.x) {
-            drawVerticalLine(ScreenCoordinates{x, 0}, size.y, color::GRID_LINE_COLOR, 1);
-            x += m_grid.blockSizeInScreen();
+        int x = m_grid.firstColumnInView();
+        int y = m_grid.firstRowInView();
+        while (true) {
+            const auto currentCoordinate = ScreenCoordinates::fromGridCoordinates({x, y - 1}, m_grid);
+            if (currentCoordinate.x() > size.x) {
+                break;
+            }
+            drawVerticalLine(currentCoordinate, size.y + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 1);
+            ++x;
         }
-        int y = m_grid.yAt(m_grid.firstRowInView());
-        while (y < size.y) {
-            drawHorizontalLine(ScreenCoordinates{0, y}, size.x, color::GRID_LINE_COLOR, 1);
-            y += m_grid.blockSizeInScreen();
+        x = m_grid.firstColumnInView();
+        while (true) {
+            const auto currentCoordinate = ScreenCoordinates::fromGridCoordinates({x - 1, y}, m_grid);
+            if (currentCoordinate.y() > size.y) {
+                break;
+            }
+            drawHorizontalLine(currentCoordinate, size.x + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 1);
+            ++y;
         }
     }
 
-    void View::drawLevel(const model::Level& level) const {
+    void View::drawLevelBlocks(const model::Level& level) const {
+        for (const auto& block : level.levelBlocks()) {
+            drawRectangle(block, model::WorldCoordinates::m_blockSizeInWorld, model::WorldCoordinates::m_blockSizeInWorld, color::WHITE);
+        }
+    }
+
+    void View::drawBlocks(const model::Level& level) const {
         for (const auto& block : level.dynamicBlocks()) {
-            if (m_assetsHandler->renderTexture(
-                    AssetHandler::getTextureEnum(block.second),
-                    {m_grid.xAt(block.first.x()), m_grid.yAt(block.first.y()), m_grid.blockSizeInScreen(), m_grid.blockSizeInScreen()},
-                    m_renderer, 0)) {
-                continue;
-            } else {
-                Rectangle rect = {m_grid.xAt(block.first.x()),
-                                  m_grid.yAt(block.first.y()),
-                                  m_grid.blockSizeInScreen(),
-                                  m_grid.blockSizeInScreen(),
-                                  {0, 0, 0, 255}};
-                switch (block.second) {
-                    case model::Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
-                        rect.setColor({100, 255, 255, 100});
-                        break;
-                    case model::Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
-                        rect.setColor({255, 100, 255, 100});
-                        break;
-                    case model::Level::DYNAMIC_BLOCK_TYPE::NONE:
-                        break;
-                }
-                rect.render(m_renderer);
-            }
+            assert(m_assetsHandler->renderTexture(AssetHandler::getTextureEnum(block.second),
+                                                  ScreenCoordinates::fromGridCoordinates(block.first, m_grid), m_grid.blockSizeInScreen(),
+                                                  m_grid.blockSizeInScreen(), m_renderer, 0));
         }
 
         for (const auto& block : level.instantBlocks()) {
-            if (m_assetsHandler->renderTexture(
-                    AssetHandler::getTextureEnum(block.second),
-                    {m_grid.xAt(block.first.x()), m_grid.yAt(block.first.y()), m_grid.blockSizeInScreen(), m_grid.blockSizeInScreen()},
-                    m_renderer, 0)) {
-                continue;
-            } else {
-                Rectangle rect = {m_grid.xAt(block.first.x()),
-                                  m_grid.yAt(block.first.y()),
-                                  m_grid.blockSizeInScreen(),
-                                  m_grid.blockSizeInScreen(),
-                                  {0, 0, 0, 255}};
-
-                switch (block.second) {
-                    case model::Level::INSTANT_BLOCK_TYPE::NONE:
-                        break;
-                    case model::Level::INSTANT_BLOCK_TYPE::KILL:
-                        rect.setColor({90, 90, 90, 180});
-                        break;
-                }
-                rect.render(m_renderer);
-            }
+            assert(m_assetsHandler->renderTexture(AssetHandler::getTextureEnum(block.second),
+                                                  ScreenCoordinates::fromGridCoordinates(block.first, m_grid), m_grid.blockSizeInScreen(),
+                                                  m_grid.blockSizeInScreen(), m_renderer, 0));
         }
     }
 
@@ -191,7 +179,7 @@ namespace view {
 
     void View::drawRectangle(const ScreenCoordinates& point, int width, int height, const SDL_Color& color) const {
         setDrawColor(color);
-        const SDL_Rect rect{static_cast<int>(point.x()), static_cast<int>(point.y()), width, height};
+        const SDL_Rect rect{point.x(), point.y(), width, height};
         SDL_RenderFillRect(m_renderer, &rect);
     }
 
@@ -231,9 +219,12 @@ namespace view {
     void View::setDrawColor(const SDL_Color& color) const {
         SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, 255);
     }
-
     const Grid& View::grid() const {
         return m_grid;
+    }
+
+    void View::clear() {
+        m_actionEditBoxes.clear();
     }
 
 } // namespace view

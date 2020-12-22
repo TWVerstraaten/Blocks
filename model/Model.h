@@ -20,11 +20,13 @@ namespace model {
       public:
         Model();
 
-        void                        moveClusters();
-        void                        interactClustersWithDynamicBlocks();
-        void                        interactClustersWithInstantBlocks();
-        void                        update(double fractionOfPhase);
-        const Level&                level() const;
+        void                             interactClustersWithDynamicBlocks();
+        void                             interactClustersWithInstantBlocks();
+        void                             interactClustersWithLevel();
+        void                             update(double fractionOfPhase);
+        void                             init();
+        void                             clear();
+        const Level&                     level() const;
         const std::list<model::Cluster>& clusters() const;
 
       private:

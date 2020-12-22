@@ -11,6 +11,7 @@
 #include "WorldVector.h"
 
 #include <list>
+#include <set>
 #include <tuple>
 
 class SDL_Renderer;
@@ -28,35 +29,40 @@ namespace model {
         void                              removeBLock(const GridCoordinates& indexPair);
         void                              update(double fractionOfPhase);
         void                              addAction(ClusterAction action);
+        void                              kill();
+        void                              clearActions();
         bool                              empty() const;
         bool                              intersects(const GridCoordinates& indexPair) const;
+        bool                              isAlive() const;
         double                            angle() const;
-        double                            dynamicRowOffset() const;
-        double                            dynamicColumnOffset() const;
-        enums::DIRECTION                  adjacent(const GridCoordinates& indexPair) const;
-        const std::list<GridCoordinates>& gridCoordinates() const;
         const GridCoordinates&            rotationPivot() const;
-        const std::vector<ClusterAction>& clusterActions() const;
-        const WorldVector&                worldOffset() const;
         WorldVector                       dynamicWorldOffset() const;
+        const std::list<GridCoordinates>& gridCoordinates() const;
+        const std::vector<ClusterAction>& clusterActions() const;
+        std::set<model::WorldCoordinates> cornerPoints() const;
 
       private:
+        enum class CURRENT_PHASE { NONE, TRANSLATING, ROTATING };
+        typedef std::pair<const GridCoordinates&, Level::DYNAMIC_BLOCK_TYPE> Block;
+
         void rotateClockWiseAbout(const GridCoordinates& pivotIndexPair);
         void rotateCounterClockWiseAbout(const GridCoordinates& pivotIndexPair);
+        void clearPhase();
+        void setRotation(double angle, const GridCoordinates& pivot);
 
         static ClusterAction rotateActionClockWise(ClusterAction action);
         static ClusterAction rotateActionCounterClockWise(ClusterAction action);
 
+        bool                       m_isAlive            = true;
         double                     m_fractionOfPhase    = 0.0;
         double                     m_angle              = 0.0;
         size_t                     m_clusterActionIndex = 0;
+        CURRENT_PHASE              m_currentPhase       = CURRENT_PHASE::NONE;
         GridCoordinates            m_rotationPivot;
         WorldVector                m_worldOffset;
         std::list<GridCoordinates> m_gridCoordinates;
         std::vector<ClusterAction> m_clusterActions;
-
-        typedef std::pair<const GridCoordinates&, Level::DYNAMIC_BLOCK_TYPE> Block;
-        std::vector<Block>                                                   m_pendingOperations;
+        std::vector<Block>         m_pendingOperations;
     };
 } // namespace model
 

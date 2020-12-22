@@ -14,19 +14,22 @@ namespace view {
       public:
         Widget(SDL_Rect rect);
 
-        virtual void handleKeyEvent(const SDL_Event& event)        = 0;
+        virtual void handleKeyEvent(const SDL_Event& event)                          = 0;
         virtual void handleMouseClickEvent(const SDL_Event& event, bool leftClicked) = 0;
-
-        void         getFocus();
         virtual void loseFocus();
-        bool         pointIsOverWidget(const SDL_Point& point) const;
-        bool         hasFocus() const;
+
+        void getFocus();
+        bool pointIsOverWidget(const SDL_Point& point) const;
+        bool hasFocus() const;
+        void setCanGetFocus(bool canGetFocus);
+        bool canGetFocus() const;
 
       protected:
         SDL_Rect m_rect;
 
       private:
-        bool m_hasFocus = false;
+        bool m_hasFocus    = false;
+        bool m_canGetFocus = true;
     };
 } // namespace view
 

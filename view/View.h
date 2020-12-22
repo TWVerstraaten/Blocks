@@ -49,10 +49,13 @@ namespace view {
         void drawVerticalLine(const model::WorldCoordinates& point, int lengthInWorld, const SDL_Color& color, size_t lineThickness) const;
         const Grid& grid() const;
 
+        void clear();
+
       private:
         SDL_Point windowSize() const;
         void      drawClusters(const std::__cxx11::list<model::Cluster>& clusters) const;
-        void      drawLevel(const model::Level& level) const;
+        void      drawLevelBlocks(const model::Level& level) const;
+        void      drawBlocks(const model::Level& level) const;
         void      drawGridLines() const;
         void      setDrawColor(const SDL_Color& color) const;
 

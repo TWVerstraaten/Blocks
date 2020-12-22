@@ -4,6 +4,8 @@
 
 #include "Level.h"
 
+#include "../aux/Aux.h"
+
 #include <cassert>
 
 namespace model {
@@ -30,14 +32,41 @@ namespace model {
         return m_instantBLocks;
     }
 
-    void Level::addBlock(const GridCoordinates& indexPair, Level::DYNAMIC_BLOCK_TYPE blockType) {
-        assert(m_dynamicBLocks.find(indexPair) == m_dynamicBLocks.end());
-        m_dynamicBLocks[indexPair] = blockType;
+    void Level::addBlock(const GridCoordinates& gridCoordinates, Level::DYNAMIC_BLOCK_TYPE blockType) {
+        assert(m_dynamicBLocks.find(gridCoordinates) == m_dynamicBLocks.end());
+        m_dynamicBLocks[gridCoordinates] = blockType;
     }
 
-    void Level::addBlock(const GridCoordinates& indexPair, Level::INSTANT_BLOCK_TYPE blockType) {
-        assert(m_instantBLocks.find(indexPair) == m_instantBLocks.end());
-        m_instantBLocks[indexPair] = blockType;
+    void Level::addBlock(const GridCoordinates& gridCoordinates, Level::INSTANT_BLOCK_TYPE blockType) {
+        assert(m_instantBLocks.find(gridCoordinates) == m_instantBLocks.end());
+        m_instantBLocks[gridCoordinates] = blockType;
+    }
+
+    void Level::addLevelBlock(const GridCoordinates& gridCoordinates) {
+        m_levelBlocks.emplace(gridCoordinates);
+    }
+
+    void Level::setLevelBlocks(std::set<GridCoordinates>&& levelBlocks) {
+        m_levelBlocks = levelBlocks;
+    }
+
+    const std::set<GridCoordinates>& Level::levelBlocks() const {
+        return m_levelBlocks;
+    }
+
+    bool Level::isInLevel(const WorldCoordinates& worldCoordinates) {
+        for (const auto& levelBlock : m_levelBlocks) {
+            if (aux::pointInBlock(worldCoordinates, levelBlock)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void Level::clear() {
+        m_levelBlocks.clear();
+        m_instantBLocks.clear();
+        m_dynamicBLocks.clear();
     }
 
 } // namespace model

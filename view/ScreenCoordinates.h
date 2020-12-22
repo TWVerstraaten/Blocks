@@ -26,13 +26,7 @@ namespace view {
         ScreenCoordinates(int x, int y);
 
         static ScreenCoordinates fromWorldCoordinates(const model::WorldCoordinates& worldCoordinates, const Grid& grid);
-        static ScreenCoordinates fromRotatedWorldCoordinates(const model::WorldCoordinates& worldCoordinates,
-                                                             const model::WorldCoordinates& pivot, double angle, const Grid& grid);
         static ScreenCoordinates fromGridCoordinates(const model::GridCoordinates& gridCoordinates, const Grid& grid);
-
-        ScreenCoordinates& operator+=(const ScreenCoordinates& other);
-        friend ScreenCoordinates(::operator+)(const ScreenCoordinates& lhs, const ScreenCoordinates& rhs);
-        friend ScreenCoordinates(::operator+)(const ScreenCoordinates& lhs, const view::ScreenVector& rhs);
 
         int x() const;
         int y() const;
@@ -43,5 +37,8 @@ namespace view {
     };
 
 } // namespace view
+
+view::ScreenCoordinates operator+(const view::ScreenCoordinates& lhs, const view::ScreenCoordinates& rhs);
+view::ScreenCoordinates operator+(const view::ScreenCoordinates& lhs, const view::ScreenVector& rhs);
 
 #endif // BLOCKS_SCREENCOORDINATES_H

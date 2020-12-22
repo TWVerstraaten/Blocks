@@ -7,27 +7,34 @@
 
 #include "Enums.h"
 
-#include <cstddef>
+#include <iostream>
 
 namespace model {
+
+    class WorldCoordinates;
 
     class GridCoordinates {
 
       public:
-        GridCoordinates() : m_x(0), m_y(0) {
-        }
+        GridCoordinates();
 
         GridCoordinates(int x, int y);
 
-        int             x() const;
-        int             y() const;
-        size_t          manhattanDistance(const GridCoordinates& other) const;
-        GridCoordinates adjacent(enums::DIRECTION direction) const;
+        int                    x() const;
+        int                    y() const;
+        size_t                 manhattanDistance(const GridCoordinates& other) const;
+        GridCoordinates        adjacent(enums::DIRECTION direction) const;
+        static GridCoordinates fromWorldCoordinates(const model::WorldCoordinates& worldCoordinates);
 
-        GridCoordinates& operator+=(const GridCoordinates& indexPair);
-
-        friend bool operator<(const GridCoordinates& lhs, const GridCoordinates& rhs);
-        friend bool operator==(const GridCoordinates& lhs, const GridCoordinates& rhs);
+                               operator WorldCoordinates() const;
+        GridCoordinates&       operator+=(const GridCoordinates& indexPair);
+        friend GridCoordinates operator+(const GridCoordinates& lhs, const GridCoordinates& rhs);
+        friend bool            operator<(const GridCoordinates& lhs, const GridCoordinates& rhs);
+        friend bool            operator==(const GridCoordinates& lhs, const GridCoordinates& rhs);
+        friend std::ostream&   operator<<(std::ostream& out, const GridCoordinates& gridCoordinates) {
+            out << "GridCoordinates(" << gridCoordinates.m_x << ", " << gridCoordinates.m_y << ")";
+            return out;
+        }
 
       private:
         int m_x;

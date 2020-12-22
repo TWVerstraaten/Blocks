@@ -16,5 +16,4 @@ namespace model {
     int WorldVector::y() const {
         return m_y;
     }
-
 } // namespace model

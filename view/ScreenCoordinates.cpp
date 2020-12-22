@@ -30,28 +30,13 @@ view::ScreenCoordinates view::ScreenCoordinates::fromWorldCoordinates(const mode
 
 view::ScreenCoordinates view::ScreenCoordinates::fromGridCoordinates(const model::GridCoordinates& gridCoordinates,
                                                                      const view::Grid&             grid) {
-    return {grid.xOffset() + gridCoordinates.x() * grid.blockSizeInScreen(),
-            grid.yOffset() + gridCoordinates.y() * grid.blockSizeInScreen()};
-}
-
-view::ScreenCoordinates& view::ScreenCoordinates::operator+=(const view::ScreenCoordinates& other) {
-    m_x += other.m_x;
-    m_y += other.m_y;
-    return *this;
-}
-view::ScreenCoordinates view::ScreenCoordinates::fromRotatedWorldCoordinates(const model::WorldCoordinates& worldCoordinates,
-                                                                             const model::WorldCoordinates& pivot, double angle,
-                                                                             const view::Grid& grid) {
-    return view::ScreenCoordinates(0, 0);
+    return fromWorldCoordinates(model::WorldCoordinates::fromGridCoordinates(gridCoordinates), grid);
 }
 
 view::ScreenCoordinates operator+(const view::ScreenCoordinates& lhs, const view::ScreenCoordinates& rhs) {
-    view::ScreenCoordinates result{lhs.m_x, lhs.m_y};
-    result += rhs;
-    return result;
+    return {lhs.x() + rhs.x(), lhs.y() + rhs.y()};
 }
 
 view::ScreenCoordinates operator+(const view::ScreenCoordinates& lhs, const view::ScreenVector& rhs) {
-    view::ScreenCoordinates result{lhs.m_x + rhs.x(), lhs.m_y + rhs.y()};
-    return result;
+    return {lhs.x() + rhs.x(), lhs.y() + rhs.y()};
 }

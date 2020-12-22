@@ -8,7 +8,9 @@ namespace view {
     }
 
     void Widget::getFocus() {
-        m_hasFocus = true;
+        if (m_canGetFocus) {
+            m_hasFocus = true;
+        }
     }
 
     void Widget::loseFocus() {
@@ -21,6 +23,17 @@ namespace view {
 
     bool Widget::hasFocus() const {
         return m_hasFocus;
+    }
+
+    void Widget::setCanGetFocus(bool canGetFocus) {
+        m_canGetFocus = canGetFocus;
+        if (not m_canGetFocus) {
+            m_hasFocus = false;
+        }
+    }
+
+    bool Widget::canGetFocus() const {
+        return m_canGetFocus;
     }
 
 } // namespace view

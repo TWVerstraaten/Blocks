@@ -12,15 +12,11 @@
 #include <cassert>
 
 Application::Application() {
-    m_lastTime          = SDL_GetTicks();
-    m_timeSinceLastStep = 0;
-
-    for (const auto& cluster : m_model.clusters()) {
-        m_view.addActionEditBox(cluster);
-    }
+    resetModel();
 }
 
 void Application::loop() {
+
     bool isRunning = true;
     SDL_StartTextInput();
     while (isRunning) {
@@ -30,7 +26,6 @@ void Application::loop() {
             m_timeSinceLastStep %= m_stepTimeInMilliSeconds;
         }
         while (SDL_PollEvent(&m_event) > 0) {
-
             switch (m_event.type) {
                 case SDL_QUIT:
                     isRunning = false;
@@ -60,18 +55,12 @@ void Application::loop() {
         const auto dt = SDL_GetTicks() - m_lastTime;
         if (not m_isPaused) {
             update(static_cast<double>(1.9 * dt) / m_stepTimeInMilliSeconds);
+            m_model.interactClustersWithLevel();
         }
         m_lastTime = SDL_GetTicks();
         m_view.draw(m_model);
         if (!m_isPaused) {
             m_timeSinceLastStep += dt;
-        }
-
-        for (const auto& cluster : m_model.clusters()) {
-            for (const auto& it : cluster.gridCoordinates()) {
-                m_view.drawPoint(model::WorldCoordinates::fromGridCoordinates(it), color::RED, 6);
-                m_view.drawPoint(view::ScreenCoordinates::fromGridCoordinates(it, m_view.grid()), color::RED, 6);
-            }
         }
 
         SDL_RenderPresent(m_view.renderer());
@@ -112,8 +101,12 @@ void Application::keyEvent() {
             }
 
             switch (m_event.key.keysym.sym) {
+                case SDLK_ESCAPE:
+                    resetModel();
+                    pause();
+                    break;
                 case SDLK_SPACE:
-                    m_isPaused = !m_isPaused;
+                    togglePause();
                     break;
                 case SDLK_1:
                     setTimeStep(1000);
@@ -122,7 +115,7 @@ void Application::keyEvent() {
                     setTimeStep(300);
                     break;
                 case SDLK_3:
-                    setTimeStep(100);
+                    setTimeStep(50);
                     break;
                 default:
                     break;
@@ -144,7 +137,7 @@ void Application::mouseClickEvent() {
         }
     }
     for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        if (actionEditBox->pointIsOverWidget(mousePosition)) {
+        if (actionEditBox->pointIsOverWidget(mousePosition) && actionEditBox->canGetFocus()) {
             actionEditBox->getFocus();
             actionEditBox->handleMouseClickEvent(m_event, m_leftMouseButtonPressed);
             break;
@@ -205,5 +198,48 @@ SDL_Point Application::getMouseCoordinates() {
 
 void Application::setTimeStep(Uint32 timeStep) {
     m_stepTimeInMilliSeconds = timeStep;
-    m_isPaused               = false;
+    unpause();
+}
+
+void Application::resetModel() {
+    m_lastTime          = SDL_GetTicks();
+    m_timeSinceLastStep = 0;
+    m_levelHasStarted   = false;
+
+    m_view.clear();
+    m_model.init();
+
+    for (const auto& cluster : m_model.clusters()) {
+        m_view.addActionEditBox(cluster);
+    }
+
+    for (auto& actionEditBox : m_view.actionEditBoxes()) {
+        actionEditBox->setCanGetFocus(true);
+    }
+}
+
+void Application::unpause() {
+    m_isPaused = false;
+    if (not m_levelHasStarted) {
+        startRun();
+    }
+    m_levelHasStarted = true;
+}
+
+void Application::pause() {
+    m_isPaused = true;
+}
+
+void Application::togglePause() {
+    if (m_isPaused) {
+        unpause();
+    } else {
+        pause();
+    }
+}
+
+void Application::startRun() {
+    for (auto& actionEditBox : m_view.actionEditBoxes()) {
+        actionEditBox->setCanGetFocus(false);
+    }
 }

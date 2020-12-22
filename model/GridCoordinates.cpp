@@ -4,10 +4,15 @@
 
 #include "GridCoordinates.h"
 
+#include "WorldCoordinates.h"
+
 #include <cassert>
 #include <cmath>
 
 namespace model {
+    GridCoordinates::GridCoordinates() : m_x(0), m_y(0) {
+    }
+
     GridCoordinates::GridCoordinates(int x, int y) : m_x(x), m_y(y) {
     }
 
@@ -51,6 +56,19 @@ namespace model {
         m_y += indexPair.y();
         m_x += indexPair.x();
         return *this;
+    }
+
+    GridCoordinates GridCoordinates::fromWorldCoordinates(const WorldCoordinates& worldCoordinates) {
+        return {static_cast<int>(std::floor(static_cast<double>(worldCoordinates.x()) / model::WorldCoordinates::m_blockSizeInWorld)),
+                static_cast<int>(std::floor(static_cast<double>(worldCoordinates.y()) / model::WorldCoordinates::m_blockSizeInWorld))};
+    }
+
+    GridCoordinates operator+(const GridCoordinates& lhs, const GridCoordinates& rhs) {
+        return {lhs.m_x + rhs.m_x, lhs.m_y + rhs.m_y};
+    }
+
+    GridCoordinates::operator WorldCoordinates() const {
+        return WorldCoordinates::fromGridCoordinates(*this);
     }
 
 } // namespace model

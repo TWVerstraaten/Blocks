@@ -4,6 +4,7 @@
 
 #include "Cluster.h"
 
+#include "../aux/Aux.h"
 #include "WorldCoordinates.h"
 
 #include <algorithm>
@@ -20,7 +21,7 @@ namespace model {
     }
 
     void Cluster::doAction() {
-        if (m_clusterActions.empty()) {
+        if (m_clusterActions.empty() || not m_isAlive) {
             return;
         }
         for (auto& idx : m_gridCoordinates) {
@@ -39,20 +40,21 @@ namespace model {
                     break;
             }
         }
-
+        clearPhase();
+        m_currentPhase    = CURRENT_PHASE::TRANSLATING;
         m_fractionOfPhase = 1.0;
         switch (m_clusterActions[m_clusterActionIndex].m_action) {
             case ClusterAction::ACTION::MOVE_UP:
-                m_worldOffset = {0, model::WorldCoordinates::m_blockSizeInWorld};
+                m_worldOffset = {0, WorldCoordinates::m_blockSizeInWorld};
                 break;
             case ClusterAction::ACTION::MOVE_DOWN:
-                m_worldOffset = {0, -model::WorldCoordinates::m_blockSizeInWorld};
+                m_worldOffset = {0, -WorldCoordinates::m_blockSizeInWorld};
                 break;
             case ClusterAction::ACTION::MOVE_LEFT:
-                m_worldOffset = {model::WorldCoordinates::m_blockSizeInWorld, 0};
+                m_worldOffset = {WorldCoordinates::m_blockSizeInWorld, 0};
                 break;
             case ClusterAction::ACTION::MOVE_RIGHT:
-                m_worldOffset = {-model::WorldCoordinates::m_blockSizeInWorld, 0};
+                m_worldOffset = {-WorldCoordinates::m_blockSizeInWorld, 0};
                 break;
         }
 
@@ -127,15 +129,6 @@ namespace model {
         return it != m_gridCoordinates.end();
     }
 
-    enums::DIRECTION Cluster::adjacent(const GridCoordinates& gridCoordinates) const {
-        for (auto dir : {enums::DIRECTION::UP, enums::DIRECTION::DOWN, enums::DIRECTION::LEFT, enums::DIRECTION::RIGHT}) {
-            if (intersects(gridCoordinates.adjacent(dir))) {
-                return dir;
-            }
-        }
-        return enums::DIRECTION::NONE;
-    }
-
     void Cluster::addPendingOperation(const GridCoordinates& gridCoordinates, Level::DYNAMIC_BLOCK_TYPE blockType) {
         if (blockType == Level::DYNAMIC_BLOCK_TYPE::NONE) {
             return;
@@ -156,39 +149,27 @@ namespace model {
         }
         switch (m_pendingOperations.front().second) {
             case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
-                m_fractionOfPhase = 1.0;
-                m_angle           = -90.0;
-                m_rotationPivot   = m_pendingOperations.front().first;
+                setRotation(-90.0, m_pendingOperations.front().first);
                 rotateClockWiseAbout(m_pendingOperations.front().first);
                 break;
             case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
-                m_fractionOfPhase = 1.0;
-                m_angle           = 90.0;
-                m_rotationPivot   = m_pendingOperations.front().first;
+                setRotation(90.0, m_pendingOperations.front().first);
                 rotateCounterClockWiseAbout(m_pendingOperations.front().first);
                 break;
             case Level::DYNAMIC_BLOCK_TYPE::NONE:
                 break;
         }
-
         m_pendingOperations.clear();
     }
 
     void Cluster::update(double fractionOfPhase) {
+        if (not m_isAlive) {
+            return;
+        }
         m_fractionOfPhase -= fractionOfPhase;
         if (m_fractionOfPhase <= 0.0) {
-            m_fractionOfPhase = 0.0;
-            m_worldOffset     = {0, 0};
-            m_angle           = 0.0;
+            clearPhase();
         }
-    }
-
-    double Cluster::dynamicRowOffset() const {
-        return m_fractionOfPhase * m_worldOffset.y();
-    }
-
-    double Cluster::dynamicColumnOffset() const {
-        return m_fractionOfPhase * m_worldOffset.x();
     }
 
     double Cluster::angle() const {
@@ -203,12 +184,72 @@ namespace model {
         return m_clusterActions;
     }
 
-    const WorldVector& Cluster::worldOffset() const {
-        return m_worldOffset;
-    }
-
     WorldVector Cluster::dynamicWorldOffset() const {
         return {static_cast<int>(m_worldOffset.x() * m_fractionOfPhase), static_cast<int>(m_worldOffset.y() * m_fractionOfPhase)};
+    }
+
+    std::set<WorldCoordinates> Cluster::cornerPoints() const {
+        std::set<WorldCoordinates> result;
+        switch (m_currentPhase) {
+            case CURRENT_PHASE::NONE:
+                for (const auto& it : m_gridCoordinates) {
+                    for (const GridCoordinates cornerOffset :
+                         {GridCoordinates{0, 0}, GridCoordinates{0, 1}, GridCoordinates{1, 1}, GridCoordinates{1, 0}}) {
+                        result.emplace(WorldCoordinates::fromGridCoordinates(it + cornerOffset));
+                    }
+                }
+                break;
+            case CURRENT_PHASE::TRANSLATING: {
+                const WorldVector offset = dynamicWorldOffset();
+                for (const auto& it : m_gridCoordinates) {
+                    for (const GridCoordinates cornerOffset :
+                         {GridCoordinates{0, 0}, GridCoordinates{0, 1}, GridCoordinates{1, 1}, GridCoordinates{1, 0}}) {
+                        result.emplace(WorldCoordinates::fromGridCoordinates(it + cornerOffset) + offset);
+                    }
+                }
+            } break;
+            case CURRENT_PHASE::ROTATING: {
+                const WorldCoordinates center = WorldCoordinates::fromGridCoordinates(m_rotationPivot) + WorldCoordinates::halfBlockInWorld;
+                const double           theta  = -angle();
+                for (const auto& it : m_gridCoordinates) {
+                    for (const GridCoordinates cornerOffset :
+                         {GridCoordinates{0, 0}, GridCoordinates{0, 1}, GridCoordinates{1, 1}, GridCoordinates{1, 0}}) {
+                        result.emplace(
+                            aux::rotateClockWiseAboutPivot(WorldCoordinates::fromGridCoordinates(it + cornerOffset), center, theta));
+                    }
+                }
+            } break;
+        }
+        return result;
+    }
+
+    void Cluster::kill() {
+        m_isAlive = false;
+    }
+
+    bool Cluster::isAlive() const {
+        return m_isAlive;
+    }
+
+    void Cluster::clearPhase() {
+        m_fractionOfPhase = 0.0;
+        m_worldOffset     = {0, 0};
+        m_angle           = 0.0;
+        m_currentPhase    = CURRENT_PHASE::NONE;
+    }
+
+    void Cluster::setRotation(double angle, const GridCoordinates& pivot) {
+        assert(angle != 0.0);
+        clearPhase();
+        m_currentPhase    = CURRENT_PHASE::ROTATING;
+        m_fractionOfPhase = 1.0;
+        m_angle           = angle;
+        m_rotationPivot   = pivot;
+    }
+
+    void Cluster::clearActions() {
+        m_clusterActions.clear();
+        m_clusterActionIndex = 0;
     }
 
 } // namespace model

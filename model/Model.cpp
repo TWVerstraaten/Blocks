@@ -4,37 +4,14 @@
 
 #include "Model.h"
 
+#include "../aux/Aux.h"
+
 #include <algorithm>
-#include <cassert>
-#include <iostream>
 
 namespace model {
 
     Model::Model() {
-
-        m_clusters.emplace_back(Cluster{{{0, 0}}, {1, 1}});
-        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_UP, ClusterAction::MODIFIER::NONE});
-        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::NONE});
-        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_DOWN, ClusterAction::MODIFIER::NONE});
-        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_RIGHT, ClusterAction::MODIFIER::NONE});
-
-        m_clusters.emplace_back(Cluster{{{0, 1}, {1, 0}, {1, 1}, {1, 2}}, {9, 1}});
-        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_UP, ClusterAction::MODIFIER::NONE});
-        m_clusters.emplace_back(Cluster{{{0, 0}, {1, 0}, {2, 0}}, {10, 7}});
-        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::NONE});
-        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_RIGHT, ClusterAction::MODIFIER::SKIP});
-        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_UP, ClusterAction::MODIFIER::SKIP});
-        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_DOWN, ClusterAction::MODIFIER::SKIP});
-        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::IGNORE});
-
-        m_level.addBlock({5, 1}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
-        m_level.addBlock({10, 6}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW);
-        m_level.addBlock({5, 4}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
-
-        m_level.addBlock({5, 6}, Level::INSTANT_BLOCK_TYPE::KILL);
-        m_level.addBlock({3, 1}, Level::INSTANT_BLOCK_TYPE::KILL);
-        m_level.addBlock({7, 2}, Level::INSTANT_BLOCK_TYPE::KILL);
-        m_level.addBlock({4, 4}, Level::INSTANT_BLOCK_TYPE::KILL);
+        init();
     }
 
     const std::list<model::Cluster>& Model::clusters() const {
@@ -72,19 +49,67 @@ namespace model {
                          m_clusters.end());
     }
 
-    const model::Level& Model::level() const {
-        return m_level;
+    void Model::interactClustersWithLevel() {
+        for (auto& cluster : m_clusters) {
+            if (not cluster.isAlive()) {
+                continue;
+            }
+            const auto points = cluster.cornerPoints();
+            for (const auto& point : points) {
+                if (not m_level.isInLevel(point)) {
+                    cluster.kill();
+                    break;
+                }
+            }
+        }
     }
 
-    void Model::moveClusters() {
-        for (auto& cluster : m_clusters) {
-            cluster.doAction();
-        }
+    const model::Level& Model::level() const {
+        return m_level;
     }
 
     void Model::update(double fractionOfPhase) {
         for (auto& cluster : m_clusters) {
             cluster.update(fractionOfPhase);
         }
+    }
+
+    void Model::init() {
+        clear();
+
+        m_clusters.emplace_back(Cluster{{{0, 0}}, {1, 3}});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_UP, ClusterAction::MODIFIER::NONE});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::NONE});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_DOWN, ClusterAction::MODIFIER::NONE});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_RIGHT, ClusterAction::MODIFIER::NONE});
+
+        m_clusters.emplace_back(Cluster{{{0, 1}, {1, 0}, {1, 1}, {1, 2}}, {9, 3}});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_UP, ClusterAction::MODIFIER::NONE});
+        m_clusters.emplace_back(Cluster{{{0, 0}, {1, 0}, {2, 0}}, {10, 7}});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::NONE});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_RIGHT, ClusterAction::MODIFIER::SKIP});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_UP, ClusterAction::MODIFIER::SKIP});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_DOWN, ClusterAction::MODIFIER::SKIP});
+        m_clusters.back().addAction({ClusterAction::ACTION::MOVE_LEFT, ClusterAction::MODIFIER::IGNORE});
+
+        m_level.addBlock({5, 1}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
+        m_level.addBlock({10, 6}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW);
+        m_level.addBlock({5, 4}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
+
+        m_level.addBlock({5, 6}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({3, 1}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({7, 2}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({4, 4}, Level::INSTANT_BLOCK_TYPE::KILL);
+
+        for (int i = -1; i != 14; ++i) {
+            for (int j = -1; j != 9; ++j) {
+                m_level.addLevelBlock({static_cast<int>(i), static_cast<int>(j)});
+            }
+        }
+    }
+
+    void Model::clear() {
+        m_clusters.clear();
+        m_level.clear();
     }
 } // namespace model

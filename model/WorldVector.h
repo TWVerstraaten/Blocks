@@ -7,6 +7,8 @@
 
 namespace model {
 
+    class WorldCoordinates;
+
     class WorldVector {
       public:
         WorldVector(int x, int y);
@@ -19,4 +21,5 @@ namespace model {
         int m_y;
     };
 } // namespace model
+
 #endif // BLOCKS_WORLDVECTOR_H

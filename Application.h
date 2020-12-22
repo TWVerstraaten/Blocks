@@ -27,10 +27,16 @@ class Application {
     void mouseReleaseEvent();
     void mouseMoveEvent();
     void setTimeStep(Uint32 timeStep);
+    void resetModel();
+    void pause();
+    void unpause();
+    void togglePause();
+    void startRun();
 
     bool                  m_isPaused                = true;
     bool                  m_rightMouseButtonPressed = false;
     bool                  m_leftMouseButtonPressed  = false;
+    bool                  m_levelHasStarted         = false;
     SDL_Point             m_previousMousePosition;
     model::Model          m_model;
     view::View            m_view;
