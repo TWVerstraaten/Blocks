@@ -5,6 +5,7 @@
 #ifndef BLOCKS_APPLICATION_EDIT_H
 #define BLOCKS_APPLICATION_EDIT_H
 
+#include "Application_Level.h"
 #include "model/Model.h"
 #include "view/View.h"
 
@@ -13,27 +14,29 @@
 class Application_Edit {
 
   public:
-    explicit Application_Edit(view::View* view);
+    explicit Application_Edit(model::Model* model, view::View* view);
 
     enum class EXIT_CODE { QUIT, DONE_EDITING };
 
-    EXIT_CODE           loop();
-    const model::Model& model() const;
+    EXIT_CODE run();
+
+    Uint32 timeStep() const;
 
   private:
     enum class RUNNING_MODE { RUNNING, QUIT, DONE_EDITING };
 
-    void      init();
-    void      mouseWheelEvent();
-    void      keyEvent();
-    void      mouseClickEvent();
-    void      mouseReleaseEvent();
-    void      mouseMoveEvent();
-    bool      canStart() const;
-    SDL_Point getMouseCoordinates();
+    void init();
+    void mouseWheelEvent();
+    void keyEvent();
+    void mouseClickEvent();
+    void mouseReleaseEvent();
+    void mouseMoveEvent();
+    bool canStart() const;
+    void getActionsFromEditBoxes();
 
+    Uint32                m_timeStep    = Application_Level::m_timeStepSlow;
     RUNNING_MODE          m_runningMode = RUNNING_MODE::RUNNING;
-    model::Model          m_model;
+    model::Model*         m_model;
     view::View*           m_view = new view::View();
     SDL_Event             m_event;
     std::set<SDL_Keycode> m_pressedKeys;

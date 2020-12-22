@@ -11,11 +11,19 @@
 Application_Run::Application_Run(const model::Model& model, view::View* view) : m_model(model), m_view(view) {
 }
 
-Application_Run::EXIT_CODE Application_Run::loop() {
+Application_Run::EXIT_CODE Application_Run::run() {
     while (true) {
         if (m_timeSinceLastStep > m_timeStep) {
             m_model.interactClustersWithInstantBlocks();
             m_model.interactClustersWithDynamicBlocks();
+
+            assert(m_model.clusters().size() == m_view->actionEditBoxes().size());
+            auto actionEditIt = m_view->actionEditBoxes().begin();
+            for (auto& cluster : m_model.clusters()) {
+                actionEditIt->setHighLightedLine(cluster.clusterActionIndex());
+                ++actionEditIt;
+            }
+
             m_timeSinceLastStep %= m_timeStep;
         }
         while (SDL_PollEvent(&m_event) > 0) {
@@ -66,6 +74,8 @@ Application_Run::EXIT_CODE Application_Run::loop() {
             return EXIT_CODE::COMPLETED;
         case RUNNING_MODE::FAILED:
             return EXIT_CODE::FAILED;
+        case RUNNING_MODE::GAVE_UP:
+            return EXIT_CODE::GAVE_UP;
         default:
             return EXIT_CODE::QUIT;
     }
@@ -87,19 +97,19 @@ void Application_Run::keyEvent() {
 
             switch (m_event.key.keysym.sym) {
                 case SDLK_ESCAPE:
-
+                    m_runningMode = RUNNING_MODE::GAVE_UP;
                     break;
                 case SDLK_SPACE:
                     togglePause();
                     break;
                 case SDLK_1:
-                    setTimeStep(1000);
+                    setTimeStep(Application_Level::m_timeStepSlow);
                     break;
                 case SDLK_2:
-                    setTimeStep(300);
+                    setTimeStep(Application_Level::m_timeStepMedium);
                     break;
                 case SDLK_3:
-                    setTimeStep(50);
+                    setTimeStep(Application_Level::m_timeStepFast);
                     break;
                 default:
                     break;

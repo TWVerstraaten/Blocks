@@ -4,14 +4,16 @@
 
 #include "Application_Edit.h"
 
+#include "Application_Level.h"
+
 #include <algorithm>
 #include <cassert>
 
-Application_Edit::Application_Edit(view::View* view) : m_view(view) {
-    init();
+Application_Edit::Application_Edit(model::Model* model, view::View* view) : m_model(model), m_view(view) {
 }
 
-Application_Edit::EXIT_CODE Application_Edit::loop() {
+Application_Edit::EXIT_CODE Application_Edit::run() {
+    init();
     SDL_StartTextInput();
     while (true) {
         while (SDL_PollEvent(&m_event) > 0) {
@@ -43,7 +45,7 @@ Application_Edit::EXIT_CODE Application_Edit::loop() {
         if (m_runningMode != RUNNING_MODE::RUNNING) {
             break;
         }
-        m_view->draw(m_model);
+        m_view->draw(*m_model);
         SDL_RenderPresent(m_view->renderer());
     }
     SDL_StopTextInput();
@@ -52,6 +54,7 @@ Application_Edit::EXIT_CODE Application_Edit::loop() {
         case RUNNING_MODE::QUIT:
             return EXIT_CODE::QUIT;
         case RUNNING_MODE::DONE_EDITING:
+            getActionsFromEditBoxes();
             return EXIT_CODE::DONE_EDITING;
         default:
             return EXIT_CODE::QUIT;
@@ -93,12 +96,15 @@ void Application_Edit::keyEvent() {
                     }
                     break;
                 case SDLK_1:
+                    m_timeStep    = Application_Level::m_timeStepSlow;
                     m_runningMode = RUNNING_MODE::DONE_EDITING;
                     break;
                 case SDLK_2:
+                    m_timeStep    = Application_Level::m_timeStepMedium;
                     m_runningMode = RUNNING_MODE::DONE_EDITING;
                     break;
                 case SDLK_3:
+                    m_timeStep    = Application_Level::m_timeStepFast;
                     m_runningMode = RUNNING_MODE::DONE_EDITING;
                     break;
                 default:
@@ -106,20 +112,15 @@ void Application_Edit::keyEvent() {
             }
             break;
         case SDL_KEYUP:
-            assert(m_pressedKeys.find(m_event.key.keysym.sym) != m_pressedKeys.end());
-            m_pressedKeys.erase(m_pressedKeys.find(m_event.key.keysym.sym));
+            if (m_pressedKeys.find(m_event.key.keysym.sym) != m_pressedKeys.end()) {
+                m_pressedKeys.erase(m_pressedKeys.find(m_event.key.keysym.sym));
+            }
             break;
     }
 }
 
-SDL_Point Application_Edit::getMouseCoordinates() {
-    int xMouse, yMouse;
-    SDL_GetMouseState(&xMouse, &yMouse);
-    return {xMouse, yMouse};
-}
-
 void Application_Edit::mouseClickEvent() {
-    const auto mousePosition = getMouseCoordinates();
+    const auto mousePosition = Application_Level::getMouseCoordinates();
 
     for (auto& actionEditBox : m_view->actionEditBoxes()) {
         if (not actionEditBox.pointIsOverWidget(mousePosition)) {
@@ -162,7 +163,7 @@ void Application_Edit::mouseReleaseEvent() {
 }
 
 void Application_Edit::mouseMoveEvent() {
-    const auto mousePosition = getMouseCoordinates();
+    const auto mousePosition = Application_Level::getMouseCoordinates();
     bool       isDone        = false;
     for (auto& actionEditBox : m_view->actionEditBoxes()) {
         if (actionEditBox.hasFocus()) {
@@ -173,7 +174,7 @@ void Application_Edit::mouseMoveEvent() {
     }
     if (not isDone) {
         if (m_rightMouseButtonPressed) {
-            const auto mouseCoordinates = getMouseCoordinates();
+            const auto mouseCoordinates = Application_Level::getMouseCoordinates();
             m_view->translate((mouseCoordinates.x - m_previousMousePosition.x), mouseCoordinates.y - m_previousMousePosition.y);
             m_previousMousePosition = mouseCoordinates;
         }
@@ -182,8 +183,7 @@ void Application_Edit::mouseMoveEvent() {
 
 void Application_Edit::init() {
     m_view->clear();
-    m_model.init();
-    for (auto& cluster : m_model.clusters()) {
+    for (auto& cluster : m_model->clusters()) {
         m_view->addActionEditBox(cluster);
     }
 }
@@ -194,6 +194,15 @@ bool Application_Edit::canStart() const {
     });
 }
 
-const model::Model& Application_Edit::model() const {
-    return m_model;
+void Application_Edit::getActionsFromEditBoxes() {
+    assert(m_model->clusters().size() == m_view->actionEditBoxes().size());
+    auto actionEditIt = m_view->actionEditBoxes().begin();
+    for (auto& cluster : m_model->clusters()) {
+        actionEditIt->updateClusterActions(cluster);
+        ++actionEditIt;
+    }
+}
+
+Uint32 Application_Edit::timeStep() const {
+    return m_timeStep;
 }

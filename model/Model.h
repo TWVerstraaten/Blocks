@@ -19,6 +19,7 @@ namespace model {
 
       public:
         Model();
+        Model(const Model& other);
 
         Model& operator=(const Model& other);
 

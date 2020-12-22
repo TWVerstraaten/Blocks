@@ -8,46 +8,21 @@
 #include "model/Model.h"
 #include "view/View.h"
 
-#include <SDL2/SDL.h>
-#include <set>
-
 class Application_Level {
 
   public:
     Application_Level();
 
-    void             loop();
+    void             run();
     static SDL_Point getMouseCoordinates();
 
-  private:
-    void mouseWheelEvent();
-    void keyEvent();
-    void mouseClickEvent();
-    void mouseReleaseEvent();
-    void mouseMoveEvent();
-    void             update(double delta_time);
-    void setTimeStep(Uint32 timeStep);
-    void resetModel();
-    void init();
-    void pause();
-    void unpause();
-    void togglePause();
-    void startRun();
-    bool canStart();
+    static const Uint32 m_timeStepSlow   = 1000;
+    static const Uint32 m_timeStepMedium = 300;
+    static const Uint32 m_timeStepFast   = 50;
 
-    bool                  m_levelHasStarted         = false;
-    bool                  m_paused                  = true;
-    bool                  m_rightMouseButtonPressed = false;
-    bool                  m_leftMouseButtonPressed  = false;
-    SDL_Point             m_previousMousePosition;
-    model::Model          m_model;
-    model::Model          m_initialModel;
-    view::View            m_view;
-    SDL_Event             m_event;
-    Uint32                m_previousTime;
-    Uint32                m_timeSinceLastStep;
-    Uint32                m_stepTimeInMilliSeconds = 300;
-    std::set<SDL_Keycode> m_pressedKeys;
+  private:
+    view::View   m_view;
+    model::Model m_model;
 };
 
 #endif // BLOCKS_APPLICATION_LEVEL_H

@@ -14,6 +14,10 @@ namespace model {
         init();
     }
 
+    Model::Model(const Model& other) {
+        *this = other;
+    }
+
     const std::vector<model::Cluster>& Model::clusters() const {
         return m_clusters;
     }

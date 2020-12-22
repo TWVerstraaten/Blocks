@@ -13,15 +13,15 @@ class Application_Run {
   public:
     Application_Run(const model::Model& model, view::View* view);
 
-    enum class EXIT_CODE { QUIT, COMPLETED, FAILED };
+    enum class EXIT_CODE { QUIT, COMPLETED, FAILED, GAVE_UP };
 
-    EXIT_CODE loop();
+    EXIT_CODE run();
+    void      setTimeStep(Uint32 timeStep);
 
   private:
-    enum class RUNNING_MODE { RUNNING, QUIT, COMPLETED, FAILED };
+    enum class RUNNING_MODE { RUNNING, QUIT, COMPLETED, FAILED, GAVE_UP };
 
     void update(double fractionOfPhase);
-    void setTimeStep(Uint32 timeStep);
     void togglePause();
     void mouseWheelEvent();
     void keyEvent();
@@ -30,12 +30,12 @@ class Application_Run {
     void mouseMoveEvent();
 
     RUNNING_MODE          m_runningMode             = RUNNING_MODE::RUNNING;
-    bool                  m_paused                  = true;
+    bool                  m_paused                  = false;
     bool                  m_rightMouseButtonPressed = false;
     bool                  m_leftMouseButtonPressed  = false;
     Uint32                m_previousTime;
-    Uint32                m_timeSinceLastStep;
-    Uint32                m_timeStep = 300;
+    Uint32                m_timeSinceLastStep = 0;
+    Uint32                m_timeStep          = 300;
     SDL_Event             m_event;
     SDL_Point             m_previousMousePosition;
     model::Model          m_model;
