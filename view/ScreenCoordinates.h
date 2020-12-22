@@ -5,17 +5,14 @@
 #ifndef BLOCKS_SCREENCOORDINATES_H
 #define BLOCKS_SCREENCOORDINATES_H
 
+#include "ScreenVector.h"
+
+#include <SDL2/SDL.h>
+
 namespace model {
     class WorldCoordinates;
     class GridCoordinates;
 } // namespace model
-
-namespace view {
-    class ScreenCoordinates;
-    class ScreenVector;
-} // namespace view
-view::ScreenCoordinates operator+(const view::ScreenCoordinates& lhs, const view::ScreenCoordinates& rhs);
-view::ScreenCoordinates operator+(const view::ScreenCoordinates& lhs, const view::ScreenVector& rhs);
 
 namespace view {
 

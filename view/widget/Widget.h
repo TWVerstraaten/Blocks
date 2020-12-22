@@ -21,15 +21,12 @@ namespace view {
         void getFocus();
         bool pointIsOverWidget(const SDL_Point& point) const;
         bool hasFocus() const;
-        void setCanGetFocus(bool canGetFocus);
-        bool canGetFocus() const;
 
       protected:
         SDL_Rect m_rect;
 
       private:
-        bool m_hasFocus    = false;
-        bool m_canGetFocus = true;
+        bool m_hasFocus = false;
     };
 } // namespace view
 

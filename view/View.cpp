@@ -77,7 +77,7 @@ namespace view {
         for (const auto& cluster : model.clusters()) {
             const auto points = cluster.cornerPoints(0);
             for (const auto& it : points) {
-                //                        drawRectangle(model::GridCoordinates::fromWorldCoordinates(it),
+                //                        drawRectangle(model::GridCoordinates::fromWorldCoordinates(actionEditIt),
                 //                        model::WorldCoordinates::m_blockSizeInWorld,
                 //                                      model::WorldCoordinates::m_blockSizeInWorld, color::BLUE);
                 drawPoint(it, color::RED, 24);
@@ -108,16 +108,14 @@ namespace view {
 
     void View::drawGridLines() const {
         const auto size = windowSize();
-        setDrawColor(color::GRID_LINE_COLOR);
-
-        int x = m_grid.firstColumnInView();
-        int y = m_grid.firstRowInView();
+        int        x    = m_grid.firstColumnInView();
+        int        y    = m_grid.firstRowInView();
         while (true) {
             const auto currentCoordinate = ScreenCoordinates::fromGridCoordinates({x, y - 1}, m_grid);
             if (currentCoordinate.x() > size.x) {
                 break;
             }
-            drawVerticalLine(currentCoordinate, size.y + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 1);
+            drawVerticalLine(currentCoordinate, size.y + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 2);
             ++x;
         }
         x = m_grid.firstColumnInView();
@@ -126,7 +124,7 @@ namespace view {
             if (currentCoordinate.y() > size.y) {
                 break;
             }
-            drawHorizontalLine(currentCoordinate, size.x + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 1);
+            drawHorizontalLine(currentCoordinate, size.x + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 2);
             ++y;
         }
     }
@@ -143,8 +141,7 @@ namespace view {
                                                   ScreenCoordinates::fromGridCoordinates(block.first, m_grid),
                                                   m_grid.blockSizeInScreen(),
                                                   m_grid.blockSizeInScreen(),
-                                                  m_renderer,
-                                                  0));
+                                                  m_renderer));
         }
 
         for (const auto& block : level.instantBlocks()) {
@@ -152,8 +149,7 @@ namespace view {
                                                   ScreenCoordinates::fromGridCoordinates(block.first, m_grid),
                                                   m_grid.blockSizeInScreen(),
                                                   m_grid.blockSizeInScreen(),
-                                                  m_renderer,
-                                                  0));
+                                                  m_renderer));
         }
     }
 

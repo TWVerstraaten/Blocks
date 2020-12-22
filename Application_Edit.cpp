@@ -1,34 +1,23 @@
 //
-// Created by pc on 15-12-20.
+// Created by pc on 22-12-20.
 //
 
-#include "Application.h"
-
-#include "model/WorldCoordinates.h"
-#include "view/Color.h"
+#include "Application_Edit.h"
 
 #include <algorithm>
 #include <cassert>
 
-Application::Application() {
+Application_Edit::Application_Edit(view::View* view) : m_view(view) {
     init();
 }
 
-void Application::loop() {
-
-    bool isRunning = true;
+Application_Edit::EXIT_CODE Application_Edit::loop() {
     SDL_StartTextInput();
-    while (isRunning) {
-        if (m_timeSinceLastStep > m_stepTimeInMilliSeconds) {
-            m_model.interactClustersWithInstantBlocks();
-            m_model.interactClustersWithDynamicBlocks();
-            m_timeSinceLastStep %= m_stepTimeInMilliSeconds;
-        }
+    while (true) {
         while (SDL_PollEvent(&m_event) > 0) {
             switch (m_event.type) {
                 case SDL_QUIT:
-                    isRunning = false;
-                    break;
+                    return EXIT_CODE::QUIT;
                 case SDL_TEXTINPUT:
                 case SDL_KEYDOWN:
                 case SDL_KEYUP:
@@ -51,34 +40,32 @@ void Application::loop() {
                 }
             }
         }
-        const auto dt = SDL_GetTicks() - m_previousTime;
-        if (not m_paused) {
-            update(static_cast<double>(1.9 * dt) / m_stepTimeInMilliSeconds);
-            m_model.interactClustersWithLevel();
+        if (m_runningMode != RUNNING_MODE::RUNNING) {
+            break;
         }
-        m_previousTime = SDL_GetTicks();
-        m_view.draw(m_model);
-        if (!m_paused) {
-            m_timeSinceLastStep += dt;
-        }
-
-        SDL_RenderPresent(m_view.renderer());
+        m_view->draw(m_model);
+        SDL_RenderPresent(m_view->renderer());
     }
     SDL_StopTextInput();
+    assert(m_runningMode != RUNNING_MODE::RUNNING);
+    switch (m_runningMode) {
+        case RUNNING_MODE::QUIT:
+            return EXIT_CODE::QUIT;
+        case RUNNING_MODE::DONE_EDITING:
+            return EXIT_CODE::DONE_EDITING;
+        default:
+            return EXIT_CODE::QUIT;
+    }
 }
 
-void Application::update(double fractionOfPhase) {
-    m_model.update(fractionOfPhase);
+void Application_Edit::mouseWheelEvent() {
+    m_view->zoom(m_event.wheel.y);
 }
 
-void Application::mouseWheelEvent() {
-    m_view.zoom(m_event.wheel.y);
-}
-
-void Application::keyEvent() {
+void Application_Edit::keyEvent() {
     switch (m_event.type) {
         case SDL_TEXTINPUT:
-            for (auto& actionEditBox : m_view.actionEditBoxes()) {
+            for (auto& actionEditBox : m_view->actionEditBoxes()) {
                 if (actionEditBox.hasFocus()) {
                     actionEditBox.handleKeyEvent(m_event);
                     return;
@@ -92,7 +79,7 @@ void Application::keyEvent() {
                 }
             }
             m_pressedKeys.insert(m_event.key.keysym.sym);
-            for (auto& actionEditBox : m_view.actionEditBoxes()) {
+            for (auto& actionEditBox : m_view->actionEditBoxes()) {
                 if (actionEditBox.hasFocus()) {
                     actionEditBox.handleKeyEvent(m_event);
                     return;
@@ -100,21 +87,19 @@ void Application::keyEvent() {
             }
 
             switch (m_event.key.keysym.sym) {
-                case SDLK_ESCAPE:
-                    resetModel();
-                    pause();
-                    break;
                 case SDLK_SPACE:
-                    togglePause();
+                    if (canStart()) {
+                        m_runningMode = RUNNING_MODE::DONE_EDITING;
+                    }
                     break;
                 case SDLK_1:
-                    setTimeStep(1000);
+                    m_runningMode = RUNNING_MODE::DONE_EDITING;
                     break;
                 case SDLK_2:
-                    setTimeStep(300);
+                    m_runningMode = RUNNING_MODE::DONE_EDITING;
                     break;
                 case SDLK_3:
-                    setTimeStep(50);
+                    m_runningMode = RUNNING_MODE::DONE_EDITING;
                     break;
                 default:
                     break;
@@ -127,16 +112,22 @@ void Application::keyEvent() {
     }
 }
 
-void Application::mouseClickEvent() {
+SDL_Point Application_Edit::getMouseCoordinates() {
+    int xMouse, yMouse;
+    SDL_GetMouseState(&xMouse, &yMouse);
+    return {xMouse, yMouse};
+}
+
+void Application_Edit::mouseClickEvent() {
     const auto mousePosition = getMouseCoordinates();
 
-    for (auto& actionEditBox : m_view.actionEditBoxes()) {
+    for (auto& actionEditBox : m_view->actionEditBoxes()) {
         if (not actionEditBox.pointIsOverWidget(mousePosition)) {
             actionEditBox.loseFocus();
         }
     }
-    for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        if (actionEditBox.pointIsOverWidget(mousePosition) && actionEditBox.canGetFocus()) {
+    for (auto& actionEditBox : m_view->actionEditBoxes()) {
+        if (actionEditBox.pointIsOverWidget(mousePosition)) {
             actionEditBox.getFocus();
             actionEditBox.handleMouseClickEvent(m_event, m_leftMouseButtonPressed);
             break;
@@ -157,7 +148,7 @@ void Application::mouseClickEvent() {
     }
 }
 
-void Application::mouseReleaseEvent() {
+void Application_Edit::mouseReleaseEvent() {
     switch (m_event.button.button) {
         case SDL_BUTTON_RIGHT:
             m_rightMouseButtonPressed = false;
@@ -170,10 +161,10 @@ void Application::mouseReleaseEvent() {
     }
 }
 
-void Application::mouseMoveEvent() {
+void Application_Edit::mouseMoveEvent() {
     const auto mousePosition = getMouseCoordinates();
     bool       isDone        = false;
-    for (auto& actionEditBox : m_view.actionEditBoxes()) {
+    for (auto& actionEditBox : m_view->actionEditBoxes()) {
         if (actionEditBox.hasFocus()) {
             actionEditBox.handleMouseMoveEvent(mousePosition, m_leftMouseButtonPressed);
             isDone = true;
@@ -183,88 +174,26 @@ void Application::mouseMoveEvent() {
     if (not isDone) {
         if (m_rightMouseButtonPressed) {
             const auto mouseCoordinates = getMouseCoordinates();
-            m_view.translate((mouseCoordinates.x - m_previousMousePosition.x), mouseCoordinates.y - m_previousMousePosition.y);
+            m_view->translate((mouseCoordinates.x - m_previousMousePosition.x), mouseCoordinates.y - m_previousMousePosition.y);
             m_previousMousePosition = mouseCoordinates;
         }
     }
 }
 
-SDL_Point Application::getMouseCoordinates() {
-    int xMouse, yMouse;
-    SDL_GetMouseState(&xMouse, &yMouse);
-    return {xMouse, yMouse};
-}
-
-void Application::setTimeStep(Uint32 timeStep) {
-    m_stepTimeInMilliSeconds = timeStep;
-    unpause();
-}
-
-void Application::resetModel() {
-    m_previousTime      = SDL_GetTicks();
-    m_timeSinceLastStep = 0;
-    m_levelHasStarted   = false;
-    m_paused            = true;
-
-    m_view.clear();
-    m_model.setClusters(m_initialModel.clusters());
-
+void Application_Edit::init() {
+    m_view->clear();
+    m_model.init();
     for (auto& cluster : m_model.clusters()) {
-        m_view.addActionEditBox(cluster);
-    }
-
-    for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        actionEditBox.setCanGetFocus(true);
+        m_view->addActionEditBox(cluster);
     }
 }
 
-void Application::unpause() {
-    if (not m_levelHasStarted) {
-        startRun();
-    } else {
-        m_paused = false;
-    }
-}
-
-void Application::pause() {
-    m_paused = true;
-}
-
-void Application::togglePause() {
-    if (m_paused) {
-        unpause();
-    } else {
-        pause();
-    }
-}
-
-void Application::startRun() {
-    if (not canStart()) {
-        return;
-    }
-    m_paused = false;
-
-    auto it = m_initialModel.clusters().begin();
-    for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        actionEditBox.setCanGetFocus(false);
-        actionEditBox.updateClusterActions(*it);
-        ++it;
-    }
-    resetModel();
-    m_levelHasStarted = true;
-    for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        actionEditBox.setCanGetFocus(false);
-    }
-}
-
-void Application::init() {
-    m_view.clear();
-    m_initialModel.init();
-    resetModel();
-}
-
-bool Application::canStart() {
-    return std::all_of(m_view.actionEditBoxes().begin(), m_view.actionEditBoxes().end(), [](const view::widget::ActionEditBox& box) {
+bool Application_Edit::canStart() const {
+    return std::all_of(m_view->actionEditBoxes().begin(), m_view->actionEditBoxes().end(), [](const view::widget::ActionEditBox& box) {
         return box.canParse();
     });
+}
+
+const model::Model& Application_Edit::model() const {
+    return m_model;
 }

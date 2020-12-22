@@ -37,6 +37,7 @@ namespace model {
         bool                              intersects(const GridCoordinates& indexPair) const;
         bool                              isAlive() const;
         double                            angle() const;
+        size_t                            clusterActionIndex() const;
         const GridCoordinates&            rotationPivot() const;
         WorldVector                       dynamicWorldOffset() const;
         const std::list<GridCoordinates>& gridCoordinates() const;

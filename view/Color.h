@@ -14,7 +14,7 @@ namespace color {
     static const SDL_Color BLACK                      = {0, 0, 0, 255};
     static const SDL_Color GREEN                      = {0, 255, 0, 255};
     static const SDL_Color BLUE                       = {0, 0, 255, 255};
-    static const SDL_Color GRID_LINE_COLOR            = {0, 0, 0, 255};
+    static const SDL_Color GRID_LINE_COLOR            = {200, 200, 200, 255};
     static const SDL_Color BACKGROUND                 = {0, 0, 0, 255};
     static const SDL_Color ACTION_EDIT_BACKGROUND     = {200, 200, 250, 255};
     static const SDL_Color ACTION_EDIT_HIGHLIGHT_HARD = {255, 200, 250, 255};

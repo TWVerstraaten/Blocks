@@ -2,8 +2,8 @@
 // Created by pc on 15-12-20.
 //
 
-#ifndef BLOCKS_APPLICATION_H
-#define BLOCKS_APPLICATION_H
+#ifndef BLOCKS_APPLICATION_LEVEL_H
+#define BLOCKS_APPLICATION_LEVEL_H
 
 #include "model/Model.h"
 #include "view/View.h"
@@ -11,13 +11,12 @@
 #include <SDL2/SDL.h>
 #include <set>
 
-class Application {
+class Application_Level {
 
   public:
-    Application();
+    Application_Level();
 
     void             loop();
-    void             update(double delta_time);
     static SDL_Point getMouseCoordinates();
 
   private:
@@ -26,6 +25,7 @@ class Application {
     void mouseClickEvent();
     void mouseReleaseEvent();
     void mouseMoveEvent();
+    void             update(double delta_time);
     void setTimeStep(Uint32 timeStep);
     void resetModel();
     void init();
@@ -35,10 +35,10 @@ class Application {
     void startRun();
     bool canStart();
 
+    bool                  m_levelHasStarted         = false;
     bool                  m_paused                  = true;
     bool                  m_rightMouseButtonPressed = false;
     bool                  m_leftMouseButtonPressed  = false;
-    bool                  m_levelHasStarted         = false;
     SDL_Point             m_previousMousePosition;
     model::Model          m_model;
     model::Model          m_initialModel;
@@ -50,4 +50,4 @@ class Application {
     std::set<SDL_Keycode> m_pressedKeys;
 };
 
-#endif // BLOCKS_APPLICATION_H
+#endif // BLOCKS_APPLICATION_LEVEL_H

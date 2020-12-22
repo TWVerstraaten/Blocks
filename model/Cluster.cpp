@@ -273,4 +273,8 @@ namespace model {
         return *this;
     }
 
+    size_t Cluster::clusterActionIndex() const {
+        return m_clusterActionIndex;
+    }
+
 } // namespace model

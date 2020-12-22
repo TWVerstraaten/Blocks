@@ -217,7 +217,10 @@ namespace view {
                     highlightRange(m_selectionData.m_first, m_selectionData.m_last, renderer, HIGHLIGHT_MODE::HARD);
                     break;
             }
-            drawDashAt(m_selectionData.m_mode == SelectionData::MODE::DOUBLE ? m_selectionData.m_last : m_selectionData.m_first, renderer);
+            if (hasFocus()) {
+                drawDashAt(m_selectionData.m_mode == SelectionData::MODE::DOUBLE ? m_selectionData.m_last : m_selectionData.m_first,
+                           renderer);
+            }
         }
 
         void ActionEditBox::highlightString(size_t stringIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const {
@@ -559,6 +562,12 @@ namespace view {
 
         bool ActionEditBox::canParse() const {
             return std::all_of(m_strings.begin(), m_strings.end(), &model::ClusterAction::canParse);
+        }
+
+        void ActionEditBox::setHighLightedLine(size_t index) {
+            m_selectionData.m_first.m_stringIndex = index;
+            m_selectionData.m_first.m_charIndex   = 0;
+            m_selectionData.m_mode                = SelectionData::MODE::SINGLE;
         }
     } // namespace widget
 } // namespace view
