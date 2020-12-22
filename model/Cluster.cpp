@@ -12,9 +12,8 @@
 
 namespace model {
 
-    Cluster::Cluster(std::list<GridXY>&& gridCoordinates, const GridXY& offset)
-        : m_worldOffset(0, 0), m_gridCoordinates(gridCoordinates) {
-        for (auto& idx : m_gridCoordinates) {
+    Cluster::Cluster(std::list<GridXY>&& gridXY, const GridXY& offset) : m_worldOffset(0, 0), m_gridXY(gridXY) {
+        for (auto& idx : m_gridXY) {
             idx += offset;
         }
     }
@@ -23,56 +22,42 @@ namespace model {
         if (m_actions.empty() || not m_isAlive) {
             return;
         }
-        for (auto& idx : m_gridCoordinates) {
-            switch (m_actions[m_actionIndex].m_action) {
-                case Action::VALUE::MOVE_UP:
-                    idx = idx.adjacent(enums::DIRECTION::UP);
-                    break;
-                case Action::VALUE::MOVE_DOWN:
-                    idx = idx.adjacent(enums::DIRECTION::DOWN);
-                    break;
-                case Action::VALUE::MOVE_LEFT:
-                    idx = idx.adjacent(enums::DIRECTION::LEFT);
-                    break;
-                case Action::VALUE::MOVE_RIGHT:
-                    idx = idx.adjacent(enums::DIRECTION::RIGHT);
-                    break;
-            }
-        }
         clearPhase();
         m_currentPhase    = CURRENT_PHASE::TRANSLATING;
         m_fractionOfPhase = 1.0;
-        switch (m_actions[m_actionIndex].m_action) {
-            case Action::VALUE::MOVE_UP:
-                m_worldOffset = {0, WorldXY::m_blockSizeInWorld};
-                break;
-            case Action::VALUE::MOVE_DOWN:
-                m_worldOffset = {0, -WorldXY::m_blockSizeInWorld};
-                break;
-            case Action::VALUE::MOVE_LEFT:
-                m_worldOffset = {WorldXY::m_blockSizeInWorld, 0};
-                break;
-            case Action::VALUE::MOVE_RIGHT:
-                m_worldOffset = {-WorldXY::m_blockSizeInWorld, 0};
-                break;
+        for (auto& idx : m_gridXY) {
+            switch (m_actions[m_actionIndex].m_action) {
+                case Action::VALUE::MOVE_UP:
+                    idx           = idx.adjacent(enums::DIRECTION::UP);
+                    m_worldOffset = {0, WorldXY::m_blockSizeInWorld};
+                    break;
+                case Action::VALUE::MOVE_DOWN:
+                    idx           = idx.adjacent(enums::DIRECTION::DOWN);
+                    m_worldOffset = {0, -WorldXY::m_blockSizeInWorld};
+                    break;
+                case Action::VALUE::MOVE_LEFT:
+                    idx           = idx.adjacent(enums::DIRECTION::LEFT);
+                    m_worldOffset = {WorldXY::m_blockSizeInWorld, 0};
+                    break;
+                case Action::VALUE::MOVE_RIGHT:
+                    idx           = idx.adjacent(enums::DIRECTION::RIGHT);
+                    m_worldOffset = {-WorldXY::m_blockSizeInWorld, 0};
+                    break;
+            }
         }
-
-        ++m_actionIndex;
-        m_actionIndex %= m_actions.size();
+        incrementActionIndex();
     }
 
-    void Cluster::rotateClockWiseAbout(const GridXY& pivotGridCoordinates) {
-        for (auto& gridCoordinates : m_gridCoordinates) {
-            gridCoordinates = {pivotGridCoordinates.x() + pivotGridCoordinates.y() - gridCoordinates.y(),
-                               pivotGridCoordinates.y() - pivotGridCoordinates.x() + gridCoordinates.x()};
+    void Cluster::rotateClockWiseAbout(const GridXY& pivotGridXY) {
+        for (auto& gridXY : m_gridXY) {
+            gridXY = {pivotGridXY.x() + pivotGridXY.y() - gridXY.y(), pivotGridXY.y() - pivotGridXY.x() + gridXY.x()};
         }
         std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionClockWise);
     }
 
-    void Cluster::rotateCounterClockWiseAbout(const GridXY& pivotGridCoordinates) {
-        for (auto& gridCoordinates : m_gridCoordinates) {
-            gridCoordinates = {pivotGridCoordinates.x() - pivotGridCoordinates.y() + gridCoordinates.y(),
-                               pivotGridCoordinates.y() + pivotGridCoordinates.x() - gridCoordinates.x()};
+    void Cluster::rotateCounterClockWiseAbout(const GridXY& pivotGridXY) {
+        for (auto& gridXY : m_gridXY) {
+            gridXY = {pivotGridXY.x() - pivotGridXY.y() + gridXY.y(), pivotGridXY.y() + pivotGridXY.x() - gridXY.x()};
         }
         std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionCounterClockWise);
     }
@@ -111,51 +96,38 @@ namespace model {
         m_actions.push_back(action);
     }
 
-    void Cluster::removeBLock(const GridXY& gridCoordinates) {
-        const auto it = std::find(m_gridCoordinates.begin(), m_gridCoordinates.end(), gridCoordinates);
-        assert(it != m_gridCoordinates.end());
-        m_gridCoordinates.erase(it);
+    void Cluster::removeBLock(const GridXY& gridXY) {
+        const auto it = std::find(m_gridXY.begin(), m_gridXY.end(), gridXY);
+        assert(it != m_gridXY.end());
+        m_gridXY.erase(it);
     }
 
     bool Cluster::empty() const {
-        return m_gridCoordinates.empty();
+        return m_gridXY.empty();
     }
 
-    const std::list<GridXY>& Cluster::gridCoordinates() const {
-        return m_gridCoordinates;
+    const std::list<GridXY>& Cluster::gridXY() const {
+        return m_gridXY;
     }
 
-    void Cluster::addPendingOperation(const GridXY& gridCoordinates, Level::DYNAMIC_BLOCK_TYPE blockType) {
+    void Cluster::addPendingOperation(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType) {
         if (blockType == Level::DYNAMIC_BLOCK_TYPE::NONE) {
             return;
         }
-        m_pendingOperations.emplace_back(gridCoordinates, blockType);
+        m_pendingOperations.emplace_back(gridXY, blockType);
     }
 
-    void Cluster::performPendingOperation() {
+    void Cluster::performPendingOperationOrNextAction() {
         assert(m_pendingOperations.size() <= 1);
         if (m_pendingOperations.empty() || m_actions.at(m_actionIndex).m_modifier == Action::MODIFIER::IGNORE) {
             doAction();
             m_pendingOperations.clear();
-            return;
+        } else {
+            if (m_actions.at(m_actionIndex).m_modifier == Action::MODIFIER::SKIP) {
+                incrementActionIndex();
+            }
+            tryPendingOperation();
         }
-        if (m_actions.at(m_actionIndex).m_modifier == Action::MODIFIER::SKIP) {
-            ++m_actionIndex;
-            m_actionIndex %= m_actions.size();
-        }
-        switch (m_pendingOperations.front().second) {
-            case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
-                setRotation(-90.0, m_pendingOperations.front().first);
-                rotateClockWiseAbout(m_pendingOperations.front().first);
-                break;
-            case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
-                setRotation(90.0, m_pendingOperations.front().first);
-                rotateCounterClockWiseAbout(m_pendingOperations.front().first);
-                break;
-            case Level::DYNAMIC_BLOCK_TYPE::NONE:
-                break;
-        }
-        m_pendingOperations.clear();
     }
 
     void Cluster::update(double fractionOfPhase) {
@@ -188,39 +160,35 @@ namespace model {
         std::set<WorldXY> result;
         switch (m_currentPhase) {
             case CURRENT_PHASE::NONE:
-                for (const auto& it : m_gridCoordinates) {
-                    for (const GridXY cornerOffset :
-                         {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
-                        result.emplace(WorldXY::fromGridCoordinates(it + cornerOffset) +
+                for (const auto& it : m_gridXY) {
+                    for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
+                        result.emplace(WorldXY::fromGridXY(it + cornerOffset) +
                                        WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
-                                                        shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()});
+                                               shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()});
                     }
                 }
                 break;
             case CURRENT_PHASE::TRANSLATING: {
                 const WorldVector offset = dynamicWorldOffset();
-                for (const auto& it : m_gridCoordinates) {
-                    for (const GridXY cornerOffset :
-                         {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
-                        result.emplace(WorldXY::fromGridCoordinates(it + cornerOffset) +
+                for (const auto& it : m_gridXY) {
+                    for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
+                        result.emplace(WorldXY::fromGridXY(it + cornerOffset) +
                                        WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
-                                                        shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()} +
+                                               shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()} +
                                        offset);
                     }
                 }
             } break;
             case CURRENT_PHASE::ROTATING: {
-                const WorldXY          center = WorldXY::fromGridCoordinates(m_rotationPivot) + WorldXY::halfBlockInWorld;
-                const double           theta  = -angle();
-                for (const auto& it : m_gridCoordinates) {
-                    for (const GridXY cornerOffset :
-                         {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
-                        result.emplace(
-                            aux::rotateClockWiseAboutPivot(WorldXY::fromGridCoordinates(it + cornerOffset) +
-                                                                          WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
-                                                                                shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()},
-                                                           center,
-                                                           theta));
+                const WorldXY center = WorldXY::fromGridXY(m_rotationPivot) + WorldXY::halfBlockInWorld;
+                const double  theta  = -angle();
+                for (const auto& it : m_gridXY) {
+                    for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
+                        result.emplace(aux::rotateAboutPivot(WorldXY::fromGridXY(it + cornerOffset) +
+                                                                 WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
+                                                                         shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()},
+                                                             center,
+                                                             theta));
                     }
                 }
             } break;
@@ -261,10 +229,10 @@ namespace model {
     Cluster& Cluster::operator=(const Cluster& other) {
         assert(other.m_currentPhase == CURRENT_PHASE::NONE);
         clearPhase();
-        m_isAlive         = other.m_isAlive;
-        m_actionIndex     = other.m_actionIndex;
-        m_gridCoordinates = other.m_gridCoordinates;
-        m_actions         = other.m_actions;
+        m_isAlive     = other.m_isAlive;
+        m_actionIndex = other.m_actionIndex;
+        m_gridXY      = other.m_gridXY;
+        m_actions     = other.m_actions;
         m_pendingOperations.clear();
         return *this;
     }
@@ -275,5 +243,30 @@ namespace model {
         } else {
             return m_actionIndex;
         }
+    }
+
+    void Cluster::incrementActionIndex() {
+        ++m_actionIndex;
+        m_actionIndex %= m_actions.size();
+    }
+
+    void Cluster::tryPendingOperation() {
+        assert(!m_pendingOperations.empty());
+        if (m_pendingOperations.size() > 1) {
+            kill();
+        }
+        switch (m_pendingOperations.front().second) {
+            case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
+                setRotation(-90.0, m_pendingOperations.front().first);
+                rotateClockWiseAbout(m_pendingOperations.front().first);
+                break;
+            case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
+                setRotation(90.0, m_pendingOperations.front().first);
+                rotateCounterClockWiseAbout(m_pendingOperations.front().first);
+                break;
+            case Level::DYNAMIC_BLOCK_TYPE::NONE:
+                break;
+        }
+        m_pendingOperations.clear();
     }
 } // namespace model

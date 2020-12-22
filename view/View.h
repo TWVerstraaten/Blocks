@@ -64,7 +64,7 @@ namespace view {
         SDL_Window*                        m_window        = nullptr;
         SDL_Renderer*                      m_renderer      = nullptr;
         Grid                               m_grid;
-        std::unique_ptr<Assets>      m_assetsHandler{new Assets()};
+        std::unique_ptr<Assets>            m_assets{new Assets()};
         std::vector<widget::ActionEditBox> m_actionEditBoxes;
     };
 } // namespace view

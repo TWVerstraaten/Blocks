@@ -28,12 +28,12 @@ namespace model {
 
     void Model::interactClustersWithDynamicBlocks() {
         for (auto& cluster : m_clusters) {
-            for (auto it = cluster.gridCoordinates().begin(); it != cluster.gridCoordinates().end(); ++it) {
+            for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end(); ++it) {
                 cluster.addPendingOperation(*it, m_level.dynamicBlockAt(GridXY(it->x(), it->y())));
             }
         }
         for (auto& cluster : m_clusters) {
-            cluster.performPendingOperation();
+            cluster.performPendingOperationOrNextAction();
         }
         clearEmptyClusters();
     }
@@ -41,7 +41,7 @@ namespace model {
     void Model::interactClustersWithInstantBlocks() {
         for (auto& cluster : m_clusters) {
             bool isDone = false;
-            for (auto it = cluster.gridCoordinates().begin(); it != cluster.gridCoordinates().end() && not isDone; ++it) {
+            for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end() && not isDone; ++it) {
                 switch (m_level.instantBlockAt(GridXY(it->x(), it->y()))) {
                     case Level::INSTANT_BLOCK_TYPE::NONE:
                         break;
@@ -89,7 +89,7 @@ namespace model {
         m_clusters.back().addAction({Action::VALUE::MOVE_DOWN, Action::MODIFIER::NONE});
         m_clusters.back().addAction({Action::VALUE::MOVE_RIGHT, Action::MODIFIER::NONE});
 
-        m_clusters.emplace_back(Cluster{{{0, 1}, {1, 0}, {1, 1}, {1, 2}}, {9, 3}});
+        m_clusters.emplace_back(Cluster{{{0, 1}}, {9, 3}});
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
 
         m_clusters.emplace_back(Cluster{{{0, 0}, {1, 0}, {2, 0}}, {10, 7}});
@@ -105,6 +105,7 @@ namespace model {
 
         m_level.addBlock({5, 6}, Level::INSTANT_BLOCK_TYPE::KILL);
         m_level.addBlock({3, 1}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({9, 3}, Level::INSTANT_BLOCK_TYPE::KILL);
         m_level.addBlock({7, 2}, Level::INSTANT_BLOCK_TYPE::KILL);
         m_level.addBlock({4, 4}, Level::INSTANT_BLOCK_TYPE::KILL);
 

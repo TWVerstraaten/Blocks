@@ -52,15 +52,15 @@ namespace model {
         return lhs.m_y == rhs.m_y && lhs.m_x == rhs.m_x;
     }
 
-    GridXY& GridXY::operator+=(const GridXY& gridCoordinates) {
-        m_y += gridCoordinates.y();
-        m_x += gridCoordinates.x();
+    GridXY& GridXY::operator+=(const GridXY& gridXY) {
+        m_y += gridXY.y();
+        m_x += gridXY.x();
         return *this;
     }
 
-    GridXY GridXY::fromWorldCoordinates(const WorldXY& worldCoordinates) {
-        return {static_cast<int>(std::floor(static_cast<double>(worldCoordinates.x()) / model::WorldXY::m_blockSizeInWorld)),
-                static_cast<int>(std::floor(static_cast<double>(worldCoordinates.y()) / model::WorldXY::m_blockSizeInWorld))};
+    GridXY GridXY::fromWorldXY(const WorldXY& worldXY) {
+        return {static_cast<int>(std::floor(static_cast<double>(worldXY.x()) / model::WorldXY::m_blockSizeInWorld)),
+                static_cast<int>(std::floor(static_cast<double>(worldXY.y()) / model::WorldXY::m_blockSizeInWorld))};
     }
 
     GridXY operator+(const GridXY& lhs, const GridXY& rhs) {
@@ -68,7 +68,7 @@ namespace model {
     }
 
     GridXY::operator WorldXY() const {
-        return WorldXY::fromGridCoordinates(*this);
+        return WorldXY::fromGridXY(*this);
     }
 
 } // namespace model

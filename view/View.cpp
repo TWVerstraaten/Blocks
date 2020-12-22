@@ -51,14 +51,14 @@ namespace view {
             std::cout << "SDL_ttf could not initialize, SDL_ttf Error: " << TTF_GetError() << '\n';
         }
 
-        m_assetsHandler->init(m_renderer);
+        m_assets->init(m_renderer);
         SDL_StartTextInput();
     }
 
     View::~View() {
         SDL_DestroyRenderer(m_renderer);
         SDL_DestroyWindow(m_window);
-        m_assetsHandler.reset(nullptr); // Release font before we close subsystems
+        m_assets.reset(nullptr); // Release font before we close subsystems
         TTF_Quit();
         IMG_Quit();
         SDL_Quit();
@@ -76,7 +76,7 @@ namespace view {
         for (const auto& cluster : model.clusters()) {
             const auto points = cluster.cornerPoints(0);
             for (const auto& it : points) {
-                //                        drawRectangle(model::GridXY::fromWorldCoordinates(actionEditIt),
+                //                        drawRectangle(model::GridXY::fromWorldXY(actionEditIt),
                 //                        model::WorldXY::m_blockSizeInWorld,
                 //                                      model::WorldXY::m_blockSizeInWorld, color::BLUE);
                 drawPoint(it, color::RED, 8);
@@ -91,16 +91,16 @@ namespace view {
     void View::drawClusters(const std::vector<model::Cluster>& clusters) const {
         for (const auto& cluster : clusters) {
             const ScreenVector offset = ScreenVector::fromWorldVector(cluster.dynamicWorldOffset(), m_grid);
-            for (auto it = cluster.gridCoordinates().begin(); it != cluster.gridCoordinates().end(); ++it) {
+            for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end(); ++it) {
                 const SDL_Point center = {static_cast<int>(m_grid.blockSizeInScreen() * (0.5 + cluster.rotationPivot().x() - it->x())),
                                           static_cast<int>(m_grid.blockSizeInScreen() * (0.5 + cluster.rotationPivot().y() - it->y()))};
-                assert(m_assetsHandler->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
-                                                      ScreenXY::fromGridCoordinates(*it, m_grid) + offset,
-                                                      m_grid.blockSizeInScreen(),
-                                                      m_grid.blockSizeInScreen(),
-                                                      m_renderer,
-                                                      cluster.angle(),
-                                                      &center));
+                assert(m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
+                                               ScreenXY::fromGridXY(*it, m_grid) + offset,
+                                               m_grid.blockSizeInScreen(),
+                                               m_grid.blockSizeInScreen(),
+                                               m_renderer,
+                                               cluster.angle(),
+                                               &center));
             }
         }
     }
@@ -110,7 +110,7 @@ namespace view {
         int        x    = m_grid.firstColumnInView();
         int        y    = m_grid.firstRowInView();
         while (true) {
-            const auto currentCoordinate = ScreenXY::fromGridCoordinates({x, y - 1}, m_grid);
+            const auto currentCoordinate = ScreenXY::fromGridXY({x, y - 1}, m_grid);
             if (currentCoordinate.x() > size.x) {
                 break;
             }
@@ -119,7 +119,7 @@ namespace view {
         }
         x = m_grid.firstColumnInView();
         while (true) {
-            const auto currentCoordinate = ScreenXY::fromGridCoordinates({x - 1, y}, m_grid);
+            const auto currentCoordinate = ScreenXY::fromGridXY({x - 1, y}, m_grid);
             if (currentCoordinate.y() > size.y) {
                 break;
             }
@@ -130,28 +130,26 @@ namespace view {
 
     void View::drawLevelBlocks(const model::Level& level) const {
         for (const auto& block : level.levelBlocks()) {
-            drawRectangle(static_cast<model::WorldXY>(block),
-                          model::WorldXY::m_blockSizeInWorld,
-                          model::WorldXY::m_blockSizeInWorld,
-                          color::WHITE);
+            drawRectangle(
+                static_cast<model::WorldXY>(block), model::WorldXY::m_blockSizeInWorld, model::WorldXY::m_blockSizeInWorld, color::WHITE);
         }
     }
 
     void View::drawBlocks(const model::Level& level) const {
         for (const auto& block : level.dynamicBlocks()) {
-            assert(m_assetsHandler->renderTexture(Assets::getTextureEnum(block.second),
-                                                  ScreenXY::fromGridCoordinates(block.first, m_grid),
-                                                  m_grid.blockSizeInScreen(),
-                                                  m_grid.blockSizeInScreen(),
-                                                  m_renderer));
+            assert(m_assets->renderTexture(Assets::getTextureEnum(block.second),
+                                           ScreenXY::fromGridXY(block.first, m_grid),
+                                           m_grid.blockSizeInScreen(),
+                                           m_grid.blockSizeInScreen(),
+                                           m_renderer));
         }
 
         for (const auto& block : level.instantBlocks()) {
-            assert(m_assetsHandler->renderTexture(Assets::getTextureEnum(block.second),
-                                                  ScreenXY::fromGridCoordinates(block.first, m_grid),
-                                                  m_grid.blockSizeInScreen(),
-                                                  m_grid.blockSizeInScreen(),
-                                                  m_renderer));
+            assert(m_assets->renderTexture(Assets::getTextureEnum(block.second),
+                                           ScreenXY::fromGridXY(block.first, m_grid),
+                                           m_grid.blockSizeInScreen(),
+                                           m_grid.blockSizeInScreen(),
+                                           m_renderer));
         }
     }
 
@@ -173,7 +171,7 @@ namespace view {
     }
 
     void View::addActionEditBox(const model::Cluster& cluster) {
-        m_actionEditBoxes.emplace_back(widget::ActionEditBox(0, m_actionEditBoxes.size() * 200, 200, 200, m_assetsHandler.get(), cluster));
+        m_actionEditBoxes.emplace_back(widget::ActionEditBox(0, m_actionEditBoxes.size() * 200, 200, 200, m_assets.get(), cluster));
     }
 
     std::vector<widget::ActionEditBox>& View::actionEditBoxes() {
@@ -191,7 +189,7 @@ namespace view {
     }
 
     void View::drawRectangle(const model::WorldXY& point, int widthInWorld, int heightInWorld, const SDL_Color& color) const {
-        drawRectangle(ScreenXY::fromWorldCoordinates(point, m_grid),
+        drawRectangle(ScreenXY::fromWorldXY(point, m_grid),
                       m_grid.worldToScreenLength(widthInWorld),
                       m_grid.worldToScreenLength(heightInWorld),
                       color);
@@ -214,11 +212,8 @@ namespace view {
         }
     }
 
-    void View::drawHorizontalLine(const model::WorldXY& point,
-                                  int                            lengthInWorld,
-                                  const SDL_Color&               color,
-                                  size_t                         lineThickness) const {
-        drawHorizontalLine(ScreenXY::fromWorldCoordinates(point, m_grid), lengthInWorld, color, lineThickness);
+    void View::drawHorizontalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, size_t lineThickness) const {
+        drawHorizontalLine(ScreenXY::fromWorldXY(point, m_grid), lengthInWorld, color, lineThickness);
     }
 
     void View::drawVerticalLine(const ScreenXY& point, int length, const SDL_Color& color, size_t lineThickness) const {
@@ -230,12 +225,8 @@ namespace view {
         }
     }
 
-    void View::drawVerticalLine(const model::WorldXY& point,
-                                int                            lengthInWorld,
-                                const SDL_Color&               color,
-                                Uint16                         lineThickness) const {
-        drawRectangle(
-            model::WorldXY{point.x(), static_cast<int>(point.y() - lineThickness / 2)}, lineThickness, lengthInWorld, color);
+    void View::drawVerticalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, Uint16 lineThickness) const {
+        drawRectangle(model::WorldXY{point.x(), static_cast<int>(point.y() - lineThickness / 2)}, lineThickness, lengthInWorld, color);
     }
 
     void View::setDrawColor(const SDL_Color& color) const {

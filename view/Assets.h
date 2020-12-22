@@ -33,7 +33,7 @@ namespace view {
                            const SDL_Point*             center = nullptr,
                            SDL_RendererFlip             flip   = SDL_FLIP_NONE) const;
         bool renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
-                           const ScreenXY&              screenCoordinates,
+                           const ScreenXY&              screenXY,
                            int                          width,
                            int                          height,
                            SDL_Renderer*                renderer,
@@ -48,7 +48,7 @@ namespace view {
                                   const SDL_Point* center = nullptr,
                                   SDL_RendererFlip flip   = SDL_FLIP_NONE);
         static bool renderTexture(Texture*         texture,
-                                  const ScreenXY&  screenCoordinates,
+                                  const ScreenXY&  screenXY,
                                   int              width,
                                   int              height,
                                   SDL_Renderer*    renderer,

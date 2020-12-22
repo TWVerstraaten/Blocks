@@ -27,7 +27,7 @@ namespace model {
         static constexpr int     halfBlockSizeInWorld();
         static const WorldVector halfBlockInWorld;
 
-        static WorldXY fromGridCoordinates(const model::GridXY& gridCoordinates);
+        static WorldXY fromGridXY(const model::GridXY& gridXY);
 
         friend bool operator<(const WorldXY& lhs, const WorldXY& rhs);
         friend bool operator==(const WorldXY& lhs, const WorldXY& rhs);

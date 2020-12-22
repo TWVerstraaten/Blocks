@@ -92,7 +92,7 @@ void Application_Run::keyEvent() {
 }
 
 void Application_Run::mouseClickEvent() {
-    const auto mousePosition = Mouse::getMouseCoordinates();
+    const auto mousePosition = Mouse::getMouseXY();
 
     switch (m_event.button.button) {
         case SDL_BUTTON_RIGHT:
@@ -123,9 +123,9 @@ void Application_Run::mouseReleaseEvent() {
 
 void Application_Run::mouseMoveEvent() {
     if (m_rightMouseButtonPressed) {
-        const auto mouseCoordinates = Mouse::getMouseCoordinates();
-        m_view->translate((mouseCoordinates.x - m_previousMousePosition.x), mouseCoordinates.y - m_previousMousePosition.y);
-        m_previousMousePosition = mouseCoordinates;
+        const auto mouseXY = Mouse::getMouseXY();
+        m_view->translate((mouseXY.x - m_previousMousePosition.x), mouseXY.y - m_previousMousePosition.y);
+        m_previousMousePosition = mouseXY;
     }
 }
 
@@ -147,7 +147,6 @@ void Application_Run::performStep() {
     m_model.interactClustersWithInstantBlocks();
     m_model.interactClustersWithDynamicBlocks();
 
-    assert(m_model.clusters().size() == m_view->actionEditBoxes().size());
     auto actionEditIt = m_view->actionEditBoxes().begin();
     for (auto& cluster : m_model.clusters()) {
         actionEditIt->setHighLightedLine(cluster.currentActionIndex());

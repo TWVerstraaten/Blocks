@@ -13,8 +13,7 @@ class Application_Level {
   public:
     Application_Level();
 
-    void             run();
-
+    void run();
 
   private:
     view::View   m_view;

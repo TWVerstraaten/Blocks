@@ -20,15 +20,15 @@ int view::ScreenXY::y() const {
     return m_y;
 }
 
-view::ScreenXY view::ScreenXY::fromWorldCoordinates(const model::WorldXY& worldCoordinates,
+view::ScreenXY view::ScreenXY::fromWorldXY(const model::WorldXY& worldXY,
                                                                       const view::Grid&              grid) {
-    return {static_cast<int>(worldCoordinates.x() * grid.scale()) + grid.xOffset(),
-            static_cast<int>(worldCoordinates.y() * grid.scale()) + grid.yOffset()};
+    return {static_cast<int>(worldXY.x() * grid.scale()) + grid.xOffset(),
+            static_cast<int>(worldXY.y() * grid.scale()) + grid.yOffset()};
 }
 
-view::ScreenXY view::ScreenXY::fromGridCoordinates(const model::GridXY& gridCoordinates,
+view::ScreenXY view::ScreenXY::fromGridXY(const model::GridXY& gridXY,
                                                                      const view::Grid&             grid) {
-    return fromWorldCoordinates(model::WorldXY::fromGridCoordinates(gridCoordinates), grid);
+    return fromWorldXY(model::WorldXY::fromGridXY(gridXY), grid);
 }
 
 view::ScreenXY operator+(const view::ScreenXY& lhs, const view::ScreenXY& rhs) {

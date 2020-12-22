@@ -14,11 +14,11 @@ namespace aux {
     SDL_Rect pad(const SDL_Rect& rect, int padding);
 
     model::WorldXY rotateClockWise(const model::WorldXY& point, double angleInDegrees);
-    model::WorldXY rotateClockWiseAboutPivot(const model::WorldXY& point,
+    model::WorldXY rotateAboutPivot(const model::WorldXY& point,
                                                       const model::WorldXY& pivot,
                                                       double                         angleInDegrees);
 
-    bool pointInBlock(const model::WorldXY& point, const model::GridXY& gridCoordinates);
+    bool pointInBlock(const model::WorldXY& point, const model::GridXY& gridXY);
 
     //    bool                    pointInAlignedRectangle(const SDL_Rect& rect, const Point& point);
     //    bool                    pointInRectangle(const SDL_Rect& rect, double angle, const Point& pivot, const Point& point);

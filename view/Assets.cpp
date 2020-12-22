@@ -51,25 +51,25 @@ namespace view {
     }
 
     bool Assets::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
-                                     const ScreenXY&              screenCoordinates,
+                                     const ScreenXY&              screenXY,
                                      int                          width,
                                      int                          height,
                                      SDL_Renderer*                renderer,
                                      double                       angle,
                                      const SDL_Point*             center,
                                      SDL_RendererFlip             flip) const {
-        return renderTexture(textureEnum, {(screenCoordinates.x()), (screenCoordinates.y()), width, height}, renderer, angle, center, flip);
+        return renderTexture(textureEnum, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
     }
 
     bool Assets::renderTexture(Texture*         texture,
-                                     const ScreenXY&  screenCoordinates,
+                                     const ScreenXY&  screenXY,
                                      int              width,
                                      int              height,
                                      SDL_Renderer*    renderer,
                                      double           angle,
                                      const SDL_Point* center,
                                      SDL_RendererFlip flip) {
-        return renderTexture(texture, {(screenCoordinates.x()), (screenCoordinates.y()), width, height}, renderer, angle, center, flip);
+        return renderTexture(texture, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
     }
 
     TextureWrapper::TEXTURE_ENUM Assets::getTextureEnum(model::Level::DYNAMIC_BLOCK_TYPE type) {

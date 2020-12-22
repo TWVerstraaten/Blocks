@@ -25,8 +25,6 @@ class Application_Edit {
   private:
     enum class RUNNING_MODE { RUNNING, QUIT, DONE_EDITING };
 
-    EXIT_CODE finalizeAndReturnExitCode();
-    EXIT_CODE runningModeToExitCode() const;
     void      init();
     void      mouseWheelEvent();
     void      keyEvent();
@@ -36,15 +34,17 @@ class Application_Edit {
     bool      canStart() const;
     void      getActionsFromEditBoxes();
     void      setFocusOnClick();
+    EXIT_CODE finalizeAndReturnExitCode();
+    EXIT_CODE runningModeToExitCode() const;
 
-    view::Widget* m_focusedWidget = nullptr;
-    Uint32        m_timeStep      = global::m_timeStepSlow;
-    RUNNING_MODE  m_runningMode   = RUNNING_MODE::RUNNING;
-    model::Model* m_model;
-    view::View*   m_view;
-    SDL_Event     m_event{};
     bool          m_rightMouseButtonPressed = false;
     bool          m_leftMouseButtonPressed  = false;
+    Uint32        m_timeStep                = global::m_timeStepSlow;
+    RUNNING_MODE  m_runningMode             = RUNNING_MODE::RUNNING;
+    view::Widget* m_focusedWidget           = nullptr;
+    view::View*   m_view;
+    model::Model* m_model;
+    SDL_Event     m_event{};
     SDL_Point     m_previousMousePosition{};
 };
 

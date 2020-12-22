@@ -4,7 +4,7 @@
 
 #include "Mouse.h"
 
-SDL_Point Mouse::getMouseCoordinates() {
+SDL_Point Mouse::getMouseXY() {
     int xMouse, yMouse;
     SDL_GetMouseState(&xMouse, &yMouse);
     return {xMouse, yMouse};

@@ -31,7 +31,6 @@ class Application_Run {
     void      mouseMoveEvent();
     void      performStep();
 
-    RUNNING_MODE m_runningMode             = RUNNING_MODE::RUNNING;
     bool         m_paused                  = false;
     bool         m_rightMouseButtonPressed = false;
     bool         m_leftMouseButtonPressed  = false;
@@ -39,6 +38,7 @@ class Application_Run {
     Uint32       m_previousTime{};
     Uint32       m_timeSinceLastStep = 0;
     Uint32       m_timeStep          = 300;
+    RUNNING_MODE m_runningMode       = RUNNING_MODE::RUNNING;
     SDL_Event    m_event{};
     SDL_Point    m_previousMousePosition{};
     model::Model m_model;

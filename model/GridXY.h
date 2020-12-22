@@ -24,10 +24,10 @@ namespace model {
         int           y() const;
         size_t        manhattanDistance(const GridXY& other) const;
         GridXY        adjacent(enums::DIRECTION direction) const;
-        static GridXY fromWorldCoordinates(const model::WorldXY& worldCoordinates);
+        static GridXY fromWorldXY(const model::WorldXY& worldXY);
 
         explicit      operator WorldXY() const;
-        GridXY&       operator+=(const GridXY& gridCoordinates);
+        GridXY&       operator+=(const GridXY& gridXY);
         friend GridXY operator+(const GridXY& lhs, const GridXY& rhs);
         friend bool   operator<(const GridXY& lhs, const GridXY& rhs);
         friend bool   operator==(const GridXY& lhs, const GridXY& rhs);

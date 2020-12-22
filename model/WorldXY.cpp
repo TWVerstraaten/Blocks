@@ -21,8 +21,8 @@ namespace model {
         return m_y;
     }
 
-    WorldXY WorldXY::fromGridCoordinates(const model::GridXY& gridCoordinates) {
-        return {m_blockSizeInWorld * gridCoordinates.x(), m_blockSizeInWorld * gridCoordinates.y()};
+    WorldXY WorldXY::fromGridXY(const model::GridXY& gridXY) {
+        return {m_blockSizeInWorld * gridXY.x(), m_blockSizeInWorld * gridXY.y()};
     }
 
     constexpr int WorldXY::halfBlockSizeInWorld() {

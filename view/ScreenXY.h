@@ -21,8 +21,8 @@ namespace view {
       public:
         ScreenXY(int x, int y);
 
-        static ScreenXY fromWorldCoordinates(const model::WorldXY& worldCoordinates, const Grid& grid);
-        static ScreenXY fromGridCoordinates(const model::GridXY& gridCoordinates, const Grid& grid);
+        static ScreenXY fromWorldXY(const model::WorldXY& worldXY, const Grid& grid);
+        static ScreenXY fromGridXY(const model::GridXY& gridXY, const Grid& grid);
 
         int x() const;
         int y() const;

@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <cassert>
 
-Application_Edit::Application_Edit(model::Model* model, view::View* view) : m_model(model), m_view(view) {
+Application_Edit::Application_Edit(model::Model* model, view::View* view) : m_view(view), m_model(model) {
 }
 
 Application_Edit::EXIT_CODE Application_Edit::run() {
@@ -88,7 +88,7 @@ void Application_Edit::keyEvent() {
 
 void Application_Edit::setFocusOnClick() {
     m_focusedWidget          = nullptr;
-    const auto mousePosition = Mouse::getMouseCoordinates();
+    const auto mousePosition = Mouse::getMouseXY();
     for (auto& actionEditBox : m_view->actionEditBoxes()) {
         if (not actionEditBox.pointIsOverWidget(mousePosition)) {
             actionEditBox.loseFocus();
@@ -100,7 +100,7 @@ void Application_Edit::setFocusOnClick() {
 }
 
 void Application_Edit::mouseClickEvent() {
-    const auto mousePosition = Mouse::getMouseCoordinates();
+    const auto mousePosition = Mouse::getMouseXY();
     switch (m_event.button.button) {
         case SDL_BUTTON_RIGHT:
             m_rightMouseButtonPressed = true;
@@ -142,9 +142,9 @@ void Application_Edit::mouseMoveEvent() {
         }
     }
     if (m_rightMouseButtonPressed) {
-        const auto mouseCoordinates = Mouse::getMouseCoordinates();
-        m_view->translate((mouseCoordinates.x - m_previousMousePosition.x), mouseCoordinates.y - m_previousMousePosition.y);
-        m_previousMousePosition = mouseCoordinates;
+        const auto mouseXY = Mouse::getMouseXY();
+        m_view->translate((mouseXY.x - m_previousMousePosition.x), mouseXY.y - m_previousMousePosition.y);
+        m_previousMousePosition = mouseXY;
     }
 }
 

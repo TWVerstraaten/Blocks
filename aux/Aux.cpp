@@ -19,14 +19,14 @@ namespace aux {
         return {static_cast<int>(ca * point.x() - sa * point.y()), static_cast<int>(sa * point.x() + ca * point.y())};
     }
 
-    model::WorldXY rotateClockWiseAboutPivot(const model::WorldXY& point,
+    model::WorldXY rotateAboutPivot(const model::WorldXY& point,
                                                       const model::WorldXY& pivot,
                                                       double                         angleInDegrees) {
         return rotateClockWise(point - pivot, angleInDegrees) + pivot;
     }
 
-    bool pointInBlock(const model::WorldXY& point, const model::GridXY& gridCoordinates) {
-        return gridCoordinates == model::GridXY::fromWorldCoordinates(point);
+    bool pointInBlock(const model::WorldXY& point, const model::GridXY& gridXY) {
+        return gridXY == model::GridXY::fromWorldXY(point);
     }
 
 } // namespace aux
