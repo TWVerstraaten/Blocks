@@ -33,7 +33,6 @@ namespace view {
                     double           angle  = 0.0,
                     const SDL_Point* center = nullptr,
                     SDL_RendererFlip flip   = SDL_FLIP_NONE);
-
         int  width() const;
         int  height() const;
         bool loadedCorrectly() const;

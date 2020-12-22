@@ -4,8 +4,6 @@
 
 #include "Rectangle.h"
 
-#include <cassert>
-
 namespace view {
 
     Rectangle::Rectangle(int left, int top, int width, int height, const SDL_Color& color)

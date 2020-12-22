@@ -5,7 +5,7 @@
 #ifndef BLOCKS_AUX_H
 #define BLOCKS_AUX_H
 
-#include "../model/WorldCoordinates.h"
+#include "../model/WorldXY.h"
 
 #include <SDL2/SDL.h>
 
@@ -13,12 +13,12 @@ namespace aux {
 
     SDL_Rect pad(const SDL_Rect& rect, int padding);
 
-    model::WorldCoordinates rotateClockWise(const model::WorldCoordinates& point, double angleInDegrees);
-    model::WorldCoordinates rotateClockWiseAboutPivot(const model::WorldCoordinates& point,
-                                                      const model::WorldCoordinates& pivot,
+    model::WorldXY rotateClockWise(const model::WorldXY& point, double angleInDegrees);
+    model::WorldXY rotateClockWiseAboutPivot(const model::WorldXY& point,
+                                                      const model::WorldXY& pivot,
                                                       double                         angleInDegrees);
 
-    bool pointInBlock(const model::WorldCoordinates& point, const model::GridCoordinates& gridCoordinates);
+    bool pointInBlock(const model::WorldXY& point, const model::GridXY& gridCoordinates);
 
     //    bool                    pointInAlignedRectangle(const SDL_Rect& rect, const Point& point);
     //    bool                    pointInRectangle(const SDL_Rect& rect, double angle, const Point& pivot, const Point& point);

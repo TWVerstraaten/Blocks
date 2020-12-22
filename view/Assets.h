@@ -2,8 +2,8 @@
 // Created by pc on 16-12-20.
 //
 
-#ifndef BLOCKS_ASSETHANDLER_H
-#define BLOCKS_ASSETHANDLER_H
+#ifndef BLOCKS_ASSETS_H
+#define BLOCKS_ASSETS_H
 
 #include "../model/Level.h"
 #include "Font.h"
@@ -15,14 +15,14 @@
 
 namespace view {
 
-    class ScreenCoordinates;
+    class ScreenXY;
 
-    class AssetHandler {
+    class Assets {
       public:
         enum class FONT_ENUM { MAIN };
 
-        AssetHandler()                          = default;
-        AssetHandler(const AssetHandler& other) = delete;
+        Assets()                    = default;
+        Assets(const Assets& other) = delete;
 
         void init(SDL_Renderer* renderer);
 
@@ -33,7 +33,7 @@ namespace view {
                            const SDL_Point*             center = nullptr,
                            SDL_RendererFlip             flip   = SDL_FLIP_NONE) const;
         bool renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
-                           const ScreenCoordinates&     screenCoordinates,
+                           const ScreenXY&              screenCoordinates,
                            int                          width,
                            int                          height,
                            SDL_Renderer*                renderer,
@@ -47,14 +47,14 @@ namespace view {
                                   double           angle  = 0.0,
                                   const SDL_Point* center = nullptr,
                                   SDL_RendererFlip flip   = SDL_FLIP_NONE);
-        static bool renderTexture(Texture*                 texture,
-                                  const ScreenCoordinates& screenCoordinates,
-                                  int                      width,
-                                  int                      height,
-                                  SDL_Renderer*            renderer,
-                                  double                   angle  = 0.0,
-                                  const SDL_Point*         center = nullptr,
-                                  SDL_RendererFlip         flip   = SDL_FLIP_NONE);
+        static bool renderTexture(Texture*         texture,
+                                  const ScreenXY&  screenCoordinates,
+                                  int              width,
+                                  int              height,
+                                  SDL_Renderer*    renderer,
+                                  double           angle  = 0.0,
+                                  const SDL_Point* center = nullptr,
+                                  SDL_RendererFlip flip   = SDL_FLIP_NONE);
 
         const Font* font(FONT_ENUM fontEnum) const;
 
@@ -68,4 +68,4 @@ namespace view {
         std::map<FONT_ENUM, std::unique_ptr<Font>>             m_fonts;
     };
 } // namespace view
-#endif // BLOCKS_ASSETHANDLER_H
+#endif // BLOCKS_ASSETS_H

@@ -7,7 +7,7 @@
 
 namespace model {
 
-    class WorldCoordinates;
+    class WorldXY;
 
     class WorldVector {
       public:

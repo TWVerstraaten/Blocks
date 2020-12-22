@@ -20,7 +20,7 @@ namespace model {
         Model();
         Model(const Model& other);
 
-        Model& operator=(const Model& other);
+        Model& operator=(const Model& other) = default;
 
         void                               interactClustersWithDynamicBlocks();
         void                               interactClustersWithInstantBlocks();
@@ -29,7 +29,6 @@ namespace model {
         void                               init();
         void                               clear();
         void                               clearEmptyClusters();
-        void                               setClusters(const std::vector<model::Cluster>& clusters);
         const Level&                       level() const;
         const std::vector<model::Cluster>& clusters() const;
         std::vector<model::Cluster>&       clusters();

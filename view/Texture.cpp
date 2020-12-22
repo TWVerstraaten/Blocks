@@ -4,9 +4,7 @@
 
 #include "Texture.h"
 
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
 #include <cassert>
 #include <iostream>
 
@@ -36,8 +34,8 @@ namespace view {
             if (result->m_texture == nullptr) {
                 printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
             } else {
-                result->m_width           = loadedSurface->w;
-                result->m_height          = loadedSurface->h;
+                result->m_width           = static_cast<size_t>(loadedSurface->w);
+                result->m_height          = static_cast<size_t>(loadedSurface->h);
                 result->m_loadedCorrectly = true;
                 SDL_FreeSurface(loadedSurface);
             }
@@ -46,9 +44,9 @@ namespace view {
     }
 
     std::unique_ptr<Texture> Texture::createFromText(const std::string& textureText,
-                                                    SDL_Color          textColor,
-                                                    SDL_Renderer*      renderer,
-                                                    TTF_Font*          font) {
+                                                     SDL_Color          textColor,
+                                                     SDL_Renderer*      renderer,
+                                                     TTF_Font*          font) {
 
         std::unique_ptr<Texture> result{new Texture()};
 
@@ -63,8 +61,8 @@ namespace view {
             printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
             return result;
         }
-        result->m_width  = textSurface->w;
-        result->m_height = textSurface->h;
+        result->m_width  = static_cast<size_t>(textSurface->w);
+        result->m_height = static_cast<size_t>(textSurface->h);
 
         SDL_FreeSurface(textSurface);
 
@@ -103,11 +101,11 @@ namespace view {
     }
 
     int Texture::width() const {
-        return m_width;
+        return static_cast<int>(m_width);
     }
 
     int Texture::height() const {
-        return m_height;
+        return static_cast<int>(m_height);
     }
 
     bool Texture::loadedCorrectly() const {

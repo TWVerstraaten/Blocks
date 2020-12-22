@@ -7,14 +7,7 @@
 #include "Application_Edit.h"
 #include "Application_Run.h"
 
-Application_Level::Application_Level() {
-}
-
-SDL_Point Application_Level::getMouseCoordinates() {
-    int xMouse, yMouse;
-    SDL_GetMouseState(&xMouse, &yMouse);
-    return {xMouse, yMouse};
-}
+Application_Level::Application_Level() = default;
 
 void Application_Level::run() {
 

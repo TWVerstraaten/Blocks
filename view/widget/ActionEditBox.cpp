@@ -6,8 +6,9 @@
 
 #include "../../aux/Aux.h"
 #include "../../model/Cluster.h"
-#include "../AssetHandler.h"
+#include "../Assets.h"
 #include "../Color.h"
+#include "../Mouse.h"
 #include "../Rectangle.h"
 
 #include <algorithm>
@@ -16,8 +17,8 @@
 
 namespace view {
     namespace widget {
-        ActionEditBox::ActionEditBox(int x, int y, int w, int h, const AssetHandler* assetHandler, const model::Cluster& cluster)
-            : Widget({x, y, w, h}), m_assetHandler(assetHandler) {
+        ActionEditBox::ActionEditBox(int x, int y, Uint16 w, Uint16 h, const Assets* assetHandler, const model::Cluster& cluster)
+            : RectWidget({x, y, w, h}), m_assetHandler(assetHandler) {
             if (cluster.actions().empty()) {
                 m_strings.emplace_back(" ");
             } else {
@@ -35,10 +36,10 @@ namespace view {
             int yOffset = 0;
             for (const auto& str : m_strings) {
                 m_yOffsets.push_back(yOffset);
-                const auto text     = str.length() == 0 ? " " : str;
+                const auto text     = str.length() == 0 ? std::string(" ") : str;
                 bool       canParse = model::Action::canParse(str) || text == " ";
                 m_textures.emplace_back(Texture::createFromText(
-                    text, canParse ? color::BLACK : color::RED, renderer, m_assetHandler->font(AssetHandler::FONT_ENUM::MAIN)->font()));
+                    text, canParse ? color::BLACK : color::RED, renderer, m_assetHandler->font(Assets::FONT_ENUM::MAIN)->font()));
                 yOffset += m_textures.back()->height();
             }
             m_yOffsets.push_back(yOffset);
@@ -58,12 +59,12 @@ namespace view {
 
             int yOffset = 0;
             for (const auto& texture : m_textures) {
-                AssetHandler::renderTexture(texture.get(), {m_rect.x, m_rect.y + yOffset, texture->width(), texture->height()}, renderer);
+                Assets::renderTexture(texture.get(), {m_rect.x, m_rect.y + yOffset, texture->width(), texture->height()}, renderer);
                 yOffset += texture->height();
             }
         }
 
-        void ActionEditBox::handleKeyEvent(const SDL_Event& event) {
+        void ActionEditBox::keyEvent(const SDL_Event& event) {
             if (m_selectionData.m_first.m_stringIndex == std::numeric_limits<size_t>::max()) {
                 return;
             } else {
@@ -75,32 +76,22 @@ namespace view {
                     case SDL_TEXTINPUT:
                         insertText(std::string(event.text.text));
                         break;
+                    default:
+                        break;
                 }
             }
         }
 
-        void ActionEditBox::handleMouseClickEvent(const SDL_Event& event, bool leftClicked) {
+        void ActionEditBox::leftClickEvent(const SDL_Event& event) {
             assert(event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP);
-            if (leftClicked) {
-                return;
-            }
             m_selectionData.reset();
-            int xMouse, yMouse;
-            SDL_GetMouseState(&xMouse, &yMouse);
-
-            xMouse -= m_rect.x;
-            yMouse -= m_rect.y;
-            getSelectionFromLocalMousePoint(xMouse, yMouse, m_selectionData.m_first);
+            getSelectionFromLocalMousePoint(m_selectionData.m_first);
             m_selectionData.m_mode = SelectionData::MODE::SINGLE;
             m_blinkTimeOffset      = SDL_GetTicks();
         }
 
-        const std::vector<std::string>& ActionEditBox::strings() const {
-            return m_strings;
-        }
-
         void ActionEditBox::loseFocus() {
-            Widget::loseFocus();
+            RectWidget::loseFocus();
             m_selectionData.reset();
         }
 
@@ -139,6 +130,8 @@ namespace view {
                 case SDLK_RIGHT:
                     moveRight(SDL_GetModState() & KMOD_SHIFT);
                     break;
+                default:
+                    break;
             }
             m_blinkTimeOffset = SDL_GetTicks();
         }
@@ -155,13 +148,16 @@ namespace view {
                     copyIfSelectionNotEmpty();
                     deleteRange(m_selectionData.m_first, m_selectionData.m_last);
                     break;
+                default:
+                    break;
             }
         }
 
-        void ActionEditBox::getSelectionFromLocalMousePoint(const int xMouse, const int yMouse, SelectionData::Data& data) const {
-            data.m_stringIndex = 0;
-            if (yMouse >= 0) {
-                while (data.m_stringIndex < m_yOffsets.size() && yMouse > m_yOffsets.at(data.m_stringIndex)) {
+        void ActionEditBox::getSelectionFromLocalMousePoint(SelectionData::Data& data) const {
+            const SDL_Point mousePoint = Mouse::getMouseCoordinates();
+            data.m_stringIndex         = 0;
+            if (mousePoint.y >= m_rect.y) {
+                while (data.m_stringIndex < m_yOffsets.size() && mousePoint.y > m_yOffsets.at(data.m_stringIndex) + m_rect.y) {
                     ++data.m_stringIndex;
                 }
                 if (data.m_stringIndex > 0) {
@@ -175,21 +171,13 @@ namespace view {
 
             const auto& selected = m_strings.at(data.m_stringIndex);
             data.m_charIndex     = selected.length();
-            while (widthOfString(selected.substr(0, data.m_charIndex)) > xMouse) {
+            while (widthOfString(selected.substr(0, data.m_charIndex)) > mousePoint.x - m_rect.x) {
                 --data.m_charIndex;
             }
         }
 
-        void ActionEditBox::handleMouseMoveEvent(const SDL_Point& mousePointInWorld, bool leftClicked) {
-            if (not leftClicked) {
-                return;
-            }
-            int xMouse, yMouse;
-            SDL_GetMouseState(&xMouse, &yMouse);
-
-            xMouse -= m_rect.x;
-            yMouse -= m_rect.y;
-            getSelectionFromLocalMousePoint(xMouse, yMouse, m_selectionData.m_last);
+        void ActionEditBox::mouseDragEvent(const SDL_Event& event) {
+            getSelectionFromLocalMousePoint(m_selectionData.m_last);
             m_selectionData.m_mode = SelectionData::MODE::DOUBLE;
             m_selectionData.fix();
             m_blinkTimeOffset = SDL_GetTicks();
@@ -291,7 +279,7 @@ namespace view {
         }
 
         int ActionEditBox::widthOfString(const std::string& string) const {
-            return m_assetHandler->font(AssetHandler::FONT_ENUM::MAIN)->widthOfString(string);
+            return m_assetHandler->font(Assets::FONT_ENUM::MAIN)->widthOfString(string);
         }
 
         void ActionEditBox::doBackSpace() {
@@ -562,5 +550,6 @@ namespace view {
             result.m_charIndex   = std::min(data.m_charIndex, m_strings.at(result.m_stringIndex).length());
             return result;
         }
+
     } // namespace widget
 } // namespace view

@@ -71,3 +71,6 @@ bool model::Action::canParse(const std::string& string) {
     const auto str2 = trimWhiteSpace(trimmed.substr(1));
     return (m_modifierMap.find(str1) != m_modifierMap.end()) && (m_actionMap.find(str2) != m_actionMap.end());
 }
+
+model::Action::Action(model::Action::VALUE action, model::Action::MODIFIER modifier) : m_action(action), m_modifier(modifier) {
+}

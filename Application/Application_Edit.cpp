@@ -4,7 +4,7 @@
 
 #include "Application_Edit.h"
 
-#include "Application_Level.h"
+#include "../view/Mouse.h"
 
 #include <algorithm>
 #include <cassert>
@@ -37,27 +37,18 @@ Application_Edit::EXIT_CODE Application_Edit::run() {
                 case SDL_MOUSEMOTION:
                     mouseMoveEvent();
                     break;
-                case SDL_MOUSEWHEEL: {
+                case SDL_MOUSEWHEEL:
                     mouseWheelEvent();
-                }
+                    break;
+                default:
+                    break;
             }
         }
         if (m_runningMode != RUNNING_MODE::RUNNING) {
-            break;
+            return finalizeAndReturnExitCode();
         }
         m_view->draw(*m_model);
         SDL_RenderPresent(m_view->renderer());
-    }
-    SDL_StopTextInput();
-    assert(m_runningMode != RUNNING_MODE::RUNNING);
-    switch (m_runningMode) {
-        case RUNNING_MODE::QUIT:
-            return EXIT_CODE::QUIT;
-        case RUNNING_MODE::DONE_EDITING:
-            getActionsFromEditBoxes();
-            return EXIT_CODE::DONE_EDITING;
-        default:
-            return EXIT_CODE::QUIT;
     }
 }
 
@@ -66,24 +57,10 @@ void Application_Edit::mouseWheelEvent() {
 }
 
 void Application_Edit::keyEvent() {
-    switch (m_event.type) {
-        case SDL_TEXTINPUT:
-            for (auto& actionEditBox : m_view->actionEditBoxes()) {
-                if (actionEditBox.hasFocus()) {
-                    actionEditBox.handleKeyEvent(m_event);
-                    return;
-                }
-            }
-            break;
-        case SDL_KEYDOWN:
-            m_pressedKeys.insert(m_event.key.keysym.sym);
-            for (auto& actionEditBox : m_view->actionEditBoxes()) {
-                if (actionEditBox.hasFocus()) {
-                    actionEditBox.handleKeyEvent(m_event);
-                    return;
-                }
-            }
-
+    if (m_focusedWidget) {
+        m_focusedWidget->keyEvent(m_event);
+    } else {
+        if (m_event.type == SDL_KEYDOWN) {
             switch (m_event.key.keysym.sym) {
                 case SDLK_SPACE:
                     if (canStart()) {
@@ -91,45 +68,39 @@ void Application_Edit::keyEvent() {
                     }
                     break;
                 case SDLK_1:
-                    m_timeStep    = Application_Level::m_timeStepSlow;
+                    m_timeStep    = global::m_timeStepSlow;
                     m_runningMode = RUNNING_MODE::DONE_EDITING;
                     break;
                 case SDLK_2:
-                    m_timeStep    = Application_Level::m_timeStepMedium;
+                    m_timeStep    = global::m_timeStepMedium;
                     m_runningMode = RUNNING_MODE::DONE_EDITING;
                     break;
                 case SDLK_3:
-                    m_timeStep    = Application_Level::m_timeStepFast;
+                    m_timeStep    = global::m_timeStepFast;
                     m_runningMode = RUNNING_MODE::DONE_EDITING;
                     break;
                 default:
                     break;
             }
-            break;
-        case SDL_KEYUP:
-            if (m_pressedKeys.find(m_event.key.keysym.sym) != m_pressedKeys.end()) {
-                m_pressedKeys.erase(m_pressedKeys.find(m_event.key.keysym.sym));
-            }
-            break;
+        }
+    }
+}
+
+void Application_Edit::setFocusOnClick() {
+    m_focusedWidget          = nullptr;
+    const auto mousePosition = Mouse::getMouseCoordinates();
+    for (auto& actionEditBox : m_view->actionEditBoxes()) {
+        if (not actionEditBox.pointIsOverWidget(mousePosition)) {
+            actionEditBox.loseFocus();
+        } else {
+            actionEditBox.getFocus();
+            m_focusedWidget = &actionEditBox;
+        }
     }
 }
 
 void Application_Edit::mouseClickEvent() {
-    const auto mousePosition = Application_Level::getMouseCoordinates();
-
-    for (auto& actionEditBox : m_view->actionEditBoxes()) {
-        if (not actionEditBox.pointIsOverWidget(mousePosition)) {
-            actionEditBox.loseFocus();
-        }
-    }
-    for (auto& actionEditBox : m_view->actionEditBoxes()) {
-        if (actionEditBox.pointIsOverWidget(mousePosition)) {
-            actionEditBox.getFocus();
-            actionEditBox.handleMouseClickEvent(m_event, m_leftMouseButtonPressed);
-            break;
-        }
-    }
-
+    const auto mousePosition = Mouse::getMouseCoordinates();
     switch (m_event.button.button) {
         case SDL_BUTTON_RIGHT:
             m_rightMouseButtonPressed = true;
@@ -141,6 +112,13 @@ void Application_Edit::mouseClickEvent() {
             break;
         default:
             break;
+    }
+
+    setFocusOnClick();
+    if (m_focusedWidget) {
+        if (m_leftMouseButtonPressed) {
+            m_focusedWidget->leftClickEvent(m_event);
+        }
     }
 }
 
@@ -158,15 +136,13 @@ void Application_Edit::mouseReleaseEvent() {
 }
 
 void Application_Edit::mouseMoveEvent() {
-    const auto mousePosition = Application_Level::getMouseCoordinates();
-    for (auto& actionEditBox : m_view->actionEditBoxes()) {
-        if (actionEditBox.hasFocus()) {
-            actionEditBox.handleMouseMoveEvent(mousePosition, m_leftMouseButtonPressed);
-            return;
+    if (m_focusedWidget) {
+        if (m_leftMouseButtonPressed) {
+            m_focusedWidget->mouseDragEvent(m_event);
         }
     }
     if (m_rightMouseButtonPressed) {
-        const auto mouseCoordinates = Application_Level::getMouseCoordinates();
+        const auto mouseCoordinates = Mouse::getMouseCoordinates();
         m_view->translate((mouseCoordinates.x - m_previousMousePosition.x), mouseCoordinates.y - m_previousMousePosition.y);
         m_previousMousePosition = mouseCoordinates;
     }
@@ -196,4 +172,24 @@ void Application_Edit::getActionsFromEditBoxes() {
 
 Uint32 Application_Edit::timeStep() const {
     return m_timeStep;
+}
+
+Application_Edit::EXIT_CODE Application_Edit::runningModeToExitCode() const {
+    switch (m_runningMode) {
+        case RUNNING_MODE::QUIT:
+            return EXIT_CODE::QUIT;
+        case RUNNING_MODE::DONE_EDITING:
+            return EXIT_CODE::DONE_EDITING;
+        default:
+            return EXIT_CODE::QUIT;
+    }
+}
+
+Application_Edit::EXIT_CODE Application_Edit::finalizeAndReturnExitCode() {
+    assert(m_runningMode != RUNNING_MODE::RUNNING);
+    if (m_runningMode == RUNNING_MODE::DONE_EDITING) {
+        getActionsFromEditBoxes();
+    }
+    SDL_StopTextInput();
+    return runningModeToExitCode();
 }

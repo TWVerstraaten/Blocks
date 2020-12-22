@@ -22,11 +22,6 @@ bool view::widget::SelectionData::empty() const {
     return m_first.m_stringIndex == std::numeric_limits<size_t>::max();
 }
 
-bool view::widget::SelectionData::isReversed() const {
-    return (m_first.m_stringIndex > m_last.m_stringIndex) ||
-           (m_first.m_stringIndex == m_last.m_stringIndex && m_first.m_charIndex > m_last.m_charIndex);
-}
-
 bool view::widget::SelectionData::isAtStart() const {
     return m_first.m_stringIndex == 0 && m_first.m_charIndex == 0;
 }

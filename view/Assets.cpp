@@ -2,26 +2,25 @@
 // Created by pc on 16-12-20.
 //
 
-#include "AssetHandler.h"
+#include "Assets.h"
 
 #include "../aux/Aux.h"
-#include "ScreenCoordinates.h"
+#include "ScreenXY.h"
 
 #include <cassert>
-#include <memory>
 
 namespace view {
-    void AssetHandler::init(SDL_Renderer* renderer) {
+    void Assets::init(SDL_Renderer* renderer) {
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ARROW_CW, renderer);
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ARROW_CCW, renderer);
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::CLUSTER, renderer);
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::KILL, renderer);
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ERROR, renderer);
 
-        m_fonts[FONT_ENUM::MAIN] = std::unique_ptr<Font>(new Font("/home/pc/Documents/c++/Blocks/assets/UbuntuMono-Bold.ttf", 28));
+        m_fonts[FONT_ENUM::MAIN] = std::make_unique<Font>("/home/pc/Documents/c++/Blocks/assets/UbuntuMono-Bold.ttf", 28);
     }
 
-    bool AssetHandler::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
+    bool Assets::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
                                      const SDL_Rect&              destination,
                                      SDL_Renderer*                renderer,
                                      double                       angle,
@@ -37,7 +36,7 @@ namespace view {
         }
     }
 
-    bool AssetHandler::renderTexture(Texture*         texture,
+    bool Assets::renderTexture(Texture*         texture,
                                      const SDL_Rect&  destination,
                                      SDL_Renderer*    renderer,
                                      double           angle,
@@ -51,39 +50,29 @@ namespace view {
         }
     }
 
-    bool AssetHandler::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
-                                     const ScreenCoordinates&     screenCoordinates,
+    bool Assets::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
+                                     const ScreenXY&              screenCoordinates,
                                      int                          width,
                                      int                          height,
                                      SDL_Renderer*                renderer,
                                      double                       angle,
                                      const SDL_Point*             center,
                                      SDL_RendererFlip             flip) const {
-        return renderTexture(textureEnum,
-                             {static_cast<int>(screenCoordinates.x()), static_cast<int>(screenCoordinates.y()), width, height},
-                             renderer,
-                             angle,
-                             center,
-                             flip);
+        return renderTexture(textureEnum, {(screenCoordinates.x()), (screenCoordinates.y()), width, height}, renderer, angle, center, flip);
     }
 
-    bool AssetHandler::renderTexture(Texture*                 texture,
-                                     const ScreenCoordinates& screenCoordinates,
-                                     int                      width,
-                                     int                      height,
-                                     SDL_Renderer*            renderer,
-                                     double                   angle,
-                                     const SDL_Point*         center,
-                                     SDL_RendererFlip         flip) {
-        return renderTexture(texture,
-                             {static_cast<int>(screenCoordinates.x()), static_cast<int>(screenCoordinates.y()), width, height},
-                             renderer,
-                             angle,
-                             center,
-                             flip);
+    bool Assets::renderTexture(Texture*         texture,
+                                     const ScreenXY&  screenCoordinates,
+                                     int              width,
+                                     int              height,
+                                     SDL_Renderer*    renderer,
+                                     double           angle,
+                                     const SDL_Point* center,
+                                     SDL_RendererFlip flip) {
+        return renderTexture(texture, {(screenCoordinates.x()), (screenCoordinates.y()), width, height}, renderer, angle, center, flip);
     }
 
-    TextureWrapper::TEXTURE_ENUM AssetHandler::getTextureEnum(model::Level::DYNAMIC_BLOCK_TYPE type) {
+    TextureWrapper::TEXTURE_ENUM Assets::getTextureEnum(model::Level::DYNAMIC_BLOCK_TYPE type) {
         switch (type) {
             case model::Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
                 return TextureWrapper::TEXTURE_ENUM::ARROW_CW;
@@ -94,7 +83,7 @@ namespace view {
         }
     }
 
-    TextureWrapper::TEXTURE_ENUM AssetHandler::getTextureEnum(model::Level::INSTANT_BLOCK_TYPE type) {
+    TextureWrapper::TEXTURE_ENUM Assets::getTextureEnum(model::Level::INSTANT_BLOCK_TYPE type) {
         switch (type) {
             case model::Level::INSTANT_BLOCK_TYPE::KILL:
                 return TextureWrapper::TEXTURE_ENUM::KILL;
@@ -103,12 +92,12 @@ namespace view {
         }
     }
 
-    const Font* AssetHandler::font(AssetHandler::FONT_ENUM fontEnum) const {
+    const Font* Assets::font(Assets::FONT_ENUM fontEnum) const {
         assert(m_fonts.find(fontEnum) != m_fonts.end());
         return m_fonts.at(fontEnum).get();
     }
 
-    void AssetHandler::loadTextureWrapper(TextureWrapper::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
+    void Assets::loadTextureWrapper(TextureWrapper::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
         m_textures.insert({textureEnum, TextureWrapper(textureEnum, renderer)});
     }
 

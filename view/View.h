@@ -5,7 +5,7 @@
 #ifndef BLOCKS_VIEW_H
 #define BLOCKS_VIEW_H
 
-#include "AssetHandler.h"
+#include "Assets.h"
 #include "Grid.h"
 #include "widget/ActionEditBox.h"
 
@@ -17,14 +17,14 @@ namespace model {
     class Model;
     class Cluster;
     class Level;
-    class WorldCoordinates;
+    class WorldXY;
 } // namespace model
 
 class SDL_Window;
 class SDL_Renderer;
 
 namespace view {
-    class ScreenCoordinates;
+    class ScreenXY;
 
     class View {
       public:
@@ -32,24 +32,23 @@ namespace view {
         ~View();
         View(const View& other) = delete;
 
-        void                                      draw(const model::Model& model);
-        void                                      zoom(int amount);
-        void                                      translate(int dx, int dy);
-        void                                      addActionEditBox(const model::Cluster& cluster);
-        const std::vector<widget::ActionEditBox>& actionEditBoxes() const;
-        std::vector<widget::ActionEditBox>&       actionEditBoxes();
-        SDL_Renderer*                             renderer() const;
-        void drawRectangle(const ScreenCoordinates& point, int width, int height, const SDL_Color& color) const;
-        void drawRectangle(const model::WorldCoordinates& point, int widthInWorld, int heightInWorld, const SDL_Color& color) const;
-        void drawPoint(const ScreenCoordinates& point, const SDL_Color& color, int pointSize) const;
-        void drawPoint(const model::WorldCoordinates& point, const SDL_Color& color, int pointSize) const;
-        void drawHorizontalLine(const ScreenCoordinates& point, int length, const SDL_Color& color, size_t lineThickness) const;
-        void drawHorizontalLine(const model::WorldCoordinates& point,
+        void                                draw(const model::Model& model);
+        void                                zoom(int amount);
+        void                                translate(int dx, int dy);
+        void                                addActionEditBox(const model::Cluster& cluster);
+        std::vector<widget::ActionEditBox>& actionEditBoxes();
+        SDL_Renderer*                       renderer() const;
+        void drawRectangle(const ScreenXY& point, int width, int height, const SDL_Color& color) const;
+        void drawRectangle(const model::WorldXY& point, int widthInWorld, int heightInWorld, const SDL_Color& color) const;
+        void drawPoint(const ScreenXY& point, const SDL_Color& color, int pointSize) const;
+        void drawPoint(const model::WorldXY& point, const SDL_Color& color, int pointSize) const;
+        void drawHorizontalLine(const ScreenXY& point, int length, const SDL_Color& color, size_t lineThickness) const;
+        void drawHorizontalLine(const model::WorldXY& point,
                                 int                            lengthInWorld,
                                 const SDL_Color&               color,
                                 size_t                         lineThickness) const;
-        void drawVerticalLine(const ScreenCoordinates& point, int length, const SDL_Color& color, size_t lineThickness) const;
-        void drawVerticalLine(const model::WorldCoordinates& point, int lengthInWorld, const SDL_Color& color, size_t lineThickness) const;
+        void drawVerticalLine(const ScreenXY& point, int length, const SDL_Color& color, size_t lineThickness) const;
+        void drawVerticalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, Uint16 lineThickness) const;
         const Grid& grid() const;
         void        clear();
 
@@ -65,7 +64,7 @@ namespace view {
         SDL_Window*                        m_window        = nullptr;
         SDL_Renderer*                      m_renderer      = nullptr;
         Grid                               m_grid;
-        std::unique_ptr<AssetHandler>      m_assetsHandler{new AssetHandler()};
+        std::unique_ptr<Assets>      m_assetsHandler{new Assets()};
         std::vector<widget::ActionEditBox> m_actionEditBoxes;
     };
 } // namespace view

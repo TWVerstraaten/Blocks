@@ -15,6 +15,8 @@ namespace model {
         enum class VALUE { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
         enum class MODIFIER { NONE, IGNORE, SKIP };
 
+        Action(VALUE action, MODIFIER modifier);
+
         static VALUE    actionFromString(const std::string& string);
         static MODIFIER modifierFromString(const std::string& string);
 

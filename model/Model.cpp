@@ -29,7 +29,7 @@ namespace model {
     void Model::interactClustersWithDynamicBlocks() {
         for (auto& cluster : m_clusters) {
             for (auto it = cluster.gridCoordinates().begin(); it != cluster.gridCoordinates().end(); ++it) {
-                cluster.addPendingOperation(*it, m_level.dynamicBlockAt(GridCoordinates(it->x(), it->y())));
+                cluster.addPendingOperation(*it, m_level.dynamicBlockAt(GridXY(it->x(), it->y())));
             }
         }
         for (auto& cluster : m_clusters) {
@@ -42,7 +42,7 @@ namespace model {
         for (auto& cluster : m_clusters) {
             bool isDone = false;
             for (auto it = cluster.gridCoordinates().begin(); it != cluster.gridCoordinates().end() && not isDone; ++it) {
-                switch (m_level.instantBlockAt(GridCoordinates(it->x(), it->y()))) {
+                switch (m_level.instantBlockAt(GridXY(it->x(), it->y()))) {
                     case Level::INSTANT_BLOCK_TYPE::NONE:
                         break;
                     case Level::INSTANT_BLOCK_TYPE::KILL:
@@ -60,7 +60,7 @@ namespace model {
             if (not cluster.isAlive()) {
                 continue;
             }
-            const auto points = cluster.cornerPoints(5);
+            const auto points = cluster.cornerPoints(1);
             for (const auto& point : points) {
                 if (not m_level.isInLevel(point)) {
                     cluster.kill();
@@ -110,7 +110,7 @@ namespace model {
 
         for (int i = -1; i != 14; ++i) {
             for (int j = -1; j != 9; ++j) {
-                m_level.addLevelBlock({static_cast<int>(i), static_cast<int>(j)});
+                m_level.addLevelBlock({(i), (j)});
             }
         }
     }
@@ -120,17 +120,9 @@ namespace model {
         m_level.clear();
     }
 
-    Model& Model::operator=(const Model& other) {
-        m_level    = other.m_level;
-        m_clusters = other.m_clusters;
-        return *this;
-    }
     void Model::clearEmptyClusters() {
         m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }),
                          m_clusters.end());
     }
 
-    void Model::setClusters(const std::vector<model::Cluster>& clusters) {
-        m_clusters = clusters;
-    }
 } // namespace model

@@ -5,7 +5,6 @@
 #include "TextureWrapper.h"
 
 #include <cassert>
-#include <iostream>
 
 static double flipIfSmallerThanOne(double a) {
     assert(a > 0);
@@ -50,9 +49,10 @@ void view::TextureWrapper::init(view::TextureWrapper::TEXTURE_ENUM textureEnum, 
             m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/arrow_ccw.png", renderer));
             break;
         case TEXTURE_ENUM::CLUSTER:
-            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/large.png", renderer));
-            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/medium.png", renderer));
-            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/small.png", renderer));
+            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/cluster.png", renderer));
+            //            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/medium.png",
+            //            renderer)); m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/small.png",
+            //            renderer));
             break;
         case TEXTURE_ENUM::KILL:
             m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/kill.png", renderer));

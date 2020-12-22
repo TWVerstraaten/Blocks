@@ -5,7 +5,6 @@
 #include "Cluster.h"
 
 #include "../aux/Aux.h"
-#include "WorldCoordinates.h"
 
 #include <algorithm>
 #include <cassert>
@@ -13,7 +12,7 @@
 
 namespace model {
 
-    Cluster::Cluster(std::list<GridCoordinates>&& gridCoordinates, const GridCoordinates& offset)
+    Cluster::Cluster(std::list<GridXY>&& gridCoordinates, const GridXY& offset)
         : m_worldOffset(0, 0), m_gridCoordinates(gridCoordinates) {
         for (auto& idx : m_gridCoordinates) {
             idx += offset;
@@ -45,16 +44,16 @@ namespace model {
         m_fractionOfPhase = 1.0;
         switch (m_actions[m_actionIndex].m_action) {
             case Action::VALUE::MOVE_UP:
-                m_worldOffset = {0, WorldCoordinates::m_blockSizeInWorld};
+                m_worldOffset = {0, WorldXY::m_blockSizeInWorld};
                 break;
             case Action::VALUE::MOVE_DOWN:
-                m_worldOffset = {0, -WorldCoordinates::m_blockSizeInWorld};
+                m_worldOffset = {0, -WorldXY::m_blockSizeInWorld};
                 break;
             case Action::VALUE::MOVE_LEFT:
-                m_worldOffset = {WorldCoordinates::m_blockSizeInWorld, 0};
+                m_worldOffset = {WorldXY::m_blockSizeInWorld, 0};
                 break;
             case Action::VALUE::MOVE_RIGHT:
-                m_worldOffset = {-WorldCoordinates::m_blockSizeInWorld, 0};
+                m_worldOffset = {-WorldXY::m_blockSizeInWorld, 0};
                 break;
         }
 
@@ -62,7 +61,7 @@ namespace model {
         m_actionIndex %= m_actions.size();
     }
 
-    void Cluster::rotateClockWiseAbout(const GridCoordinates& pivotGridCoordinates) {
+    void Cluster::rotateClockWiseAbout(const GridXY& pivotGridCoordinates) {
         for (auto& gridCoordinates : m_gridCoordinates) {
             gridCoordinates = {pivotGridCoordinates.x() + pivotGridCoordinates.y() - gridCoordinates.y(),
                                pivotGridCoordinates.y() - pivotGridCoordinates.x() + gridCoordinates.x()};
@@ -70,7 +69,7 @@ namespace model {
         std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionClockWise);
     }
 
-    void Cluster::rotateCounterClockWiseAbout(const GridCoordinates& pivotGridCoordinates) {
+    void Cluster::rotateCounterClockWiseAbout(const GridXY& pivotGridCoordinates) {
         for (auto& gridCoordinates : m_gridCoordinates) {
             gridCoordinates = {pivotGridCoordinates.x() - pivotGridCoordinates.y() + gridCoordinates.y(),
                                pivotGridCoordinates.y() + pivotGridCoordinates.x() - gridCoordinates.x()};
@@ -81,13 +80,13 @@ namespace model {
     Action Cluster::rotateActionClockWise(Action action) {
         switch (action.m_action) {
             case Action::VALUE::MOVE_UP:
-                return {Action::VALUE::MOVE_RIGHT, action.m_modifier};
+                return Action{Action::VALUE::MOVE_RIGHT, action.m_modifier};
             case Action::VALUE::MOVE_DOWN:
-                return {Action::VALUE::MOVE_LEFT, action.m_modifier};
+                return Action{Action::VALUE::MOVE_LEFT, action.m_modifier};
             case Action::VALUE::MOVE_LEFT:
-                return {Action::VALUE::MOVE_UP, action.m_modifier};
+                return Action{Action::VALUE::MOVE_UP, action.m_modifier};
             case Action::VALUE::MOVE_RIGHT:
-                return {Action::VALUE::MOVE_DOWN, action.m_modifier};
+                return Action{Action::VALUE::MOVE_DOWN, action.m_modifier};
             default:
                 return action;
         }
@@ -112,7 +111,7 @@ namespace model {
         m_actions.push_back(action);
     }
 
-    void Cluster::removeBLock(const GridCoordinates& gridCoordinates) {
+    void Cluster::removeBLock(const GridXY& gridCoordinates) {
         const auto it = std::find(m_gridCoordinates.begin(), m_gridCoordinates.end(), gridCoordinates);
         assert(it != m_gridCoordinates.end());
         m_gridCoordinates.erase(it);
@@ -122,16 +121,11 @@ namespace model {
         return m_gridCoordinates.empty();
     }
 
-    const std::list<GridCoordinates>& Cluster::gridCoordinates() const {
+    const std::list<GridXY>& Cluster::gridCoordinates() const {
         return m_gridCoordinates;
     }
 
-    bool Cluster::intersects(const GridCoordinates& gridCoordinates) const {
-        const auto it = std::find(m_gridCoordinates.begin(), m_gridCoordinates.end(), gridCoordinates);
-        return it != m_gridCoordinates.end();
-    }
-
-    void Cluster::addPendingOperation(const GridCoordinates& gridCoordinates, Level::DYNAMIC_BLOCK_TYPE blockType) {
+    void Cluster::addPendingOperation(const GridXY& gridCoordinates, Level::DYNAMIC_BLOCK_TYPE blockType) {
         if (blockType == Level::DYNAMIC_BLOCK_TYPE::NONE) {
             return;
         }
@@ -178,7 +172,7 @@ namespace model {
         return m_fractionOfPhase * m_angle;
     }
 
-    const GridCoordinates& Cluster::rotationPivot() const {
+    const GridXY& Cluster::rotationPivot() const {
         return m_rotationPivot;
     }
 
@@ -190,15 +184,15 @@ namespace model {
         return {static_cast<int>(m_worldOffset.x() * m_fractionOfPhase), static_cast<int>(m_worldOffset.y() * m_fractionOfPhase)};
     }
 
-    std::set<WorldCoordinates> Cluster::cornerPoints(int shrinkInWorld) const {
-        std::set<WorldCoordinates> result;
+    std::set<WorldXY> Cluster::cornerPoints(int shrinkInWorld) const {
+        std::set<WorldXY> result;
         switch (m_currentPhase) {
             case CURRENT_PHASE::NONE:
                 for (const auto& it : m_gridCoordinates) {
-                    for (const GridCoordinates cornerOffset :
-                         {GridCoordinates{0, 0}, GridCoordinates{0, 1}, GridCoordinates{1, 1}, GridCoordinates{1, 0}}) {
-                        result.emplace(WorldCoordinates::fromGridCoordinates(it + cornerOffset) +
-                                       WorldCoordinates{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
+                    for (const GridXY cornerOffset :
+                         {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
+                        result.emplace(WorldXY::fromGridCoordinates(it + cornerOffset) +
+                                       WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
                                                         shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()});
                     }
                 }
@@ -206,24 +200,24 @@ namespace model {
             case CURRENT_PHASE::TRANSLATING: {
                 const WorldVector offset = dynamicWorldOffset();
                 for (const auto& it : m_gridCoordinates) {
-                    for (const GridCoordinates cornerOffset :
-                         {GridCoordinates{0, 0}, GridCoordinates{0, 1}, GridCoordinates{1, 1}, GridCoordinates{1, 0}}) {
-                        result.emplace(WorldCoordinates::fromGridCoordinates(it + cornerOffset) +
-                                       WorldCoordinates{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
+                    for (const GridXY cornerOffset :
+                         {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
+                        result.emplace(WorldXY::fromGridCoordinates(it + cornerOffset) +
+                                       WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
                                                         shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()} +
                                        offset);
                     }
                 }
             } break;
             case CURRENT_PHASE::ROTATING: {
-                const WorldCoordinates center = WorldCoordinates::fromGridCoordinates(m_rotationPivot) + WorldCoordinates::halfBlockInWorld;
+                const WorldXY          center = WorldXY::fromGridCoordinates(m_rotationPivot) + WorldXY::halfBlockInWorld;
                 const double           theta  = -angle();
                 for (const auto& it : m_gridCoordinates) {
-                    for (const GridCoordinates cornerOffset :
-                         {GridCoordinates{0, 0}, GridCoordinates{0, 1}, GridCoordinates{1, 1}, GridCoordinates{1, 0}}) {
+                    for (const GridXY cornerOffset :
+                         {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
                         result.emplace(
-                            aux::rotateClockWiseAboutPivot(WorldCoordinates::fromGridCoordinates(it + cornerOffset) +
-                                                               WorldCoordinates{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
+                            aux::rotateClockWiseAboutPivot(WorldXY::fromGridCoordinates(it + cornerOffset) +
+                                                                          WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
                                                                                 shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()},
                                                            center,
                                                            theta));
@@ -250,7 +244,7 @@ namespace model {
         m_rotationPivot   = {0, 0};
     }
 
-    void Cluster::setRotation(double angle, const GridCoordinates& pivot) {
+    void Cluster::setRotation(double angle, const GridXY& pivot) {
         assert(angle != 0.0);
         clearPhase();
         m_currentPhase    = CURRENT_PHASE::ROTATING;

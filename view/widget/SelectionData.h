@@ -25,7 +25,6 @@ namespace view {
             Data m_first;
             Data m_last;
 
-            bool        isReversed() const;
             static bool isReversed(const Data& first, const Data& last);
             bool        isAtStart() const;
 

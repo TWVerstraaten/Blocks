@@ -9,7 +9,7 @@
 
 namespace view {
 
-    Font::Font(const std::string& path, size_t fontSize)
+    Font::Font(const std::string& path, Uint16 fontSize)
         : m_font(TTF_OpenFont(path.c_str(), fontSize)), m_loadedCorrectly(m_font != nullptr) {
         if (m_font == nullptr) {
             std::cout << "Could not load font! SDL_ttf Error: " << TTF_GetError() << '\n';

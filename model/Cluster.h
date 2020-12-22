@@ -21,37 +21,36 @@ namespace model {
     class Cluster {
 
       public:
-        Cluster(std::list<GridCoordinates>&& gridCoordinates, const GridCoordinates& offset);
+        Cluster(std::list<GridXY>&& gridCoordinates, const GridXY& offset);
 
         Cluster& operator=(const Cluster& other);
 
         void                              doAction();
-        void                              addPendingOperation(const GridCoordinates& gridCoordinates, Level::DYNAMIC_BLOCK_TYPE blockType);
+        void                              addPendingOperation(const GridXY& gridCoordinates, Level::DYNAMIC_BLOCK_TYPE blockType);
         void                              performPendingOperation();
-        void                              removeBLock(const GridCoordinates& gridCoordinates);
+        void                              removeBLock(const GridXY& gridCoordinates);
         void                              update(double fractionOfPhase);
         void                              addAction(Action action);
         void                              kill();
         void                              clearActions();
         bool                              empty() const;
-        bool                              intersects(const GridCoordinates& gridCoordinates) const;
         bool                              isAlive() const;
         double                            angle() const;
         size_t                            currentActionIndex() const;
-        const GridCoordinates&            rotationPivot() const;
+        const GridXY&            rotationPivot() const;
         WorldVector                       dynamicWorldOffset() const;
-        const std::list<GridCoordinates>& gridCoordinates() const;
+        const std::list<GridXY>& gridCoordinates() const;
         const std::vector<Action>&        actions() const;
-        std::set<WorldCoordinates>        cornerPoints(int shrinkInWorld) const;
+        std::set<WorldXY>        cornerPoints(int shrinkInWorld) const;
 
       private:
         enum class CURRENT_PHASE { NONE, TRANSLATING, ROTATING };
-        typedef std::pair<const GridCoordinates&, Level::DYNAMIC_BLOCK_TYPE> Block;
+        typedef std::pair<const GridXY&, Level::DYNAMIC_BLOCK_TYPE> Block;
 
-        void rotateClockWiseAbout(const GridCoordinates& pivotGridCoordinates);
-        void rotateCounterClockWiseAbout(const GridCoordinates& pivotGridCoordinates);
+        void rotateClockWiseAbout(const GridXY& pivotGridCoordinates);
+        void rotateCounterClockWiseAbout(const GridXY& pivotGridCoordinates);
         void clearPhase();
-        void setRotation(double angle, const GridCoordinates& pivot);
+        void setRotation(double angle, const GridXY& pivot);
 
         static Action rotateActionClockWise(Action action);
         static Action rotateActionCounterClockWise(Action action);
@@ -61,9 +60,9 @@ namespace model {
         double                     m_angle           = 0.0;
         size_t                     m_actionIndex     = 0;
         CURRENT_PHASE              m_currentPhase    = CURRENT_PHASE::NONE;
-        GridCoordinates            m_rotationPivot;
+        GridXY                     m_rotationPivot;
         WorldVector                m_worldOffset;
-        std::list<GridCoordinates> m_gridCoordinates;
+        std::list<GridXY> m_gridCoordinates;
         std::vector<Action>        m_actions;
         std::vector<Block>         m_pendingOperations;
     };

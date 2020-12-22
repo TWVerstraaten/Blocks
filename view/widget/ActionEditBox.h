@@ -6,8 +6,8 @@
 #define BLOCKS_ACTIONEDITBOX_H
 
 #include "../Texture.h"
+#include "RectWidget.h"
 #include "SelectionData.h"
-#include "Widget.h"
 
 #include <SDL2/SDL.h>
 #include <memory>
@@ -21,23 +21,22 @@ namespace model {
 }
 
 namespace view {
-    class AssetHandler;
+    class Assets;
     namespace widget {
 
-        class ActionEditBox : public Widget {
+        class ActionEditBox : public RectWidget {
           public:
-            ActionEditBox(int x, int y, int w, int h, const AssetHandler* assetHandler, const model::Cluster& cluster);
+            ActionEditBox(int x, int y, Uint16 w, Uint16 h, const Assets* assetHandler, const model::Cluster& cluster);
 
-            void                            render(SDL_Renderer* renderer);
-            void                            init(SDL_Renderer* renderer);
-            void                            handleKeyEvent(const SDL_Event& event) override;
-            void                            handleMouseClickEvent(const SDL_Event& event, bool leftClicked) override;
-            void                            handleMouseMoveEvent(const SDL_Point& mousePointInWorld, bool leftClicked);
-            void                            loseFocus() override;
-            void                            updateClusterActions(model::Cluster& cluster);
-            void                            setHighLightedLine(size_t index);
-            bool                            canParse() const;
-            const std::vector<std::string>& strings() const;
+            void render(SDL_Renderer* renderer);
+            void init(SDL_Renderer* renderer);
+            void keyEvent(const SDL_Event& event) override;
+            void leftClickEvent(const SDL_Event& event) override;
+            void mouseDragEvent(const SDL_Event& event) override;
+            void loseFocus() override;
+            void updateClusterActions(model::Cluster& cluster);
+            void setHighLightedLine(size_t index);
+            bool canParse() const;
 
           private:
             enum class HIGHLIGHT_MODE { SOFT, HARD };
@@ -45,7 +44,7 @@ namespace view {
             void insertEmptyBeforeLine(size_t lineNumber);
             void handleKeyDown(const SDL_Event& event);
             void handleKeyDownControlPressed(const SDL_Event& event);
-            void getSelectionFromLocalMousePoint(int xMouse, int yMouse, SelectionData::Data& data) const;
+            void getSelectionFromLocalMousePoint(SelectionData::Data& data) const;
             void renderSelection(SDL_Renderer* renderer);
             void drawDashAt(const SelectionData::Data& data, SDL_Renderer* renderer) const;
             void doBackSpace();
@@ -77,7 +76,7 @@ namespace view {
             bool                                  m_needsUpdate     = true;
             Uint32                                m_blinkTimeOffset = 0;
             SelectionData                         m_selectionData;
-            const AssetHandler*                   m_assetHandler;
+            const Assets*                   m_assetHandler;
             std::vector<int>                      m_yOffsets;
             std::vector<std::string>              m_strings;
             std::vector<std::unique_ptr<Texture>> m_textures;
