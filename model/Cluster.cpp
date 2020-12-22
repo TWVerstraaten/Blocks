@@ -188,14 +188,16 @@ namespace model {
         return {static_cast<int>(m_worldOffset.x() * m_fractionOfPhase), static_cast<int>(m_worldOffset.y() * m_fractionOfPhase)};
     }
 
-    std::set<WorldCoordinates> Cluster::cornerPoints() const {
+    std::set<WorldCoordinates> Cluster::cornerPoints(int shrinkInWorld) const {
         std::set<WorldCoordinates> result;
         switch (m_currentPhase) {
             case CURRENT_PHASE::NONE:
                 for (const auto& it : m_gridCoordinates) {
                     for (const GridCoordinates cornerOffset :
                          {GridCoordinates{0, 0}, GridCoordinates{0, 1}, GridCoordinates{1, 1}, GridCoordinates{1, 0}}) {
-                        result.emplace(WorldCoordinates::fromGridCoordinates(it + cornerOffset));
+                        result.emplace(WorldCoordinates::fromGridCoordinates(it + cornerOffset) +
+                                       WorldCoordinates{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
+                                                        shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()});
                     }
                 }
                 break;
@@ -204,7 +206,10 @@ namespace model {
                 for (const auto& it : m_gridCoordinates) {
                     for (const GridCoordinates cornerOffset :
                          {GridCoordinates{0, 0}, GridCoordinates{0, 1}, GridCoordinates{1, 1}, GridCoordinates{1, 0}}) {
-                        result.emplace(WorldCoordinates::fromGridCoordinates(it + cornerOffset) + offset);
+                        result.emplace(WorldCoordinates::fromGridCoordinates(it + cornerOffset) +
+                                       WorldCoordinates{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
+                                                        shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()} +
+                                       offset);
                     }
                 }
             } break;
@@ -215,7 +220,11 @@ namespace model {
                     for (const GridCoordinates cornerOffset :
                          {GridCoordinates{0, 0}, GridCoordinates{0, 1}, GridCoordinates{1, 1}, GridCoordinates{1, 0}}) {
                         result.emplace(
-                            aux::rotateClockWiseAboutPivot(WorldCoordinates::fromGridCoordinates(it + cornerOffset), center, theta));
+                            aux::rotateClockWiseAboutPivot(WorldCoordinates::fromGridCoordinates(it + cornerOffset) +
+                                                               WorldCoordinates{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
+                                                                                shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()},
+                                                           center,
+                                                           theta));
                     }
                 }
             } break;

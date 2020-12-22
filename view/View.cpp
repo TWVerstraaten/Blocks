@@ -75,7 +75,7 @@ namespace view {
         drawBlocks(model.level());
 
         for (const auto& cluster : model.clusters()) {
-            const auto points = cluster.cornerPoints();
+            const auto points = cluster.cornerPoints(0);
             for (const auto& it : points) {
                 //                        drawRectangle(model::GridCoordinates::fromWorldCoordinates(it),
                 //                        model::WorldCoordinates::m_blockSizeInWorld,
@@ -85,7 +85,7 @@ namespace view {
         }
 
         for (auto& actionEditBox : m_actionEditBoxes) {
-            actionEditBox->render(m_renderer);
+            actionEditBox.render(m_renderer);
         }
     }
 
@@ -175,11 +175,14 @@ namespace view {
     }
 
     void View::addActionEditBox(const model::Cluster& cluster) {
-        m_actionEditBoxes.emplace_back(
-            new widget::ActionEditBox(0, m_actionEditBoxes.size() * 200, 200, 200, m_assetsHandler.get(), cluster));
+        m_actionEditBoxes.emplace_back(widget::ActionEditBox(0, m_actionEditBoxes.size() * 200, 200, 200, m_assetsHandler.get(), cluster));
     }
 
-    const std::vector<std::unique_ptr<widget::ActionEditBox>>& View::actionEditBoxes() const {
+    const std::vector<widget::ActionEditBox>& View::actionEditBoxes() const {
+        return m_actionEditBoxes;
+    }
+
+    std::vector<widget::ActionEditBox>& View::actionEditBoxes() {
         return m_actionEditBoxes;
     }
 
@@ -212,8 +215,10 @@ namespace view {
         drawRectangle(ScreenCoordinates{point.x(), static_cast<int>(point.y() - lineThickness / 2)}, length, lineThickness, color);
     }
 
-    void
-    View::drawHorizontalLine(int lengthInWorld, const SDL_Color& color, const model::WorldCoordinates& point, size_t lineThickness) const {
+    void View::drawHorizontalLine(int                            lengthInWorld,
+                                  const SDL_Color&               color,
+                                  const model::WorldCoordinates& point,
+                                  size_t                         lineThickness) const {
         drawRectangle(
             model::WorldCoordinates{point.x(), static_cast<int>(point.y() - lineThickness / 2)}, lengthInWorld, lineThickness, color);
     }
@@ -222,8 +227,10 @@ namespace view {
         drawRectangle(ScreenCoordinates{static_cast<int>(point.x() - lineThickness / 2), point.y()}, lineThickness, length, color);
     }
 
-    void
-    View::drawVerticalLine(const model::WorldCoordinates& point, int lengthInWorld, const SDL_Color& color, size_t lineThickness) const {
+    void View::drawVerticalLine(const model::WorldCoordinates& point,
+                                int                            lengthInWorld,
+                                const SDL_Color&               color,
+                                size_t                         lineThickness) const {
         drawRectangle(
             model::WorldCoordinates{point.x(), static_cast<int>(point.y() - lineThickness / 2)}, lineThickness, lengthInWorld, color);
     }

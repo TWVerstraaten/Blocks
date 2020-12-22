@@ -41,7 +41,7 @@ namespace model {
         WorldVector                       dynamicWorldOffset() const;
         const std::list<GridCoordinates>& gridCoordinates() const;
         const std::vector<ClusterAction>& clusterActions() const;
-        std::set<model::WorldCoordinates> cornerPoints() const;
+        std::set<WorldCoordinates>        cornerPoints(int shrinkInWorld) const;
 
       private:
         enum class CURRENT_PHASE { NONE, TRANSLATING, ROTATING };

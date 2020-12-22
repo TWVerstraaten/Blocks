@@ -56,7 +56,7 @@ namespace model {
             if (not cluster.isAlive()) {
                 continue;
             }
-            const auto points = cluster.cornerPoints();
+            const auto points = cluster.cornerPoints(5);
             for (const auto& point : points) {
                 if (not m_level.isInLevel(point)) {
                     cluster.kill();
@@ -124,5 +124,9 @@ namespace model {
     void Model::clearEmptyClusters() {
         m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }),
                          m_clusters.end());
+    }
+
+    void Model::setClusters(const std::vector<model::Cluster>& clusters) {
+        m_clusters = clusters;
     }
 } // namespace model

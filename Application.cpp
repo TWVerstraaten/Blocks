@@ -51,14 +51,14 @@ void Application::loop() {
                 }
             }
         }
-        const auto dt = SDL_GetTicks() - m_lastTime;
-        if (not m_isPaused) {
+        const auto dt = SDL_GetTicks() - m_previousTime;
+        if (not m_paused) {
             update(static_cast<double>(1.9 * dt) / m_stepTimeInMilliSeconds);
             m_model.interactClustersWithLevel();
         }
-        m_lastTime = SDL_GetTicks();
+        m_previousTime = SDL_GetTicks();
         m_view.draw(m_model);
-        if (!m_isPaused) {
+        if (!m_paused) {
             m_timeSinceLastStep += dt;
         }
 
@@ -79,8 +79,8 @@ void Application::keyEvent() {
     switch (m_event.type) {
         case SDL_TEXTINPUT:
             for (auto& actionEditBox : m_view.actionEditBoxes()) {
-                if (actionEditBox->hasFocus()) {
-                    actionEditBox->handleKeyEvent(m_event);
+                if (actionEditBox.hasFocus()) {
+                    actionEditBox.handleKeyEvent(m_event);
                     return;
                 }
             }
@@ -93,8 +93,8 @@ void Application::keyEvent() {
             }
             m_pressedKeys.insert(m_event.key.keysym.sym);
             for (auto& actionEditBox : m_view.actionEditBoxes()) {
-                if (actionEditBox->hasFocus()) {
-                    actionEditBox->handleKeyEvent(m_event);
+                if (actionEditBox.hasFocus()) {
+                    actionEditBox.handleKeyEvent(m_event);
                     return;
                 }
             }
@@ -131,14 +131,14 @@ void Application::mouseClickEvent() {
     const auto mousePosition = getMouseCoordinates();
 
     for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        if (not actionEditBox->pointIsOverWidget(mousePosition)) {
-            actionEditBox->loseFocus();
+        if (not actionEditBox.pointIsOverWidget(mousePosition)) {
+            actionEditBox.loseFocus();
         }
     }
     for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        if (actionEditBox->pointIsOverWidget(mousePosition) && actionEditBox->canGetFocus()) {
-            actionEditBox->getFocus();
-            actionEditBox->handleMouseClickEvent(m_event, m_leftMouseButtonPressed);
+        if (actionEditBox.pointIsOverWidget(mousePosition) && actionEditBox.canGetFocus()) {
+            actionEditBox.getFocus();
+            actionEditBox.handleMouseClickEvent(m_event, m_leftMouseButtonPressed);
             break;
         }
     }
@@ -174,8 +174,8 @@ void Application::mouseMoveEvent() {
     const auto mousePosition = getMouseCoordinates();
     bool       isDone        = false;
     for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        if (actionEditBox->hasFocus()) {
-            actionEditBox->handleMouseMoveEvent(mousePosition, m_leftMouseButtonPressed);
+        if (actionEditBox.hasFocus()) {
+            actionEditBox.handleMouseMoveEvent(mousePosition, m_leftMouseButtonPressed);
             isDone = true;
             break;
         }
@@ -201,19 +201,20 @@ void Application::setTimeStep(Uint32 timeStep) {
 }
 
 void Application::resetModel() {
-    m_lastTime          = SDL_GetTicks();
+    m_previousTime      = SDL_GetTicks();
     m_timeSinceLastStep = 0;
     m_levelHasStarted   = false;
+    m_paused            = true;
 
     m_view.clear();
-    m_model = m_initialModel;
+    m_model.setClusters(m_initialModel.clusters());
 
     for (auto& cluster : m_model.clusters()) {
         m_view.addActionEditBox(cluster);
     }
 
     for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        actionEditBox->setCanGetFocus(true);
+        actionEditBox.setCanGetFocus(true);
     }
 }
 
@@ -221,16 +222,16 @@ void Application::unpause() {
     if (not m_levelHasStarted) {
         startRun();
     } else {
-        m_isPaused = false;
+        m_paused = false;
     }
 }
 
 void Application::pause() {
-    m_isPaused = true;
+    m_paused = true;
 }
 
 void Application::togglePause() {
-    if (m_isPaused) {
+    if (m_paused) {
         unpause();
     } else {
         pause();
@@ -238,23 +239,21 @@ void Application::togglePause() {
 }
 
 void Application::startRun() {
-    assert(m_view.actionEditBoxes().size() == m_initialModel.clusters().size());
-    bool can = canStart();
-    if (not can) {
+    if (not canStart()) {
         return;
     }
-    m_isPaused        = false;
-    m_levelHasStarted = true;
+    m_paused = false;
 
     auto it = m_initialModel.clusters().begin();
     for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        actionEditBox->setCanGetFocus(false);
-        actionEditBox->updateClusterActions(*it);
+        actionEditBox.setCanGetFocus(false);
+        actionEditBox.updateClusterActions(*it);
         ++it;
     }
     resetModel();
+    m_levelHasStarted = true;
     for (auto& actionEditBox : m_view.actionEditBoxes()) {
-        actionEditBox->setCanGetFocus(false);
+        actionEditBox.setCanGetFocus(false);
     }
 }
 
@@ -265,7 +264,7 @@ void Application::init() {
 }
 
 bool Application::canStart() {
-    return std::all_of(m_view.actionEditBoxes().begin(),
-                       m_view.actionEditBoxes().end(),
-                       [](const std::unique_ptr<view::widget::ActionEditBox>& box) { return box->canParse(); });
+    return std::all_of(m_view.actionEditBoxes().begin(), m_view.actionEditBoxes().end(), [](const view::widget::ActionEditBox& box) {
+        return box.canParse();
+    });
 }

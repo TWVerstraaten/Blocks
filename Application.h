@@ -35,7 +35,7 @@ class Application {
     void startRun();
     bool canStart();
 
-    bool                  m_isPaused                = true;
+    bool                  m_paused                  = true;
     bool                  m_rightMouseButtonPressed = false;
     bool                  m_leftMouseButtonPressed  = false;
     bool                  m_levelHasStarted         = false;
@@ -44,7 +44,7 @@ class Application {
     model::Model          m_initialModel;
     view::View            m_view;
     SDL_Event             m_event;
-    Uint32                m_lastTime;
+    Uint32                m_previousTime;
     Uint32                m_timeSinceLastStep;
     Uint32                m_stepTimeInMilliSeconds = 300;
     std::set<SDL_Keycode> m_pressedKeys;
