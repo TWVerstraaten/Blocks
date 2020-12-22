@@ -14,8 +14,9 @@ namespace aux {
     SDL_Rect pad(const SDL_Rect& rect, int padding);
 
     model::WorldCoordinates rotateClockWise(const model::WorldCoordinates& point, double angleInDegrees);
-    model::WorldCoordinates rotateClockWiseAboutPivot(const model::WorldCoordinates& point, const model::WorldCoordinates& pivot,
-                                                      double angleInDegrees);
+    model::WorldCoordinates rotateClockWiseAboutPivot(const model::WorldCoordinates& point,
+                                                      const model::WorldCoordinates& pivot,
+                                                      double                         angleInDegrees);
 
     bool pointInBlock(const model::WorldCoordinates& point, const model::GridCoordinates& gridCoordinates);
 

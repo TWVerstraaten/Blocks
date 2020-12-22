@@ -7,7 +7,8 @@
 #include "../model/Model.h"
 #include "../model/WorldCoordinates.h"
 #include "Color.h"
-#include "Rectangle.h"
+#include "ScreenCoordinates.h"
+#include "ScreenVector.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -95,7 +96,7 @@ namespace view {
             for (auto it = cluster.gridCoordinates().begin(); it != cluster.gridCoordinates().end(); ++it) {
                 const SDL_Point center = {static_cast<int>(m_grid.blockSizeInScreen() * (0.5 + cluster.rotationPivot().x() - it->x())),
                                           static_cast<int>(m_grid.blockSizeInScreen() * (0.5 + cluster.rotationPivot().y() - it->y()))};
-                assert(m_assetsHandler->renderTexture(AssetHandler::TEXTURE_ENUM::CLUSTER,
+                assert(m_assetsHandler->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
                                                       ScreenCoordinates::fromGridCoordinates(*it, m_grid) + offset,
                                                       m_grid.blockSizeInScreen(),
                                                       m_grid.blockSizeInScreen(),
@@ -115,7 +116,7 @@ namespace view {
             if (currentCoordinate.x() > size.x) {
                 break;
             }
-            drawVerticalLine(currentCoordinate, size.y + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 2);
+            drawVerticalLine(currentCoordinate, size.y + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 1);
             ++x;
         }
         x = m_grid.firstColumnInView();
@@ -124,7 +125,7 @@ namespace view {
             if (currentCoordinate.y() > size.y) {
                 break;
             }
-            drawHorizontalLine(currentCoordinate, size.x + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 2);
+            drawHorizontalLine(currentCoordinate, size.x + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 1);
             ++y;
         }
     }
@@ -208,19 +209,28 @@ namespace view {
     }
 
     void View::drawHorizontalLine(const ScreenCoordinates& point, int length, const SDL_Color& color, size_t lineThickness) const {
-        drawRectangle(ScreenCoordinates{point.x(), static_cast<int>(point.y() - lineThickness / 2)}, length, lineThickness, color);
+        if (lineThickness == 1) {
+            setDrawColor(color);
+            SDL_RenderDrawLine(m_renderer, point.x(), point.y(), point.x() + length, point.y());
+        } else {
+            drawRectangle(ScreenCoordinates{point.x(), static_cast<int>(point.y() - lineThickness / 2)}, length, lineThickness, color);
+        }
     }
 
-    void View::drawHorizontalLine(int                            lengthInWorld,
+    void View::drawHorizontalLine(const model::WorldCoordinates& point,
+                                  int                            lengthInWorld,
                                   const SDL_Color&               color,
-                                  const model::WorldCoordinates& point,
                                   size_t                         lineThickness) const {
-        drawRectangle(
-            model::WorldCoordinates{point.x(), static_cast<int>(point.y() - lineThickness / 2)}, lengthInWorld, lineThickness, color);
+        drawHorizontalLine(ScreenCoordinates::fromWorldCoordinates(point, m_grid), lengthInWorld, color, lineThickness);
     }
 
     void View::drawVerticalLine(const ScreenCoordinates& point, int length, const SDL_Color& color, size_t lineThickness) const {
-        drawRectangle(ScreenCoordinates{static_cast<int>(point.x() - lineThickness / 2), point.y()}, lineThickness, length, color);
+        if (lineThickness == 1) {
+            setDrawColor(color);
+            SDL_RenderDrawLine(m_renderer, point.x(), point.y(), point.x(), point.y() + length);
+        } else {
+            drawRectangle(ScreenCoordinates{static_cast<int>(point.x() - lineThickness / 2), point.y()}, lineThickness, length, color);
+        }
     }
 
     void View::drawVerticalLine(const model::WorldCoordinates& point,

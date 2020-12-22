@@ -5,8 +5,6 @@
 #ifndef BLOCKS_SCREENCOORDINATES_H
 #define BLOCKS_SCREENCOORDINATES_H
 
-#include "ScreenVector.h"
-
 #include <SDL2/SDL.h>
 
 namespace model {
@@ -17,6 +15,7 @@ namespace model {
 namespace view {
 
     class Grid;
+    class ScreenVector;
 
     class ScreenCoordinates {
       public:

@@ -13,11 +13,7 @@ namespace view {
 
     class Rectangle {
       public:
-        Rectangle(int left, int top, int width, int height, const SDL_Color& color);
-        Rectangle(SDL_Rect rect, const SDL_Color& color);
-
-        static void render(int left, int top, int width, int height, const SDL_Color& color,
-                           SDL_Renderer* renderer);
+        static void render(int left, int top, int width, int height, const SDL_Color& color, SDL_Renderer* renderer);
         static void render(SDL_Rect rect, const SDL_Color& color, SDL_Renderer* renderer);
 
         void render(SDL_Renderer* renderer) const;
@@ -25,6 +21,9 @@ namespace view {
         void setColor(SDL_Color color);
 
       private:
+        Rectangle(int left, int top, int width, int height, const SDL_Color& color);
+        Rectangle(SDL_Rect rect, const SDL_Color& color);
+
         SDL_Rect  m_rect;
         SDL_Color m_color = {0, 0, 0};
     };

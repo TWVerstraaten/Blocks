@@ -12,19 +12,18 @@
 
 #include <algorithm>
 #include <cassert>
-#include <iostream>
 #include <sstream>
 
 namespace view {
     namespace widget {
         ActionEditBox::ActionEditBox(int x, int y, int w, int h, const AssetHandler* assetHandler, const model::Cluster& cluster)
             : Widget({x, y, w, h}), m_assetHandler(assetHandler) {
-            if (cluster.clusterActions().empty()) {
+            if (cluster.actions().empty()) {
                 m_strings.emplace_back(" ");
             } else {
-                for (const auto& action : cluster.clusterActions()) {
-                    m_strings.emplace_back(model::ClusterAction::stringFromModifier(action.m_modifier) + " " +
-                                           model::ClusterAction::stringFromAction(action.m_action));
+                for (const auto& action : cluster.actions()) {
+                    m_strings.emplace_back(model::Action::stringFromModifier(action.m_modifier) + " " +
+                                           model::Action::stringFromAction(action.m_action));
                 }
             }
         }
@@ -37,8 +36,8 @@ namespace view {
             for (const auto& str : m_strings) {
                 m_yOffsets.push_back(yOffset);
                 const auto text     = str.length() == 0 ? " " : str;
-                bool       canParse = model::ClusterAction::canParse(str) || text == " ";
-                m_textures.emplace_back(Texture::buildFromText(
+                bool       canParse = model::Action::canParse(str) || text == " ";
+                m_textures.emplace_back(Texture::createFromText(
                     text, canParse ? color::BLACK : color::RED, renderer, m_assetHandler->font(AssetHandler::FONT_ENUM::MAIN)->font()));
                 yOffset += m_textures.back()->height();
             }
@@ -74,7 +73,7 @@ namespace view {
                         handleKeyDown(event);
                         break;
                     case SDL_TEXTINPUT:
-                        handleTextInput(event);
+                        insertText(std::string(event.text.text));
                         break;
                 }
             }
@@ -390,14 +389,12 @@ namespace view {
 
         void ActionEditBox::moveDown() {
             swapIfRangeIsSelected();
-            ++m_selectionData.m_first.m_stringIndex;
-            if (m_selectionData.m_first.m_stringIndex >= m_strings.size()) {
-                assert(m_selectionData.m_first.m_stringIndex == m_strings.size());
+            if (m_selectionData.m_first.m_stringIndex + 1 == m_strings.size()) {
                 m_strings.emplace_back("");
                 m_needsUpdate = true;
             }
-            potentiallyDecrementFirstCharIndex();
-            m_selectionData.m_mode = SelectionData::MODE::SINGLE;
+            m_selectionData.m_first = moveSelectionOneDown(m_selectionData.m_first);
+            m_selectionData.m_mode  = SelectionData::MODE::SINGLE;
         }
 
         void ActionEditBox::moveRight(bool shiftPressed) {
@@ -464,20 +461,6 @@ namespace view {
             }
         }
 
-        void ActionEditBox::handleTextInput(const SDL_Event& event) {
-            if (m_selectionData.m_mode == SelectionData::MODE::DOUBLE) {
-                deleteRange(m_selectionData.m_first, m_selectionData.m_last);
-            }
-            auto& str = m_strings[m_selectionData.m_first.m_stringIndex];
-            if (!(SDL_GetModState() & KMOD_CTRL &&
-                  (event.text.text[0] == 'c' || event.text.text[0] == 'C' || event.text.text[0] == 'v' || event.text.text[0] == 'V'))) {
-                str =
-                    str.substr(0, m_selectionData.m_first.m_charIndex) + event.text.text + str.substr(m_selectionData.m_first.m_charIndex);
-                m_needsUpdate = true;
-                ++m_selectionData.m_first.m_charIndex;
-            }
-        }
-
         std::string ActionEditBox::selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const {
             if (m_selectionData.m_mode == SelectionData::MODE::SINGLE) {
                 return "";
@@ -520,13 +503,15 @@ namespace view {
             if (text.length() == 0) {
                 return;
             }
+            std::string upperCaseString;
+            std::transform(text.cbegin(), text.cend(), std::back_inserter(upperCaseString), ::toupper);
             m_needsUpdate = true;
-            m_strings[m_selectionData.m_first.m_stringIndex].insert(m_selectionData.m_first.m_charIndex, text);
+            m_strings[m_selectionData.m_first.m_stringIndex].insert(m_selectionData.m_first.m_charIndex, upperCaseString);
             const auto lastNewLine = m_strings[m_selectionData.m_first.m_stringIndex].find_last_of('\n');
             if (lastNewLine == std::string::npos) {
-                m_selectionData.m_first.m_charIndex += text.length();
+                m_selectionData.m_first.m_charIndex += upperCaseString.length();
             } else {
-                m_selectionData.m_first.m_charIndex += text.length() - lastNewLine - 1;
+                m_selectionData.m_first.m_charIndex += upperCaseString.length() - lastNewLine - 1;
                 std::cout << m_selectionData.m_first.m_charIndex << '\n';
                 std::string str = std::move(m_strings[m_selectionData.m_first.m_stringIndex]);
                 m_strings.erase(m_strings.begin() + m_selectionData.m_first.m_stringIndex);
@@ -554,20 +539,28 @@ namespace view {
         void ActionEditBox::updateClusterActions(model::Cluster& cluster) {
             cluster.clearActions();
             for (const auto& str : m_strings) {
-                if (model::ClusterAction::canParse(str)) {
-                    cluster.addAction(model::ClusterAction::fromString(str));
+                if (model::Action::canParse(str)) {
+                    cluster.addAction(model::Action::fromString(str));
                 }
             }
         }
 
         bool ActionEditBox::canParse() const {
-            return std::all_of(m_strings.begin(), m_strings.end(), &model::ClusterAction::canParse);
+            return std::all_of(m_strings.begin(), m_strings.end(), &model::Action::canParse);
         }
 
         void ActionEditBox::setHighLightedLine(size_t index) {
             m_selectionData.m_first.m_stringIndex = index;
             m_selectionData.m_first.m_charIndex   = 0;
             m_selectionData.m_mode                = SelectionData::MODE::SINGLE;
+        }
+
+        SelectionData::Data ActionEditBox::moveSelectionOneDown(const SelectionData::Data& data) const {
+            assert(data.m_stringIndex + 1 < m_strings.size());
+            SelectionData::Data result;
+            result.m_stringIndex = data.m_stringIndex + 1ul;
+            result.m_charIndex   = std::min(data.m_charIndex, m_strings.at(result.m_stringIndex).length());
+            return result;
         }
     } // namespace widget
 } // namespace view

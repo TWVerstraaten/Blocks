@@ -76,11 +76,6 @@ void Application_Edit::keyEvent() {
             }
             break;
         case SDL_KEYDOWN:
-            if (m_pressedKeys.find(m_event.key.keysym.sym) != m_pressedKeys.end()) {
-                if (m_event.key.keysym.sym != SDLK_DELETE) {
-                    return;
-                }
-            }
             m_pressedKeys.insert(m_event.key.keysym.sym);
             for (auto& actionEditBox : m_view->actionEditBoxes()) {
                 if (actionEditBox.hasFocus()) {
@@ -164,20 +159,16 @@ void Application_Edit::mouseReleaseEvent() {
 
 void Application_Edit::mouseMoveEvent() {
     const auto mousePosition = Application_Level::getMouseCoordinates();
-    bool       isDone        = false;
     for (auto& actionEditBox : m_view->actionEditBoxes()) {
         if (actionEditBox.hasFocus()) {
             actionEditBox.handleMouseMoveEvent(mousePosition, m_leftMouseButtonPressed);
-            isDone = true;
-            break;
+            return;
         }
     }
-    if (not isDone) {
-        if (m_rightMouseButtonPressed) {
-            const auto mouseCoordinates = Application_Level::getMouseCoordinates();
-            m_view->translate((mouseCoordinates.x - m_previousMousePosition.x), mouseCoordinates.y - m_previousMousePosition.y);
-            m_previousMousePosition = mouseCoordinates;
-        }
+    if (m_rightMouseButtonPressed) {
+        const auto mouseCoordinates = Application_Level::getMouseCoordinates();
+        m_view->translate((mouseCoordinates.x - m_previousMousePosition.x), mouseCoordinates.y - m_previousMousePosition.y);
+        m_previousMousePosition = mouseCoordinates;
     }
 }
 

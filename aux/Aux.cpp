@@ -4,9 +4,7 @@
 
 #include "Aux.h"
 
-#include "../model/WorldCoordinates.h"
-
-#include <iostream>
+#include "../model/GridCoordinates.h"
 
 namespace aux {
 
@@ -21,27 +19,14 @@ namespace aux {
         return {static_cast<int>(ca * point.x() - sa * point.y()), static_cast<int>(sa * point.x() + ca * point.y())};
     }
 
-    model::WorldCoordinates rotateClockWiseAboutPivot(const model::WorldCoordinates& point, const model::WorldCoordinates& pivot,
-                                                      double angleInDegrees) {
+    model::WorldCoordinates rotateClockWiseAboutPivot(const model::WorldCoordinates& point,
+                                                      const model::WorldCoordinates& pivot,
+                                                      double                         angleInDegrees) {
         return rotateClockWise(point - pivot, angleInDegrees) + pivot;
     }
 
     bool pointInBlock(const model::WorldCoordinates& point, const model::GridCoordinates& gridCoordinates) {
         return gridCoordinates == model::GridCoordinates::fromWorldCoordinates(point);
     }
-
-    //    bool pointInAlignedRectangle(const SDL_Rect& rect, const Point& point) {
-    //        const SDL_Point p = point;
-    //        return SDL_PointInRect(&p, &rect);
-    //    }
-    //
-    //    bool pointInRectangle(const SDL_Rect& rect, double angle, const Point& pivot, const Point& point) {
-    //        const auto rotatedPoint = rotateClockWiseAboutPivot(point, pivot, angle);
-    //        return pointInAlignedRectangle(rect, rotatedPoint);
-    //    }
-    //
-    //    Point center(const SDL_Rect& rect) {
-    //        return Point(rect.x + rect.w / 2, rect.y + rect.h / 2);
-    //    }
 
 } // namespace aux

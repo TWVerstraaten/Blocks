@@ -5,14 +5,14 @@
 #ifndef BLOCKS_CLUSTER_H
 #define BLOCKS_CLUSTER_H
 
-#include "ClusterAction.h"
-#include "Enums.h"
+#include "Action.h"
 #include "Level.h"
 #include "WorldVector.h"
 
 #include <list>
 #include <set>
 #include <tuple>
+#include <vector>
 
 class SDL_Renderer;
 
@@ -26,45 +26,45 @@ namespace model {
         Cluster& operator=(const Cluster& other);
 
         void                              doAction();
-        void                              addPendingOperation(const GridCoordinates& indexPair, Level::DYNAMIC_BLOCK_TYPE blockType);
+        void                              addPendingOperation(const GridCoordinates& gridCoordinates, Level::DYNAMIC_BLOCK_TYPE blockType);
         void                              performPendingOperation();
-        void                              removeBLock(const GridCoordinates& indexPair);
+        void                              removeBLock(const GridCoordinates& gridCoordinates);
         void                              update(double fractionOfPhase);
-        void                              addAction(ClusterAction action);
+        void                              addAction(Action action);
         void                              kill();
         void                              clearActions();
         bool                              empty() const;
-        bool                              intersects(const GridCoordinates& indexPair) const;
+        bool                              intersects(const GridCoordinates& gridCoordinates) const;
         bool                              isAlive() const;
         double                            angle() const;
-        size_t                            clusterActionIndex() const;
+        size_t                            currentActionIndex() const;
         const GridCoordinates&            rotationPivot() const;
         WorldVector                       dynamicWorldOffset() const;
         const std::list<GridCoordinates>& gridCoordinates() const;
-        const std::vector<ClusterAction>& clusterActions() const;
+        const std::vector<Action>&        actions() const;
         std::set<WorldCoordinates>        cornerPoints(int shrinkInWorld) const;
 
       private:
         enum class CURRENT_PHASE { NONE, TRANSLATING, ROTATING };
         typedef std::pair<const GridCoordinates&, Level::DYNAMIC_BLOCK_TYPE> Block;
 
-        void rotateClockWiseAbout(const GridCoordinates& pivotIndexPair);
-        void rotateCounterClockWiseAbout(const GridCoordinates& pivotIndexPair);
+        void rotateClockWiseAbout(const GridCoordinates& pivotGridCoordinates);
+        void rotateCounterClockWiseAbout(const GridCoordinates& pivotGridCoordinates);
         void clearPhase();
         void setRotation(double angle, const GridCoordinates& pivot);
 
-        static ClusterAction rotateActionClockWise(ClusterAction action);
-        static ClusterAction rotateActionCounterClockWise(ClusterAction action);
+        static Action rotateActionClockWise(Action action);
+        static Action rotateActionCounterClockWise(Action action);
 
-        bool                       m_isAlive            = true;
-        double                     m_fractionOfPhase    = 0.0;
-        double                     m_angle              = 0.0;
-        size_t                     m_clusterActionIndex = 0;
-        CURRENT_PHASE              m_currentPhase       = CURRENT_PHASE::NONE;
+        bool                       m_isAlive         = true;
+        double                     m_fractionOfPhase = 0.0;
+        double                     m_angle           = 0.0;
+        size_t                     m_actionIndex     = 0;
+        CURRENT_PHASE              m_currentPhase    = CURRENT_PHASE::NONE;
         GridCoordinates            m_rotationPivot;
         WorldVector                m_worldOffset;
         std::list<GridCoordinates> m_gridCoordinates;
-        std::vector<ClusterAction> m_clusterActions;
+        std::vector<Action>        m_actions;
         std::vector<Block>         m_pendingOperations;
     };
 } // namespace model

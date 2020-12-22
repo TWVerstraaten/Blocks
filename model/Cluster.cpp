@@ -21,21 +21,21 @@ namespace model {
     }
 
     void Cluster::doAction() {
-        if (m_clusterActions.empty() || not m_isAlive) {
+        if (m_actions.empty() || not m_isAlive) {
             return;
         }
         for (auto& idx : m_gridCoordinates) {
-            switch (m_clusterActions[m_clusterActionIndex].m_action) {
-                case ClusterAction::ACTION::MOVE_UP:
+            switch (m_actions[m_actionIndex].m_action) {
+                case Action::VALUE::MOVE_UP:
                     idx = idx.adjacent(enums::DIRECTION::UP);
                     break;
-                case ClusterAction::ACTION::MOVE_DOWN:
+                case Action::VALUE::MOVE_DOWN:
                     idx = idx.adjacent(enums::DIRECTION::DOWN);
                     break;
-                case ClusterAction::ACTION::MOVE_LEFT:
+                case Action::VALUE::MOVE_LEFT:
                     idx = idx.adjacent(enums::DIRECTION::LEFT);
                     break;
-                case ClusterAction::ACTION::MOVE_RIGHT:
+                case Action::VALUE::MOVE_RIGHT:
                     idx = idx.adjacent(enums::DIRECTION::RIGHT);
                     break;
             }
@@ -43,75 +43,77 @@ namespace model {
         clearPhase();
         m_currentPhase    = CURRENT_PHASE::TRANSLATING;
         m_fractionOfPhase = 1.0;
-        switch (m_clusterActions[m_clusterActionIndex].m_action) {
-            case ClusterAction::ACTION::MOVE_UP:
+        switch (m_actions[m_actionIndex].m_action) {
+            case Action::VALUE::MOVE_UP:
                 m_worldOffset = {0, WorldCoordinates::m_blockSizeInWorld};
                 break;
-            case ClusterAction::ACTION::MOVE_DOWN:
+            case Action::VALUE::MOVE_DOWN:
                 m_worldOffset = {0, -WorldCoordinates::m_blockSizeInWorld};
                 break;
-            case ClusterAction::ACTION::MOVE_LEFT:
+            case Action::VALUE::MOVE_LEFT:
                 m_worldOffset = {WorldCoordinates::m_blockSizeInWorld, 0};
                 break;
-            case ClusterAction::ACTION::MOVE_RIGHT:
+            case Action::VALUE::MOVE_RIGHT:
                 m_worldOffset = {-WorldCoordinates::m_blockSizeInWorld, 0};
                 break;
         }
 
-        ++m_clusterActionIndex;
-        m_clusterActionIndex %= m_clusterActions.size();
+        ++m_actionIndex;
+        m_actionIndex %= m_actions.size();
     }
 
-    void Cluster::rotateClockWiseAbout(const GridCoordinates& pivotIndexPair) {
-        for (auto& indexPair : m_gridCoordinates) {
-            indexPair = {pivotIndexPair.x() + pivotIndexPair.y() - indexPair.y(), pivotIndexPair.y() - pivotIndexPair.x() + indexPair.x()};
+    void Cluster::rotateClockWiseAbout(const GridCoordinates& pivotGridCoordinates) {
+        for (auto& gridCoordinates : m_gridCoordinates) {
+            gridCoordinates = {pivotGridCoordinates.x() + pivotGridCoordinates.y() - gridCoordinates.y(),
+                               pivotGridCoordinates.y() - pivotGridCoordinates.x() + gridCoordinates.x()};
         }
-        std::transform(m_clusterActions.begin(), m_clusterActions.end(), m_clusterActions.begin(), rotateActionClockWise);
+        std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionClockWise);
     }
 
-    void Cluster::rotateCounterClockWiseAbout(const GridCoordinates& pivotIndexPair) {
-        for (auto& indexPair : m_gridCoordinates) {
-            indexPair = {pivotIndexPair.x() - pivotIndexPair.y() + indexPair.y(), pivotIndexPair.y() + pivotIndexPair.x() - indexPair.x()};
+    void Cluster::rotateCounterClockWiseAbout(const GridCoordinates& pivotGridCoordinates) {
+        for (auto& gridCoordinates : m_gridCoordinates) {
+            gridCoordinates = {pivotGridCoordinates.x() - pivotGridCoordinates.y() + gridCoordinates.y(),
+                               pivotGridCoordinates.y() + pivotGridCoordinates.x() - gridCoordinates.x()};
         }
-        std::transform(m_clusterActions.begin(), m_clusterActions.end(), m_clusterActions.begin(), rotateActionCounterClockWise);
+        std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionCounterClockWise);
     }
 
-    ClusterAction Cluster::rotateActionClockWise(ClusterAction action) {
+    Action Cluster::rotateActionClockWise(Action action) {
         switch (action.m_action) {
-            case ClusterAction::ACTION::MOVE_UP:
-                return {ClusterAction::ACTION::MOVE_RIGHT, action.m_modifier};
-            case ClusterAction::ACTION::MOVE_DOWN:
-                return {ClusterAction::ACTION::MOVE_LEFT, action.m_modifier};
-            case ClusterAction::ACTION::MOVE_LEFT:
-                return {ClusterAction::ACTION::MOVE_UP, action.m_modifier};
-            case ClusterAction::ACTION::MOVE_RIGHT:
-                return {ClusterAction::ACTION::MOVE_DOWN, action.m_modifier};
+            case Action::VALUE::MOVE_UP:
+                return {Action::VALUE::MOVE_RIGHT, action.m_modifier};
+            case Action::VALUE::MOVE_DOWN:
+                return {Action::VALUE::MOVE_LEFT, action.m_modifier};
+            case Action::VALUE::MOVE_LEFT:
+                return {Action::VALUE::MOVE_UP, action.m_modifier};
+            case Action::VALUE::MOVE_RIGHT:
+                return {Action::VALUE::MOVE_DOWN, action.m_modifier};
             default:
                 return action;
         }
     }
 
-    ClusterAction Cluster::rotateActionCounterClockWise(ClusterAction action) {
+    Action Cluster::rotateActionCounterClockWise(Action action) {
         switch (action.m_action) {
-            case ClusterAction::ACTION::MOVE_UP:
-                return {ClusterAction::ACTION::MOVE_LEFT, action.m_modifier};
-            case ClusterAction::ACTION::MOVE_DOWN:
-                return {ClusterAction::ACTION::MOVE_RIGHT, action.m_modifier};
-            case ClusterAction::ACTION::MOVE_LEFT:
-                return {ClusterAction::ACTION::MOVE_DOWN, action.m_modifier};
-            case ClusterAction::ACTION::MOVE_RIGHT:
-                return {ClusterAction::ACTION::MOVE_UP, action.m_modifier};
+            case Action::VALUE::MOVE_UP:
+                return {Action::VALUE::MOVE_LEFT, action.m_modifier};
+            case Action::VALUE::MOVE_DOWN:
+                return {Action::VALUE::MOVE_RIGHT, action.m_modifier};
+            case Action::VALUE::MOVE_LEFT:
+                return {Action::VALUE::MOVE_DOWN, action.m_modifier};
+            case Action::VALUE::MOVE_RIGHT:
+                return {Action::VALUE::MOVE_UP, action.m_modifier};
             default:
                 return action;
         }
     }
 
-    void Cluster::addAction(ClusterAction action) {
-        m_clusterActions.push_back(action);
+    void Cluster::addAction(Action action) {
+        m_actions.push_back(action);
     }
 
-    void Cluster::removeBLock(const GridCoordinates& indexPair) {
-        const auto it = std::find(m_gridCoordinates.begin(), m_gridCoordinates.end(), indexPair);
+    void Cluster::removeBLock(const GridCoordinates& gridCoordinates) {
+        const auto it = std::find(m_gridCoordinates.begin(), m_gridCoordinates.end(), gridCoordinates);
         assert(it != m_gridCoordinates.end());
         m_gridCoordinates.erase(it);
     }
@@ -138,14 +140,14 @@ namespace model {
 
     void Cluster::performPendingOperation() {
         assert(m_pendingOperations.size() <= 1);
-        if (m_pendingOperations.empty() || m_clusterActions.at(m_clusterActionIndex).m_modifier == ClusterAction::MODIFIER::IGNORE) {
+        if (m_pendingOperations.empty() || m_actions.at(m_actionIndex).m_modifier == Action::MODIFIER::IGNORE) {
             doAction();
             m_pendingOperations.clear();
             return;
         }
-        if (m_clusterActions.at(m_clusterActionIndex).m_modifier == ClusterAction::MODIFIER::SKIP) {
-            ++m_clusterActionIndex;
-            m_clusterActionIndex %= m_clusterActions.size();
+        if (m_actions.at(m_actionIndex).m_modifier == Action::MODIFIER::SKIP) {
+            ++m_actionIndex;
+            m_actionIndex %= m_actions.size();
         }
         switch (m_pendingOperations.front().second) {
             case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
@@ -180,8 +182,8 @@ namespace model {
         return m_rotationPivot;
     }
 
-    const std::vector<ClusterAction>& Cluster::clusterActions() const {
-        return m_clusterActions;
+    const std::vector<Action>& Cluster::actions() const {
+        return m_actions;
     }
 
     WorldVector Cluster::dynamicWorldOffset() const {
@@ -258,23 +260,26 @@ namespace model {
     }
 
     void Cluster::clearActions() {
-        m_clusterActions.clear();
-        m_clusterActionIndex = 0;
+        m_actions.clear();
+        m_actionIndex = 0;
     }
 
     Cluster& Cluster::operator=(const Cluster& other) {
         assert(other.m_currentPhase == CURRENT_PHASE::NONE);
         clearPhase();
-        m_isAlive            = other.m_isAlive;
-        m_clusterActionIndex = other.m_clusterActionIndex;
-        m_gridCoordinates    = other.m_gridCoordinates;
-        m_clusterActions     = other.m_clusterActions;
+        m_isAlive         = other.m_isAlive;
+        m_actionIndex     = other.m_actionIndex;
+        m_gridCoordinates = other.m_gridCoordinates;
+        m_actions         = other.m_actions;
         m_pendingOperations.clear();
         return *this;
     }
 
-    size_t Cluster::clusterActionIndex() const {
-        return m_clusterActionIndex;
+    size_t Cluster::currentActionIndex() const {
+        if (m_fractionOfPhase != 0.0) {
+            return (m_actionIndex + m_actions.size() - 1) % m_actions.size();
+        } else {
+            return m_actionIndex;
+        }
     }
-
 } // namespace model

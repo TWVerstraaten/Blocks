@@ -27,14 +27,10 @@ namespace model {
         static GridCoordinates fromWorldCoordinates(const model::WorldCoordinates& worldCoordinates);
 
                                operator WorldCoordinates() const;
-        GridCoordinates&       operator+=(const GridCoordinates& indexPair);
+        GridCoordinates&       operator+=(const GridCoordinates& gridCoordinates);
         friend GridCoordinates operator+(const GridCoordinates& lhs, const GridCoordinates& rhs);
         friend bool            operator<(const GridCoordinates& lhs, const GridCoordinates& rhs);
         friend bool            operator==(const GridCoordinates& lhs, const GridCoordinates& rhs);
-        friend std::ostream&   operator<<(std::ostream& out, const GridCoordinates& gridCoordinates) {
-            out << "GridCoordinates(" << gridCoordinates.m_x << ", " << gridCoordinates.m_y << ")";
-            return out;
-        }
 
       private:
         int m_x;

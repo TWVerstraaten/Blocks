@@ -12,19 +12,11 @@ Application_Run::Application_Run(const model::Model& model, view::View* view) : 
 }
 
 Application_Run::EXIT_CODE Application_Run::run() {
+    m_timeSinceLastStep = 0;
+    m_previousTime      = SDL_GetTicks();
     while (true) {
         if (m_timeSinceLastStep > m_timeStep) {
-            m_model.interactClustersWithInstantBlocks();
-            m_model.interactClustersWithDynamicBlocks();
-
-            assert(m_model.clusters().size() == m_view->actionEditBoxes().size());
-            auto actionEditIt = m_view->actionEditBoxes().begin();
-            for (auto& cluster : m_model.clusters()) {
-                actionEditIt->setHighLightedLine(cluster.clusterActionIndex());
-                ++actionEditIt;
-            }
-
-            m_timeSinceLastStep %= m_timeStep;
+            performStep();
         }
         while (SDL_PollEvent(&m_event) > 0) {
             switch (m_event.type) {
@@ -53,7 +45,7 @@ Application_Run::EXIT_CODE Application_Run::run() {
         }
         const auto dt = SDL_GetTicks() - m_previousTime;
         if (not m_paused) {
-            update(static_cast<double>(1.9 * dt) / m_timeStep);
+            update(static_cast<double>(1.3 * dt) / m_timeStep);
             m_model.interactClustersWithLevel();
         }
         m_previousTime = SDL_GetTicks();
@@ -74,8 +66,8 @@ Application_Run::EXIT_CODE Application_Run::run() {
             return EXIT_CODE::COMPLETED;
         case RUNNING_MODE::FAILED:
             return EXIT_CODE::FAILED;
-        case RUNNING_MODE::GAVE_UP:
-            return EXIT_CODE::GAVE_UP;
+        case RUNNING_MODE::GIVE_UP:
+            return EXIT_CODE::GIVE_UP;
         default:
             return EXIT_CODE::QUIT;
     }
@@ -88,19 +80,23 @@ void Application_Run::mouseWheelEvent() {
 void Application_Run::keyEvent() {
     switch (m_event.type) {
         case SDL_KEYDOWN:
-            if (m_pressedKeys.find(m_event.key.keysym.sym) != m_pressedKeys.end()) {
-                if (m_event.key.keysym.sym != SDLK_DELETE) {
-                    return;
-                }
-            }
+            //            if (m_pressedKeys.find(m_event.key.keysym.sym) != m_pressedKeys.end()) {
+            //                if (m_event.key.keysym.sym != SDLK_DELETE) {
+            //                    return;
+            //                }
+            //            }
             m_pressedKeys.insert(m_event.key.keysym.sym);
 
             switch (m_event.key.keysym.sym) {
                 case SDLK_ESCAPE:
-                    m_runningMode = RUNNING_MODE::GAVE_UP;
+                    m_runningMode = RUNNING_MODE::GIVE_UP;
                     break;
                 case SDLK_SPACE:
                     togglePause();
+                    break;
+                case SDLK_TAB:
+                    m_paused             = false;
+                    m_pauseAfterNextStep = true;
                     break;
                 case SDLK_1:
                     setTimeStep(Application_Level::m_timeStepSlow);
@@ -172,4 +168,22 @@ void Application_Run::setTimeStep(Uint32 timeStep) {
 
 void Application_Run::togglePause() {
     m_paused = !m_paused;
+}
+
+void Application_Run::performStep() {
+    m_model.interactClustersWithInstantBlocks();
+    m_model.interactClustersWithDynamicBlocks();
+
+    assert(m_model.clusters().size() == m_view->actionEditBoxes().size());
+    auto actionEditIt = m_view->actionEditBoxes().begin();
+    for (auto& cluster : m_model.clusters()) {
+        actionEditIt->setHighLightedLine(cluster.currentActionIndex());
+        ++actionEditIt;
+    }
+
+    if (m_pauseAfterNextStep) {
+        m_pauseAfterNextStep = false;
+        m_paused             = true;
+    }
+    m_timeSinceLastStep %= m_timeStep;
 }

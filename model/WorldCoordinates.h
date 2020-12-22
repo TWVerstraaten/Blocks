@@ -5,7 +5,6 @@
 #ifndef BLOCKS_WORLDCOORDINATES_H
 #define BLOCKS_WORLDCOORDINATES_H
 
-#include "GridCoordinates.h"
 #include "WorldVector.h"
 
 #include <cstddef>
@@ -15,7 +14,7 @@ namespace view {
 }
 
 namespace model {
-    class WorldVector;
+    class GridCoordinates;
 
     class WorldCoordinates {
       public:
@@ -37,10 +36,6 @@ namespace model {
         friend WorldCoordinates operator+(const WorldCoordinates& lhs, const WorldCoordinates& rhs);
         friend WorldCoordinates operator+(const WorldCoordinates& lhs, const WorldVector& rhs);
         friend WorldCoordinates operator-(const WorldCoordinates& lhs, const WorldVector& rhs);
-        friend std::ostream&    operator<<(std::ostream& out, const WorldCoordinates& worldCoordinates) {
-            out << "GridCoordinates(" << worldCoordinates.m_x << ", " << worldCoordinates.m_y << ")";
-            return out;
-        }
 
       private:
         int m_x;

@@ -52,9 +52,9 @@ namespace model {
         return lhs.m_y == rhs.m_y && lhs.m_x == rhs.m_x;
     }
 
-    GridCoordinates& GridCoordinates::operator+=(const GridCoordinates& indexPair) {
-        m_y += indexPair.y();
-        m_x += indexPair.x();
+    GridCoordinates& GridCoordinates::operator+=(const GridCoordinates& gridCoordinates) {
+        m_y += gridCoordinates.y();
+        m_x += gridCoordinates.x();
         return *this;
     }
 

@@ -10,22 +10,22 @@
 
 namespace model {
 
-    Level::DYNAMIC_BLOCK_TYPE Level::dynamicBlockAt(const GridCoordinates& indexPair) {
-        if (m_dynamicBLocks.find(indexPair) == m_dynamicBLocks.end()) {
+    Level::DYNAMIC_BLOCK_TYPE Level::dynamicBlockAt(const GridCoordinates& gridCoordinates) {
+        if (m_dynamicBLocks.find(gridCoordinates) == m_dynamicBLocks.end()) {
             return DYNAMIC_BLOCK_TYPE::NONE;
         }
-        return m_dynamicBLocks[indexPair];
+        return m_dynamicBLocks[gridCoordinates];
     }
 
     const std::map<GridCoordinates, Level::DYNAMIC_BLOCK_TYPE>& Level::dynamicBlocks() const {
         return m_dynamicBLocks;
     }
 
-    Level::INSTANT_BLOCK_TYPE Level::instantBlockAt(const GridCoordinates& indexPair) {
-        if (m_instantBLocks.find(indexPair) == m_instantBLocks.end()) {
+    Level::INSTANT_BLOCK_TYPE Level::instantBlockAt(const GridCoordinates& gridCoordinates) {
+        if (m_instantBLocks.find(gridCoordinates) == m_instantBLocks.end()) {
             return INSTANT_BLOCK_TYPE::NONE;
         }
-        return m_instantBLocks[indexPair];
+        return m_instantBLocks[gridCoordinates];
     }
 
     const std::map<GridCoordinates, Level::INSTANT_BLOCK_TYPE>& Level::instantBlocks() const {

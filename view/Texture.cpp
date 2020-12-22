@@ -4,6 +4,7 @@
 
 #include "Texture.h"
 
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <cassert>
@@ -20,29 +21,6 @@ namespace view {
 
     Texture::~Texture() {
         free();
-    }
-
-    Texture Texture::buildFromImagePath(const std::string& path, SDL_Renderer* renderer) {
-        Texture result;
-
-        SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-        if (loadedSurface == nullptr) {
-            std::cout << "Unable to load image " << path.c_str() << ", SDL_image Error: " << IMG_GetError() << '\n';
-            return result;
-        }
-        SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
-
-        result.m_texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-        if (result.m_texture == nullptr) {
-            printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
-            return result;
-        } else {
-            result.m_width           = loadedSurface->w;
-            result.m_height          = loadedSurface->h;
-            result.m_loadedCorrectly = true;
-            SDL_FreeSurface(loadedSurface);
-        }
-        return result;
     }
 
     std::unique_ptr<Texture> Texture::createFromImagePath(const std::string& path, SDL_Renderer* renderer) {
@@ -67,7 +45,10 @@ namespace view {
         return result;
     }
 
-    std::unique_ptr<Texture> Texture::buildFromText(const std::string& textureText, SDL_Color textColor, SDL_Renderer* renderer, TTF_Font* font) {
+    std::unique_ptr<Texture> Texture::createFromText(const std::string& textureText,
+                                                    SDL_Color          textColor,
+                                                    SDL_Renderer*      renderer,
+                                                    TTF_Font*          font) {
 
         std::unique_ptr<Texture> result{new Texture()};
 
@@ -113,7 +94,8 @@ namespace view {
         SDL_SetTextureAlphaMod(m_texture, alpha);
     }
 
-    void Texture::render(const SDL_Rect& destination, SDL_Renderer* renderer, double angle, const SDL_Point* center, SDL_RendererFlip flip) {
+    void Texture::render(
+        const SDL_Rect& destination, SDL_Renderer* renderer, double angle, const SDL_Point* center, SDL_RendererFlip flip) {
         assert(m_loadedCorrectly);
         assert(m_texture != nullptr);
 

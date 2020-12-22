@@ -10,7 +10,6 @@
 #include <map>
 #include <set>
 #include <tuple>
-#include <vector>
 
 namespace model {
 
@@ -24,9 +23,9 @@ namespace model {
         enum class DYNAMIC_BLOCK_TYPE { NONE, ROTATE_CW, ROTATE_CCW };
         enum class INSTANT_BLOCK_TYPE { NONE, KILL };
 
-        DYNAMIC_BLOCK_TYPE                                   dynamicBlockAt(const GridCoordinates& indexPair);
+        DYNAMIC_BLOCK_TYPE                                   dynamicBlockAt(const GridCoordinates& gridCoordinates);
         const std::map<GridCoordinates, DYNAMIC_BLOCK_TYPE>& dynamicBlocks() const;
-        INSTANT_BLOCK_TYPE                                   instantBlockAt(const GridCoordinates& indexPair);
+        INSTANT_BLOCK_TYPE                                   instantBlockAt(const GridCoordinates& gridCoordinates);
         const std::map<GridCoordinates, INSTANT_BLOCK_TYPE>& instantBlocks() const;
 
         const std::set<GridCoordinates>& levelBlocks() const;

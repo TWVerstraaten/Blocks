@@ -13,13 +13,13 @@ class Application_Run {
   public:
     Application_Run(const model::Model& model, view::View* view);
 
-    enum class EXIT_CODE { QUIT, COMPLETED, FAILED, GAVE_UP };
+    enum class EXIT_CODE { QUIT, COMPLETED, FAILED, GIVE_UP };
 
     EXIT_CODE run();
     void      setTimeStep(Uint32 timeStep);
 
   private:
-    enum class RUNNING_MODE { RUNNING, QUIT, COMPLETED, FAILED, GAVE_UP };
+    enum class RUNNING_MODE { RUNNING, QUIT, COMPLETED, FAILED, GIVE_UP };
 
     void update(double fractionOfPhase);
     void togglePause();
@@ -28,11 +28,13 @@ class Application_Run {
     void mouseClickEvent();
     void mouseReleaseEvent();
     void mouseMoveEvent();
+    void performStep();
 
     RUNNING_MODE          m_runningMode             = RUNNING_MODE::RUNNING;
     bool                  m_paused                  = false;
     bool                  m_rightMouseButtonPressed = false;
     bool                  m_leftMouseButtonPressed  = false;
+    bool                  m_pauseAfterNextStep      = false;
     Uint32                m_previousTime;
     Uint32                m_timeSinceLastStep = 0;
     Uint32                m_timeStep          = 300;

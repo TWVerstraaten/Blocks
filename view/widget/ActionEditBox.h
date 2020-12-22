@@ -10,7 +10,6 @@
 #include "Widget.h"
 
 #include <SDL2/SDL.h>
-#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
@@ -45,7 +44,6 @@ namespace view {
 
             void insertEmptyBeforeLine(size_t lineNumber);
             void handleKeyDown(const SDL_Event& event);
-            void handleTextInput(const SDL_Event& event);
             void handleKeyDownControlPressed(const SDL_Event& event);
             void getSelectionFromLocalMousePoint(int xMouse, int yMouse, SelectionData::Data& data) const;
             void renderSelection(SDL_Renderer* renderer);
@@ -68,12 +66,13 @@ namespace view {
             void highlightStrings(size_t firstStringIndex, size_t lastStringIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
             void highlightStringPartial(
                 size_t stringIndex, size_t firstCharIndex, size_t lastCharIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
-            void        highlightRange(const SelectionData::Data& first,
-                                       const SelectionData::Data& last,
-                                       SDL_Renderer*              renderer,
-                                       HIGHLIGHT_MODE             mode) const;
-            int         widthOfString(const std::string& string) const;
-            std::string selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
+            void                highlightRange(const SelectionData::Data& first,
+                                               const SelectionData::Data& last,
+                                               SDL_Renderer*              renderer,
+                                               HIGHLIGHT_MODE             mode) const;
+            int                 widthOfString(const std::string& string) const;
+            std::string         selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
+            SelectionData::Data moveSelectionOneDown(const SelectionData::Data& data) const;
 
             bool                                  m_needsUpdate     = true;
             Uint32                                m_blinkTimeOffset = 0;

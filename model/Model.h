@@ -5,7 +5,6 @@
 #ifndef BLOCKS_MODEL_H
 #define BLOCKS_MODEL_H
 
-#include "../view/widget/ActionEditBox.h"
 #include "Cluster.h"
 #include "Level.h"
 
