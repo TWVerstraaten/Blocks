@@ -11,13 +11,13 @@ namespace model {
 
 namespace view {
 
-    class Grid;
+    class ViewPort;
 
     class ScreenVector {
       public:
         ScreenVector(int x, int y);
 
-        static ScreenVector fromWorldVector(const model::WorldVector& worldVector, const Grid& grid);
+        static ScreenVector fromWorldVector(const model::WorldVector& worldVector, const ViewPort& viewPort);
 
         int x() const;
         int y() const;

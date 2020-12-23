@@ -3,6 +3,7 @@
 //
 
 #include "RectWidget.h"
+
 namespace view {
     RectWidget::RectWidget(SDL_Rect rect) : m_rect(rect) {
     }
@@ -22,6 +23,5 @@ namespace view {
     bool RectWidget::hasFocus() const {
         return m_hasFocus;
     }
-
 
 } // namespace view

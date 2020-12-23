@@ -8,6 +8,7 @@
 #include "../Global.h"
 #include "../model/Model.h"
 #include "../view/View.h"
+#include "Application_Level.h"
 
 #include <SDL2/SDL.h>
 
@@ -16,36 +17,30 @@ class Application_Edit {
   public:
     explicit Application_Edit(model::Model* model, view::View* view);
 
-    enum class EXIT_CODE { QUIT, DONE_EDITING };
-
-    EXIT_CODE run();
-
-    Uint32 timeStep() const;
+    void                         handleEvent(const SDL_Event& event);
+    Application_Level::EDIT_MODE performSingleLoop();
+    Uint32                       timeStep() const;
+    bool                         canStart() const;
 
   private:
-    enum class RUNNING_MODE { RUNNING, QUIT, DONE_EDITING };
+    void init();
+    void mouseWheelEvent(const SDL_Event& event);
+    void keyEvent(const SDL_Event& event);
+    void mouseClickEvent(const SDL_Event& event);
+    void mouseReleaseEvent(const SDL_Event& event);
+    void mouseMoveEvent(const SDL_Event& event);
+    void getActionsFromEditBoxes();
+    void setFocusOnClick();
+    void finalize();
 
-    void      init();
-    void      mouseWheelEvent();
-    void      keyEvent();
-    void      mouseClickEvent();
-    void      mouseReleaseEvent();
-    void      mouseMoveEvent();
-    bool      canStart() const;
-    void      getActionsFromEditBoxes();
-    void      setFocusOnClick();
-    EXIT_CODE finalizeAndReturnExitCode();
-    EXIT_CODE runningModeToExitCode() const;
-
-    bool          m_rightMouseButtonPressed = false;
-    bool          m_leftMouseButtonPressed  = false;
-    Uint32        m_timeStep                = global::m_timeStepSlow;
-    RUNNING_MODE  m_runningMode             = RUNNING_MODE::RUNNING;
-    view::Widget* m_focusedWidget           = nullptr;
-    view::View*   m_view;
-    model::Model* m_model;
-    SDL_Event     m_event{};
-    SDL_Point     m_previousMousePosition{};
+    bool                         m_rightMouseButtonPressed = false;
+    bool                         m_leftMouseButtonPressed  = false;
+    Uint32                       m_timeStep                = global::m_timeStepSlow;
+    Application_Level::EDIT_MODE m_editMode                = Application_Level::EDIT_MODE::EDITING;
+    view::Widget*                m_focusedWidget           = nullptr;
+    view::View*                  m_view;
+    model::Model*                m_model;
+    SDL_Point                    m_previousMousePosition{};
 };
 
 #endif // BLOCKS_APPLICATION_EDIT_H

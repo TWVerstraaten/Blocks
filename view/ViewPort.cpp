@@ -2,7 +2,7 @@
 // Created by pc on 15-12-20.
 //
 
-#include "Grid.h"
+#include "ViewPort.h"
 
 #include "../model/WorldXY.h"
 
@@ -10,40 +10,40 @@
 
 namespace view {
 
-    int Grid::blockSizeInScreen() const {
+    int ViewPort::blockSizeInScreen() const {
         return static_cast<int>(model::WorldXY::m_blockSizeInWorld * m_scale);
     }
 
-    int Grid::firstColumnInView() const {
+    int ViewPort::firstColumnInView() const {
         return -m_xOffset / blockSizeInScreen();
     }
 
-    int Grid::firstRowInView() const {
+    int ViewPort::firstRowInView() const {
         return -m_yOffset / blockSizeInScreen();
     }
 
-    void Grid::setScale(int scaleParameter) {
+    void ViewPort::setScale(int scaleParameter) {
         m_scale = std::exp(scaleParameter / 10.0);
     }
 
-    void Grid::translate(int dx, int dy) {
+    void ViewPort::translate(int dx, int dy) {
         m_xOffset += dx;
         m_yOffset += dy;
     }
 
-    int Grid::xOffset() const {
+    int ViewPort::xOffset() const {
         return m_xOffset;
     }
 
-    int Grid::yOffset() const {
+    int ViewPort::yOffset() const {
         return m_yOffset;
     }
 
-    double Grid::scale() const {
+    double ViewPort::scale() const {
         return m_scale;
     }
 
-    int Grid::worldToScreenLength(int worldLength) const {
+    int ViewPort::worldToScreenLength(int worldLength) const {
         return static_cast<int>(m_scale * worldLength);
     }
 } // namespace view

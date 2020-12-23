@@ -83,16 +83,16 @@ namespace model {
     void Model::init() {
         clear();
 
-        m_clusters.emplace_back(Cluster{{{0, 0}}, {1, 3}});
+        m_clusters.emplace_back(Cluster{{{1, 3}}, "Cluster_" + std::to_string(m_clusters.size())});
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
         m_clusters.back().addAction({Action::VALUE::MOVE_LEFT, Action::MODIFIER::NONE});
         m_clusters.back().addAction({Action::VALUE::MOVE_DOWN, Action::MODIFIER::NONE});
         m_clusters.back().addAction({Action::VALUE::MOVE_RIGHT, Action::MODIFIER::NONE});
 
-        m_clusters.emplace_back(Cluster{{{0, 1}}, {9, 3}});
-        m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
+        //        m_clusters.emplace_back(Cluster{{{9, 4}}, "Cluster_" + std::to_string(m_clusters.size())});
+        //        m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
 
-        m_clusters.emplace_back(Cluster{{{0, 0}, {1, 0}, {2, 0}}, {10, 7}});
+        m_clusters.emplace_back(Cluster{{{10, 7}, {11, 7}, {12, 7}}, "Cluster_" + std::to_string(m_clusters.size())});
         m_clusters.back().addAction({Action::VALUE::MOVE_LEFT, Action::MODIFIER::NONE});
         m_clusters.back().addAction({Action::VALUE::MOVE_RIGHT, Action::MODIFIER::SKIP});
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::SKIP});

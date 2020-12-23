@@ -6,8 +6,8 @@
 
 #include "../model/GridXY.h"
 #include "../model/WorldXY.h"
-#include "Grid.h"
 #include "ScreenVector.h"
+#include "ViewPort.h"
 
 view::ScreenXY::ScreenXY(int x, int y) : m_x(x), m_y(y) {
 }
@@ -20,15 +20,13 @@ int view::ScreenXY::y() const {
     return m_y;
 }
 
-view::ScreenXY view::ScreenXY::fromWorldXY(const model::WorldXY& worldXY,
-                                                                      const view::Grid&              grid) {
-    return {static_cast<int>(worldXY.x() * grid.scale()) + grid.xOffset(),
-            static_cast<int>(worldXY.y() * grid.scale()) + grid.yOffset()};
+view::ScreenXY view::ScreenXY::fromWorldXY(const model::WorldXY& worldXY, const view::ViewPort& viewPort) {
+    return {static_cast<int>(worldXY.x() * viewPort.scale()) + viewPort.xOffset(),
+            static_cast<int>(worldXY.y() * viewPort.scale()) + viewPort.yOffset()};
 }
 
-view::ScreenXY view::ScreenXY::fromGridXY(const model::GridXY& gridXY,
-                                                                     const view::Grid&             grid) {
-    return fromWorldXY(model::WorldXY::fromGridXY(gridXY), grid);
+view::ScreenXY view::ScreenXY::fromGridXY(const model::GridXY& gridXY, const view::ViewPort& viewPort) {
+    return fromWorldXY(model::WorldXY::fromGridXY(gridXY), viewPort);
 }
 
 view::ScreenXY operator+(const view::ScreenXY& lhs, const view::ScreenXY& rhs) {

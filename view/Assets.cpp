@@ -5,6 +5,7 @@
 #include "Assets.h"
 
 #include "../aux/Aux.h"
+#include "Color.h"
 #include "ScreenXY.h"
 
 #include <cassert>
@@ -21,11 +22,11 @@ namespace view {
     }
 
     bool Assets::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
-                                     const SDL_Rect&              destination,
-                                     SDL_Renderer*                renderer,
-                                     double                       angle,
-                                     const SDL_Point*             center,
-                                     SDL_RendererFlip             flip) const {
+                               const SDL_Rect&              destination,
+                               SDL_Renderer*                renderer,
+                               double                       angle,
+                               const SDL_Point*             center,
+                               SDL_RendererFlip             flip) const {
         assert(m_textures.find(textureEnum) != m_textures.end());
         auto* texture = m_textures.at(textureEnum).getTexture(destination.w, destination.h);
         if (texture->loadedCorrectly()) {
@@ -37,11 +38,11 @@ namespace view {
     }
 
     bool Assets::renderTexture(Texture*         texture,
-                                     const SDL_Rect&  destination,
-                                     SDL_Renderer*    renderer,
-                                     double           angle,
-                                     const SDL_Point* center,
-                                     SDL_RendererFlip flip) {
+                               const SDL_Rect&  destination,
+                               SDL_Renderer*    renderer,
+                               double           angle,
+                               const SDL_Point* center,
+                               SDL_RendererFlip flip) {
         if (texture->loadedCorrectly()) {
             texture->render(destination, renderer, angle, center, flip);
             return true;
@@ -51,24 +52,24 @@ namespace view {
     }
 
     bool Assets::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
-                                     const ScreenXY&              screenXY,
-                                     int                          width,
-                                     int                          height,
-                                     SDL_Renderer*                renderer,
-                                     double                       angle,
-                                     const SDL_Point*             center,
-                                     SDL_RendererFlip             flip) const {
+                               const ScreenXY&              screenXY,
+                               int                          width,
+                               int                          height,
+                               SDL_Renderer*                renderer,
+                               double                       angle,
+                               const SDL_Point*             center,
+                               SDL_RendererFlip             flip) const {
         return renderTexture(textureEnum, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
     }
 
     bool Assets::renderTexture(Texture*         texture,
-                                     const ScreenXY&  screenXY,
-                                     int              width,
-                                     int              height,
-                                     SDL_Renderer*    renderer,
-                                     double           angle,
-                                     const SDL_Point* center,
-                                     SDL_RendererFlip flip) {
+                               const ScreenXY&  screenXY,
+                               int              width,
+                               int              height,
+                               SDL_Renderer*    renderer,
+                               double           angle,
+                               const SDL_Point* center,
+                               SDL_RendererFlip flip) {
         return renderTexture(texture, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
     }
 
@@ -99,6 +100,11 @@ namespace view {
 
     void Assets::loadTextureWrapper(TextureWrapper::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
         m_textures.insert({textureEnum, TextureWrapper(textureEnum, renderer)});
+    }
+
+    void Assets::renderText(const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer) {
+        const auto texture = view::Texture::createFromText(text, color::BLACK, renderer, m_fonts[FONT_ENUM::MAIN].get()->font());
+        renderTexture(texture.get(), screenXY, texture->width(), texture->height(), renderer);
     }
 
 } // namespace view

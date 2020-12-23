@@ -2,16 +2,16 @@
 // Created by pc on 15-12-20.
 //
 
-#ifndef BLOCKS_GRID_H
-#define BLOCKS_GRID_H
+#ifndef BLOCKS_VIEWPORT_H
+#define BLOCKS_VIEWPORT_H
 
 #include <cstddef>
 
 namespace view {
 
-    class Grid {
+    class ViewPort {
       public:
-        Grid() = default;
+        ViewPort() = default;
 
         double scale() const;
         int    blockSizeInScreen() const;
@@ -29,4 +29,4 @@ namespace view {
         int    m_yOffset = 0;
     };
 } // namespace view
-#endif // BLOCKS_GRID_H
+#endif // BLOCKS_VIEWPORT_H

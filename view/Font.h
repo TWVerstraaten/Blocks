@@ -12,7 +12,7 @@ namespace view {
 
     class Font {
       public:
-        Font(const std::string& path, Uint16 fontSize);
+        Font(const std::string& path, Uint32 fontSize);
         ~Font();
 
         Font(const Font& other) = delete;

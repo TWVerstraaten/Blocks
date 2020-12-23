@@ -5,7 +5,7 @@
 #include "ScreenVector.h"
 
 #include "../model/WorldVector.h"
-#include "Grid.h"
+#include "ViewPort.h"
 
 view::ScreenVector::ScreenVector(int x, int y) : m_x(x), m_y(y) {
 }
@@ -18,6 +18,6 @@ int view::ScreenVector::y() const {
     return m_y;
 }
 
-view::ScreenVector view::ScreenVector::fromWorldVector(const model::WorldVector& worldVector, const view::Grid& grid) {
-    return {static_cast<int>(worldVector.x() * grid.scale()), static_cast<int>(worldVector.y() * grid.scale())};
+view::ScreenVector view::ScreenVector::fromWorldVector(const model::WorldVector& worldVector, const view::ViewPort& viewPort) {
+    return {static_cast<int>(worldVector.x() * viewPort.scale()), static_cast<int>(worldVector.y() * viewPort.scale())};
 }

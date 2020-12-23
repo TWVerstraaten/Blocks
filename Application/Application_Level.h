@@ -13,9 +13,16 @@ class Application_Level {
   public:
     Application_Level();
 
+    enum class RUN_MODE { QUIT, RUNNING, COMPLETED, FAILED, GIVE_UP };
+    enum class EDIT_MODE { QUIT, EDITING, DONE_EDITING };
+
     void run();
 
   private:
+    Application_Level::RUN_MODE runLevel();
+    EDIT_MODE                   editLevel();
+
+    Uint32       m_timestep = global::m_timeStepSlow;
     view::View   m_view;
     model::Model m_model;
 };

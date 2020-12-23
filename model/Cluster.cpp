@@ -9,13 +9,11 @@
 #include <algorithm>
 #include <cassert>
 #include <queue>
+#include <utility>
 
 namespace model {
 
-    Cluster::Cluster(std::list<GridXY>&& gridXY, const GridXY& offset) : m_worldOffset(0, 0), m_gridXY(gridXY) {
-        for (auto& idx : m_gridXY) {
-            idx += offset;
-        }
+    Cluster::Cluster(std::list<GridXY>&& gridXY, std::string name) : m_gridXYList(gridXY), m_name(std::move(name)) {
     }
 
     void Cluster::doAction() {
@@ -25,7 +23,7 @@ namespace model {
         clearPhase();
         m_currentPhase    = CURRENT_PHASE::TRANSLATING;
         m_fractionOfPhase = 1.0;
-        for (auto& idx : m_gridXY) {
+        for (auto& idx : m_gridXYList) {
             switch (m_actions[m_actionIndex].m_action) {
                 case Action::VALUE::MOVE_UP:
                     idx           = idx.adjacent(enums::DIRECTION::UP);
@@ -49,14 +47,14 @@ namespace model {
     }
 
     void Cluster::rotateClockWiseAbout(const GridXY& pivotGridXY) {
-        for (auto& gridXY : m_gridXY) {
+        for (auto& gridXY : m_gridXYList) {
             gridXY = {pivotGridXY.x() + pivotGridXY.y() - gridXY.y(), pivotGridXY.y() - pivotGridXY.x() + gridXY.x()};
         }
         std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionClockWise);
     }
 
     void Cluster::rotateCounterClockWiseAbout(const GridXY& pivotGridXY) {
-        for (auto& gridXY : m_gridXY) {
+        for (auto& gridXY : m_gridXYList) {
             gridXY = {pivotGridXY.x() - pivotGridXY.y() + gridXY.y(), pivotGridXY.y() + pivotGridXY.x() - gridXY.x()};
         }
         std::transform(m_actions.begin(), m_actions.end(), m_actions.begin(), rotateActionCounterClockWise);
@@ -97,17 +95,17 @@ namespace model {
     }
 
     void Cluster::removeBLock(const GridXY& gridXY) {
-        const auto it = std::find(m_gridXY.begin(), m_gridXY.end(), gridXY);
-        assert(it != m_gridXY.end());
-        m_gridXY.erase(it);
+        const auto it = std::find(m_gridXYList.begin(), m_gridXYList.end(), gridXY);
+        assert(it != m_gridXYList.end());
+        m_gridXYList.erase(it);
     }
 
     bool Cluster::empty() const {
-        return m_gridXY.empty();
+        return m_gridXYList.empty();
     }
 
     const std::list<GridXY>& Cluster::gridXY() const {
-        return m_gridXY;
+        return m_gridXYList;
     }
 
     void Cluster::addPendingOperation(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType) {
@@ -160,7 +158,7 @@ namespace model {
         std::set<WorldXY> result;
         switch (m_currentPhase) {
             case CURRENT_PHASE::NONE:
-                for (const auto& it : m_gridXY) {
+                for (const auto& it : m_gridXYList) {
                     for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
                         result.emplace(WorldXY::fromGridXY(it + cornerOffset) +
                                        WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
@@ -170,7 +168,7 @@ namespace model {
                 break;
             case CURRENT_PHASE::TRANSLATING: {
                 const WorldVector offset = dynamicWorldOffset();
-                for (const auto& it : m_gridXY) {
+                for (const auto& it : m_gridXYList) {
                     for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
                         result.emplace(WorldXY::fromGridXY(it + cornerOffset) +
                                        WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
@@ -182,7 +180,7 @@ namespace model {
             case CURRENT_PHASE::ROTATING: {
                 const WorldXY center = WorldXY::fromGridXY(m_rotationPivot) + WorldXY::halfBlockInWorld;
                 const double  theta  = -angle();
-                for (const auto& it : m_gridXY) {
+                for (const auto& it : m_gridXYList) {
                     for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
                         result.emplace(aux::rotateAboutPivot(WorldXY::fromGridXY(it + cornerOffset) +
                                                                  WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
@@ -227,11 +225,11 @@ namespace model {
     }
 
     Cluster& Cluster::operator=(const Cluster& other) {
-        assert(other.m_currentPhase == CURRENT_PHASE::NONE);
         clearPhase();
+        m_name        = other.m_name;
         m_isAlive     = other.m_isAlive;
         m_actionIndex = other.m_actionIndex;
-        m_gridXY      = other.m_gridXY;
+        m_gridXYList  = other.m_gridXYList;
         m_actions     = other.m_actions;
         m_pendingOperations.clear();
         return *this;
@@ -268,5 +266,9 @@ namespace model {
                 break;
         }
         m_pendingOperations.clear();
+    }
+
+    const std::string& Cluster::getName() const {
+        return m_name;
     }
 } // namespace model

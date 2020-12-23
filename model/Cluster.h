@@ -21,7 +21,7 @@ namespace model {
     class Cluster {
 
       public:
-        Cluster(std::list<GridXY>&& gridXY, const GridXY& offset);
+        explicit Cluster(std::list<GridXY>&& gridXY, std::string name);
 
         Cluster& operator=(const Cluster& other);
 
@@ -42,6 +42,7 @@ namespace model {
         const std::list<GridXY>&   gridXY() const;
         const std::vector<Action>& actions() const;
         std::set<WorldXY>          cornerPoints(int shrinkInWorld) const;
+        const std::string&         getName() const;
 
       private:
         enum class CURRENT_PHASE { NONE, TRANSLATING, ROTATING };
@@ -63,10 +64,11 @@ namespace model {
         size_t              m_actionIndex     = 0;
         CURRENT_PHASE       m_currentPhase    = CURRENT_PHASE::NONE;
         GridXY              m_rotationPivot;
-        WorldVector         m_worldOffset;
-        std::list<GridXY>   m_gridXY;
+        WorldVector         m_worldOffset{0, 0};
+        std::list<GridXY>   m_gridXYList;
         std::vector<Action> m_actions;
         std::vector<Block>  m_pendingOperations;
+        std::string         m_name;
     };
 } // namespace model
 

@@ -5,6 +5,7 @@
 #ifndef BLOCKS_MODEL_H
 #define BLOCKS_MODEL_H
 
+#include "../Global.h"
 #include "Cluster.h"
 #include "Level.h"
 
@@ -18,6 +19,8 @@ namespace model {
 
       public:
         Model();
+        explicit Model(const std::string& path);
+
         Model(const Model& other);
 
         Model& operator=(const Model& other) = default;

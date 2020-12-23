@@ -24,8 +24,8 @@ namespace view {
             std::cout << "Warning: Linear texture filtering not enabled!\n";
         }
 
-        Uint16 initialWidth  = 900;
-        Uint16 initialHeight = 700;
+        Uint32 initialWidth  = 900;
+        Uint32 initialHeight = 700;
 
         m_window =
             SDL_CreateWindow("Blocks", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, initialWidth, initialHeight, SDL_WINDOW_RESIZABLE);
@@ -69,35 +69,40 @@ namespace view {
         SDL_RenderClear(m_renderer);
 
         drawLevelBlocks(model.level());
-        drawGridLines();
         drawClusters(model.clusters());
         drawBlocks(model.level());
 
-        for (const auto& cluster : model.clusters()) {
-            const auto points = cluster.cornerPoints(0);
-            for (const auto& it : points) {
-                //                        drawRectangle(model::GridXY::fromWorldXY(actionEditIt),
-                //                        model::WorldXY::m_blockSizeInWorld,
-                //                                      model::WorldXY::m_blockSizeInWorld, color::BLUE);
-                drawPoint(it, color::RED, 8);
-            }
-        }
+        //        for (const auto& cluster : model.clusters()) {
+        //            const auto points = cluster.cornerPoints(0);
+        //            for (const auto& it : points) {
+        //                                        drawRectangle(model::GridXY::fromWorldXY(actionEditIt),
+        //                                        model::WorldXY::m_blockSizeInWorld,
+        //                                                      model::WorldXY::m_blockSizeInWorld, color::BLUE);
+        //                drawPoint(it, color::RED, 8);
+        //            }
+        //        }
+        drawActionEditBoxes();
+    }
 
+    void View::drawActionEditBoxes() {
+        int yOffset = 2.4 * view::widget::LineEditBox::s_padding;
         for (auto& actionEditBox : m_actionEditBoxes) {
+            actionEditBox.setY(yOffset);
             actionEditBox.render(m_renderer);
+            yOffset += actionEditBox.height() + 2.4 * view::widget::LineEditBox::s_padding;
         }
     }
 
     void View::drawClusters(const std::vector<model::Cluster>& clusters) const {
         for (const auto& cluster : clusters) {
-            const ScreenVector offset = ScreenVector::fromWorldVector(cluster.dynamicWorldOffset(), m_grid);
+            const ScreenVector offset = ScreenVector::fromWorldVector(cluster.dynamicWorldOffset(), m_viewPort);
             for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end(); ++it) {
-                const SDL_Point center = {static_cast<int>(m_grid.blockSizeInScreen() * (0.5 + cluster.rotationPivot().x() - it->x())),
-                                          static_cast<int>(m_grid.blockSizeInScreen() * (0.5 + cluster.rotationPivot().y() - it->y()))};
+                const SDL_Point center = {static_cast<int>(m_viewPort.blockSizeInScreen() * (0.5 + cluster.rotationPivot().x() - it->x())),
+                                          static_cast<int>(m_viewPort.blockSizeInScreen() * (0.5 + cluster.rotationPivot().y() - it->y()))};
                 assert(m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
-                                               ScreenXY::fromGridXY(*it, m_grid) + offset,
-                                               m_grid.blockSizeInScreen(),
-                                               m_grid.blockSizeInScreen(),
+                                               ScreenXY::fromGridXY(*it, m_viewPort) + offset + ScreenXY{2, 2},
+                                               m_viewPort.blockSizeInScreen() - 4,
+                                               m_viewPort.blockSizeInScreen() - 4,
                                                m_renderer,
                                                cluster.angle(),
                                                &center));
@@ -105,50 +110,29 @@ namespace view {
         }
     }
 
-    void View::drawGridLines() const {
-        const auto size = windowSize();
-        int        x    = m_grid.firstColumnInView();
-        int        y    = m_grid.firstRowInView();
-        while (true) {
-            const auto currentCoordinate = ScreenXY::fromGridXY({x, y - 1}, m_grid);
-            if (currentCoordinate.x() > size.x) {
-                break;
-            }
-            drawVerticalLine(currentCoordinate, size.y + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 1);
-            ++x;
-        }
-        x = m_grid.firstColumnInView();
-        while (true) {
-            const auto currentCoordinate = ScreenXY::fromGridXY({x - 1, y}, m_grid);
-            if (currentCoordinate.y() > size.y) {
-                break;
-            }
-            drawHorizontalLine(currentCoordinate, size.x + 2 * m_grid.blockSizeInScreen(), color::GRID_LINE_COLOR, 1);
-            ++y;
-        }
-    }
-
     void View::drawLevelBlocks(const model::Level& level) const {
         for (const auto& block : level.levelBlocks()) {
-            drawRectangle(
-                static_cast<model::WorldXY>(block), model::WorldXY::m_blockSizeInWorld, model::WorldXY::m_blockSizeInWorld, color::WHITE);
+            drawRectangle(ScreenXY::fromGridXY(block, m_viewPort) + ScreenXY{2, 2},
+                          m_viewPort.blockSizeInScreen() - 4,
+                          m_viewPort.blockSizeInScreen() - 4,
+                          color::BACKGROUND_PLAYABLE);
         }
     }
 
     void View::drawBlocks(const model::Level& level) const {
         for (const auto& block : level.dynamicBlocks()) {
             assert(m_assets->renderTexture(Assets::getTextureEnum(block.second),
-                                           ScreenXY::fromGridXY(block.first, m_grid),
-                                           m_grid.blockSizeInScreen(),
-                                           m_grid.blockSizeInScreen(),
+                                           ScreenXY::fromGridXY(block.first, m_viewPort),
+                                           m_viewPort.blockSizeInScreen(),
+                                           m_viewPort.blockSizeInScreen(),
                                            m_renderer));
         }
 
         for (const auto& block : level.instantBlocks()) {
             assert(m_assets->renderTexture(Assets::getTextureEnum(block.second),
-                                           ScreenXY::fromGridXY(block.first, m_grid),
-                                           m_grid.blockSizeInScreen(),
-                                           m_grid.blockSizeInScreen(),
+                                           ScreenXY::fromGridXY(block.first, m_viewPort),
+                                           m_viewPort.blockSizeInScreen(),
+                                           m_viewPort.blockSizeInScreen(),
                                            m_renderer));
         }
     }
@@ -157,11 +141,11 @@ namespace view {
         m_zoomParameter += amount;
         m_zoomParameter = std::max(m_zoomParameter, -28);
         m_zoomParameter = std::min(m_zoomParameter, 6);
-        m_grid.setScale(m_zoomParameter);
+        m_viewPort.setScale(m_zoomParameter);
     }
 
     void View::translate(int dx, int dy) {
-        m_grid.translate(dx, dy);
+        m_viewPort.translate(dx, dy);
     }
 
     SDL_Point View::windowSize() const {
@@ -170,16 +154,8 @@ namespace view {
         return {windowWidth, windowHeight};
     }
 
-    void View::addActionEditBox(const model::Cluster& cluster) {
-        m_actionEditBoxes.emplace_back(widget::ActionEditBox(0, m_actionEditBoxes.size() * 200, 200, 200, m_assets.get(), cluster));
-    }
-
     std::vector<widget::ActionEditBox>& View::actionEditBoxes() {
         return m_actionEditBoxes;
-    }
-
-    SDL_Renderer* View::renderer() const {
-        return m_renderer;
     }
 
     void View::drawRectangle(const ScreenXY& point, int width, int height, const SDL_Color& color) const {
@@ -189,9 +165,9 @@ namespace view {
     }
 
     void View::drawRectangle(const model::WorldXY& point, int widthInWorld, int heightInWorld, const SDL_Color& color) const {
-        drawRectangle(ScreenXY::fromWorldXY(point, m_grid),
-                      m_grid.worldToScreenLength(widthInWorld),
-                      m_grid.worldToScreenLength(heightInWorld),
+        drawRectangle(ScreenXY::fromWorldXY(point, m_viewPort),
+                      m_viewPort.worldToScreenLength(widthInWorld),
+                      m_viewPort.worldToScreenLength(heightInWorld),
                       color);
     }
 
@@ -213,7 +189,7 @@ namespace view {
     }
 
     void View::drawHorizontalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, size_t lineThickness) const {
-        drawHorizontalLine(ScreenXY::fromWorldXY(point, m_grid), lengthInWorld, color, lineThickness);
+        drawHorizontalLine(ScreenXY::fromWorldXY(point, m_viewPort), lengthInWorld, color, lineThickness);
     }
 
     void View::drawVerticalLine(const ScreenXY& point, int length, const SDL_Color& color, size_t lineThickness) const {
@@ -225,19 +201,40 @@ namespace view {
         }
     }
 
-    void View::drawVerticalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, Uint16 lineThickness) const {
+    void View::drawVerticalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, Uint32 lineThickness) const {
         drawRectangle(model::WorldXY{point.x(), static_cast<int>(point.y() - lineThickness / 2)}, lineThickness, lengthInWorld, color);
     }
 
     void View::setDrawColor(const SDL_Color& color) const {
         SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, 255);
     }
-    const Grid& View::grid() const {
-        return m_grid;
+    const ViewPort& View::viewPort() const {
+        return m_viewPort;
     }
 
     void View::clear() {
         m_actionEditBoxes.clear();
+    }
+
+    void View::setActionEditBoxes(const std::vector<model::Cluster>& clusters) {
+        m_actionEditBoxes.clear();
+        for (const auto& cluster : clusters) {
+            m_actionEditBoxes.emplace_back(view::widget::ActionEditBox(30, 0, global::m_actionEditBoxWidth, 0, m_assets.get(), cluster));
+            m_actionEditBoxes.back().setHighLightedLine(cluster.currentActionIndex());
+            m_actionEditBoxes.back().setActive(cluster.isAlive());
+        }
+    }
+
+    void View::renderPresent() const {
+        SDL_RenderPresent(m_renderer);
+    }
+
+    SDL_Renderer* View::renderer() const {
+        return m_renderer;
+    }
+
+    Assets& View::assets() const {
+        return *m_assets;
     }
 
 } // namespace view

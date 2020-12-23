@@ -10,7 +10,7 @@
 #include <cstddef>
 
 namespace view {
-    class Grid;
+    class ViewPort;
 }
 
 namespace model {

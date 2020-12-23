@@ -14,15 +14,15 @@ namespace model {
 
 namespace view {
 
-    class Grid;
+    class ViewPort;
     class ScreenVector;
 
     class ScreenXY {
       public:
         ScreenXY(int x, int y);
 
-        static ScreenXY fromWorldXY(const model::WorldXY& worldXY, const Grid& grid);
-        static ScreenXY fromGridXY(const model::GridXY& gridXY, const Grid& grid);
+        static ScreenXY fromWorldXY(const model::WorldXY& worldXY, const ViewPort& viewPort);
+        static ScreenXY fromGridXY(const model::GridXY& gridXY, const ViewPort& viewPort);
 
         int x() const;
         int y() const;

@@ -5,69 +5,24 @@
 #include "Application_Run.h"
 
 #include "../view/Mouse.h"
-#include "Application_Edit.h"
+#include "../view/ScreenXY.h"
 
 #include <cassert>
 
 Application_Run::Application_Run(const model::Model& model, view::View* view) : m_model(model), m_view(view) {
-}
-
-Application_Run::EXIT_CODE Application_Run::run() {
     m_timeSinceLastStep = 0;
     m_previousTime      = SDL_GetTicks();
-    while (true) {
-        if (m_timeSinceLastStep > m_timeStep) {
-            performStep();
-        }
-        while (SDL_PollEvent(&m_event) > 0) {
-            switch (m_event.type) {
-                case SDL_QUIT:
-                    return EXIT_CODE::QUIT;
-                case SDL_KEYDOWN:
-                case SDL_KEYUP:
-                    keyEvent();
-                    break;
-                case SDL_WINDOWEVENT:
-                    if (m_event.window.event == SDL_WINDOWEVENT_RESIZED) {}
-                    break;
-                case SDL_MOUSEBUTTONDOWN:
-                    mouseClickEvent();
-                    break;
-                case SDL_MOUSEBUTTONUP:
-                    mouseReleaseEvent();
-                    break;
-                case SDL_MOUSEMOTION:
-                    mouseMoveEvent();
-                    break;
-                case SDL_MOUSEWHEEL: {
-                    mouseWheelEvent();
-                }
-            }
-        }
-        if (m_runningMode != RUNNING_MODE::RUNNING) {
-            return runningModeToExitCode();
-        }
-
-        if (not m_paused) {
-            const auto dt = SDL_GetTicks() - m_previousTime;
-            update(1.3 * dt / m_timeStep);
-            m_timeSinceLastStep += dt;
-        }
-        m_previousTime = SDL_GetTicks();
-        m_view->draw(m_model);
-        SDL_RenderPresent(m_view->renderer());
-    }
 }
 
-void Application_Run::mouseWheelEvent() {
-    m_view->zoom(m_event.wheel.y);
+void Application_Run::mouseWheelEvent(const SDL_Event& event) {
+    m_view->zoom(event.wheel.y);
 }
 
-void Application_Run::keyEvent() {
-    if (m_event.type == SDL_KEYDOWN) {
-        switch (m_event.key.keysym.sym) {
+void Application_Run::keyEvent(const SDL_Event& event) {
+    if (event.type == SDL_KEYDOWN) {
+        switch (event.key.keysym.sym) {
             case SDLK_ESCAPE:
-                m_runningMode = RUNNING_MODE::GIVE_UP;
+                m_runningMode = Application_Level::RUN_MODE::GIVE_UP;
                 break;
             case SDLK_SPACE:
                 togglePause();
@@ -91,10 +46,10 @@ void Application_Run::keyEvent() {
     }
 }
 
-void Application_Run::mouseClickEvent() {
+void Application_Run::mouseClickEvent(const SDL_Event& event) {
     const auto mousePosition = Mouse::getMouseXY();
 
-    switch (m_event.button.button) {
+    switch (event.button.button) {
         case SDL_BUTTON_RIGHT:
             m_rightMouseButtonPressed = true;
             m_previousMousePosition   = mousePosition;
@@ -108,8 +63,8 @@ void Application_Run::mouseClickEvent() {
     }
 }
 
-void Application_Run::mouseReleaseEvent() {
-    switch (m_event.button.button) {
+void Application_Run::mouseReleaseEvent(const SDL_Event& event) {
+    switch (event.button.button) {
         case SDL_BUTTON_RIGHT:
             m_rightMouseButtonPressed = false;
             break;
@@ -121,7 +76,7 @@ void Application_Run::mouseReleaseEvent() {
     }
 }
 
-void Application_Run::mouseMoveEvent() {
+void Application_Run::mouseMoveEvent(const SDL_Event& event) {
     if (m_rightMouseButtonPressed) {
         const auto mouseXY = Mouse::getMouseXY();
         m_view->translate((mouseXY.x - m_previousMousePosition.x), mouseXY.y - m_previousMousePosition.y);
@@ -143,15 +98,11 @@ void Application_Run::togglePause() {
     m_paused = !m_paused;
 }
 
-void Application_Run::performStep() {
+void Application_Run::performTimeStep() {
     m_model.interactClustersWithInstantBlocks();
     m_model.interactClustersWithDynamicBlocks();
 
-    auto actionEditIt = m_view->actionEditBoxes().begin();
-    for (auto& cluster : m_model.clusters()) {
-        actionEditIt->setHighLightedLine(cluster.currentActionIndex());
-        ++actionEditIt;
-    }
+    m_view->setActionEditBoxes(m_model.clusters());
 
     if (m_pauseAfterNextStep) {
         m_pauseAfterNextStep = false;
@@ -160,18 +111,47 @@ void Application_Run::performStep() {
     m_timeSinceLastStep %= m_timeStep;
 }
 
-Application_Run::EXIT_CODE Application_Run::runningModeToExitCode() const {
-    assert(m_runningMode != RUNNING_MODE::RUNNING);
-    switch (m_runningMode) {
-        case RUNNING_MODE::QUIT:
-            return EXIT_CODE::QUIT;
-        case RUNNING_MODE::COMPLETED:
-            return EXIT_CODE::COMPLETED;
-        case RUNNING_MODE::FAILED:
-            return EXIT_CODE::FAILED;
-        case RUNNING_MODE::GIVE_UP:
-            return EXIT_CODE::GIVE_UP;
-        default:
-            return EXIT_CODE::QUIT;
+Application_Level::RUN_MODE Application_Run::performSingleLoop() {
+    m_paused = false;
+    if (m_runningMode != Application_Level::RUN_MODE::RUNNING) {
+        return m_runningMode;
+    }
+    if (m_timeSinceLastStep > m_timeStep) {
+        performTimeStep();
+    }
+
+    const auto dt = SDL_GetTicks() - m_previousTime;
+    if (not m_paused) {
+        update(1.3 * dt / m_timeStep);
+        m_timeSinceLastStep += dt;
+    }
+    m_previousTime = SDL_GetTicks();
+    m_view->draw(m_model);
+    m_view->assets().renderText(std::to_string(1000.0 / dt), view::ScreenXY{10, m_view->windowSize().y - 40}, m_view->renderer());
+    m_view->renderPresent();
+    return Application_Level::RUN_MODE::RUNNING;
+}
+
+void Application_Run::handleEvent(const SDL_Event& event) {
+    switch (event.type) {
+        case SDL_KEYDOWN:
+        case SDL_KEYUP:
+            keyEvent(event);
+            break;
+        case SDL_WINDOWEVENT:
+            if (event.window.event == SDL_WINDOWEVENT_RESIZED) {}
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            mouseClickEvent(event);
+            break;
+        case SDL_MOUSEBUTTONUP:
+            mouseReleaseEvent(event);
+            break;
+        case SDL_MOUSEMOTION:
+            mouseMoveEvent(event);
+            break;
+        case SDL_MOUSEWHEEL: {
+            mouseWheelEvent(event);
+        }
     }
 }

@@ -55,6 +55,7 @@ namespace view {
                                   double           angle  = 0.0,
                                   const SDL_Point* center = nullptr,
                                   SDL_RendererFlip flip   = SDL_FLIP_NONE);
+        void        renderText(const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer);
 
         const Font* font(FONT_ENUM fontEnum) const;
 
