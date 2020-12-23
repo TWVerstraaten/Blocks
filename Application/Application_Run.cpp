@@ -112,7 +112,6 @@ void Application_Run::performTimeStep() {
 }
 
 Application_Level::RUN_MODE Application_Run::performSingleLoop() {
-    m_paused = false;
     if (m_runningMode != Application_Level::RUN_MODE::RUNNING) {
         return m_runningMode;
     }
@@ -154,4 +153,8 @@ void Application_Run::handleEvent(const SDL_Event& event) {
             mouseWheelEvent(event);
         }
     }
+}
+
+void Application_Run::setPauseAfterNextStep(bool pauseAfterNextStep) {
+    m_pauseAfterNextStep = pauseAfterNextStep;
 }

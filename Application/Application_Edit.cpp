@@ -21,30 +21,6 @@ void Application_Edit::mouseWheelEvent(const SDL_Event& event) {
 void Application_Edit::keyEvent(const SDL_Event& event) {
     if (m_focusedWidget) {
         m_focusedWidget->keyEvent(event);
-    } else {
-        if (event.type == SDL_KEYDOWN) {
-            switch (event.key.keysym.sym) {
-                case SDLK_SPACE:
-                    if (canStart()) {
-                        m_editMode = Application_Level::EDIT_MODE::DONE_EDITING;
-                    }
-                    break;
-                case SDLK_1:
-                    m_timeStep = global::m_timeStepSlow;
-                    m_editMode = Application_Level::EDIT_MODE::DONE_EDITING;
-                    break;
-                case SDLK_2:
-                    m_timeStep = global::m_timeStepMedium;
-                    m_editMode = Application_Level::EDIT_MODE::DONE_EDITING;
-                    break;
-                case SDLK_3:
-                    m_timeStep = global::m_timeStepFast;
-                    m_editMode = Application_Level::EDIT_MODE::DONE_EDITING;
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 }
 
@@ -136,10 +112,7 @@ Uint32 Application_Edit::timeStep() const {
 }
 
 void Application_Edit::finalize() {
-    assert(m_editMode != Application_Level::EDIT_MODE::EDITING);
-    if (m_editMode == Application_Level::EDIT_MODE::DONE_EDITING) {
-        getActionsFromEditBoxes();
-    }
+    getActionsFromEditBoxes();
     SDL_StopTextInput();
 }
 
@@ -177,4 +150,8 @@ Application_Level::EDIT_MODE Application_Edit::performSingleLoop() {
     m_view->draw(*m_model);
     m_view->renderPresent();
     return m_editMode;
+}
+
+bool Application_Edit::hasFocus() {
+    return m_focusedWidget == nullptr;
 }

@@ -23,7 +23,7 @@ namespace model {
         int x() const;
         int y() const;
 
-        static const int         m_blockSizeInWorld = 100;
+        static const int         m_blockSizeInWorld = 50;
         static constexpr int     halfBlockSizeInWorld();
         static const WorldVector halfBlockInWorld;
 

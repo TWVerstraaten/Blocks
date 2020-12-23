@@ -24,6 +24,9 @@ void view::widget::ActionEditBox::updateClusterActions(model::Cluster& cluster) 
     cluster.clearActions();
     for (const auto& str : m_strings) {
         if (model::Action::canParse(str)) {
+            if (str.empty()) {
+                continue;
+            }
             cluster.addAction(model::Action::fromString(str));
         }
     }

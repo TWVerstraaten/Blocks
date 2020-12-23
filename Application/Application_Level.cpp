@@ -20,9 +20,12 @@ void Application_Level::run() {
                 break;
             case EDIT_MODE::EDITING:
                 assert(false);
-                break;
             case EDIT_MODE::DONE_EDITING:
                 break;
+        }
+
+        if (not isRunning) {
+            break;
         }
 
         switch (runLevel()) {
@@ -56,6 +59,30 @@ Application_Level::EDIT_MODE Application_Level::editLevel() {
                 case SDL_QUIT:
                     isRunning = false;
                     break;
+                case SDL_KEYDOWN:
+                    if (editApp.hasFocus() && editApp.canStart()) {
+                        switch (event.key.keysym.sym) {
+                            case SDLK_SPACE:
+                                editApp.finalize();
+                                return EDIT_MODE::DONE_EDITING;
+                            case SDLK_TAB:
+                                editApp.finalize();
+                                m_pauseAfterFirstStep = true;
+                                return EDIT_MODE::DONE_EDITING;
+                            case SDLK_1:
+                                editApp.finalize();
+                                m_timeStep = global::m_timeStepSlow;
+                                return EDIT_MODE::DONE_EDITING;
+                            case SDLK_2:
+                                editApp.finalize();
+                                m_timeStep = global::m_timeStepMedium;
+                                return EDIT_MODE::DONE_EDITING;
+                            case SDLK_3:
+                                editApp.finalize();
+                                m_timeStep = global::m_timeStepFast;
+                                return EDIT_MODE::DONE_EDITING;
+                        }
+                    }
                 default:
                     editApp.handleEvent(event);
             }
@@ -65,7 +92,7 @@ Application_Level::EDIT_MODE Application_Level::editLevel() {
             case EDIT_MODE::EDITING:
                 break;
             default:
-                m_timestep = editApp.timeStep();
+                m_timeStep = editApp.timeStep();
                 return currentMode;
         }
     }
@@ -77,7 +104,8 @@ Application_Level::RUN_MODE Application_Level::runLevel() {
 
     SDL_Event       event;
     Application_Run runApp(m_model, &m_view);
-    runApp.setTimeStep(m_timestep);
+    runApp.setTimeStep(m_timeStep);
+    runApp.setPauseAfterNextStep(m_pauseAfterFirstStep);
 
     RUN_MODE currentMode;
     while (isRunning) {

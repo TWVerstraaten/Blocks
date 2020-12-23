@@ -65,7 +65,7 @@ model::Action model::Action::fromString(const std::string& string) {
 bool model::Action::canParse(const std::string& string) {
     const auto trimmed = trimWhiteSpace(string);
     if (trimmed.empty()) {
-        return false;
+        return true;
     }
     const auto str1 = trimWhiteSpace(trimmed.substr(0, 1));
     const auto str2 = trimWhiteSpace(trimmed.substr(1));

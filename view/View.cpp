@@ -24,8 +24,8 @@ namespace view {
             std::cout << "Warning: Linear texture filtering not enabled!\n";
         }
 
-        Uint32 initialWidth  = 900;
-        Uint32 initialHeight = 700;
+        Uint32 initialWidth  = 1000;
+        Uint32 initialHeight = 800;
 
         m_window =
             SDL_CreateWindow("Blocks", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, initialWidth, initialHeight, SDL_WINDOW_RESIZABLE);

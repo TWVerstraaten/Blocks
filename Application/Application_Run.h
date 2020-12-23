@@ -17,6 +17,7 @@ class Application_Run {
     void                        setTimeStep(Uint32 timeStep);
     void                        handleEvent(const SDL_Event& event);
     Application_Level::RUN_MODE performSingleLoop();
+    void                        setPauseAfterNextStep(bool pauseAfterNextStep);
 
   private:
     void update(double fractionOfPhase);

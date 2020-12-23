@@ -21,6 +21,8 @@ class Application_Edit {
     Application_Level::EDIT_MODE performSingleLoop();
     Uint32                       timeStep() const;
     bool                         canStart() const;
+    bool                         hasFocus();
+    void                         finalize();
 
   private:
     void init();
@@ -31,7 +33,6 @@ class Application_Edit {
     void mouseMoveEvent(const SDL_Event& event);
     void getActionsFromEditBoxes();
     void setFocusOnClick();
-    void finalize();
 
     bool                         m_rightMouseButtonPressed = false;
     bool                         m_leftMouseButtonPressed  = false;
