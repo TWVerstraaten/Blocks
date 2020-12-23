@@ -38,6 +38,7 @@ namespace model {
         std::vector<model::Cluster>&       clusters();
 
       private:
+
         void splitDisconnectedClusters();
 
         Level                m_level;

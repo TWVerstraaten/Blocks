@@ -41,12 +41,13 @@ namespace model {
 
     void Model::interactClustersWithInstantBlocks() {
         for (auto& cluster : m_clusters) {
-            for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end(); ++it) {
+            for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end();) {
                 switch (m_level.instantBlockAt(GridXY(it->x(), it->y()))) {
-                    case Level::INSTANT_BLOCK_TYPE::NONE:
-                        break;
                     case Level::INSTANT_BLOCK_TYPE::KILL:
                         it = cluster.removeBLock(*it);
+                        break;
+                    default:
+                        ++it;
                         break;
                 }
             }
@@ -76,9 +77,6 @@ namespace model {
 
     void Model::update(double fractionOfPhase) {
         for (auto& cluster : m_clusters) {
-            if (cluster.empty()) {
-                continue;
-            }
             cluster.update(fractionOfPhase);
 
             while (not cluster.isConnected()) {
@@ -90,8 +88,11 @@ namespace model {
     void Model::init() {
         clear();
 
-        m_clusters.emplace_back(Cluster{{{3, 4}}, "CL" + std::to_string(m_clusters.size())});
+        m_clusters.emplace_back(Cluster{{{3, 4}, {4, 4}}, "CL" + std::to_string(m_clusters.size())});
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
+
+        m_level.addBlock({3, 3}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({4, 3}, Level::INSTANT_BLOCK_TYPE::KILL);
 
         m_clusters.emplace_back(Cluster{{{9, 7}, {10, 7}, {11, 7}, {12, 7}}, "CL" + std::to_string(m_clusters.size())});
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});

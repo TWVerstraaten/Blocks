@@ -44,7 +44,7 @@ namespace model {
         const std::list<GridXY>&    gridXY() const;
         const std::vector<Action>&  actions() const;
         std::set<WorldXY>           cornerPoints(int shrinkInWorld) const;
-        const std::string&          getName() const;
+        const std::string&          name() const;
         bool                        isConnected() const;
         Cluster                     getComponent();
 

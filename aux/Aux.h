@@ -8,6 +8,7 @@
 #include "../model/WorldXY.h"
 
 #include <SDL2/SDL.h>
+#include <string>
 
 namespace aux {
 
@@ -18,6 +19,8 @@ namespace aux {
 
     bool pointInBlock(const model::WorldXY& point, const model::GridXY& gridXY);
     int  clamp(int value, int lower, int upper);
+
+    std::string trimWhiteSpace(const std::string& string);
 
 } // namespace aux
 

@@ -107,6 +107,9 @@ namespace view {
                                                cluster.angle(),
                                                &center));
             }
+            m_assets->renderText(cluster.name() + " " + std::to_string(cluster.index()),
+                                 ScreenXY::fromGridXY(cluster.gridXY().front(), m_viewPort),
+                                 m_renderer);
         }
     }
 

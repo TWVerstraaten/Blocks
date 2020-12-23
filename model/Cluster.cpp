@@ -244,8 +244,12 @@ namespace model {
     }
 
     void Cluster::incrementActionIndex() {
+        if (m_actions.empty()) {
+            return;
+        }
         ++m_actionIndex;
         m_actionIndex %= m_actions.size();
+        assert(m_actionIndex < m_actions.size());
     }
 
     void Cluster::tryPendingOperation() {
@@ -268,7 +272,7 @@ namespace model {
         m_pendingOperations.clear();
     }
 
-    const std::string& Cluster::getName() const {
+    const std::string& Cluster::name() const {
         return m_name;
     }
 
@@ -311,7 +315,7 @@ namespace model {
                 }
             }
         }
-        Cluster result{{}, getName() + "_"};
+        Cluster result{{}, name() + "_"};
         result.clearPhase();
         result.m_isAlive     = m_isAlive;
         result.m_actionIndex = m_actionIndex;
