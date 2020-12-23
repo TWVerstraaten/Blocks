@@ -7,7 +7,7 @@
 
 #include "Action.h"
 #include "Level.h"
-#include "WorldVector.h"
+#include "WorldXY.h"
 
 #include <list>
 #include <set>
@@ -40,7 +40,7 @@ namespace model {
         size_t                      index() const;
         size_t                      currentActionIndex() const;
         const GridXY&               rotationPivot() const;
-        WorldVector                 dynamicWorldOffset() const;
+        WorldXY                     dynamicWorldOffset() const;
         const std::list<GridXY>&    gridXY() const;
         const std::vector<Action>&  actions() const;
         std::set<WorldXY>           cornerPoints(int shrinkInWorld) const;
@@ -70,7 +70,7 @@ namespace model {
         size_t              m_actionIndex     = 0;
         CURRENT_PHASE       m_currentPhase    = CURRENT_PHASE::NONE;
         GridXY              m_rotationPivot;
-        WorldVector         m_worldOffset{0, 0};
+        WorldXY             m_worldOffset{0, 0};
         std::list<GridXY>   m_gridXYList;
         std::vector<Action> m_actions;
         std::vector<Block>  m_pendingOperations;

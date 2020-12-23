@@ -15,13 +15,13 @@ namespace model {
 namespace view {
 
     class ViewPort;
-    class ScreenVector;
 
     class ScreenXY {
       public:
         ScreenXY(int x, int y);
 
         static ScreenXY fromWorldXY(const model::WorldXY& worldXY, const ViewPort& viewPort);
+        static ScreenXY fromWorldXYAsVector(const model::WorldXY& worldXY, const ViewPort& viewPort);
         static ScreenXY fromGridXY(const model::GridXY& gridXY, const ViewPort& viewPort);
 
         int x() const;
@@ -35,6 +35,5 @@ namespace view {
 } // namespace view
 
 view::ScreenXY operator+(const view::ScreenXY& lhs, const view::ScreenXY& rhs);
-view::ScreenXY operator+(const view::ScreenXY& lhs, const view::ScreenVector& rhs);
 
 #endif // BLOCKS_SCREENXY_H

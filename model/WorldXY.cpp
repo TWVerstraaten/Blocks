@@ -8,7 +8,7 @@
 
 namespace model {
 
-    const WorldVector WorldXY::halfBlockInWorld = {halfBlockSizeInWorld(), halfBlockSizeInWorld()};
+    const WorldXY WorldXY::halfBlockInWorld = {halfBlockSizeInWorld(), halfBlockSizeInWorld()};
 
     WorldXY::WorldXY(int x, int y) : m_x(x), m_y(y) {
     }
@@ -43,14 +43,6 @@ namespace model {
 
     model::WorldXY operator+(const model::WorldXY& lhs, const model::WorldXY& rhs) {
         return {lhs.x() + rhs.x(), lhs.y() + rhs.y()};
-    }
-
-    model::WorldXY operator+(const model::WorldXY& lhs, const model::WorldVector& rhs) {
-        return {lhs.x() + rhs.x(), lhs.y() + rhs.y()};
-    }
-
-    model::WorldXY operator-(const model::WorldXY& lhs, const model::WorldVector& rhs) {
-        return {lhs.x() - rhs.x(), lhs.y() - rhs.y()};
     }
 
 } // namespace model

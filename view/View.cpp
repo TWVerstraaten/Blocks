@@ -7,7 +7,6 @@
 #include "../model/Model.h"
 #include "../model/WorldXY.h"
 #include "Color.h"
-#include "ScreenVector.h"
 #include "ScreenXY.h"
 
 #include <SDL2/SDL_image.h>
@@ -96,7 +95,7 @@ namespace view {
 
     void View::drawClusters(const std::vector<model::Cluster>& clusters) const {
         for (const auto& cluster : clusters) {
-            const ScreenVector offset = ScreenVector::fromWorldVector(cluster.dynamicWorldOffset(), m_viewPort);
+            const ScreenXY offset = ScreenXY::fromWorldXYAsVector(cluster.dynamicWorldOffset(), m_viewPort);
             for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end(); ++it) {
                 const SDL_Point center = {static_cast<int>(m_viewPort.blockSizeInScreen() * (0.5 + cluster.rotationPivot().x() - it->x())),
                                           static_cast<int>(m_viewPort.blockSizeInScreen() * (0.5 + cluster.rotationPivot().y() - it->y()))};

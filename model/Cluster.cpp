@@ -154,7 +154,7 @@ namespace model {
         return m_actions;
     }
 
-    WorldVector Cluster::dynamicWorldOffset() const {
+    WorldXY Cluster::dynamicWorldOffset() const {
         return {static_cast<int>(m_worldOffset.x() * m_fractionOfPhase), static_cast<int>(m_worldOffset.y() * m_fractionOfPhase)};
     }
 
@@ -171,7 +171,7 @@ namespace model {
                 }
                 break;
             case CURRENT_PHASE::TRANSLATING: {
-                const WorldVector offset = dynamicWorldOffset();
+                const WorldXY offset = dynamicWorldOffset();
                 for (const auto& it : m_gridXYList) {
                     for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
                         result.emplace(WorldXY::fromGridXY(it + cornerOffset) +

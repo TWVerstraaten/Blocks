@@ -5,8 +5,6 @@
 #ifndef BLOCKS_WORLDXY_H
 #define BLOCKS_WORLDXY_H
 
-#include "WorldVector.h"
-
 #include <cstddef>
 
 namespace view {
@@ -23,9 +21,9 @@ namespace model {
         int x() const;
         int y() const;
 
-        static const int         m_blockSizeInWorld = 50;
-        static constexpr int     halfBlockSizeInWorld();
-        static const WorldVector halfBlockInWorld;
+        static const int     m_blockSizeInWorld = 50;
+        static constexpr int halfBlockSizeInWorld();
+        static const WorldXY halfBlockInWorld;
 
         static WorldXY fromGridXY(const model::GridXY& gridXY);
 
@@ -34,8 +32,6 @@ namespace model {
 
         friend WorldXY operator-(const WorldXY& lhs, const WorldXY& rhs);
         friend WorldXY operator+(const WorldXY& lhs, const WorldXY& rhs);
-        friend WorldXY operator+(const WorldXY& lhs, const WorldVector& rhs);
-        friend WorldXY operator-(const WorldXY& lhs, const WorldVector& rhs);
 
       private:
         int m_x;

@@ -99,10 +99,12 @@ namespace model {
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
 
         m_level.addBlock({11, 6}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
-        m_level.addBlock({10, 4}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
 
         for (int i = -1; i != 15; ++i) {
             for (int j = -1; j != 11; ++j) {
+                if (i == 11 && j == 3) {
+                    continue;
+                }
                 m_level.addLevelBlock({(i), (j)});
             }
         }
