@@ -9,7 +9,7 @@
 
 view::widget::ActionEditBox::ActionEditBox(
     int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
-    : LineEditBox(x, y, w, h, assetHandler, cluster.getName()) {
+    : LineEditBox(x, y, w, h, assetHandler, cluster.getName()), m_clusterIndex(cluster.index()) {
     if (cluster.actions().empty()) {
         m_strings.emplace_back(" ");
     } else {
@@ -30,4 +30,8 @@ void view::widget::ActionEditBox::updateClusterActions(model::Cluster& cluster) 
             cluster.addAction(model::Action::fromString(str));
         }
     }
+}
+
+size_t view::widget::ActionEditBox::clusterIndex() const {
+    return m_clusterIndex;
 }

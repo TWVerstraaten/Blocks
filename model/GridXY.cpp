@@ -28,8 +28,8 @@ namespace model {
         return lhs.y() == rhs.y() ? lhs.x() < rhs.x() : lhs.y() < rhs.y();
     }
 
-    size_t GridXY::manhattanDistance(const GridXY& other) const {
-        return static_cast<size_t>(std::abs(other.y() - y()) + std::abs(other.x() - x()));
+    int GridXY::manhattanDistance(const GridXY& other) const {
+        return std::abs(other.y() - y()) + std::abs(other.x() - x());
     }
 
     GridXY GridXY::adjacent(enums::DIRECTION direction) const {
@@ -69,6 +69,10 @@ namespace model {
 
     GridXY::operator WorldXY() const {
         return WorldXY::fromGridXY(*this);
+    }
+
+    bool GridXY::isAdjacent(const GridXY& other) const {
+        return manhattanDistance(other) == 1;
     }
 
 } // namespace model

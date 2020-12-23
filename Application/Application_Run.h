@@ -29,6 +29,7 @@ class Application_Run {
     void mouseMoveEvent(const SDL_Event& event);
     void performTimeStep();
 
+    bool                        m_currentStepIsFirst      = true;
     bool                        m_paused                  = false;
     bool                        m_rightMouseButtonPressed = false;
     bool                        m_leftMouseButtonPressed  = false;

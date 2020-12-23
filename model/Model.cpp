@@ -7,6 +7,7 @@
 #include "../aux/Aux.h"
 
 #include <algorithm>
+#include <cassert>
 
 namespace model {
 
@@ -28,31 +29,30 @@ namespace model {
 
     void Model::interactClustersWithDynamicBlocks() {
         for (auto& cluster : m_clusters) {
+            if (not cluster.isAlive()) {
+                continue;
+            }
             for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end(); ++it) {
                 cluster.addPendingOperation(*it, m_level.dynamicBlockAt(GridXY(it->x(), it->y())));
             }
-        }
-        for (auto& cluster : m_clusters) {
             cluster.performPendingOperationOrNextAction();
         }
-        clearEmptyClusters();
     }
 
     void Model::interactClustersWithInstantBlocks() {
         for (auto& cluster : m_clusters) {
-            bool isDone = false;
-            for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end() && not isDone; ++it) {
+            for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end(); ++it) {
                 switch (m_level.instantBlockAt(GridXY(it->x(), it->y()))) {
                     case Level::INSTANT_BLOCK_TYPE::NONE:
                         break;
                     case Level::INSTANT_BLOCK_TYPE::KILL:
-                        isDone = true;
-                        cluster.removeBLock(*it);
+                        it = cluster.removeBLock(*it);
                         break;
                 }
             }
         }
         clearEmptyClusters();
+        splitDisconnectedClusters();
     }
 
     void Model::interactClustersWithLevel() {
@@ -76,41 +76,33 @@ namespace model {
 
     void Model::update(double fractionOfPhase) {
         for (auto& cluster : m_clusters) {
+            if (cluster.empty()) {
+                continue;
+            }
             cluster.update(fractionOfPhase);
+
+            while (not cluster.isConnected()) {
+                m_clusters.emplace_back(cluster.getComponent());
+            }
         }
     }
 
     void Model::init() {
         clear();
 
-        m_clusters.emplace_back(Cluster{{{1, 3}}, "Cluster_" + std::to_string(m_clusters.size())});
+        m_clusters.emplace_back(Cluster{{{3, 4}}, "CL" + std::to_string(m_clusters.size())});
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
-        m_clusters.back().addAction({Action::VALUE::MOVE_LEFT, Action::MODIFIER::NONE});
-        m_clusters.back().addAction({Action::VALUE::MOVE_DOWN, Action::MODIFIER::NONE});
-        m_clusters.back().addAction({Action::VALUE::MOVE_RIGHT, Action::MODIFIER::NONE});
 
-        //        m_clusters.emplace_back(Cluster{{{9, 4}}, "Cluster_" + std::to_string(m_clusters.size())});
-        //        m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
+        m_clusters.emplace_back(Cluster{{{9, 7}, {10, 7}, {11, 7}, {12, 7}}, "CL" + std::to_string(m_clusters.size())});
+        m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
+        m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
+        m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
 
-        m_clusters.emplace_back(Cluster{{{10, 7}, {11, 7}, {12, 7}}, "Cluster_" + std::to_string(m_clusters.size())});
-        m_clusters.back().addAction({Action::VALUE::MOVE_LEFT, Action::MODIFIER::NONE});
-        m_clusters.back().addAction({Action::VALUE::MOVE_RIGHT, Action::MODIFIER::SKIP});
-        m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::SKIP});
-        m_clusters.back().addAction({Action::VALUE::MOVE_DOWN, Action::MODIFIER::SKIP});
-        m_clusters.back().addAction({Action::VALUE::MOVE_LEFT, Action::MODIFIER::IGNORE});
+        m_level.addBlock({11, 6}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
+        m_level.addBlock({10, 4}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
 
-        m_level.addBlock({5, 1}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
-        m_level.addBlock({10, 6}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW);
-        m_level.addBlock({5, 4}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
-
-        m_level.addBlock({5, 6}, Level::INSTANT_BLOCK_TYPE::KILL);
-        m_level.addBlock({3, 1}, Level::INSTANT_BLOCK_TYPE::KILL);
-        m_level.addBlock({9, 3}, Level::INSTANT_BLOCK_TYPE::KILL);
-        m_level.addBlock({7, 2}, Level::INSTANT_BLOCK_TYPE::KILL);
-        m_level.addBlock({4, 4}, Level::INSTANT_BLOCK_TYPE::KILL);
-
-        for (int i = -1; i != 14; ++i) {
-            for (int j = -1; j != 9; ++j) {
+        for (int i = -1; i != 15; ++i) {
+            for (int j = -1; j != 11; ++j) {
                 m_level.addLevelBlock({(i), (j)});
             }
         }
@@ -124,6 +116,21 @@ namespace model {
     void Model::clearEmptyClusters() {
         m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }),
                          m_clusters.end());
+    }
+
+    void Model::splitDisconnectedClusters() {
+        for (auto& cluster : m_clusters) {
+            if (not cluster.isConnected()) {
+                m_clusters.push_back(cluster.getComponent());
+                splitDisconnectedClusters();
+            }
+        }
+    }
+
+    void Model::preStep() {
+        for (auto& cluster : m_clusters) {
+            cluster.preStep();
+        }
     }
 
 } // namespace model

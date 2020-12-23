@@ -19,10 +19,6 @@ namespace aux {
     bool pointInBlock(const model::WorldXY& point, const model::GridXY& gridXY);
     int  clamp(int value, int lower, int upper);
 
-    //    bool                    pointInAlignedRectangle(const SDL_Rect& rect, const Point& point);
-    //    bool                    pointInRectangle(const SDL_Rect& rect, double angle, const Point& pivot, const Point& point);
-    //    Point                   center(const SDL_Rect& rect);
-    //
 } // namespace aux
 
 #endif // BLOCKS_AUX_H

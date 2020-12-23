@@ -89,7 +89,7 @@ void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
 void Application_Edit::init() {
     SDL_StartTextInput();
     m_view->clear();
-    m_view->setActionEditBoxes(m_model->clusters());
+    m_view->initActionBoxes(m_model->clusters());
 }
 
 bool Application_Edit::canStart() const {

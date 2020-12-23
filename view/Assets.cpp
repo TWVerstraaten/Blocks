@@ -95,6 +95,7 @@ namespace view {
 
     const Font* Assets::font(Assets::FONT_ENUM fontEnum) const {
         assert(m_fonts.find(fontEnum) != m_fonts.end());
+        assert(m_fonts.at(fontEnum)->loadedCorrectly());
         return m_fonts.at(fontEnum).get();
     }
 

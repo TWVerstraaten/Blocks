@@ -22,9 +22,10 @@ namespace model {
 
         int           x() const;
         int           y() const;
-        size_t        manhattanDistance(const GridXY& other) const;
+        int           manhattanDistance(const GridXY& other) const;
         GridXY        adjacent(enums::DIRECTION direction) const;
         static GridXY fromWorldXY(const model::WorldXY& worldXY);
+        bool          isAdjacent(const GridXY& other) const;
 
         explicit      operator WorldXY() const;
         GridXY&       operator+=(const GridXY& gridXY);

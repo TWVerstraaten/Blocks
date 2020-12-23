@@ -11,6 +11,7 @@
 #include "ScreenXY.h"
 
 #include <SDL2/SDL_image.h>
+#include <algorithm>
 #include <cassert>
 
 namespace view {
@@ -154,7 +155,7 @@ namespace view {
         return {windowWidth, windowHeight};
     }
 
-    std::vector<widget::ActionEditBox>& View::actionEditBoxes() {
+    std::list<widget::ActionEditBox>& View::actionEditBoxes() {
         return m_actionEditBoxes;
     }
 
@@ -216,12 +217,10 @@ namespace view {
         m_actionEditBoxes.clear();
     }
 
-    void View::setActionEditBoxes(const std::vector<model::Cluster>& clusters) {
+    void View::initActionBoxes(const std::vector<model::Cluster>& clusters) {
         m_actionEditBoxes.clear();
         for (const auto& cluster : clusters) {
-            m_actionEditBoxes.emplace_back(view::widget::ActionEditBox(30, 0, global::m_actionEditBoxWidth, 0, m_assets.get(), cluster));
-            m_actionEditBoxes.back().setHighLightedLine(cluster.currentActionIndex());
-            m_actionEditBoxes.back().setActive(cluster.isAlive());
+            addActionBox(cluster);
         }
     }
 
@@ -235,6 +234,42 @@ namespace view {
 
     Assets& View::assets() const {
         return *m_assets;
+    }
+
+    void View::addActionBox(const model::Cluster& cluster) {
+        m_actionEditBoxes.emplace_back(view::widget::ActionEditBox(30, 0, global::m_actionEditBoxWidth, 0, m_assets.get(), cluster));
+        m_actionEditBoxes.back().setHighLightedLine(cluster.currentActionIndex());
+        m_actionEditBoxes.back().setActive(cluster.isAlive());
+    }
+
+    void View::updateActionBoxes(const std::vector<model::Cluster>& clusters) {
+        m_actionEditBoxes.remove_if([&](const widget::ActionEditBox& box) {
+            return std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
+                       return cluster.index() == box.clusterIndex();
+                   }) == clusters.end();
+        });
+
+        for (auto& actionBox : m_actionEditBoxes) {
+            auto it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
+                return cluster.index() == actionBox.clusterIndex();
+            });
+            assert(it != clusters.end());
+            actionBox.setHighLightedLine(it->currentActionIndex());
+            actionBox.setActive(it->isAlive());
+        }
+        auto it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
+            return std::find_if(m_actionEditBoxes.begin(), m_actionEditBoxes.end(), [&](const widget::ActionEditBox& box) {
+                       return box.clusterIndex() == cluster.index();
+                   }) == m_actionEditBoxes.end();
+        });
+        while (it != clusters.end()) {
+            addActionBox(*it);
+            it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
+                return std::find_if(m_actionEditBoxes.begin(), m_actionEditBoxes.end(), [&](const widget::ActionEditBox& box) {
+                           return box.clusterIndex() == cluster.index();
+                       }) == m_actionEditBoxes.end();
+            });
+        }
     }
 
 } // namespace view

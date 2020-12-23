@@ -11,7 +11,6 @@
 
 #include <iostream>
 #include <list>
-#include <vector>
 
 namespace model {
     class Model;
@@ -37,7 +36,7 @@ namespace view {
         void                                translate(int dx, int dy);
         void                                renderPresent() const;
         const ViewPort&                     viewPort() const;
-        std::vector<widget::ActionEditBox>& actionEditBoxes();
+        std::list<widget::ActionEditBox>& actionEditBoxes();
         SDL_Renderer*                       renderer() const;
         Assets&                             assets() const;
         void                                drawRectangle(const ScreenXY& point, int width, int height, const SDL_Color& color) const;
@@ -49,7 +48,8 @@ namespace view {
         void      drawVerticalLine(const ScreenXY& point, int length, const SDL_Color& color, size_t lineThickness) const;
         void      drawVerticalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, Uint32 lineThickness) const;
         void      clear();
-        void      setActionEditBoxes(const std::vector<model::Cluster>& clusters);
+        void      initActionBoxes(const std::vector<model::Cluster>& clusters);
+        void      updateActionBoxes(const std::vector<model::Cluster>& clusters);
         SDL_Point windowSize() const;
 
       private:
@@ -58,13 +58,14 @@ namespace view {
         void drawBlocks(const model::Level& level) const;
         void drawActionEditBoxes();
         void setDrawColor(const SDL_Color& color) const;
+        void addActionBox(const model::Cluster& cluster);
 
-        int                                m_zoomParameter = 0;
-        SDL_Window*                        m_window        = nullptr;
-        SDL_Renderer*                      m_renderer      = nullptr;
-        ViewPort                           m_viewPort;
-        std::unique_ptr<Assets>            m_assets{new Assets()};
-        std::vector<widget::ActionEditBox> m_actionEditBoxes;
+        int                              m_zoomParameter = 0;
+        SDL_Window*                      m_window        = nullptr;
+        SDL_Renderer*                    m_renderer      = nullptr;
+        ViewPort                         m_viewPort;
+        std::unique_ptr<Assets>          m_assets{new Assets()};
+        std::list<widget::ActionEditBox> m_actionEditBoxes;
     };
 } // namespace view
 

@@ -11,9 +11,13 @@
 #include <queue>
 #include <utility>
 
-namespace model {
+size_t model::Cluster::s_maxClusterIndex = 0;
 
-    Cluster::Cluster(std::list<GridXY>&& gridXY, std::string name) : m_gridXYList(gridXY), m_name(std::move(name)) {
+namespace model {
+    Cluster::Cluster(std::list<GridXY>&& gridXY, std::string name)
+        : m_gridXYList(gridXY), m_name(name.empty() ? "CL" + std::to_string(s_maxClusterIndex) : name) {
+        m_index = s_maxClusterIndex;
+        ++s_maxClusterIndex;
     }
 
     void Cluster::doAction() {
@@ -43,7 +47,6 @@ namespace model {
                     break;
             }
         }
-        incrementActionIndex();
     }
 
     void Cluster::rotateClockWiseAbout(const GridXY& pivotGridXY) {
@@ -94,10 +97,10 @@ namespace model {
         m_actions.push_back(action);
     }
 
-    void Cluster::removeBLock(const GridXY& gridXY) {
-        const auto it = std::find(m_gridXYList.begin(), m_gridXYList.end(), gridXY);
+    std::list<GridXY>::iterator Cluster::removeBLock(const GridXY& gridXY) {
+        const std::list<GridXY>::iterator it = std::find(m_gridXYList.begin(), m_gridXYList.end(), gridXY);
         assert(it != m_gridXYList.end());
-        m_gridXYList.erase(it);
+        return m_gridXYList.erase(it);
     }
 
     bool Cluster::empty() const {
@@ -116,14 +119,15 @@ namespace model {
     }
 
     void Cluster::performPendingOperationOrNextAction() {
-        assert(m_pendingOperations.size() <= 1);
+        if (m_pendingOperations.size() > 1) {
+            kill();
+            return;
+        }
+
         if (m_pendingOperations.empty() || m_actions.at(m_actionIndex).m_modifier == Action::MODIFIER::IGNORE) {
             doAction();
             m_pendingOperations.clear();
         } else {
-            if (m_actions.at(m_actionIndex).m_modifier == Action::MODIFIER::SKIP) {
-                incrementActionIndex();
-            }
             tryPendingOperation();
         }
     }
@@ -206,7 +210,6 @@ namespace model {
         m_fractionOfPhase = 0.0;
         m_worldOffset     = {0, 0};
         m_angle           = 0.0;
-        m_currentPhase    = CURRENT_PHASE::NONE;
         m_rotationPivot   = {0, 0};
     }
 
@@ -226,6 +229,7 @@ namespace model {
 
     Cluster& Cluster::operator=(const Cluster& other) {
         clearPhase();
+        assert(m_index > 1);
         m_name        = other.m_name;
         m_isAlive     = other.m_isAlive;
         m_actionIndex = other.m_actionIndex;
@@ -236,11 +240,7 @@ namespace model {
     }
 
     size_t Cluster::currentActionIndex() const {
-        if (m_fractionOfPhase != 0.0) {
-            return (m_actionIndex + m_actions.size() - 1) % m_actions.size();
-        } else {
-            return m_actionIndex;
-        }
+        return m_actionIndex;
     }
 
     void Cluster::incrementActionIndex() {
@@ -270,5 +270,84 @@ namespace model {
 
     const std::string& Cluster::getName() const {
         return m_name;
+    }
+
+    bool Cluster::isConnected() const {
+        assert(not empty());
+        if (m_gridXYList.size() == 1) {
+            return true;
+        }
+        std::list<GridXY> copy = m_gridXYList;
+
+        std::queue<GridXY> queue;
+        queue.push(copy.front());
+        while (not queue.empty() && not copy.empty()) {
+            copy.remove(queue.front());
+            const auto fr = queue.front();
+            queue.pop();
+            for (const auto& c : copy) {
+                if (fr.isAdjacent(c)) {
+                    queue.push(c);
+                }
+            }
+        }
+
+        return copy.empty();
+    }
+
+    Cluster Cluster::getComponent() {
+        assert(not isConnected());
+        std::list<GridXY> copy = m_gridXYList;
+
+        std::queue<GridXY> queue;
+        queue.push(copy.front());
+        while (not queue.empty() && not copy.empty()) {
+            copy.remove(queue.front());
+            const auto fr = queue.front();
+            queue.pop();
+            for (const auto& c : copy) {
+                if (fr.isAdjacent(c)) {
+                    queue.push(c);
+                }
+            }
+        }
+        Cluster result{{}, getName() + "_"};
+        result.clearPhase();
+        result.m_isAlive     = m_isAlive;
+        result.m_actionIndex = m_actionIndex;
+        result.m_actions     = m_actions;
+        result.m_pendingOperations.clear();
+
+        result.m_gridXYList = std::move(copy);
+
+        for (const auto& c : result.m_gridXYList) {
+            m_gridXYList.remove(c);
+        }
+
+        return result;
+    }
+
+    size_t Cluster::index() const {
+        return m_index;
+    }
+
+    std::string Cluster::toString() const {
+        std::string str;
+        for (const auto& block : m_gridXYList) {
+            str += "(" + std::to_string(block.x()) + " " + std::to_string(block.y()) + ") " + ' ';
+        }
+        str += '\n';
+        return str;
+    }
+
+    void Cluster::preStep() {
+        if (m_currentPhase == CURRENT_PHASE::ROTATING) {
+            if (m_actions.at(m_actionIndex).m_modifier == Action::MODIFIER::SKIP) {
+                incrementActionIndex();
+            }
+        } else {
+            incrementActionIndex();
+            m_currentPhase = CURRENT_PHASE::NONE;
+        }
     }
 } // namespace model

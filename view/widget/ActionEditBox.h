@@ -19,6 +19,10 @@ namespace view {
             ActionEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, const model::Cluster& cluster);
 
             void updateClusterActions(model::Cluster& cluster);
+            size_t clusterIndex() const;
+
+          private:
+            size_t m_clusterIndex;
         };
 
     } // namespace widget

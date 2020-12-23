@@ -19,12 +19,13 @@ namespace model {
 
       public:
         Model();
-        explicit Model(const std::string& path);
+        //        explicit Model(const std::string& path);
 
         Model(const Model& other);
 
         Model& operator=(const Model& other) = default;
 
+        void                               preStep();
         void                               interactClustersWithDynamicBlocks();
         void                               interactClustersWithInstantBlocks();
         void                               interactClustersWithLevel();
@@ -37,6 +38,8 @@ namespace model {
         std::vector<model::Cluster>&       clusters();
 
       private:
+        void splitDisconnectedClusters();
+
         Level                m_level;
         std::vector<Cluster> m_clusters;
     };
