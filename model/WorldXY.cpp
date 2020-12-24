@@ -8,9 +8,9 @@
 
 namespace model {
 
-    const WorldXY WorldXY::halfBlockInWorld = {halfBlockSizeInWorld(), halfBlockSizeInWorld()};
+    const WorldXY WorldXY::halfBlockInWorld(m_halfBlockSizeInWorld, m_halfBlockSizeInWorld);
 
-    WorldXY::WorldXY(int x, int y) : m_x(x), m_y(y) {
+    WorldXY::WorldXY(int x, int y) noexcept : m_x(x), m_y(y) {
     }
 
     int WorldXY::x() const {
@@ -23,10 +23,6 @@ namespace model {
 
     WorldXY WorldXY::fromGridXY(const model::GridXY& gridXY) {
         return {m_blockSizeInWorld * gridXY.x(), m_blockSizeInWorld * gridXY.y()};
-    }
-
-    constexpr int WorldXY::halfBlockSizeInWorld() {
-        return m_blockSizeInWorld / 2;
     }
 
     bool operator<(const WorldXY& lhs, const WorldXY& rhs) {

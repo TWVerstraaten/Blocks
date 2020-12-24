@@ -16,13 +16,13 @@ namespace model {
 
     class WorldXY {
       public:
-        WorldXY(int x, int y);
+        WorldXY(int x, int y) noexcept;
 
         int x() const;
         int y() const;
 
-        static const int     m_blockSizeInWorld = 50;
-        static constexpr int halfBlockSizeInWorld();
+        static const int     m_blockSizeInWorld     = 50;
+        static const int     m_halfBlockSizeInWorld = m_blockSizeInWorld / 2;
         static const WorldXY halfBlockInWorld;
 
         static WorldXY fromGridXY(const model::GridXY& gridXY);

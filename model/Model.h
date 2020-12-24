@@ -20,11 +20,12 @@ namespace model {
 
       public:
         Model();
-        //        explicit Model(const std::string& path);
 
-        Model(const Model& other);
-
-        Model& operator=(const Model& other) = default;
+        Model& operator=(const Model& other) {
+            m_level    = other.m_level;
+            m_clusters = other.m_clusters;
+            return *this;
+        };
 
         void                        preStep();
         void                        interactClustersWithDynamicBlocks();
@@ -34,6 +35,8 @@ namespace model {
         void                        init();
         void                        clear();
         void                        clearEmptyClusters();
+        void                        addCluster(const GridXY& gridXY);
+        void                        linkClusters(const GridXY& base, const GridXY& extension);
         const Level&                level() const;
         const std::vector<Cluster>& clusters() const;
         std::vector<Cluster>&       clusters();

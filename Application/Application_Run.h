@@ -34,7 +34,7 @@ class Application_Run {
     bool                        m_rightMouseButtonPressed = false;
     bool                        m_leftMouseButtonPressed  = false;
     bool                        m_pauseAfterNextStep      = false;
-    Uint32                      m_previousTime{};
+    Uint32                      m_previousTime;
     Uint32                      m_timeSinceLastStep = 0;
     Uint32                      m_timeStep          = 300;
     Application_Level::RUN_MODE m_runningMode       = Application_Level::RUN_MODE::RUNNING;

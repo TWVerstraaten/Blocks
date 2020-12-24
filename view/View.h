@@ -54,7 +54,7 @@ namespace view {
 
       private:
         void drawClusters(const std::vector<model::Cluster>& clusters) const;
-        void drawLevelBlocks(const model::Level& level) const;
+        void drawLevel(const model::Level& level) const;
         void drawBlocks(const model::Level& level) const;
         void drawActionEditBoxes();
         void setDrawColor(const SDL_Color& color) const;

@@ -12,11 +12,6 @@
 namespace model {
 
     Model::Model() {
-        init();
-    }
-
-    Model::Model(const Model& other) {
-        *this = other;
     }
 
     const std::vector<Cluster>& Model::clusters() const {
@@ -78,38 +73,32 @@ namespace model {
     void Model::update(double fractionOfPhase) {
         for (auto& cluster : m_clusters) {
             cluster.update(fractionOfPhase);
-
-            while (not cluster.isConnected()) {
-                m_clusters.emplace_back(cluster.getComponent());
-            }
         }
     }
 
     void Model::init() {
         clear();
 
-        m_clusters.emplace_back(Cluster{{{3, 4}, {4, 4}}, "CL" + std::to_string(m_clusters.size())});
+        m_clusters.push_back(Cluster({{4, 5}, {4, 6}, {5, 6}, {6, 6}, {7, 6}, {8, 6}, {8, 5}}, "CL" + std::to_string(m_clusters.size())));
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
 
-        m_level.addBlock({4, 3}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({5, 5}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({7, 5}, Level::INSTANT_BLOCK_TYPE::KILL);
 
-        m_clusters.emplace_back(Cluster{{{4, 7}, {4, 6}}, "CL" + std::to_string(m_clusters.size())});
-        m_clusters.back().addAction({Action::VALUE::MOVE_DOWN, Action::MODIFIER::NONE});
-        m_level.addBlock({4, 8}, Level::INSTANT_BLOCK_TYPE::KILL);
-
-        m_clusters.emplace_back(Cluster{{{9, 7}, {10, 7}, {11, 7}, {12, 7}}, "CL" + std::to_string(m_clusters.size())});
-        m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
-        m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
-        m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
-
-        m_level.addBlock({11, 6}, Level::INSTANT_BLOCK_TYPE::KILL);
-
-        for (int i = -1; i != 15; ++i) {
-            for (int j = -1; j != 11; ++j) {
+        for (int i = -2; i != 15; ++i) {
+            for (int j = -2; j != 11; ++j) {
                 if (i == 11 && j == 3) {
                     continue;
                 }
                 m_level.addLevelBlock({(i), (j)});
+            }
+        }
+        for (int i = -2; i != 5; ++i) {
+            for (int j = -2; j != 11; ++j) {
+                if (i == 11 && j == 3) {
+                    continue;
+                }
+                m_level.addStartBlock({(i), (j)});
             }
         }
     }
@@ -120,17 +109,8 @@ namespace model {
     }
 
     void Model::clearEmptyClusters() {
-        for (auto it = m_clusters.begin(); it != m_clusters.end();) {
-            if (it->empty()) {
-                it = m_clusters.erase(it);
-            } else {
-                ++it;
-            }
-        }
-
-        //        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const auto& cluster) { return cluster.empty();
-        //        }),
-        //                         m_clusters.end());
+        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const auto& cluster) { return cluster.empty(); }),
+                         m_clusters.end());
     }
 
     void Model::splitDisconnectedClusters() {
@@ -138,6 +118,7 @@ namespace model {
             if (not cluster.isConnected()) {
                 m_clusters.push_back(cluster.getComponent());
                 splitDisconnectedClusters();
+                return;
             }
         }
     }
@@ -146,6 +127,33 @@ namespace model {
         for (auto& cluster : m_clusters) {
             cluster.preStep();
         }
+    }
+
+    void Model::addCluster(const GridXY& gridXY) {
+        if (std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); }) ==
+            m_clusters.end()) {
+            m_clusters.push_back(Cluster({gridXY}, "CL" + std::to_string(m_clusters.size())));
+        }
+    }
+
+    void Model::linkClusters(const GridXY& base, const GridXY& extension) {
+        auto baseIt = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(base); });
+        assert(baseIt != m_clusters.end());
+        if (not base.isAdjacent(extension)) {
+            addCluster(extension);
+            return;
+        }
+        auto extensionIt =
+            std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(extension); });
+        if (baseIt == extensionIt) {
+            return;
+        } else if (extensionIt == m_clusters.end()) {
+            baseIt->addGridXY(extension);
+            assert(baseIt->isConnected());
+        }
+        //        else {
+        //            baseIt->gridXY().emplace_back(extensionIt->gridXY());
+        //        }
     }
 
 } // namespace model

@@ -47,6 +47,10 @@ namespace model {
         m_levelBlocks.emplace(gridXY);
     }
 
+    void Level::addStartBlock(const GridXY& gridXY) {
+        m_startBlocks.emplace(gridXY);
+    }
+
     const std::set<GridXY>& Level::levelBlocks() const {
         return m_levelBlocks;
     }
@@ -58,8 +62,13 @@ namespace model {
 
     void Level::clear() {
         m_levelBlocks.clear();
+        m_startBlocks.clear();
         m_instantBLocks.clear();
         m_dynamicBLocks.clear();
+    }
+
+    const std::set<GridXY>& Level::startBlocks() const {
+        return m_startBlocks;
     }
 
 } // namespace model

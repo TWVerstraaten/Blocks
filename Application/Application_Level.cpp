@@ -9,7 +9,9 @@
 
 #include <cassert>
 
-Application_Level::Application_Level() = default;
+Application_Level::Application_Level() {
+    m_model.init();
+};
 
 void Application_Level::run() {
     bool isRunning = true;

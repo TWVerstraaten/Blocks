@@ -16,7 +16,7 @@ view::widget::ActionEditBox::ActionEditBox(
     } else {
         for (const auto& action : cluster.actions()) {
             m_strings.emplace_back(model::Action::stringFromModifier(action.m_modifier) + " " +
-                                   model::Action::stringFromAction(action.m_action));
+                                   model::Action::stringFromAction(action.m_value));
         }
     }
 }

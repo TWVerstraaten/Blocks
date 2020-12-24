@@ -24,10 +24,13 @@ namespace model {
         static size_t s_maxClusterIndex;
 
       public:
-        explicit Cluster(std::list<GridXY>&& gridXY, std::string name = "");
-        Cluster(const Cluster& other) = default;
-        Cluster& operator             =(const Cluster& other);
-        Cluster& operator=(Cluster&& other) noexcept = default;
+        explicit Cluster(std::vector<GridXY>&& gridXY, std::string name = "");
+        explicit Cluster(const std::vector<GridXY>& gridXY, std::string name = "");
+
+        Cluster& operator=(const Cluster& other) = default;
+        Cluster(const Cluster& other)            = default;
+        Cluster(Cluster&& other)                 = default;
+        Cluster& operator=(Cluster&& other) = default;
 
         /****** CONST GETTERS  ******/
         double                     angle() const;
@@ -36,32 +39,38 @@ namespace model {
         std::string                string() const;
         WorldXY                    dynamicWorldOffset() const;
         const GridXY&              rotationPivot() const;
-        const std::set<WorldXY>    cornerPoints(int shrinkInWorld) const;
+        std::set<WorldXY>          cornerPoints(int shrinkInWorld) const;
         const std::string&         name() const;
-        const std::list<GridXY>&   gridXY() const;
+        const std::vector<GridXY>& gridXY() const;
         const std::vector<Action>& actions() const;
 
         /****** CONST FUNCTIONS  ******/
         bool empty() const;
         bool isAlive() const;
         bool isConnected() const;
+        bool contains(const GridXY& gridXY) const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void                        preStep();
-        void                        doAction();
-        void                        addPendingOperation(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType);
-        void                        performPendingOperationOrNextAction();
-        void                        update(double fractionOfPhase);
-        void                        addAction(Action action);
-        void                        kill();
-        void                        clearActions();
-        model::Cluster              getComponent();
-        std::list<GridXY>::iterator removeBLock(const GridXY& gridXY);
+        void addGridXY(const GridXY& gridXY);
+        void preStep();
+        void doAction();
+        void addPendingOperation(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType);
+        void performPendingOperationOrNextAction();
+        void update(double fractionOfPhase);
+        void addAction(Action action);
+        void kill();
+        void clearActions();
+        //        void                          swallow(Cluster& cluster);
+        model::Cluster                getComponent();
+        std::vector<GridXY>::iterator removeBLock(const GridXY& gridXY);
 
       private:
         /****** PRIVATE ENUMS / TYPEDEFS  ******/
         enum class CURRENT_PHASE { NONE, TRANSLATING, ROTATING };
         typedef std::pair<const GridXY&, Level::DYNAMIC_BLOCK_TYPE> Block;
+
+        /****** PRIVATE CONST FUNCTIONS  ******/
+        bool gridXUYAreUnique() const;
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void rotateClockWiseAbout(const GridXY& pivotGridXY);
@@ -76,18 +85,18 @@ namespace model {
         static Action rotateActionCounterClockWise(Action action);
 
         /****** DATA MEMBERS  ******/
-        bool                m_isAlive           = true;
-        double              m_fractionOfPhase   = 0.0;
-        double              m_angle             = 0.0;
-        size_t              m_actionIndex       = 0;
-        CURRENT_PHASE       m_currentPhase      = CURRENT_PHASE::NONE;
-        WorldXY             m_worldOffset       = {0, 0};
-        GridXY              m_rotationPivot     = {0, 0};
-        std::vector<Action> m_actions           = {};
-        std::vector<Block>  m_pendingOperations = {};
-        std::list<GridXY>   m_gridXYList;
-        std::string         m_name;
-        size_t              m_index;
+        bool                                              m_isAlive           = true;
+        double                                            m_fractionOfPhase   = 0.0;
+        double                                            m_angle             = 0.0;
+        size_t                                            m_actionIndex       = 0;
+        CURRENT_PHASE                                     m_currentPhase      = CURRENT_PHASE::NONE;
+        WorldXY                                           m_worldOffset       = {0, 0};
+        GridXY                                            m_rotationPivot     = {0, 0};
+        std::vector<Action>                               m_actions           = {};
+        std::map<const GridXY, Level::DYNAMIC_BLOCK_TYPE> m_pendingOperations = {};
+        std::vector<GridXY>                               m_gridXYVector      = {};
+        std::string                                       m_name;
+        size_t                                            m_index = 0;
     };
 } // namespace model
 

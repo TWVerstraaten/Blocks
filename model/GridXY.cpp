@@ -4,15 +4,14 @@
 
 #include "GridXY.h"
 
+#include "../view/ScreenXY.h"
+#include "../view/ViewPort.h"
 #include "WorldXY.h"
 
 #include <cassert>
 #include <cmath>
 
 namespace model {
-    GridXY::GridXY() : m_x(0), m_y(0) {
-    }
-
     GridXY::GridXY(int x, int y) : m_x(x), m_y(y) {
     }
 
@@ -49,7 +48,7 @@ namespace model {
     }
 
     bool operator==(const GridXY& lhs, const GridXY& rhs) {
-        return lhs.m_y == rhs.m_y && lhs.m_x == rhs.m_x;
+        return (lhs.m_y == rhs.m_y) && (lhs.m_x == rhs.m_x);
     }
 
     GridXY& GridXY::operator+=(const GridXY& gridXY) {
@@ -73,6 +72,15 @@ namespace model {
 
     bool GridXY::isAdjacent(const GridXY& other) const {
         return manhattanDistance(other) == 1;
+    }
+
+    GridXY GridXY::fromScreenXY(const view::ScreenXY& screenXY, const view::ViewPort& viewPort) {
+        return GridXY(std::floor((screenXY.x() - viewPort.xOffset()) / static_cast<double>(viewPort.blockSizeInScreen())),
+                      std::floor((screenXY.y() - viewPort.yOffset()) / static_cast<double>(viewPort.blockSizeInScreen())));
+    }
+
+    bool operator!=(const GridXY& lhs, const GridXY& rhs) {
+        return not(lhs == rhs);
     }
 
 } // namespace model

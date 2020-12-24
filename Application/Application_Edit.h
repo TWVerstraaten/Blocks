@@ -39,6 +39,7 @@ class Application_Edit {
     Uint32                       m_timeStep                = cst::s_timeStepSlow;
     Application_Level::EDIT_MODE m_editMode                = Application_Level::EDIT_MODE::EDITING;
     view::Widget*                m_focusedWidget           = nullptr;
+    model::GridXY                m_previousGridClickPosition{0, 0};
     view::View*                  m_view;
     model::Model*                m_model;
     SDL_Point                    m_previousMousePosition{};

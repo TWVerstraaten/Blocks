@@ -18,6 +18,7 @@ namespace color {
     static const SDL_Color GRID_LINE_COLOR                 = {200, 200, 200, 255};
     static const SDL_Color BACKGROUND                      = {12, 43, 103, 255};
     static const SDL_Color BACKGROUND_PLAYABLE             = {35, 123, 193, 255};
+    static const SDL_Color BACKGROUND_START                = {119, 181, 230, 255};
     static const SDL_Color ACTION_EDIT_BACKGROUND_INACTIVE = {120, 120, 120, 255};
     static const SDL_Color ACTION_EDIT_HIGHLIGHT_DEAD      = {150, 150, 150, 255};
     static const SDL_Color ACTION_EDIT_BACKGROUND          = {180, 180, 228, 255};

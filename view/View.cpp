@@ -5,7 +5,6 @@
 #include "View.h"
 
 #include "../model/Model.h"
-#include "../model/WorldXY.h"
 #include "Color.h"
 #include "ScreenXY.h"
 
@@ -68,7 +67,7 @@ namespace view {
         setDrawColor(color::BACKGROUND);
         SDL_RenderClear(m_renderer);
 
-        drawLevelBlocks(model.level());
+        drawLevel(model.level());
         drawClusters(model.clusters());
         drawBlocks(model.level());
 
@@ -113,12 +112,18 @@ namespace view {
         }
     }
 
-    void View::drawLevelBlocks(const model::Level& level) const {
+    void View::drawLevel(const model::Level& level) const {
         for (const auto& block : level.levelBlocks()) {
             drawRectangle(ScreenXY::fromGridXY(block, m_viewPort) + ScreenXY{2, 2},
                           m_viewPort.blockSizeInScreen() - 4,
                           m_viewPort.blockSizeInScreen() - 4,
                           color::BACKGROUND_PLAYABLE);
+        }
+        for (const auto& block : level.startBlocks()) {
+            drawRectangle(ScreenXY::fromGridXY(block, m_viewPort) + ScreenXY{2, 2},
+                          m_viewPort.blockSizeInScreen() - 4,
+                          m_viewPort.blockSizeInScreen() - 4,
+                          color::BACKGROUND_START);
         }
     }
 

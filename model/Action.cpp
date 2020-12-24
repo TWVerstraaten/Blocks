@@ -64,5 +64,5 @@ bool model::Action::canParse(const std::string& string) {
     return (m_modifierMap.find(str1) != m_modifierMap.end()) && (m_actionMap.find(str2) != m_actionMap.end());
 }
 
-model::Action::Action(model::Action::VALUE action, model::Action::MODIFIER modifier) : m_action(action), m_modifier(modifier) {
+model::Action::Action(model::Action::VALUE action, model::Action::MODIFIER modifier) : m_value(action), m_modifier(modifier) {
 }

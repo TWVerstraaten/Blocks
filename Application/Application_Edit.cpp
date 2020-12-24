@@ -57,6 +57,12 @@ void Application_Edit::mouseClickEvent(const SDL_Event& event) {
         if (m_leftMouseButtonPressed) {
             m_focusedWidget->leftClickEvent(event);
         }
+    } else {
+        if (event.button.button == SDL_BUTTON_LEFT) {
+            m_previousGridClickPosition = model::GridXY::fromScreenXY({mousePosition.x, mousePosition.y}, m_view->viewPort());
+            m_model->addCluster(m_previousGridClickPosition);
+            m_view->updateActionBoxes(m_model->clusters());
+        }
     }
 }
 
@@ -78,11 +84,20 @@ void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
         if (m_leftMouseButtonPressed) {
             m_focusedWidget->mouseDragEvent(event);
         }
-    }
-    if (m_rightMouseButtonPressed) {
-        const auto mouseXY = Mouse::getMouseXY();
-        m_view->translate((mouseXY.x - m_previousMousePosition.x), mouseXY.y - m_previousMousePosition.y);
-        m_previousMousePosition = mouseXY;
+    } else {
+        if (m_rightMouseButtonPressed) {
+            const auto mouseXY = Mouse::getMouseXY();
+            m_view->translate((mouseXY.x - m_previousMousePosition.x), mouseXY.y - m_previousMousePosition.y);
+            m_previousMousePosition = mouseXY;
+        } else if (m_leftMouseButtonPressed) {
+            const auto mousePosition       = Mouse::getMouseXY();
+            const auto currentGridPosition = model::GridXY::fromScreenXY({mousePosition.x, mousePosition.y}, m_view->viewPort());
+            if (currentGridPosition != m_previousGridClickPosition) {
+                m_model->linkClusters(m_previousGridClickPosition, currentGridPosition);
+                m_view->updateActionBoxes(m_model->clusters());
+                m_previousGridClickPosition = currentGridPosition;
+            }
+        }
     }
 }
 
