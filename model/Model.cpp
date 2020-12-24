@@ -114,11 +114,9 @@ namespace model {
     }
 
     void Model::splitDisconnectedClusters() {
-        for (auto& cluster : m_clusters) {
-            if (not cluster.isConnected()) {
-                m_clusters.push_back(cluster.getComponent());
-                splitDisconnectedClusters();
-                return;
+        for (size_t i = 0; i != m_clusters.size(); ++i) {
+            while (not m_clusters[i].isConnected()) {
+                m_clusters.push_back(m_clusters[i].getComponent());
             }
         }
     }
@@ -150,10 +148,11 @@ namespace model {
         } else if (extensionIt == m_clusters.end()) {
             baseIt->addGridXY(extension);
             assert(baseIt->isConnected());
+        } else {
+            std::move(extensionIt->gridXY().begin(), extensionIt->gridXY().end(), std::back_inserter(baseIt->gridXY())); // ##
+            extensionIt->gridXY().erase(extensionIt->gridXY().begin(), extensionIt->gridXY().end());
+            clearEmptyClusters();
         }
-        //        else {
-        //            baseIt->gridXY().emplace_back(extensionIt->gridXY());
-        //        }
     }
 
 } // namespace model

@@ -42,6 +42,9 @@ namespace model {
         std::set<WorldXY>          cornerPoints(int shrinkInWorld) const;
         const std::string&         name() const;
         const std::vector<GridXY>& gridXY() const;
+        std::vector<GridXY>&       gridXY() {
+            return m_gridXYVector;
+        }
         const std::vector<Action>& actions() const;
 
         /****** CONST FUNCTIONS  ******/

@@ -116,7 +116,7 @@ namespace model {
     }
 
     const std::vector<GridXY>& Cluster::gridXY() const {
-        assert(gridXUYAreUnique());
+        assert(empty() || gridXUYAreUnique());
         return m_gridXYVector;
     }
 
