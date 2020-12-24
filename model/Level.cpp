@@ -70,5 +70,17 @@ namespace model {
     const std::set<GridXY>& Level::startBlocks() const {
         return m_startBlocks;
     }
+    bool Level::isFreeStartBlock(const GridXY gridXY) const {
+        if (m_startBlocks.find(gridXY) == m_startBlocks.end()) {
+            return false;
+        }
+        if (m_instantBLocks.find(gridXY) != m_instantBLocks.end()) {
+            return false;
+        }
+        if (m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end()) {
+            return false;
+        }
+        return true;
+    }
 
 } // namespace model

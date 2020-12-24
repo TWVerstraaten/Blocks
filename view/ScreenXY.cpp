@@ -32,6 +32,9 @@ view::ScreenXY view::ScreenXY::fromGridXY(const model::GridXY& gridXY, const vie
     return fromWorldXY(model::WorldXY::fromGridXY(gridXY), viewPort);
 }
 
+view::ScreenXY::ScreenXY(const SDL_Point& point) : m_x(point.x), m_y(point.y) {
+}
+
 view::ScreenXY operator+(const view::ScreenXY& lhs, const view::ScreenXY& rhs) {
     return {lhs.x() + rhs.x(), lhs.y() + rhs.y()};
 }

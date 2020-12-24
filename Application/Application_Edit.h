@@ -33,6 +33,8 @@ class Application_Edit {
     void mouseMoveEvent(const SDL_Event& event);
     void getActionsFromEditBoxes();
     void setFocusOnClick();
+    void clearBlock(const model::GridXY& gridXY);
+    void addBlock(const model::GridXY& gridXY);
 
     bool                         m_rightMouseButtonPressed = false;
     bool                         m_leftMouseButtonPressed  = false;

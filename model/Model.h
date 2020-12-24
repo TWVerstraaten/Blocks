@@ -35,11 +35,13 @@ namespace model {
         void                        init();
         void                        clear();
         void                        clearEmptyClusters();
-        void                        addCluster(const GridXY& gridXY);
-        void                        linkClusters(const GridXY& base, const GridXY& extension);
+        void                        addBlock(const GridXY& gridXY);
+        void                        linkBlocks(const GridXY& base, const GridXY& extension);
         const Level&                level() const;
         const std::vector<Cluster>& clusters() const;
         std::vector<Cluster>&       clusters();
+
+        void clearBlock(const GridXY gridXY);
 
       private:
         void splitDisconnectedClusters();

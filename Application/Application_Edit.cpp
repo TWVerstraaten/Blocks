@@ -60,8 +60,12 @@ void Application_Edit::mouseClickEvent(const SDL_Event& event) {
     } else {
         if (event.button.button == SDL_BUTTON_LEFT) {
             m_previousGridClickPosition = model::GridXY::fromScreenXY({mousePosition.x, mousePosition.y}, m_view->viewPort());
-            m_model->addCluster(m_previousGridClickPosition);
-            m_view->updateActionBoxes(m_model->clusters());
+            if (SDL_GetModState() & KMOD_CTRL) {
+                clearBlock(m_previousGridClickPosition);
+            } else {
+                m_model->addBlock(m_previousGridClickPosition);
+                m_view->updateActionBoxes(m_model->clusters());
+            }
         }
     }
 }
@@ -90,11 +94,13 @@ void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
             m_view->translate((mouseXY.x - m_previousMousePosition.x), mouseXY.y - m_previousMousePosition.y);
             m_previousMousePosition = mouseXY;
         } else if (m_leftMouseButtonPressed) {
-            const auto mousePosition       = Mouse::getMouseXY();
-            const auto currentGridPosition = model::GridXY::fromScreenXY({mousePosition.x, mousePosition.y}, m_view->viewPort());
+            const auto currentGridPosition = model::GridXY::fromScreenXY(Mouse::getMouseXY(), m_view->viewPort());
             if (currentGridPosition != m_previousGridClickPosition) {
-                m_model->linkClusters(m_previousGridClickPosition, currentGridPosition);
-                m_view->updateActionBoxes(m_model->clusters());
+                if (SDL_GetModState() & KMOD_CTRL) {
+                    clearBlock(currentGridPosition);
+                } else {
+                    addBlock(currentGridPosition);
+                }
                 m_previousGridClickPosition = currentGridPosition;
             }
         }
@@ -169,4 +175,20 @@ Application_Level::EDIT_MODE Application_Edit::performSingleLoop() {
 
 bool Application_Edit::hasFocus() {
     return m_focusedWidget == nullptr;
+}
+
+void Application_Edit::clearBlock(const model::GridXY& gridXY) {
+    if (m_model->level().isFreeStartBlock(gridXY)) {
+        m_model->clearBlock(gridXY);
+        m_view->updateActionBoxes(m_model->clusters());
+    }
+}
+
+void Application_Edit::addBlock(const model::GridXY& gridXY) {
+    if (m_model->level().isFreeStartBlock(m_previousGridClickPosition)) {
+        m_model->linkBlocks(m_previousGridClickPosition, gridXY);
+    } else {
+        m_model->addBlock(gridXY);
+    }
+    m_view->updateActionBoxes(m_model->clusters());
 }

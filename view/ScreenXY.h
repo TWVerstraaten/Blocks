@@ -19,6 +19,7 @@ namespace view {
     class ScreenXY {
       public:
         ScreenXY(int x, int y);
+        ScreenXY(const SDL_Point& point);
 
         static ScreenXY fromWorldXY(const model::WorldXY& worldXY, const ViewPort& viewPort);
         static ScreenXY fromWorldXYAsVector(const model::WorldXY& worldXY, const ViewPort& viewPort);

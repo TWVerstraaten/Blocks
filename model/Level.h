@@ -35,6 +35,7 @@ namespace model {
         const std::map<GridXY, INSTANT_BLOCK_TYPE>& instantBlocks() const;
         const std::set<GridXY>&                     levelBlocks() const;
         const std::set<GridXY>&                     startBlocks() const;
+        bool                                        isFreeStartBlock(const GridXY gridXY) const;
 
       private:
         std::map<GridXY, DYNAMIC_BLOCK_TYPE> m_dynamicBLocks;

@@ -90,15 +90,15 @@ namespace model {
                 if (i == 11 && j == 3) {
                     continue;
                 }
-                m_level.addLevelBlock({(i), (j)});
+                m_level.addLevelBlock({i, j});
             }
         }
-        for (int i = -2; i != 5; ++i) {
+        for (int i = -2; i != 4; ++i) {
             for (int j = -2; j != 11; ++j) {
                 if (i == 11 && j == 3) {
                     continue;
                 }
-                m_level.addStartBlock({(i), (j)});
+                m_level.addStartBlock({i, j});
             }
         }
     }
@@ -127,18 +127,18 @@ namespace model {
         }
     }
 
-    void Model::addCluster(const GridXY& gridXY) {
+    void Model::addBlock(const GridXY& gridXY) {
         if (std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); }) ==
             m_clusters.end()) {
             m_clusters.push_back(Cluster({gridXY}, "CL" + std::to_string(m_clusters.size())));
         }
     }
 
-    void Model::linkClusters(const GridXY& base, const GridXY& extension) {
-        auto baseIt = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(base); });
+    void Model::linkBlocks(const GridXY& base, const GridXY& extension) {
+        const auto baseIt = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(base); });
         assert(baseIt != m_clusters.end());
         if (not base.isAdjacent(extension)) {
-            addCluster(extension);
+            addBlock(extension);
             return;
         }
         auto extensionIt =
@@ -153,6 +153,16 @@ namespace model {
             extensionIt->gridXY().erase(extensionIt->gridXY().begin(), extensionIt->gridXY().end());
             clearEmptyClusters();
         }
+    }
+
+    void Model::clearBlock(const GridXY gridXY) {
+        const auto it = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); });
+        if (it == m_clusters.end()) {
+            return;
+        }
+        it->removeBLock(gridXY);
+        clearEmptyClusters();
+        splitDisconnectedClusters();
     }
 
 } // namespace model
