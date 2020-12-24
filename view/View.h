@@ -31,15 +31,15 @@ namespace view {
         ~View();
         View(const View& other) = delete;
 
-        void                                draw(const model::Model& model);
-        void                                zoom(int amount);
-        void                                translate(int dx, int dy);
-        void                                renderPresent() const;
-        const ViewPort&                     viewPort() const;
+        void                              draw(const model::Model& model);
+        void                              zoom(int amount);
+        void                              translate(int dx, int dy);
+        void                              renderPresent() const;
+        const ViewPort&                   viewPort() const;
         std::list<widget::ActionEditBox>& actionEditBoxes();
-        SDL_Renderer*                       renderer() const;
-        Assets&                             assets() const;
-        void                                drawRectangle(const ScreenXY& point, int width, int height, const SDL_Color& color) const;
+        SDL_Renderer*                     renderer() const;
+        Assets&                           assets() const;
+        void                              drawRectangle(const ScreenXY& point, int width, int height, const SDL_Color& color) const;
         void      drawRectangle(const model::WorldXY& point, int widthInWorld, int heightInWorld, const SDL_Color& color) const;
         void      drawPoint(const ScreenXY& point, const SDL_Color& color, int pointSize) const;
         void      drawPoint(const model::WorldXY& point, const SDL_Color& color, int pointSize) const;
@@ -59,6 +59,8 @@ namespace view {
         void drawActionEditBoxes();
         void setDrawColor(const SDL_Color& color) const;
         void addActionBox(const model::Cluster& cluster);
+        void renderClusterName(const model::Cluster& cluster) const;
+        void renderClusterOutline(const model::Cluster& cluster) const;
 
         int                              m_zoomParameter = 0;
         SDL_Window*                      m_window        = nullptr;

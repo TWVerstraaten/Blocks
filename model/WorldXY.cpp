@@ -41,4 +41,8 @@ namespace model {
         return {lhs.x() + rhs.x(), lhs.y() + rhs.y()};
     }
 
+    WorldXY::WorldXY(const GridXY& gridXY) {
+        *this = fromGridXY(gridXY);
+    }
+
 } // namespace model

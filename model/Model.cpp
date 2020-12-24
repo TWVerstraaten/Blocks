@@ -82,8 +82,7 @@ namespace model {
         m_clusters.push_back(Cluster({{4, 5}, {4, 6}, {5, 6}, {6, 6}, {7, 6}, {8, 6}, {8, 5}}, "CL" + std::to_string(m_clusters.size())));
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
 
-        m_level.addBlock({5, 5}, Level::INSTANT_BLOCK_TYPE::KILL);
-        m_level.addBlock({7, 5}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({7, 5}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
 
         for (int i = -2; i != 15; ++i) {
             for (int j = -2; j != 11; ++j) {
@@ -128,6 +127,7 @@ namespace model {
     }
 
     void Model::addBlock(const GridXY& gridXY) {
+        assert(m_level.isFreeStartBlock(gridXY));
         if (std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); }) ==
             m_clusters.end()) {
             m_clusters.push_back(Cluster({gridXY}, "CL" + std::to_string(m_clusters.size())));
@@ -136,8 +136,7 @@ namespace model {
 
     void Model::linkBlocks(const GridXY& base, const GridXY& extension) {
         const auto baseIt = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(base); });
-        assert(baseIt != m_clusters.end());
-        if (not base.isAdjacent(extension)) {
+        if (baseIt == m_clusters.end() || (not base.isAdjacent(extension))) {
             addBlock(extension);
             return;
         }

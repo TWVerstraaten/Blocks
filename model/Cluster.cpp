@@ -28,7 +28,7 @@ namespace model {
             return;
         }
         resetPhase();
-        m_currentPhase    = CURRENT_PHASE::TRANSLATING;
+        m_phase           = PHASE::TRANSLATING;
         m_fractionOfPhase = 1.0;
         for (auto& idx : m_gridXYVector) {
             switch (m_actions[m_actionIndex].m_value) {
@@ -170,44 +170,16 @@ namespace model {
 
     std::set<WorldXY> Cluster::cornerPoints(int shrinkInWorld) const {
         assert(gridXUYAreUnique());
-
-        std::set<WorldXY> result;
-        switch (m_currentPhase) {
-            case CURRENT_PHASE::NONE:
-                for (const auto& it : m_gridXYVector) {
-                    for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
-                        result.emplace(WorldXY::fromGridXY(it + cornerOffset) +
-                                       WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
-                                               shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()});
-                    }
-                }
-                break;
-            case CURRENT_PHASE::TRANSLATING: {
-                const WorldXY offset = dynamicWorldOffset();
-                for (const auto& it : m_gridXYVector) {
-                    for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
-                        result.emplace(WorldXY::fromGridXY(it + cornerOffset) +
-                                       WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
-                                               shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()} +
-                                       offset);
-                    }
-                }
-            } break;
-            case CURRENT_PHASE::ROTATING: {
-                const WorldXY center = WorldXY::fromGridXY(m_rotationPivot) + WorldXY::halfBlockInWorld;
-                const double  theta  = -angle();
-                for (const auto& it : m_gridXYVector) {
-                    for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
-                        result.emplace(global::rotateAboutPivot(WorldXY::fromGridXY(it + cornerOffset) +
-                                                                    WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
-                                                                            shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()},
-                                                                center,
-                                                                theta));
-                    }
-                }
-            } break;
+        switch (m_phase) {
+            case PHASE::NONE:
+                return cornerPointsNoPhase(shrinkInWorld);
+            case PHASE::TRANSLATING:
+                return cornerPointsTranslating(shrinkInWorld);
+            case PHASE::ROTATING:
+                return cornerPointsRotating(shrinkInWorld);
         }
-        return result;
+        assert(false);
+        return cornerPointsNoPhase(shrinkInWorld);
     }
 
     void Cluster::kill() {
@@ -228,7 +200,7 @@ namespace model {
     void Cluster::setRotation(double angle, const GridXY& pivot) {
         assert(angle != 0.0);
         resetPhase();
-        m_currentPhase    = CURRENT_PHASE::ROTATING;
+        m_phase           = PHASE::ROTATING;
         m_fractionOfPhase = 1.0;
         m_angle           = angle;
         m_rotationPivot   = pivot;
@@ -367,13 +339,13 @@ namespace model {
     }
 
     void Cluster::preStep() {
-        if (m_currentPhase == CURRENT_PHASE::ROTATING) {
+        if (m_phase == PHASE::ROTATING) {
             if (m_actions.at(m_actionIndex).m_modifier == Action::MODIFIER::SKIP) {
                 incrementActionIndex();
             }
         } else {
             incrementActionIndex();
-            m_currentPhase = CURRENT_PHASE::NONE;
+            m_phase = PHASE::NONE;
         }
     }
 
@@ -396,6 +368,54 @@ namespace model {
         assert(!m_gridXYVector.empty());
         std::set<GridXY> s(m_gridXYVector.begin(), m_gridXYVector.end());
         return s.size() == m_gridXYVector.size();
+    }
+
+    std::vector<GridXY>& Cluster::gridXY() {
+        return m_gridXYVector;
+    }
+
+    std::set<WorldXY> Cluster::cornerPointsNoPhase(int shrinkInWorld) const {
+        assert(m_phase == PHASE::NONE);
+        std::set<WorldXY> result;
+        for (const auto& it : m_gridXYVector) {
+            for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
+                result.emplace(WorldXY(it + cornerOffset) + WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
+                                                                    shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()});
+            }
+        }
+        return result;
+    }
+
+    std::set<WorldXY> Cluster::cornerPointsRotating(int shrinkInWorld) const {
+        assert(m_phase == PHASE::ROTATING);
+        std::set<WorldXY> result;
+        const WorldXY     center = WorldXY(m_rotationPivot) + WorldXY::halfBlockInWorld;
+        const double      theta  = -angle();
+        for (const auto& it : m_gridXYVector) {
+            for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
+                result.emplace(
+                    global::rotateAboutPivot(WorldXY(it + cornerOffset) + WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
+                                                                                  shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()},
+                                             center,
+                                             theta));
+            }
+        }
+        return result;
+    }
+
+    std::set<WorldXY> Cluster::cornerPointsTranslating(int shrinkInWorld) const {
+        assert(m_phase == PHASE::TRANSLATING);
+        std::set<WorldXY> result;
+        const WorldXY     offset = dynamicWorldOffset();
+        for (const auto& it : m_gridXYVector) {
+            for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
+                result.emplace(
+                    WorldXY(it + cornerOffset) +
+                    WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(), shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()} +
+                    offset);
+            }
+        }
+        return result;
     }
 
 } // namespace model

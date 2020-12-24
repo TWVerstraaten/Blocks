@@ -4,10 +4,12 @@
 
 #include "View.h"
 
+#include "../global/Global.h"
 #include "../model/Model.h"
 #include "Color.h"
 #include "ScreenXY.h"
 
+#include <SDL2_gfxPrimitives.h>
 #include <SDL_image.h>
 #include <algorithm>
 #include <cassert>
@@ -71,15 +73,15 @@ namespace view {
         drawClusters(model.clusters());
         drawBlocks(model.level());
 
-        //        for (const auto& cluster : model.clusters()) {
-        //            const auto points = cluster.cornerPoints(0);
-        //            for (const auto& it : points) {
-        //                                        drawRectangle(model::GridXY::fromWorldXY(actionEditIt),
-        //                                        model::WorldXY::m_blockSizeInWorld,
-        //                                                      model::WorldXY::m_blockSizeInWorld, color::BLUE);
-        //                drawPoint(it, color::RED, 8);
-        //            }
-        //        }
+        for (const auto& cluster : model.clusters()) {
+            const auto points = cluster.cornerPoints(0);
+            for (const auto& it : points) {
+                //                                                drawRectangle(model::GridXY::fromWorldXY(actionEditIt),
+                //                                                model::WorldXY::m_blockSizeInWorld,
+                //                                                              model::WorldXY::m_blockSizeInWorld, color::BLUE);
+                drawPoint(it, color::RED, 8);
+            }
+        }
         drawActionEditBoxes();
     }
 
@@ -93,22 +95,23 @@ namespace view {
     }
 
     void View::drawClusters(const std::vector<model::Cluster>& clusters) const {
+        using namespace model;
+        using namespace model;
         for (const auto& cluster : clusters) {
             const ScreenXY offset = ScreenXY::fromWorldXYAsVector(cluster.dynamicWorldOffset(), m_viewPort);
             for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end(); ++it) {
                 const SDL_Point center = {static_cast<int>(m_viewPort.blockSizeInScreen() * (0.5 + cluster.rotationPivot().x() - it->x())),
                                           static_cast<int>(m_viewPort.blockSizeInScreen() * (0.5 + cluster.rotationPivot().y() - it->y()))};
                 assert(m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
-                                               ScreenXY::fromGridXY(*it, m_viewPort) + offset + ScreenXY{2, 2},
-                                               m_viewPort.blockSizeInScreen() - 4,
-                                               m_viewPort.blockSizeInScreen() - 4,
+                                               ScreenXY::fromWorldXY(WorldXY(*it), m_viewPort) + offset,
+                                               m_viewPort.blockSizeInScreen(),
+                                               m_viewPort.blockSizeInScreen(),
                                                m_renderer,
                                                cluster.angle(),
                                                &center));
             }
-            m_assets->renderText(cluster.name() + " " + std::to_string(cluster.index()),
-                                 ScreenXY::fromGridXY(cluster.gridXY().front(), m_viewPort),
-                                 m_renderer);
+            renderClusterOutline(cluster);
+            renderClusterName(cluster);
         }
     }
 
@@ -216,6 +219,7 @@ namespace view {
     void View::setDrawColor(const SDL_Color& color) const {
         SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, 255);
     }
+
     const ViewPort& View::viewPort() const {
         return m_viewPort;
     }
@@ -277,6 +281,44 @@ namespace view {
                            return box.clusterIndex() == cluster.index();
                        }) == m_actionEditBoxes.end();
             });
+        }
+    }
+
+    void View::renderClusterName(const model::Cluster& cluster) const {
+        const std::string name = cluster.name() + " " + std::to_string(cluster.index());
+        const auto        worldPosition =
+            global::rotateAboutPivot(cluster.dynamicWorldOffset() + cluster.gridXY().front(), cluster.rotationPivot(), -cluster.angle());
+        const auto screenPosition = ScreenXY::fromWorldXY(worldPosition, m_viewPort);
+        m_assets->renderText(name, screenPosition, m_renderer);
+    }
+
+    void View::renderClusterOutline(const model::Cluster& cluster) const {
+        for (const auto& gridXY : cluster.gridXY()) {
+            const auto pivot  = cluster.rotationPivot() + model::WorldXY::halfBlockInWorld;
+            const auto theta  = -cluster.angle();
+            const auto world1 = global::rotateAboutPivot(
+                gridXY + cluster.dynamicWorldOffset(), cluster.rotationPivot() + model::WorldXY::halfBlockInWorld, theta);
+            const auto world2 = global::rotateAboutPivot(gridXY + model::GridXY{0, 1} + cluster.dynamicWorldOffset(), pivot, theta);
+            const auto world3 = global::rotateAboutPivot(gridXY + model::GridXY{1, 1} + cluster.dynamicWorldOffset(), pivot, theta);
+            const auto world4 = global::rotateAboutPivot(gridXY + model::GridXY{1, 0} + cluster.dynamicWorldOffset(), pivot, theta);
+            const auto point1 = ScreenXY::fromWorldXY(world1, m_viewPort);
+            const auto point2 = ScreenXY::fromWorldXY(world2, m_viewPort);
+            const auto point3 = ScreenXY::fromWorldXY(world3, m_viewPort);
+            const auto point4 = ScreenXY::fromWorldXY(world4, m_viewPort);
+
+            SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
+            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::LEFT))) {
+                thickLineRGBA(m_renderer, point1.x(), point1.y(), point2.x(), point2.y(), 6, 0, 0, 0, 255);
+            }
+            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::RIGHT))) {
+                thickLineRGBA(m_renderer, point3.x(), point3.y(), point4.x(), point4.y(), 6, 0, 0, 0, 255);
+            }
+            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::UP))) {
+                thickLineRGBA(m_renderer, point1.x(), point1.y(), point4.x(), point4.y(), 6, 0, 0, 0, 255);
+            }
+            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::DOWN))) {
+                thickLineRGBA(m_renderer, point2.x(), point2.y(), point3.x(), point3.y(), 6, 0, 0, 0, 255);
+            }
         }
     }
 

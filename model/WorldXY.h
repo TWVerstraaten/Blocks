@@ -17,6 +17,7 @@ namespace model {
     class WorldXY {
       public:
         WorldXY(int x, int y) noexcept;
+        WorldXY(const model::GridXY& gridXY);
 
         int x() const;
         int y() const;
@@ -25,8 +26,6 @@ namespace model {
         static const int     m_halfBlockSizeInWorld = m_blockSizeInWorld / 2;
         static const WorldXY halfBlockInWorld;
 
-        static WorldXY fromGridXY(const model::GridXY& gridXY);
-
         friend bool operator<(const WorldXY& lhs, const WorldXY& rhs);
         friend bool operator==(const WorldXY& lhs, const WorldXY& rhs);
 
@@ -34,8 +33,11 @@ namespace model {
         friend WorldXY operator+(const WorldXY& lhs, const WorldXY& rhs);
 
       private:
-        int m_x;
-        int m_y;
+        friend class GridXY;
+        static WorldXY fromGridXY(const model::GridXY& gridXY);
+
+        int m_x = 0;
+        int m_y = 0;
     };
 } // namespace model
 

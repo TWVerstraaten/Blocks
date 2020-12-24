@@ -49,7 +49,7 @@ void view::TextureWrapper::init(view::TextureWrapper::TEXTURE_ENUM textureEnum, 
             m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/arrow_ccw.png", renderer));
             break;
         case TEXTURE_ENUM::CLUSTER:
-            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/cluster.png", renderer));
+            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/yellow.png", renderer));
             //            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/medium.png",
             //            renderer)); m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/small.png",
             //            renderer));

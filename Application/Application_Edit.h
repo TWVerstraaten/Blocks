@@ -35,6 +35,9 @@ class Application_Edit {
     void setFocusOnClick();
     void clearBlock(const model::GridXY& gridXY);
     void addBlock(const model::GridXY& gridXY);
+    void handleLeftMouseMove();
+    void handleRightMouseMove();
+    void setButtonBooleans(const SDL_Event& event);
 
     bool                         m_rightMouseButtonPressed = false;
     bool                         m_leftMouseButtonPressed  = false;

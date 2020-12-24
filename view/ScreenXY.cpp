@@ -29,7 +29,7 @@ view::ScreenXY view::ScreenXY::fromWorldXYAsVector(const model::WorldXY& worldXY
 }
 
 view::ScreenXY view::ScreenXY::fromGridXY(const model::GridXY& gridXY, const view::ViewPort& viewPort) {
-    return fromWorldXY(model::WorldXY::fromGridXY(gridXY), viewPort);
+    return fromWorldXY(gridXY, viewPort);
 }
 
 view::ScreenXY::ScreenXY(const SDL_Point& point) : m_x(point.x), m_y(point.y) {

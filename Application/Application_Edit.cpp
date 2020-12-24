@@ -38,20 +38,7 @@ void Application_Edit::setFocusOnClick() {
 }
 
 void Application_Edit::mouseClickEvent(const SDL_Event& event) {
-    const auto mousePosition = Mouse::getMouseXY();
-    switch (event.button.button) {
-        case SDL_BUTTON_RIGHT:
-            m_rightMouseButtonPressed = true;
-            m_previousMousePosition   = mousePosition;
-            break;
-        case SDL_BUTTON_LEFT:
-            m_leftMouseButtonPressed = true;
-            m_previousMousePosition  = mousePosition;
-            break;
-        default:
-            break;
-    }
-
+    setButtonBooleans(event);
     setFocusOnClick();
     if (m_focusedWidget) {
         if (m_leftMouseButtonPressed) {
@@ -59,12 +46,11 @@ void Application_Edit::mouseClickEvent(const SDL_Event& event) {
         }
     } else {
         if (event.button.button == SDL_BUTTON_LEFT) {
-            m_previousGridClickPosition = model::GridXY::fromScreenXY({mousePosition.x, mousePosition.y}, m_view->viewPort());
+            m_previousGridClickPosition = model::GridXY::fromScreenXY(Mouse::getMouseXY(), m_view->viewPort());
             if (SDL_GetModState() & KMOD_CTRL) {
                 clearBlock(m_previousGridClickPosition);
             } else {
-                m_model->addBlock(m_previousGridClickPosition);
-                m_view->updateActionBoxes(m_model->clusters());
+                addBlock(m_previousGridClickPosition);
             }
         }
     }
@@ -90,19 +76,9 @@ void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
         }
     } else {
         if (m_rightMouseButtonPressed) {
-            const auto mouseXY = Mouse::getMouseXY();
-            m_view->translate((mouseXY.x - m_previousMousePosition.x), mouseXY.y - m_previousMousePosition.y);
-            m_previousMousePosition = mouseXY;
+            handleRightMouseMove();
         } else if (m_leftMouseButtonPressed) {
-            const auto currentGridPosition = model::GridXY::fromScreenXY(Mouse::getMouseXY(), m_view->viewPort());
-            if (currentGridPosition != m_previousGridClickPosition) {
-                if (SDL_GetModState() & KMOD_CTRL) {
-                    clearBlock(currentGridPosition);
-                } else {
-                    addBlock(currentGridPosition);
-                }
-                m_previousGridClickPosition = currentGridPosition;
-            }
+            handleLeftMouseMove();
         }
     }
 }
@@ -185,10 +161,51 @@ void Application_Edit::clearBlock(const model::GridXY& gridXY) {
 }
 
 void Application_Edit::addBlock(const model::GridXY& gridXY) {
+    if (not m_model->level().isFreeStartBlock(gridXY)) {
+        return;
+    }
     if (m_model->level().isFreeStartBlock(m_previousGridClickPosition)) {
         m_model->linkBlocks(m_previousGridClickPosition, gridXY);
     } else {
         m_model->addBlock(gridXY);
     }
     m_view->updateActionBoxes(m_model->clusters());
+}
+
+void Application_Edit::handleLeftMouseMove() {
+    assert(m_leftMouseButtonPressed);
+    assert(not m_rightMouseButtonPressed);
+    const auto currentGridPosition = model::GridXY::fromScreenXY(Mouse::getMouseXY(), m_view->viewPort());
+    if (currentGridPosition != m_previousGridClickPosition) {
+        if (SDL_GetModState() & KMOD_CTRL) {
+            clearBlock(currentGridPosition);
+        } else {
+            addBlock(currentGridPosition);
+        }
+        m_previousGridClickPosition = currentGridPosition;
+    }
+}
+
+void Application_Edit::handleRightMouseMove() {
+    assert(m_rightMouseButtonPressed);
+    assert(not m_leftMouseButtonPressed);
+    const auto mouseXY = Mouse::getMouseXY();
+    m_view->translate((mouseXY.x - m_previousMousePosition.x), mouseXY.y - m_previousMousePosition.y);
+    m_previousMousePosition = mouseXY;
+}
+
+void Application_Edit::setButtonBooleans(const SDL_Event& event) {
+    assert(event.type == SDL_MOUSEBUTTONDOWN);
+    switch (event.button.button) {
+        case SDL_BUTTON_RIGHT:
+            m_rightMouseButtonPressed = true;
+            m_previousMousePosition   = Mouse::getMouseXY();
+            break;
+        case SDL_BUTTON_LEFT:
+            m_leftMouseButtonPressed = true;
+            m_previousMousePosition  = Mouse::getMouseXY();
+            break;
+        default:
+            break;
+    }
 }

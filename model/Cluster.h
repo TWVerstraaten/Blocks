@@ -42,9 +42,7 @@ namespace model {
         std::set<WorldXY>          cornerPoints(int shrinkInWorld) const;
         const std::string&         name() const;
         const std::vector<GridXY>& gridXY() const;
-        std::vector<GridXY>&       gridXY() {
-            return m_gridXYVector;
-        }
+        std::vector<GridXY>&       gridXY();
         const std::vector<Action>& actions() const;
 
         /****** CONST FUNCTIONS  ******/
@@ -69,11 +67,14 @@ namespace model {
 
       private:
         /****** PRIVATE ENUMS / TYPEDEFS  ******/
-        enum class CURRENT_PHASE { NONE, TRANSLATING, ROTATING };
+        enum class PHASE { NONE, TRANSLATING, ROTATING };
         typedef std::pair<const GridXY&, Level::DYNAMIC_BLOCK_TYPE> Block;
 
         /****** PRIVATE CONST FUNCTIONS  ******/
-        bool gridXUYAreUnique() const;
+        bool              gridXUYAreUnique() const;
+        std::set<WorldXY> cornerPointsNoPhase(int shrinkInWorld) const;
+        std::set<WorldXY> cornerPointsRotating(int shrinkInWorld) const;
+        std::set<WorldXY> cornerPointsTranslating(int shrinkInWorld) const;
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void rotateClockWiseAbout(const GridXY& pivotGridXY);
@@ -92,7 +93,7 @@ namespace model {
         double                                            m_fractionOfPhase   = 0.0;
         double                                            m_angle             = 0.0;
         size_t                                            m_actionIndex       = 0;
-        CURRENT_PHASE                                     m_currentPhase      = CURRENT_PHASE::NONE;
+        PHASE                                             m_phase             = PHASE::NONE;
         WorldXY                                           m_worldOffset       = {0, 0};
         GridXY                                            m_rotationPivot     = {0, 0};
         std::vector<Action>                               m_actions           = {};
