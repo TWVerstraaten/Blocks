@@ -239,22 +239,21 @@ namespace view {
     }
 
     void View::addActionBox(const model::Cluster& cluster) {
-        m_actionEditBoxes.emplace_back(view::widget::ActionEditBox(30, 0, global::m_actionEditBoxWidth, 0, m_assets.get(), cluster));
+        m_actionEditBoxes.emplace_back(view::widget::ActionEditBox(30, 0, conf::m_actionEditBoxWidth, 0, m_assets.get(), cluster));
         m_actionEditBoxes.back().setHighLightedLine(cluster.currentActionIndex());
         m_actionEditBoxes.back().setActive(cluster.isAlive());
     }
 
     void View::updateActionBoxes(const std::vector<model::Cluster>& clusters) {
         m_actionEditBoxes.remove_if([&](const widget::ActionEditBox& box) {
-            return std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
+            return std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) {
                        return cluster.index() == box.clusterIndex();
                    }) == clusters.end();
         });
 
         for (auto& actionBox : m_actionEditBoxes) {
-            auto it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
-                return cluster.index() == actionBox.clusterIndex();
-            });
+            auto it = std::find_if(
+                clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.index() == actionBox.clusterIndex(); });
             assert(it != clusters.end());
             actionBox.setHighLightedLine(it->currentActionIndex());
             actionBox.setActive(it->isAlive());

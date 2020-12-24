@@ -4,7 +4,7 @@
 
 #include "Model.h"
 
-#include "../aux/Aux.h"
+#include "../global/Global.h"
 
 #include <algorithm>
 #include <cassert>
@@ -19,7 +19,7 @@ namespace model {
         *this = other;
     }
 
-    const std::vector<model::Cluster>& Model::clusters() const {
+    const std::vector<Cluster>& Model::clusters() const {
         return m_clusters;
     }
 
@@ -117,8 +117,9 @@ namespace model {
     }
 
     void Model::clearEmptyClusters() {
-        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); }),
-                         m_clusters.end());
+        //        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const auto& cluster) { return cluster.empty();
+        //        }),
+        //                         m_clusters.end());
     }
 
     void Model::splitDisconnectedClusters() {

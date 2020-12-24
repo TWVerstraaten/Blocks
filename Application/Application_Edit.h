@@ -5,7 +5,7 @@
 #ifndef BLOCKS_APPLICATION_EDIT_H
 #define BLOCKS_APPLICATION_EDIT_H
 
-#include "../Global.h"
+#include "../global/Conf.h"
 #include "../model/Model.h"
 #include "../view/View.h"
 #include "Application_Level.h"
@@ -36,7 +36,7 @@ class Application_Edit {
 
     bool                         m_rightMouseButtonPressed = false;
     bool                         m_leftMouseButtonPressed  = false;
-    Uint32                       m_timeStep                = global::m_timeStepSlow;
+    Uint32                       m_timeStep                = conf::m_timeStepSlow;
     Application_Level::EDIT_MODE m_editMode                = Application_Level::EDIT_MODE::EDITING;
     view::Widget*                m_focusedWidget           = nullptr;
     view::View*                  m_view;

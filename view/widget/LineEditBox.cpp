@@ -4,7 +4,7 @@
 
 #include "LineEditBox.h"
 
-#include "../../aux/Aux.h"
+#include "../../global/Global.h"
 #include "../../model/Cluster.h"
 #include "../Assets.h"
 #include "../Color.h"
@@ -56,7 +56,7 @@ namespace view {
                 update(renderer);
             }
             Rectangle::render(
-                aux::pad(m_rect, s_padding), m_active ? color::ACTION_EDIT_BACKGROUND : color::ACTION_EDIT_BACKGROUND_INACTIVE, renderer);
+                global::pad(m_rect, s_padding), m_active ? color::ACTION_EDIT_BACKGROUND : color::ACTION_EDIT_BACKGROUND_INACTIVE, renderer);
 
             Assets::renderTexture(m_titleTexture.get(), {m_rect.x, m_rect.y, m_titleTexture->width(), m_titleTexture->height()}, renderer);
             renderHighlightIfSelected(renderer);
@@ -195,8 +195,8 @@ namespace view {
             const auto mousePoint = Mouse::getMouseXY();
 
             getSelectionFromMousePoint(m_selectionData.m_last,
-                                       SDL_Point{aux::clamp(mousePoint.x, m_rect.x, m_rect.x + m_rect.w),
-                                                 aux::clamp(mousePoint.y, m_rect.y, m_rect.y + m_rect.h)});
+                                       SDL_Point{global::clamp(mousePoint.x, m_rect.x, m_rect.x + m_rect.w),
+                                                 global::clamp(mousePoint.y, m_rect.y, m_rect.y + m_rect.h)});
             m_selectionData.m_mode = SelectionData::MODE::DOUBLE;
             m_selectionData.fix();
             m_blinkTimeOffset = SDL_GetTicks();

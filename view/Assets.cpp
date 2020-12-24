@@ -4,7 +4,7 @@
 
 #include "Assets.h"
 
-#include "../aux/Aux.h"
+#include "../global/Global.h"
 #include "Color.h"
 #include "ScreenXY.h"
 
@@ -30,7 +30,7 @@ namespace view {
         assert(m_textures.find(textureEnum) != m_textures.end());
         auto* texture = m_textures.at(textureEnum).getTexture(destination.w, destination.h);
         if (texture->loadedCorrectly()) {
-            texture->render(aux::pad(destination, 1), renderer, angle, center, flip);
+            texture->render(global::pad(destination, 1), renderer, angle, center, flip);
             return true;
         } else {
             return false;

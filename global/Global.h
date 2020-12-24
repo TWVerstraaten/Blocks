@@ -2,15 +2,15 @@
 // Created by pc on 16-12-20.
 //
 
-#ifndef BLOCKS_AUX_H
-#define BLOCKS_AUX_H
+#ifndef BLOCKS_GLOBAL_H
+#define BLOCKS_GLOBAL_H
 
 #include "../model/WorldXY.h"
 
 #include <SDL2/SDL.h>
 #include <string>
 
-namespace aux {
+namespace global {
 
     SDL_Rect pad(const SDL_Rect& rect, int padding);
 
@@ -22,6 +22,6 @@ namespace aux {
 
     std::string trimWhiteSpace(const std::string& string);
 
-} // namespace aux
+} // namespace global
 
-#endif // BLOCKS_AUX_H
+#endif // BLOCKS_GLOBAL_H

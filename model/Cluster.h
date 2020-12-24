@@ -10,6 +10,7 @@
 #include "WorldXY.h"
 
 #include <list>
+#include <memory>
 #include <set>
 #include <tuple>
 #include <vector>
@@ -25,28 +26,28 @@ namespace model {
 
         Cluster& operator=(const Cluster& other);
 
-        void                        preStep();
-        void                        doAction();
-        void                        addPendingOperation(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType);
-        void                        performPendingOperationOrNextAction();
-        std::list<GridXY>::iterator removeBLock(const GridXY& gridXY);
-        void                        update(double fractionOfPhase);
-        void                        addAction(Action action);
-        void                        kill();
-        void                        clearActions();
-        bool                        empty() const;
-        bool                        isAlive() const;
-        double                      angle() const;
-        size_t                      index() const;
-        size_t                      currentActionIndex() const;
-        const GridXY&               rotationPivot() const;
-        WorldXY                     dynamicWorldOffset() const;
-        const std::list<GridXY>&    gridXY() const;
-        const std::vector<Action>&  actions() const;
-        std::set<WorldXY>           cornerPoints(int shrinkInWorld) const;
-        const std::string&          name() const;
-        bool                        isConnected() const;
-        Cluster                     getComponent();
+        void                            preStep();
+        void                            doAction();
+        void                            addPendingOperation(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType);
+        void                            performPendingOperationOrNextAction();
+        std::list<GridXY>::iterator     removeBLock(const GridXY& gridXY);
+        void                            update(double fractionOfPhase);
+        void                            addAction(Action action);
+        void                            kill();
+        void                            clearActions();
+        bool                            empty() const;
+        bool                            isAlive() const;
+        double                          angle() const;
+        size_t                          index() const;
+        size_t                          currentActionIndex() const;
+        const GridXY&                   rotationPivot() const;
+        WorldXY                         dynamicWorldOffset() const;
+        const std::list<GridXY>&        gridXY() const;
+        const std::vector<Action>&      actions() const;
+        std::set<WorldXY>               cornerPoints(int shrinkInWorld) const;
+        const std::string&              name() const;
+        bool                            isConnected() const;
+        model::Cluster                  getComponent();
 
       private:
         enum class CURRENT_PHASE { NONE, TRANSLATING, ROTATING };

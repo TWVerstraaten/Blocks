@@ -5,10 +5,11 @@
 #ifndef BLOCKS_MODEL_H
 #define BLOCKS_MODEL_H
 
-#include "../Global.h"
+#include "../global/Conf.h"
 #include "Cluster.h"
 #include "Level.h"
 
+#include <memory>
 #include <vector>
 
 class SDL_Renderer;
@@ -25,20 +26,19 @@ namespace model {
 
         Model& operator=(const Model& other) = default;
 
-        void                               preStep();
-        void                               interactClustersWithDynamicBlocks();
-        void                               interactClustersWithInstantBlocks();
-        void                               interactClustersWithLevel();
-        void                               update(double fractionOfPhase);
-        void                               init();
-        void                               clear();
-        void                               clearEmptyClusters();
-        const Level&                       level() const;
-        const std::vector<model::Cluster>& clusters() const;
-        std::vector<model::Cluster>&       clusters();
+        void                        preStep();
+        void                        interactClustersWithDynamicBlocks();
+        void                        interactClustersWithInstantBlocks();
+        void                        interactClustersWithLevel();
+        void                        update(double fractionOfPhase);
+        void                        init();
+        void                        clear();
+        void                        clearEmptyClusters();
+        const Level&                level() const;
+        const std::vector<Cluster>& clusters() const;
+        std::vector<Cluster>&       clusters();
 
       private:
-
         void splitDisconnectedClusters();
 
         Level                m_level;

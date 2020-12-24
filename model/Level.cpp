@@ -4,7 +4,7 @@
 
 #include "Level.h"
 
-#include "../aux/Aux.h"
+#include "../global/Global.h"
 
 #include <algorithm>
 #include <cassert>
@@ -53,7 +53,7 @@ namespace model {
 
     bool Level::isInLevel(const WorldXY& worldXY) {
         return std::any_of(
-            m_levelBlocks.begin(), m_levelBlocks.end(), [&](const GridXY& gridXY) { return aux::pointInBlock(worldXY, gridXY); });
+            m_levelBlocks.begin(), m_levelBlocks.end(), [&](const GridXY& gridXY) { return global::pointInBlock(worldXY, gridXY); });
     }
 
     void Level::clear() {

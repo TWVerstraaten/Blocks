@@ -4,7 +4,7 @@
 
 #include "Cluster.h"
 
-#include "../aux/Aux.h"
+#include "../global/Global.h"
 
 #include <algorithm>
 #include <cassert>
@@ -186,7 +186,7 @@ namespace model {
                 const double  theta  = -angle();
                 for (const auto& it : m_gridXYList) {
                     for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
-                        result.emplace(aux::rotateAboutPivot(WorldXY::fromGridXY(it + cornerOffset) +
+                        result.emplace(global::rotateAboutPivot(WorldXY::fromGridXY(it + cornerOffset) +
                                                                  WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
                                                                          shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()},
                                                              center,
@@ -277,7 +277,10 @@ namespace model {
     }
 
     bool Cluster::isConnected() const {
-        assert(not empty());
+        //        assert(not empty());
+        if (empty()) {
+            return true;
+        }
         if (m_gridXYList.size() == 1) {
             return true;
         }
@@ -299,7 +302,7 @@ namespace model {
         return copy.empty();
     }
 
-    Cluster Cluster::getComponent() {
+    model::Cluster Cluster::getComponent() {
         assert(not isConnected());
         std::list<GridXY> copy = m_gridXYList;
 
