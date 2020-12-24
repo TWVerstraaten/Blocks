@@ -228,7 +228,6 @@ namespace model {
 
     Cluster& Cluster::operator=(const Cluster& other) {
         resetPhase();
-        m_index       = other.m_index;
         m_name        = other.m_name;
         m_isAlive     = other.m_isAlive;
         m_actionIndex = other.m_actionIndex;

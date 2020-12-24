@@ -32,13 +32,13 @@ void Application_Run::keyEvent(const SDL_Event& event) {
                 m_pauseAfterNextStep = true;
                 break;
             case SDLK_1:
-                setTimeStep(cst::m_timeStepSlow);
+                setTimeStep(cst::s_timeStepSlow);
                 break;
             case SDLK_2:
-                setTimeStep(cst::m_timeStepMedium);
+                setTimeStep(cst::s_timeStepMedium);
                 break;
             case SDLK_3:
-                setTimeStep(cst::m_timeStepFast);
+                setTimeStep(cst::s_timeStepFast);
                 break;
             default:
                 break;

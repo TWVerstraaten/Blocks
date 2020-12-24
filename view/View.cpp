@@ -85,11 +85,11 @@ namespace view {
     }
 
     void View::drawActionEditBoxes() {
-        int yOffset = 2.4 * view::widget::LineEditBox::s_padding;
+        int yOffset = 2.4 * cst::s_padding;
         for (auto& actionEditBox : m_actionEditBoxes) {
             actionEditBox.setY(yOffset);
             actionEditBox.render(m_renderer);
-            yOffset += actionEditBox.height() + 2.4 * view::widget::LineEditBox::s_padding;
+            yOffset += actionEditBox.height() + 2.4 * cst::s_padding;
         }
     }
 
@@ -239,7 +239,7 @@ namespace view {
     }
 
     void View::addActionBox(const model::Cluster& cluster) {
-        m_actionEditBoxes.emplace_back(view::widget::ActionEditBox(30, 0, cst::m_actionEditBoxWidth, 0, m_assets.get(), cluster));
+        m_actionEditBoxes.emplace_back(view::widget::ActionEditBox(30, 0, cst::s_actionEditBoxWidth, 0, m_assets.get(), cluster));
         m_actionEditBoxes.back().setHighLightedLine(cluster.actionIndex());
         m_actionEditBoxes.back().setActive(cluster.isAlive());
     }
@@ -255,7 +255,9 @@ namespace view {
             auto it = std::find_if(
                 clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.index() == actionBox.clusterIndex(); });
             assert(it != clusters.end());
-            actionBox.setHighLightedLine(it->actionIndex());
+            if (it->isAlive()) {
+                actionBox.setHighLightedLine(it->actionIndex());
+            }
             actionBox.setActive(it->isAlive());
         }
         auto it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {

@@ -93,6 +93,10 @@ namespace model {
 
         m_level.addBlock({4, 3}, Level::INSTANT_BLOCK_TYPE::KILL);
 
+        m_clusters.emplace_back(Cluster{{{4, 7}, {4, 6}}, "CL" + std::to_string(m_clusters.size())});
+        m_clusters.back().addAction({Action::VALUE::MOVE_DOWN, Action::MODIFIER::NONE});
+        m_level.addBlock({4, 8}, Level::INSTANT_BLOCK_TYPE::KILL);
+
         m_clusters.emplace_back(Cluster{{{9, 7}, {10, 7}, {11, 7}, {12, 7}}, "CL" + std::to_string(m_clusters.size())});
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});

@@ -4,6 +4,7 @@
 
 #include "LineEditBox.h"
 
+#include "../../global/Conf.h"
 #include "../../global/Global.h"
 #include "../../model/Cluster.h"
 #include "../Assets.h"
@@ -37,7 +38,7 @@ namespace view {
             m_textures.clear();
             m_yOffsets.clear();
 
-            int yOffset = s_titleHeight;
+            int yOffset = cst::s_titleHeight;
             for (const auto& str : m_strings) {
                 m_yOffsets.push_back(yOffset);
                 const auto text     = str.length() == 0 ? std::string(" ") : str;
@@ -55,7 +56,7 @@ namespace view {
             if (m_needsUpdate) {
                 update(renderer);
             }
-            Rectangle::render(global::pad(m_rect, s_padding),
+            Rectangle::render(global::pad(m_rect, cst::s_padding),
                               m_active ? color::ACTION_EDIT_BACKGROUND : color::ACTION_EDIT_BACKGROUND_INACTIVE,
                               renderer);
 
@@ -71,7 +72,7 @@ namespace view {
         }
 
         void LineEditBox::renderStrings(SDL_Renderer* renderer) {
-            int yOffset = s_titleHeight;
+            int yOffset = cst::s_titleHeight;
             for (const auto& texture : m_textures) {
                 Assets::renderTexture(texture.get(), {m_rect.x, m_rect.y + yOffset, texture->width(), texture->height()}, renderer);
                 yOffset += texture->height();

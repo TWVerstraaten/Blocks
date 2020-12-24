@@ -22,8 +22,6 @@ namespace view {
 
         class LineEditBox : public RectWidget {
           public:
-            static const size_t s_padding     = 14;
-            static const size_t s_titleHeight = 36;
 
             LineEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, std::string title);
 

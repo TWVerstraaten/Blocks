@@ -36,7 +36,7 @@ class Application_Edit {
 
     bool                         m_rightMouseButtonPressed = false;
     bool                         m_leftMouseButtonPressed  = false;
-    Uint32                       m_timeStep                = cst::m_timeStepSlow;
+    Uint32                       m_timeStep                = cst::s_timeStepSlow;
     Application_Level::EDIT_MODE m_editMode                = Application_Level::EDIT_MODE::EDITING;
     view::Widget*                m_focusedWidget           = nullptr;
     view::View*                  m_view;

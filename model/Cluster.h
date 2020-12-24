@@ -25,7 +25,9 @@ namespace model {
 
       public:
         explicit Cluster(std::list<GridXY>&& gridXY, std::string name = "");
-        Cluster& operator=(const Cluster& other);
+        Cluster(const Cluster& other) = default;
+        Cluster& operator             =(const Cluster& other);
+        Cluster& operator=(Cluster&& other) noexcept = default;
 
         /****** CONST GETTERS  ******/
         double                     angle() const;
