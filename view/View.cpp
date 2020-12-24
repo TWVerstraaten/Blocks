@@ -9,7 +9,7 @@
 #include "Color.h"
 #include "ScreenXY.h"
 
-#include <SDL2_gfxPrimitives.h>
+//#include <SDL2_gfxPrimitives.h>
 #include <SDL_image.h>
 #include <algorithm>
 #include <cassert>
@@ -293,33 +293,33 @@ namespace view {
     }
 
     void View::renderClusterOutline(const model::Cluster& cluster) const {
-        for (const auto& gridXY : cluster.gridXY()) {
-            const auto pivot  = cluster.rotationPivot() + model::WorldXY::halfBlockInWorld;
-            const auto theta  = -cluster.angle();
-            const auto world1 = global::rotateAboutPivot(
-                gridXY + cluster.dynamicWorldOffset(), cluster.rotationPivot() + model::WorldXY::halfBlockInWorld, theta);
-            const auto world2 = global::rotateAboutPivot(gridXY + model::GridXY{0, 1} + cluster.dynamicWorldOffset(), pivot, theta);
-            const auto world3 = global::rotateAboutPivot(gridXY + model::GridXY{1, 1} + cluster.dynamicWorldOffset(), pivot, theta);
-            const auto world4 = global::rotateAboutPivot(gridXY + model::GridXY{1, 0} + cluster.dynamicWorldOffset(), pivot, theta);
-            const auto point1 = ScreenXY::fromWorldXY(world1, m_viewPort);
-            const auto point2 = ScreenXY::fromWorldXY(world2, m_viewPort);
-            const auto point3 = ScreenXY::fromWorldXY(world3, m_viewPort);
-            const auto point4 = ScreenXY::fromWorldXY(world4, m_viewPort);
-
-            SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
-            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::LEFT))) {
-                thickLineRGBA(m_renderer, point1.x(), point1.y(), point2.x(), point2.y(), 6, 0, 0, 0, 255);
-            }
-            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::RIGHT))) {
-                thickLineRGBA(m_renderer, point3.x(), point3.y(), point4.x(), point4.y(), 6, 0, 0, 0, 255);
-            }
-            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::UP))) {
-                thickLineRGBA(m_renderer, point1.x(), point1.y(), point4.x(), point4.y(), 6, 0, 0, 0, 255);
-            }
-            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::DOWN))) {
-                thickLineRGBA(m_renderer, point2.x(), point2.y(), point3.x(), point3.y(), 6, 0, 0, 0, 255);
-            }
-        }
+//        for (const auto& gridXY : cluster.gridXY()) {
+//            const auto pivot  = cluster.rotationPivot() + model::WorldXY::halfBlockInWorld;
+//            const auto theta  = -cluster.angle();
+//            const auto world1 = global::rotateAboutPivot(
+//                gridXY + cluster.dynamicWorldOffset(), cluster.rotationPivot() + model::WorldXY::halfBlockInWorld, theta);
+//            const auto world2 = global::rotateAboutPivot(gridXY + model::GridXY{0, 1} + cluster.dynamicWorldOffset(), pivot, theta);
+//            const auto world3 = global::rotateAboutPivot(gridXY + model::GridXY{1, 1} + cluster.dynamicWorldOffset(), pivot, theta);
+//            const auto world4 = global::rotateAboutPivot(gridXY + model::GridXY{1, 0} + cluster.dynamicWorldOffset(), pivot, theta);
+//            const auto point1 = ScreenXY::fromWorldXY(world1, m_viewPort);
+//            const auto point2 = ScreenXY::fromWorldXY(world2, m_viewPort);
+//            const auto point3 = ScreenXY::fromWorldXY(world3, m_viewPort);
+//            const auto point4 = ScreenXY::fromWorldXY(world4, m_viewPort);
+//
+//            SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
+//            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::LEFT))) {
+//                thickLineRGBA(m_renderer, point1.x(), point1.y(), point2.x(), point2.y(), 6, 0, 0, 0, 255);
+//            }
+//            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::RIGHT))) {
+//                thickLineRGBA(m_renderer, point3.x(), point3.y(), point4.x(), point4.y(), 6, 0, 0, 0, 255);
+//            }
+//            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::UP))) {
+//                thickLineRGBA(m_renderer, point1.x(), point1.y(), point4.x(), point4.y(), 6, 0, 0, 0, 255);
+//            }
+//            if (not cluster.contains(gridXY.adjacent(enums::DIRECTION::DOWN))) {
+//                thickLineRGBA(m_renderer, point2.x(), point2.y(), point3.x(), point3.y(), 6, 0, 0, 0, 255);
+//            }
+//        }
     }
 
 } // namespace view

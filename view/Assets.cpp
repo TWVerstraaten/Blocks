@@ -18,7 +18,7 @@ namespace view {
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::KILL, renderer);
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ERROR, renderer);
 
-        m_fonts[FONT_ENUM::MAIN] = std::make_unique<Font>("/home/pc/Documents/c++/Blocks/assets/UbuntuMono-Bold.ttf", 28);
+        m_fonts[FONT_ENUM::MAIN] = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", 28);
     }
 
     bool Assets::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,

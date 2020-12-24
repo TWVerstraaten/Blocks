@@ -40,22 +40,22 @@ void view::TextureWrapper::init(view::TextureWrapper::TEXTURE_ENUM textureEnum, 
     m_textures.clear();
     switch (textureEnum) {
         case TEXTURE_ENUM::ERROR:
-            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/error.png", renderer));
+            m_textures.emplace_back(Texture::createFromImagePath("assets/error.png", renderer));
             break;
         case TEXTURE_ENUM::ARROW_CW:
-            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/arrow_cw.png", renderer));
+            m_textures.emplace_back(Texture::createFromImagePath("assets/arrow_cw.png", renderer));
             break;
         case TEXTURE_ENUM::ARROW_CCW:
-            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/arrow_ccw.png", renderer));
+            m_textures.emplace_back(Texture::createFromImagePath("assets/arrow_ccw.png", renderer));
             break;
         case TEXTURE_ENUM::CLUSTER:
-            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/yellow.png", renderer));
+            m_textures.emplace_back(Texture::createFromImagePath("assets/yellow.png", renderer));
             //            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/medium.png",
             //            renderer)); m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/small.png",
             //            renderer));
             break;
         case TEXTURE_ENUM::KILL:
-            m_textures.emplace_back(Texture::createFromImagePath("/home/pc/Documents/c++/Blocks/assets/kill.png", renderer));
+            m_textures.emplace_back(Texture::createFromImagePath("assets/kill.png", renderer));
             break;
     }
 }

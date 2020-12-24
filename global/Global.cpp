@@ -7,6 +7,7 @@
 #include "../model/GridXY.h"
 
 #include <cassert>
+#include <cmath>
 
 namespace global {
 
