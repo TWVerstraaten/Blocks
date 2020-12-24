@@ -4,6 +4,7 @@ project(Blocks)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${Blocks_SOURCE_DIR}/bin)
 
 file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets)
+set(ASSETS_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets)
 
 # Copy assets
 file(GLOB ASSET_FILES ${Blocks_SOURCE_DIR}/assets/*)
@@ -11,13 +12,13 @@ set(assets_files "")
 foreach (file ${ASSET_FILES})
     get_filename_component(nam ${file} NAME)
     add_custom_command(
-            OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets/${nam}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets/${nam}
+            OUTPUT ${ASSETS_DIRECTORY}/${nam}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} ${ASSETS_DIRECTORY}/${nam}
             DEPENDS ${file}
             COMMENT "Copying ${file}"
             VERBATIM
     )
-    list(APPEND assets_files ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets/${nam})
+    list(APPEND assets_files ${ASSETS_DIRECTORY}/${nam})
 endforeach ()
 
 if (WIN32)
@@ -45,8 +46,13 @@ if (WIN32)
     link_directories(C:/build/dll)
 endif (WIN32)
 
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_LINK_FLAGS "-lSDL2 -lSDL2_image -lSDL2_ttf")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 
 add_executable(Blocks ${dll_file} ${assets_files} main.cpp view/View.cpp view/View.h view/Rectangle.cpp view/Rectangle.h model/Cluster.cpp model/Cluster.h view/ViewPort.cpp view/ViewPort.h model/Model.cpp model/Model.h Application/Application_Level.cpp Application/Application_Level.h model/Level.cpp model/Level.h model/GridXY.cpp model/GridXY.h model/Enums.h model/Action.cpp model/Action.h view/Texture.cpp view/Texture.h view/Font.cpp view/Font.h view/Assets.cpp view/Assets.h view/widget/LineEditBox.cpp view/widget/LineEditBox.h view/widget/RectWidget.cpp view/widget/RectWidget.h global/Global.cpp global/Global.h view/widget/SelectionData.cpp view/widget/SelectionData.h view/ScreenXY.cpp view/ScreenXY.h model/WorldXY.cpp model/WorldXY.h view/Color.cpp view/Color.h Application/Application_Edit.cpp Application/Application_Edit.h Application/Application_Run.cpp Application/Application_Run.h view/TextureWrapper.cpp view/TextureWrapper.h global/Conf.h view/widget/Widget.cpp view/widget/Widget.h view/Mouse.cpp view/Mouse.h view/widget/ActionEditBox.cpp view/widget/ActionEditBox.h)
+
+if (UNIX)
+    target_include_directories(Blocks PRIVATE /usr/include/SDL2)
+endif (UNIX)

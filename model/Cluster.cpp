@@ -15,8 +15,7 @@ size_t model::Cluster::s_maxClusterIndex = 0;
 
 namespace model {
     Cluster::Cluster(std::list<GridXY>&& gridXY, std::string name)
-        : m_gridXYList(gridXY), m_name(name.empty() ? "CL" + std::to_string(s_maxClusterIndex) : name) {
-        m_index = s_maxClusterIndex;
+        : m_gridXYList(gridXY), m_name(name.empty() ? "CL" + std::to_string(s_maxClusterIndex) : name), m_index(s_maxClusterIndex) {
         ++s_maxClusterIndex;
     }
 
@@ -24,7 +23,7 @@ namespace model {
         if (m_actions.empty() || not m_isAlive) {
             return;
         }
-        clearPhase();
+        resetPhase();
         m_currentPhase    = CURRENT_PHASE::TRANSLATING;
         m_fractionOfPhase = 1.0;
         for (auto& idx : m_gridXYList) {
@@ -138,7 +137,7 @@ namespace model {
         }
         m_fractionOfPhase -= fractionOfPhase;
         if (m_fractionOfPhase <= 0.0) {
-            clearPhase();
+            resetPhase();
         }
     }
 
@@ -158,7 +157,7 @@ namespace model {
         return {static_cast<int>(m_worldOffset.x() * m_fractionOfPhase), static_cast<int>(m_worldOffset.y() * m_fractionOfPhase)};
     }
 
-    std::set<WorldXY> Cluster::cornerPoints(int shrinkInWorld) const {
+    const std::set<WorldXY> Cluster::cornerPoints(int shrinkInWorld) const {
         std::set<WorldXY> result;
         switch (m_currentPhase) {
             case CURRENT_PHASE::NONE:
@@ -187,10 +186,10 @@ namespace model {
                 for (const auto& it : m_gridXYList) {
                     for (const GridXY cornerOffset : {GridXY{0, 0}, GridXY{0, 1}, GridXY{1, 1}, GridXY{1, 0}}) {
                         result.emplace(global::rotateAboutPivot(WorldXY::fromGridXY(it + cornerOffset) +
-                                                                 WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
-                                                                         shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()},
-                                                             center,
-                                                             theta));
+                                                                    WorldXY{shrinkInWorld - 2 * shrinkInWorld * cornerOffset.x(),
+                                                                            shrinkInWorld - 2 * shrinkInWorld * cornerOffset.y()},
+                                                                center,
+                                                                theta));
                     }
                 }
             } break;
@@ -206,7 +205,7 @@ namespace model {
         return m_isAlive;
     }
 
-    void Cluster::clearPhase() {
+    void Cluster::resetPhase() {
         m_fractionOfPhase = 0.0;
         m_worldOffset     = {0, 0};
         m_angle           = 0.0;
@@ -215,7 +214,7 @@ namespace model {
 
     void Cluster::setRotation(double angle, const GridXY& pivot) {
         assert(angle != 0.0);
-        clearPhase();
+        resetPhase();
         m_currentPhase    = CURRENT_PHASE::ROTATING;
         m_fractionOfPhase = 1.0;
         m_angle           = angle;
@@ -228,8 +227,8 @@ namespace model {
     }
 
     Cluster& Cluster::operator=(const Cluster& other) {
-        clearPhase();
-        assert(m_index > 1);
+        resetPhase();
+        m_index       = other.m_index;
         m_name        = other.m_name;
         m_isAlive     = other.m_isAlive;
         m_actionIndex = other.m_actionIndex;
@@ -239,7 +238,7 @@ namespace model {
         return *this;
     }
 
-    size_t Cluster::currentActionIndex() const {
+    size_t Cluster::actionIndex() const {
         return m_actionIndex;
     }
 
@@ -319,7 +318,7 @@ namespace model {
             }
         }
         Cluster result{{}, name() + "_"};
-        result.clearPhase();
+        result.resetPhase();
         result.m_isAlive     = m_isAlive;
         result.m_actionIndex = m_actionIndex;
         result.m_actions     = m_actions;
@@ -338,7 +337,7 @@ namespace model {
         return m_index;
     }
 
-    std::string Cluster::toString() const {
+    std::string Cluster::string() const {
         std::string str;
         for (const auto& block : m_gridXYList) {
             str += "(" + std::to_string(block.x()) + " " + std::to_string(block.y()) + ") " + ' ';

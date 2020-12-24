@@ -5,7 +5,7 @@
 #ifndef BLOCKS_COLOR_H
 #define BLOCKS_COLOR_H
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 namespace color {
 

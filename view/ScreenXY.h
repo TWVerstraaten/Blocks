@@ -5,7 +5,7 @@
 #ifndef BLOCKS_SCREENXY_H
 #define BLOCKS_SCREENXY_H
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 namespace model {
     class WorldXY;

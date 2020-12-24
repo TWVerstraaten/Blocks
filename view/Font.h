@@ -5,7 +5,7 @@
 #ifndef BLOCKS_FONT_H
 #define BLOCKS_FONT_H
 
-#include <SDL2/SDL_ttf.h>
+#include <SDL_ttf.h>
 #include <string>
 
 namespace view {

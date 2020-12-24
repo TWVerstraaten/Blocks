@@ -91,7 +91,6 @@ namespace model {
         m_clusters.emplace_back(Cluster{{{3, 4}, {4, 4}}, "CL" + std::to_string(m_clusters.size())});
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
 
-        m_level.addBlock({3, 3}, Level::INSTANT_BLOCK_TYPE::KILL);
         m_level.addBlock({4, 3}, Level::INSTANT_BLOCK_TYPE::KILL);
 
         m_clusters.emplace_back(Cluster{{{9, 7}, {10, 7}, {11, 7}, {12, 7}}, "CL" + std::to_string(m_clusters.size())});
@@ -99,7 +98,7 @@ namespace model {
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
 
-        m_level.addBlock({11, 6}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
+        m_level.addBlock({11, 6}, Level::INSTANT_BLOCK_TYPE::KILL);
 
         for (int i = -1; i != 15; ++i) {
             for (int j = -1; j != 11; ++j) {
@@ -117,6 +116,14 @@ namespace model {
     }
 
     void Model::clearEmptyClusters() {
+        for (auto it = m_clusters.begin(); it != m_clusters.end();) {
+            if (it->empty()) {
+                it = m_clusters.erase(it);
+            } else {
+                ++it;
+            }
+        }
+
         //        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const auto& cluster) { return cluster.empty();
         //        }),
         //                         m_clusters.end());

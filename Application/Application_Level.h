@@ -22,7 +22,7 @@ class Application_Level {
     Application_Level::RUN_MODE runLevel();
     EDIT_MODE                   editLevel();
 
-    Uint32       m_timeStep            = conf::m_timeStepSlow;
+    Uint32       m_timeStep            = cst::m_timeStepSlow;
     bool         m_pauseAfterFirstStep = false;
     view::View   m_view;
     model::Model m_model;

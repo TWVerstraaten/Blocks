@@ -5,7 +5,7 @@
 #ifndef BLOCKS_RECTANGLE_H
 #define BLOCKS_RECTANGLE_H
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class SDL_Renderer;
 

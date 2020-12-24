@@ -5,8 +5,8 @@
 #ifndef BLOCKS_TEXTURE_H
 #define BLOCKS_TEXTURE_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
 #include <memory>
 #include <string>
 
@@ -15,14 +15,8 @@ namespace view {
     class Texture {
 
       public:
-        Texture();
+        Texture() = default;
         ~Texture();
-
-        static std::unique_ptr<Texture> createFromImagePath(const std::string& path, SDL_Renderer* renderer);
-        static std::unique_ptr<Texture> createFromText(const std::string& textureText,
-                                                       SDL_Color          textColor,
-                                                       SDL_Renderer*      renderer,
-                                                       TTF_Font*          font);
 
         void free();
         void setColor(Uint8 red, Uint8 green, Uint8 blue);
@@ -37,11 +31,17 @@ namespace view {
         int  height() const;
         bool loadedCorrectly() const;
 
+        static std::unique_ptr<Texture> createFromImagePath(const std::string& path, SDL_Renderer* renderer);
+        static std::unique_ptr<Texture> createFromText(const std::string& textureText,
+                                                       SDL_Color          textColor,
+                                                       SDL_Renderer*      renderer,
+                                                       TTF_Font*          font);
+
       private:
-        bool         m_loadedCorrectly;
-        SDL_Texture* m_texture;
-        size_t       m_width;
-        size_t       m_height;
+        bool         m_loadedCorrectly = false;
+        SDL_Texture* m_texture         = nullptr;
+        size_t       m_width           = 0;
+        size_t       m_height          = 0;
     };
 } // namespace view
 

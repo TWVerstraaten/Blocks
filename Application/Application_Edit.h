@@ -10,7 +10,7 @@
 #include "../view/View.h"
 #include "Application_Level.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class Application_Edit {
 
@@ -36,7 +36,7 @@ class Application_Edit {
 
     bool                         m_rightMouseButtonPressed = false;
     bool                         m_leftMouseButtonPressed  = false;
-    Uint32                       m_timeStep                = conf::m_timeStepSlow;
+    Uint32                       m_timeStep                = cst::m_timeStepSlow;
     Application_Level::EDIT_MODE m_editMode                = Application_Level::EDIT_MODE::EDITING;
     view::Widget*                m_focusedWidget           = nullptr;
     view::View*                  m_view;

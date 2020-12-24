@@ -55,8 +55,9 @@ namespace view {
             if (m_needsUpdate) {
                 update(renderer);
             }
-            Rectangle::render(
-                global::pad(m_rect, s_padding), m_active ? color::ACTION_EDIT_BACKGROUND : color::ACTION_EDIT_BACKGROUND_INACTIVE, renderer);
+            Rectangle::render(global::pad(m_rect, s_padding),
+                              m_active ? color::ACTION_EDIT_BACKGROUND : color::ACTION_EDIT_BACKGROUND_INACTIVE,
+                              renderer);
 
             Assets::renderTexture(m_titleTexture.get(), {m_rect.x, m_rect.y, m_titleTexture->width(), m_titleTexture->height()}, renderer);
             renderHighlightIfSelected(renderer);

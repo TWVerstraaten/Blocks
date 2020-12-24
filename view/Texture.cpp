@@ -4,19 +4,11 @@
 
 #include "Texture.h"
 
-#include <SDL2/SDL_image.h>
+#include <SDL_image.h>
 #include <cassert>
 #include <iostream>
 
 namespace view {
-
-    Texture::Texture() {
-        m_loadedCorrectly = false;
-        m_texture         = nullptr;
-        m_width           = 0;
-        m_height          = 0;
-    }
-
     Texture::~Texture() {
         free();
     }
