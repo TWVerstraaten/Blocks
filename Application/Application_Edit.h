@@ -5,7 +5,7 @@
 #ifndef BLOCKS_APPLICATION_EDIT_H
 #define BLOCKS_APPLICATION_EDIT_H
 
-#include "../global/Conf.h"
+#include "../global/constants.h"
 #include "../model/Model.h"
 #include "../view/View.h"
 #include "Application_Level.h"

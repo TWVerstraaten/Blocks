@@ -59,7 +59,13 @@ namespace view {
                                double                       angle,
                                const SDL_Point*             center,
                                SDL_RendererFlip             flip) const {
-        return renderTexture(textureEnum, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
+        if (width < 0) {
+            return renderTexture(textureEnum, {screenXY.x() + width, screenXY.y()}, -width, height, renderer, angle, center, flip);
+        } else if (height < 0) {
+            return renderTexture(textureEnum, {screenXY.x(), screenXY.y() + height}, width, -height, renderer, angle, center, flip);
+        } else {
+            return renderTexture(textureEnum, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
+        }
     }
 
     bool Assets::renderTexture(Texture*         texture,

@@ -68,6 +68,9 @@ namespace view {
         ViewPort                         m_viewPort;
         std::unique_ptr<Assets>          m_assets{new Assets()};
         std::list<widget::ActionEditBox> m_actionEditBoxes;
+        void                             drawClusterNoPhase(const model::Cluster& cluster) const;
+        void                             drawClusterTranslating(const model::Cluster& cluster) const;
+        void                             drawClusterRotating(const model::Cluster& cluster) const;
     };
 } // namespace view
 

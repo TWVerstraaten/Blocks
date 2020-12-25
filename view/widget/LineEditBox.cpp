@@ -4,8 +4,8 @@
 
 #include "LineEditBox.h"
 
-#include "../../global/Conf.h"
 #include "../../global/Global.h"
+#include "../../global/constants.h"
 #include "../../model/Cluster.h"
 #include "../Assets.h"
 #include "../Color.h"

@@ -417,5 +417,8 @@ namespace model {
         }
         return result;
     }
+    Cluster::PHASE Cluster::phase() const {
+        return m_phase;
+    }
 
 } // namespace model

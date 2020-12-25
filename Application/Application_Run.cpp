@@ -123,7 +123,7 @@ Application_Level::RUN_MODE Application_Run::performSingleLoop() {
 
     const auto dt = SDL_GetTicks() - m_previousTime;
     if (not m_paused) {
-        update(1.3 * dt / m_timeStep);
+        update(1.9 * dt / m_timeStep);
         m_timeSinceLastStep += dt;
     }
     m_previousTime = SDL_GetTicks();

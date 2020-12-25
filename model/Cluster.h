@@ -23,7 +23,13 @@ namespace model {
         /****** PRIVATE STATICS  ******/
         static size_t s_maxClusterIndex;
 
+        /****** PRIVATE ENUMS / TYPEDEFS  ******/
+        typedef std::pair<const GridXY&, Level::DYNAMIC_BLOCK_TYPE> Block;
+
       public:
+        /****** PUBLIC ENUMS / TYPEDEFS  ******/
+        enum class PHASE { NONE, TRANSLATING, ROTATING };
+
         explicit Cluster(std::vector<GridXY>&& gridXY, std::string name = "");
         explicit Cluster(const std::vector<GridXY>& gridXY, std::string name = "");
 
@@ -37,6 +43,7 @@ namespace model {
         size_t                     index() const;
         size_t                     actionIndex() const;
         std::string                string() const;
+        PHASE                      phase() const;
         WorldXY                    dynamicWorldOffset() const;
         const GridXY&              rotationPivot() const;
         std::set<WorldXY>          cornerPoints(int shrinkInWorld) const;
@@ -66,10 +73,6 @@ namespace model {
         std::vector<GridXY>::iterator removeBLock(const GridXY& gridXY);
 
       private:
-        /****** PRIVATE ENUMS / TYPEDEFS  ******/
-        enum class PHASE { NONE, TRANSLATING, ROTATING };
-        typedef std::pair<const GridXY&, Level::DYNAMIC_BLOCK_TYPE> Block;
-
         /****** PRIVATE CONST FUNCTIONS  ******/
         bool              gridXUYAreUnique() const;
         std::set<WorldXY> cornerPointsNoPhase(int shrinkInWorld) const;

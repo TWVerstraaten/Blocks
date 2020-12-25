@@ -5,7 +5,7 @@
 #ifndef BLOCKS_MODEL_H
 #define BLOCKS_MODEL_H
 
-#include "../global/Conf.h"
+#include "../global/constants.h"
 #include "Cluster.h"
 #include "Level.h"
 
