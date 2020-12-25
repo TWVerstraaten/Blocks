@@ -18,6 +18,8 @@ namespace cst {
     static const size_t LINE_EDIT_PADDING      = 4;
     static const size_t LINE_EDIT_TITLE_HEIGHT = 44;
 
+    static const double MAX_D_PHASE = 0.1;
+
     namespace color {
 
         static const SDL_Color WHITE                           = {255, 255, 255, 255};

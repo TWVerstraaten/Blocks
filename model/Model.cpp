@@ -56,13 +56,7 @@ namespace model {
             if (not cluster.isAlive()) {
                 continue;
             }
-            const auto points = cluster.cornerPoints(1);
-            for (const auto& point : points) {
-                if (not m_level.isInLevel(point)) {
-                    cluster.kill();
-                    break;
-                }
-            }
+            cluster.collideWithLevel(m_level, cst::BLOCK_SHRINK_IN_WORLD);
         }
     }
 
@@ -71,34 +65,37 @@ namespace model {
     }
 
     void Model::update(double dPhase) {
-        m_phaseFraction -= dPhase;
-        if (m_phaseFraction <= 0.0 && m_needsPreStep) {
-            m_phaseFraction = 0.0;
-            preStep();
-            m_needsPreStep = false;
+        assert(dPhase >= 0);
+        assert(dPhase <= 1);
+        while (dPhase > cst::MAX_D_PHASE) {
+            updateInternal(cst::MAX_D_PHASE);
+            dPhase -= cst::MAX_D_PHASE;
         }
-        for (auto& cluster : m_clusters) {
-            cluster.update(m_phaseFraction);
-        }
+        updateInternal(dPhase);
     }
 
     void Model::init() {
         clear();
-
-        m_clusters.push_back(Cluster({{4, 5}, {4, 6}, {5, 6}, {6, 6}, {7, 6}, {8, 6}, {8, 5}}, "CL" + std::to_string(m_clusters.size())));
+        m_clusters.push_back(Cluster({{5, 5}, {5, 6}, {6, 5}, {4, 5}, {5, 4}}, "CL" + std::to_string(m_clusters.size())));
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
 
-        m_level.addBlock({7, 5}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
+        m_level.addBlock({5, 5}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
 
         for (int i = -2; i != 15; ++i) {
             for (int j = -2; j != 11; ++j) {
                 if (i == 11 && j == 3) {
                     continue;
                 }
+                if (i == 10 && j == 3) {
+                    continue;
+                }
+                if (i == 11 && j == 4) {
+                    continue;
+                }
                 m_level.addLevelBlock({i, j});
             }
         }
-        for (int i = -2; i != 4; ++i) {
+        for (int i = -2; i != 9; ++i) {
             for (int j = -2; j != 11; ++j) {
                 if (i == 11 && j == 3) {
                     continue;
@@ -106,6 +103,8 @@ namespace model {
                 m_level.addStartBlock({i, j});
             }
         }
+        m_level.sort();
+        m_level.buildBoundaries();
     }
 
     void Model::clear() {
@@ -179,8 +178,36 @@ namespace model {
     }
 
     void Model::startPhase() {
+        if (m_needsPreStep) {
+            preStep();
+        } else {
+            m_needsPreStep = true;
+        }
         m_phaseFraction = 1.0;
-        m_needsPreStep  = true;
+    }
+
+    void Model::updateInternal(double dPhase) {
+        assert(dPhase <= cst::MAX_D_PHASE);
+        assert(dPhase >= 0);
+        if (m_phaseFraction == 0.0) {
+            return;
+        }
+        m_phaseFraction -= dPhase;
+        if (m_phaseFraction <= 0.0 && m_needsPreStep) {
+            m_phaseFraction = 0.0;
+            preStep();
+            m_needsPreStep = false;
+        }
+        for (auto& cluster : m_clusters) {
+            cluster.update(m_phaseFraction);
+        }
+        interactClustersWithLevel();
+    }
+
+    void Model::finishInteractions() {
+        //        for (auto& cluster : m_clusters) {
+        //                        cluster.sortGridXYVector();
+        //        }
     }
 
 } // namespace model

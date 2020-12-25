@@ -31,7 +31,7 @@ namespace model {
         int           x() const;
         int           y() const;
         int           manhattanDistance(const GridXY& other) const;
-        GridXY        adjacent(enums::DIRECTION direction) const;
+        GridXY        neighbor(enums::DIRECTION direction) const;
         static GridXY fromWorldXY(const model::WorldXY& worldXY);
         static GridXY fromScreenXY(const view::ScreenXY& screenXY, const view::ViewPort& viewPort);
         bool          isAdjacent(const GridXY& other) const;

@@ -53,23 +53,24 @@ namespace view {
         SDL_Point windowSize() const;
 
       private:
-        void drawClusters(const std::vector<model::Cluster>& clusters) const;
+        void drawClusters(const std::vector<model::Cluster>& clusters);
         void drawLevel(const model::Level& level) const;
         void drawBlocks(const model::Level& level) const;
         void drawActionEditBoxes();
         void setDrawColor(const SDL_Color& color) const;
         void addActionBox(const model::Cluster& cluster);
-        void renderClusterName(const model::Cluster& cluster) const;
+        void renderClusterName(const model::Cluster& cluster);
+        void drawClusterNoPhase(const model::Cluster& cluster) const;
+        void drawClusterTranslating(const model::Cluster& cluster) const;
+        void drawClusterRotating(const model::Cluster& cluster) const;
 
-        int                              m_zoomParameter = 0;
-        SDL_Window*                      m_window        = nullptr;
-        SDL_Renderer*                    m_renderer      = nullptr;
-        ViewPort                         m_viewPort;
-        std::unique_ptr<Assets>          m_assets{new Assets()};
-        std::list<widget::ActionEditBox> m_actionEditBoxes;
-        void                             drawClusterNoPhase(const model::Cluster& cluster) const;
-        void                             drawClusterTranslating(const model::Cluster& cluster) const;
-        void                             drawClusterRotating(const model::Cluster& cluster) const;
+        int                                        m_zoomParameter = 0;
+        SDL_Window*                                m_window        = nullptr;
+        SDL_Renderer*                              m_renderer      = nullptr;
+        ViewPort                                   m_viewPort;
+        std::unique_ptr<Assets>                    m_assets{new Assets()};
+        std::list<widget::ActionEditBox>           m_actionEditBoxes;
+        std::map<size_t, std::unique_ptr<Texture>> m_nameTextures;
     };
 } // namespace view
 

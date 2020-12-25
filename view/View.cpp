@@ -71,15 +71,16 @@ namespace view {
         drawClusters(model.clusters());
         drawBlocks(model.level());
 
-        //        for (const auto& cluster : model.clusters()) {
-        //            const auto points = cluster.cornerPoints(0);
-        //            for (const auto& it : points) {
-        //                                                drawRectangle(model::GridXY::fromWorldXY(actionEditIt),
-        //                                                model::WorldXY::m_blockSizeInWorld,
-        //                                                              model::WorldXY::m_blockSizeInWorld, color::BLUE);
-        //                drawPoint(it, color::RED, 8);
-        //            }
-        //    }
+        for (auto& cluster : model.clusters()) {
+            const auto points = cluster.cornerPoints(cst::BLOCK_SHRINK_IN_WORLD);
+            for (const auto& it : points) {
+                //                                                                        drawRectangle(model::GridXY::fromWorldXY(actionEditIt),
+                //                                                                        model::WorldXY::m_blockSizeInWorld,
+                //                                                                                      model::WorldXY::m_blockSizeInWorld,
+                //                                                                                      color::BLUE);
+                drawPoint(it, cst::color::RED, 8);
+            }
+        }
         drawActionEditBoxes();
     }
 
@@ -92,7 +93,7 @@ namespace view {
         }
     }
 
-    void View::drawClusters(const std::vector<model::Cluster>& clusters) const {
+    void View::drawClusters(const std::vector<model::Cluster>& clusters) {
         for (const auto& cluster : clusters) {
             switch (cluster.phase()) {
                 case model::Cluster::PHASE::NONE:
@@ -122,6 +123,14 @@ namespace view {
         for (const auto& block : level.startBlocks()) {
             drawRectangle(
                 ScreenXY::fromGridXY(block, m_viewPort) + shrinkInScreenXY, shrunkBlockSize, shrunkBlockSize, cst::color::BACKGROUND_START);
+        }
+
+        for (const auto& line : level.boundaries()) {
+            setDrawColor(cst::color::WHITE);
+            const auto p1 = ScreenXY::fromWorldXY(line.start(), m_viewPort);
+            const auto p2 = ScreenXY::fromWorldXY(line.end(), m_viewPort);
+
+            SDL_RenderDrawLine(m_renderer, p1.x(), p1.y(), p2.x(), p2.y());
         }
     }
 
@@ -281,12 +290,20 @@ namespace view {
         }
     }
 
-    void View::renderClusterName(const model::Cluster& cluster) const {
-        const std::string name = cluster.name() + " " + std::to_string(cluster.index());
-        const auto        worldPosition =
+    void View::renderClusterName(const model::Cluster& cluster) {
+        const auto worldPosition =
             global::rotateAboutPivot(cluster.dynamicWorldOffset() + cluster.gridXY().front(), cluster.rotationPivot(), -cluster.angle());
         const auto screenPosition = ScreenXY::fromWorldXY(worldPosition, m_viewPort);
-        m_assets->renderText(name, screenPosition, m_renderer);
+
+        if (m_nameTextures.find(cluster.index()) == m_nameTextures.end()) {
+            std::cout << "Name added\n";
+            const std::string name = cluster.name() + " " + std::to_string(cluster.index());
+            m_nameTextures.insert(
+                {cluster.index(),
+                 view::Texture::createFromText(name, cst::color::BLACK, m_renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font())});
+        }
+        const auto& texture = m_nameTextures.at(cluster.index());
+        m_assets->renderTexture(texture.get(), screenPosition, texture->width(), texture->height(), m_renderer);
     }
 
     void View::drawClusterNoPhase(const model::Cluster& cluster) const {
@@ -299,15 +316,17 @@ namespace view {
                                            shrunkBlockSize,
                                            shrunkBlockSize,
                                            m_renderer));
-
-            if (cluster.contains(it.adjacent(enums::DIRECTION::LEFT))) {
+            if (m_viewPort.distanceBetweenBlocksInScreenXY() == 0) {
+                continue;
+            }
+            if (cluster.contains(it.neighbor(enums::DIRECTION::LEFT))) {
                 assert(m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
                                                ScreenXY::fromWorldXY(model::WorldXY(it) + shrinkWorldXY, m_viewPort),
                                                -m_viewPort.distanceBetweenBlocksInScreenXY(),
                                                shrunkBlockSize,
                                                m_renderer));
             }
-            if (cluster.contains(it.adjacent(enums::DIRECTION::UP))) {
+            if (cluster.contains(it.neighbor(enums::DIRECTION::UP))) {
                 assert(m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
                                                ScreenXY::fromWorldXY(model::WorldXY(it) + shrinkWorldXY, m_viewPort),
                                                shrunkBlockSize,
@@ -328,14 +347,17 @@ namespace view {
                                            shrunkBlockSize,
                                            shrunkBlockSize,
                                            m_renderer));
-            if (cluster.contains(it.adjacent(enums::DIRECTION::LEFT))) {
+            if (m_viewPort.distanceBetweenBlocksInScreenXY() == 0) {
+                continue;
+            }
+            if (cluster.contains(it.neighbor(enums::DIRECTION::LEFT))) {
                 assert(m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
                                                ScreenXY::fromWorldXY(model::WorldXY(it) + shrinkWorldXY, m_viewPort) + offset,
                                                -m_viewPort.distanceBetweenBlocksInScreenXY(),
                                                shrunkBlockSize,
                                                m_renderer));
             }
-            if (cluster.contains(it.adjacent(enums::DIRECTION::UP))) {
+            if (cluster.contains(it.neighbor(enums::DIRECTION::UP))) {
                 assert(m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
                                                ScreenXY::fromWorldXY(model::WorldXY(it) + shrinkWorldXY, m_viewPort) + offset,
                                                shrunkBlockSize,
@@ -357,7 +379,10 @@ namespace view {
             const auto topLeftScreenXY = ScreenXY::fromWorldXY(topLeftWorldXY, m_viewPort);
             assert(m_assets->renderTexture(
                 TextureWrapper::TEXTURE_ENUM::CLUSTER, topLeftScreenXY, shrunkBlockSize, shrunkBlockSize, m_renderer, theta, &pivot));
-            if (cluster.contains(it.adjacent(enums::DIRECTION::LEFT))) {
+            if (m_viewPort.distanceBetweenBlocksInScreenXY() == 0) {
+                continue;
+            }
+            if (cluster.contains(it.neighbor(enums::DIRECTION::LEFT))) {
                 assert(m_assets->renderTexture(
                     TextureWrapper::TEXTURE_ENUM::CLUSTER,
                     ScreenXY::fromWorldXY(
@@ -370,7 +395,7 @@ namespace view {
                     theta,
                     &pivot));
             }
-            if (cluster.contains(it.adjacent(enums::DIRECTION::UP))) {
+            if (cluster.contains(it.neighbor(enums::DIRECTION::UP))) {
                 assert(m_assets->renderTexture(
                     TextureWrapper::TEXTURE_ENUM::CLUSTER,
                     ScreenXY::fromWorldXY(

@@ -31,7 +31,7 @@ namespace model {
         return std::abs(other.y() - y()) + std::abs(other.x() - x());
     }
 
-    GridXY GridXY::adjacent(enums::DIRECTION direction) const {
+    GridXY GridXY::neighbor(enums::DIRECTION direction) const {
         assert(direction != enums::DIRECTION::NONE);
         switch (direction) {
             case enums::DIRECTION::UP:

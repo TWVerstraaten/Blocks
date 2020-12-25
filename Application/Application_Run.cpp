@@ -86,7 +86,6 @@ void Application_Run::mouseMoveEvent(const SDL_Event& event) {
 
 void Application_Run::update(double fractionOfPhase) {
     m_model.update(fractionOfPhase);
-    m_model.interactClustersWithLevel();
 }
 
 void Application_Run::setTimeStep(Uint32 timeStep) {
@@ -102,6 +101,7 @@ void Application_Run::performTimeStep() {
     m_model.startPhase();
     m_model.interactClustersWithInstantBlocks();
     m_model.interactClustersWithDynamicBlocks();
+    m_model.finishInteractions();
     m_view->updateActionBoxes(m_model.clusters());
     if (m_pauseAfterNextStep) {
         m_pauseAfterNextStep = false;

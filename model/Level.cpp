@@ -55,9 +55,8 @@ namespace model {
         return m_levelBlocks;
     }
 
-    bool Level::isInLevel(const WorldXY& worldXY) {
-        return std::any_of(
-            m_levelBlocks.begin(), m_levelBlocks.end(), [&](const GridXY& gridXY) { return global::pointInBlock(worldXY, gridXY); });
+    bool Level::isInLevel(const WorldXY& worldXY) const {
+        return m_levelBlocks.find(GridXY::fromWorldXY(worldXY)) != m_levelBlocks.end();
     }
 
     void Level::clear() {
@@ -81,6 +80,55 @@ namespace model {
             return false;
         }
         return true;
+    }
+
+    void Level::sort() {
+    }
+
+    void Level::buildBoundaries() {
+        for (const auto& it : m_levelBlocks) {
+            std::cout << it.x() << " " << it.y() << '\n';
+        }
+
+        auto it = m_levelBlocks.begin();
+        while (it != m_levelBlocks.end()) {
+            if (not contains(*it + GridXY{0, -1})) {
+                const GridXY start = *it;
+                int          idx   = it->x() + 1;
+                ++it;
+                while (it != m_levelBlocks.end() && it->x() == idx && it->y() == start.y() && (not contains(*it + GridXY{0, -1}))) {
+                    idx = it->x() + 1;
+                    ++it;
+                }
+                m_boundaries.emplace(start, GridXY{idx, start.y()});
+            } else {
+                ++it;
+            }
+        }
+
+        it = m_levelBlocks.begin();
+        while (it != m_levelBlocks.end()) {
+            if (not contains(*it + GridXY{0, 1})) {
+                const GridXY start = *it;
+                int          idx   = it->x() + 1;
+                ++it;
+                while (it != m_levelBlocks.end() && it->x() == idx && it->y() == start.y() && (not contains(*it + GridXY{0, 1}))) {
+                    idx = it->x() + 1;
+                    ++it;
+                }
+                m_boundaries.emplace(start + GridXY{0, 1}, GridXY{idx, start.y() + 1});
+            } else {
+                ++it;
+            }
+        }
+    }
+
+    const std::set<WorldLine>& Level::boundaries() const {
+        return m_boundaries;
+    }
+
+    bool Level::contains(const GridXY& gridXY) const {
+        return m_levelBlocks.find(gridXY) != m_levelBlocks.end();
     }
 
 } // namespace model

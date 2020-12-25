@@ -41,8 +41,11 @@ namespace model {
 
         void clearBlock(const GridXY& gridXY);
 
+        void finishInteractions();
+
       private:
         void splitDisconnectedClusters();
+        void updateInternal(double dPhase);
 
         bool                 m_needsPreStep  = false;
         double               m_phaseFraction = 0.0;

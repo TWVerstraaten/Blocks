@@ -6,6 +6,7 @@
 #define BLOCKS_LEVEL_H
 
 #include "GridXY.h"
+#include "WorldLine.h"
 
 #include <map>
 #include <set>
@@ -28,7 +29,7 @@ namespace model {
         void                                        addLevelBlock(const GridXY& gridXY);
         void                                        addStartBlock(const GridXY& gridXY);
         void                                        clear();
-        bool                                        isInLevel(const model::WorldXY& worldXY);
+        bool                                        isInLevel(const model::WorldXY& worldXY) const;
         DYNAMIC_BLOCK_TYPE                          dynamicBlockAt(const GridXY& gridXY);
         INSTANT_BLOCK_TYPE                          instantBlockAt(const GridXY& gridXY);
         const std::map<GridXY, DYNAMIC_BLOCK_TYPE>& dynamicBlocks() const;
@@ -36,12 +37,18 @@ namespace model {
         const std::set<GridXY>&                     levelBlocks() const;
         const std::set<GridXY>&                     startBlocks() const;
         bool                                        isFreeStartBlock(const GridXY gridXY) const;
+        void                                        sort();
+        void                                        buildBoundaries();
+        const std::set<WorldLine>&                  boundaries() const;
 
       private:
+        bool contains(const GridXY& gridXY) const;
+
         std::map<GridXY, DYNAMIC_BLOCK_TYPE> m_dynamicBLocks;
         std::map<GridXY, INSTANT_BLOCK_TYPE> m_instantBLocks;
         std::set<GridXY>                     m_levelBlocks;
         std::set<GridXY>                     m_startBlocks;
+        std::set<WorldLine>                  m_boundaries;
     };
 } // namespace model
 #endif // BLOCKS_LEVEL_H
