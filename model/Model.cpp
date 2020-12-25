@@ -70,9 +70,15 @@ namespace model {
         return m_level;
     }
 
-    void Model::update(double fractionOfPhase) {
+    void Model::update(double dPhase) {
+        m_phaseFraction -= dPhase;
+        if (m_phaseFraction <= 0.0 && m_needsPreStep) {
+            m_phaseFraction = 0.0;
+            preStep();
+            m_needsPreStep = false;
+        }
         for (auto& cluster : m_clusters) {
-            cluster.update(fractionOfPhase);
+            cluster.update(m_phaseFraction);
         }
     }
 
@@ -121,9 +127,11 @@ namespace model {
     }
 
     void Model::preStep() {
+        m_phaseFraction = 0.0;
         for (auto& cluster : m_clusters) {
             cluster.preStep();
         }
+        m_needsPreStep = false;
     }
 
     void Model::addBlock(const GridXY& gridXY) {
@@ -154,7 +162,7 @@ namespace model {
         }
     }
 
-    void Model::clearBlock(const GridXY gridXY) {
+    void Model::clearBlock(const GridXY& gridXY) {
         const auto it = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); });
         if (it == m_clusters.end()) {
             return;
@@ -162,6 +170,17 @@ namespace model {
         it->removeBLock(gridXY);
         clearEmptyClusters();
         splitDisconnectedClusters();
+    }
+
+    Model& Model::operator=(const Model& other) {
+        m_level    = other.m_level;
+        m_clusters = other.m_clusters;
+        return *this;
+    }
+
+    void Model::startPhase() {
+        m_phaseFraction = 1.0;
+        m_needsPreStep  = true;
     }
 
 } // namespace model

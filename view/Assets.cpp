@@ -5,7 +5,7 @@
 #include "Assets.h"
 
 #include "../global/Global.h"
-#include "Color.h"
+#include "../global/cst.h"
 #include "ScreenXY.h"
 
 #include <cassert>
@@ -110,7 +110,7 @@ namespace view {
     }
 
     void Assets::renderText(const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer) {
-        const auto texture = view::Texture::createFromText(text, color::BLACK, renderer, m_fonts[FONT_ENUM::MAIN].get()->font());
+        const auto texture = view::Texture::createFromText(text, cst::color::BLACK, renderer, m_fonts[FONT_ENUM::MAIN].get()->font());
         renderTexture(texture.get(), screenXY, texture->width(), texture->height(), renderer);
     }
 

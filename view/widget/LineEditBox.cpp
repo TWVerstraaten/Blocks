@@ -5,10 +5,9 @@
 #include "LineEditBox.h"
 
 #include "../../global/Global.h"
-#include "../../global/constants.h"
+#include "../../global/cst.h"
 #include "../../model/Cluster.h"
 #include "../Assets.h"
-#include "../Color.h"
 #include "../Mouse.h"
 #include "../Rectangle.h"
 
@@ -32,19 +31,21 @@ namespace view {
         void LineEditBox::update(SDL_Renderer* renderer) {
             if (not m_titleTexture) {
                 m_titleTexture =
-                    Texture::createFromText(m_title, color::BLACK, renderer, m_assetHandler->font(Assets::FONT_ENUM::MAIN)->font());
+                    Texture::createFromText(m_title, cst::color::BLACK, renderer, m_assetHandler->font(Assets::FONT_ENUM::MAIN)->font());
             }
 
             m_textures.clear();
             m_yOffsets.clear();
 
-            int yOffset = cst::s_titleHeight;
+            int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
             for (const auto& str : m_strings) {
                 m_yOffsets.push_back(yOffset);
                 const auto text     = str.length() == 0 ? std::string(" ") : str;
                 bool       canParse = model::Action::canParse(str) || text == " ";
-                m_textures.emplace_back(Texture::createFromText(
-                    text, canParse ? color::BLACK : color::TEXT_ERROR, renderer, m_assetHandler->font(Assets::FONT_ENUM::MAIN)->font()));
+                m_textures.emplace_back(Texture::createFromText(text,
+                                                                canParse ? cst::color::BLACK : cst::color::TEXT_ERROR,
+                                                                renderer,
+                                                                m_assetHandler->font(Assets::FONT_ENUM::MAIN)->font()));
                 yOffset += m_textures.back()->height();
             }
             m_yOffsets.push_back(yOffset);
@@ -56,8 +57,8 @@ namespace view {
             if (m_needsUpdate) {
                 update(renderer);
             }
-            Rectangle::render(global::pad(m_rect, cst::s_padding),
-                              m_active ? color::ACTION_EDIT_BACKGROUND : color::ACTION_EDIT_BACKGROUND_INACTIVE,
+            Rectangle::render(global::pad(m_rect, cst::LINE_EDIT_PADDING),
+                              m_active ? cst::color::ACTION_EDIT_BACKGROUND : cst::color::ACTION_EDIT_BACKGROUND_INACTIVE,
                               renderer);
 
             Assets::renderTexture(m_titleTexture.get(), {m_rect.x, m_rect.y, m_titleTexture->width(), m_titleTexture->height()}, renderer);
@@ -72,7 +73,7 @@ namespace view {
         }
 
         void LineEditBox::renderStrings(SDL_Renderer* renderer) {
-            int yOffset = cst::s_titleHeight;
+            int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
             for (const auto& texture : m_textures) {
                 Assets::renderTexture(texture.get(), {m_rect.x, m_rect.y + yOffset, texture->width(), texture->height()}, renderer);
                 yOffset += texture->height();
@@ -586,8 +587,9 @@ namespace view {
         }
 
         const SDL_Color& LineEditBox::getHighlightColor(HIGHLIGHT_MODE mode) const {
-            return m_active ? (mode == HIGHLIGHT_MODE::HARD ? color::ACTION_EDIT_HIGHLIGHT_HARD : color::ACTION_EDIT_HIGHLIGHT_SOFT)
-                            : color::ACTION_EDIT_HIGHLIGHT_DEAD;
+            return m_active
+                     ? (mode == HIGHLIGHT_MODE::HARD ? cst::color::ACTION_EDIT_HIGHLIGHT_HARD : cst::color::ACTION_EDIT_HIGHLIGHT_SOFT)
+                     : cst::color::ACTION_EDIT_HIGHLIGHT_DEAD;
         }
 
     } // namespace widget

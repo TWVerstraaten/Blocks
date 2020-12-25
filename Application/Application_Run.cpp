@@ -7,7 +7,7 @@
 #include "../view/Mouse.h"
 #include "../view/ScreenXY.h"
 
-Application_Run::Application_Run(const model::Model& model, view::View* view) :  m_view(view) {
+Application_Run::Application_Run(const model::Model& model, view::View* view) : m_view(view) {
     m_model             = model;
     m_timeSinceLastStep = 0;
     m_previousTime      = SDL_GetTicks();
@@ -32,13 +32,13 @@ void Application_Run::keyEvent(const SDL_Event& event) {
                 m_pauseAfterNextStep = true;
                 break;
             case SDLK_1:
-                setTimeStep(cst::s_timeStepSlow);
+                setTimeStep(cst::TIME_STEP_SLOW);
                 break;
             case SDLK_2:
-                setTimeStep(cst::s_timeStepMedium);
+                setTimeStep(cst::TIME_STEP_MEDIUM);
                 break;
             case SDLK_3:
-                setTimeStep(cst::s_timeStepFast);
+                setTimeStep(cst::TIME_STEP_FAST);
                 break;
             default:
                 break;
@@ -99,9 +99,7 @@ void Application_Run::togglePause() {
 }
 
 void Application_Run::performTimeStep() {
-    if (not m_currentStepIsFirst) {
-        m_model.preStep();
-    }
+    m_model.startPhase();
     m_model.interactClustersWithInstantBlocks();
     m_model.interactClustersWithDynamicBlocks();
     m_view->updateActionBoxes(m_model.clusters());

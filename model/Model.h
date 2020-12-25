@@ -5,7 +5,7 @@
 #ifndef BLOCKS_MODEL_H
 #define BLOCKS_MODEL_H
 
-#include "../global/constants.h"
+#include "../global/cst.h"
 #include "Cluster.h"
 #include "Level.h"
 
@@ -21,31 +21,31 @@ namespace model {
       public:
         Model();
 
-        Model& operator=(const Model& other) {
-            m_level    = other.m_level;
-            m_clusters = other.m_clusters;
-            return *this;
-        };
+        Model& operator=(const Model& other);
+        ;
 
         void                        preStep();
         void                        interactClustersWithDynamicBlocks();
         void                        interactClustersWithInstantBlocks();
         void                        interactClustersWithLevel();
-        void                        update(double fractionOfPhase);
+        void                        update(double dPhase);
         void                        init();
         void                        clear();
         void                        clearEmptyClusters();
+        void                        startPhase();
         void                        addBlock(const GridXY& gridXY);
         void                        linkBlocks(const GridXY& base, const GridXY& extension);
         const Level&                level() const;
         const std::vector<Cluster>& clusters() const;
         std::vector<Cluster>&       clusters();
 
-        void clearBlock(const GridXY gridXY);
+        void clearBlock(const GridXY& gridXY);
 
       private:
         void splitDisconnectedClusters();
 
+        bool                 m_needsPreStep  = false;
+        double               m_phaseFraction = 0.0;
         Level                m_level;
         std::vector<Cluster> m_clusters;
     };

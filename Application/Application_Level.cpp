@@ -73,15 +73,15 @@ Application_Level::EDIT_MODE Application_Level::editLevel() {
                                 return EDIT_MODE::DONE_EDITING;
                             case SDLK_1:
                                 editApp.finalize();
-                                m_timeStep = cst::s_timeStepSlow;
+                                m_timeStep = cst::TIME_STEP_SLOW;
                                 return EDIT_MODE::DONE_EDITING;
                             case SDLK_2:
                                 editApp.finalize();
-                                m_timeStep = cst::s_timeStepMedium;
+                                m_timeStep = cst::TIME_STEP_MEDIUM;
                                 return EDIT_MODE::DONE_EDITING;
                             case SDLK_3:
                                 editApp.finalize();
-                                m_timeStep = cst::s_timeStepFast;
+                                m_timeStep = cst::TIME_STEP_FAST;
                                 return EDIT_MODE::DONE_EDITING;
                         }
                     }

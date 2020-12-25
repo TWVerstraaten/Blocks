@@ -4,6 +4,7 @@
 
 #include "ViewPort.h"
 
+#include "../global/cst.h"
 #include "../model/WorldXY.h"
 
 #include <cmath>
@@ -23,7 +24,8 @@ namespace view {
     }
 
     void ViewPort::setScale(int scaleParameter) {
-        m_scale = std::exp(scaleParameter / 10.0);
+        m_scale                           = std::exp(scaleParameter / 10.0);
+        m_distanceBetweenBlocksInScreenXY = worldToScreenLength(2 * cst::BLOCK_SHRINK_IN_WORLD);
     }
 
     void ViewPort::translate(int dx, int dy) {
@@ -45,5 +47,9 @@ namespace view {
 
     int ViewPort::worldToScreenLength(int worldLength) const {
         return static_cast<int>(m_scale * worldLength);
+    }
+
+    int ViewPort::distanceBetweenBlocksInScreenXY() const {
+        return m_distanceBetweenBlocksInScreenXY;
     }
 } // namespace view

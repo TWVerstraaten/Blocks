@@ -64,7 +64,7 @@ namespace model {
         void doAction();
         void addPendingOperation(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType);
         void performPendingOperationOrNextAction();
-        void update(double fractionOfPhase);
+        void update(double dPhase);
         void addAction(Action action);
         void kill();
         void clearActions();
@@ -92,8 +92,8 @@ namespace model {
         static Action rotateActionCounterClockWise(Action action);
 
         /****** DATA MEMBERS  ******/
-        bool                                              m_isAlive           = true;
-        double                                            m_fractionOfPhase   = 0.0;
+        bool                                              m_alive             = true;
+        double                                            m_phaseFraction     = 0.0;
         double                                            m_angle             = 0.0;
         size_t                                            m_actionIndex       = 0;
         PHASE                                             m_phase             = PHASE::NONE;

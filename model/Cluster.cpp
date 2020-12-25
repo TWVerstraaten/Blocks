@@ -24,12 +24,11 @@ namespace model {
     }
 
     void Cluster::doAction() {
-        if (m_actions.empty() || not m_isAlive) {
+        if (m_actions.empty() || not m_alive) {
             return;
         }
         resetPhase();
-        m_phase           = PHASE::TRANSLATING;
-        m_fractionOfPhase = 1.0;
+        m_phase = PHASE::TRANSLATING;
         for (auto& idx : m_gridXYVector) {
             switch (m_actions[m_actionIndex].m_value) {
                 case Action::VALUE::MOVE_UP:
@@ -141,19 +140,19 @@ namespace model {
         }
     }
 
-    void Cluster::update(double fractionOfPhase) {
+    void Cluster::update(double dPhase) {
         assert(gridXUYAreUnique());
-        if (not m_isAlive) {
+        if (not m_alive) {
             return;
         }
-        m_fractionOfPhase -= fractionOfPhase;
-        if (m_fractionOfPhase <= 0.0) {
+        m_phaseFraction = dPhase;
+        if (m_phaseFraction <= 0.0) {
             resetPhase();
         }
     }
 
     double Cluster::angle() const {
-        return m_fractionOfPhase * m_angle;
+        return m_phaseFraction * m_angle;
     }
 
     const GridXY& Cluster::rotationPivot() const {
@@ -165,7 +164,7 @@ namespace model {
     }
 
     WorldXY Cluster::dynamicWorldOffset() const {
-        return {static_cast<int>(m_worldOffset.x() * m_fractionOfPhase), static_cast<int>(m_worldOffset.y() * m_fractionOfPhase)};
+        return {static_cast<int>(m_worldOffset.x() * m_phaseFraction), static_cast<int>(m_worldOffset.y() * m_phaseFraction)};
     }
 
     std::set<WorldXY> Cluster::cornerPoints(int shrinkInWorld) const {
@@ -183,27 +182,25 @@ namespace model {
     }
 
     void Cluster::kill() {
-        m_isAlive = false;
+        m_alive = false;
     }
 
     bool Cluster::isAlive() const {
-        return m_isAlive;
+        return m_alive;
     }
 
     void Cluster::resetPhase() {
-        m_fractionOfPhase = 0.0;
-        m_worldOffset     = {0, 0};
-        m_angle           = 0.0;
-        m_rotationPivot   = {0, 0};
+        m_worldOffset   = {0, 0};
+        m_angle         = 0.0;
+        m_rotationPivot = {0, 0};
     }
 
     void Cluster::setRotation(double angle, const GridXY& pivot) {
         assert(angle != 0.0);
         resetPhase();
-        m_phase           = PHASE::ROTATING;
-        m_fractionOfPhase = 1.0;
-        m_angle           = angle;
-        m_rotationPivot   = pivot;
+        m_phase         = PHASE::ROTATING;
+        m_angle         = angle;
+        m_rotationPivot = pivot;
     }
 
     void Cluster::clearActions() {
@@ -318,7 +315,7 @@ namespace model {
         Cluster result{std::move(copy), name() + "_"};
         assert(result.isConnected());
         result.resetPhase();
-        result.m_isAlive     = m_isAlive;
+        result.m_alive       = m_alive;
         result.m_actionIndex = m_actionIndex;
         result.m_actions     = m_actions;
         result.m_pendingOperations.clear();
@@ -339,14 +336,21 @@ namespace model {
     }
 
     void Cluster::preStep() {
-        if (m_phase == PHASE::ROTATING) {
-            if (m_actions.at(m_actionIndex).m_modifier == Action::MODIFIER::SKIP) {
-                incrementActionIndex();
-            }
-        } else {
-            incrementActionIndex();
-            m_phase = PHASE::NONE;
+        if (not m_alive) {
+            return;
         }
+        switch (m_phase) {
+            case PHASE::NONE:
+            case PHASE::TRANSLATING:
+                incrementActionIndex();
+                break;
+            case PHASE::ROTATING:
+                if (m_actions[m_actionIndex].m_modifier == Action::MODIFIER::SKIP) {
+                    incrementActionIndex();
+                }
+                break;
+        }
+        m_phase = PHASE::NONE;
     }
 
     bool Cluster::contains(const GridXY& gridXY) const {

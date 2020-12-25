@@ -60,7 +60,6 @@ namespace view {
         void setDrawColor(const SDL_Color& color) const;
         void addActionBox(const model::Cluster& cluster);
         void renderClusterName(const model::Cluster& cluster) const;
-        void renderClusterOutline(const model::Cluster& cluster) const;
 
         int                              m_zoomParameter = 0;
         SDL_Window*                      m_window        = nullptr;
