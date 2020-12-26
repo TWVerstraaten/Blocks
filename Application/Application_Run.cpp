@@ -11,7 +11,7 @@ Application_Run::Application_Run(const model::Model& model, view::View* view) : 
     m_model             = model;
     m_timeSinceLastStep = 0;
     m_previousTime      = SDL_GetTicks();
-    m_view->initActionBoxes(m_model.clusters());
+//    m_view->initActionBoxes(m_model.clusters());
 }
 
 void Application_Run::mouseWheelEvent(const SDL_Event& event) {

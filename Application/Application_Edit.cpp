@@ -65,7 +65,7 @@ void Application_Edit::mouseReleaseEvent(const SDL_Event& event) {
 void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
     if (m_leftMouseButtonPressed) {
         if (m_view->scrollArea().pointIsOverWidget(Mouse::getMouseXY())) {
-            m_view->scrollArea().mouseDragEvent(event);
+            m_view->scrollArea().getFocus();
         }
     }
     if (m_view->scrollArea().hasFocus()) {
@@ -84,7 +84,8 @@ void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
 void Application_Edit::init() {
     SDL_StartTextInput();
     m_view->clear();
-    m_view->initActionBoxes(m_model->clusters());
+    //        m_view->initActionBoxes(m_model->clusters());
+    m_view->updateActionBoxes(m_model->clusters());
 }
 
 bool Application_Edit::canStart() const {
@@ -182,6 +183,7 @@ void Application_Edit::handleLeftMouseMove() {
         }
         m_previousGridClickPosition = currentGridPosition;
     }
+    m_view->updateActionBoxes(m_model->clusters());
 }
 
 void Application_Edit::handleRightMouseMove() {

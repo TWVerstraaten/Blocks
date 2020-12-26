@@ -15,6 +15,7 @@ Application_Level::Application_Level() {
 
 void Application_Level::run() {
     bool isRunning = true;
+
     while (isRunning) {
         switch (editLevel()) {
             case EDIT_MODE::QUIT:

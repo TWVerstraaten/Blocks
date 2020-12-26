@@ -14,7 +14,7 @@ view::widget::ActionEditBox::ActionEditBox(
     int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
     : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())), m_clusterIndex(cluster.index()) {
     if (cluster.actions().empty()) {
-        m_strings.emplace_back(" ");
+        m_strings.emplace_back("");
     } else {
         for (const auto& action : cluster.actions()) {
             m_strings.emplace_back(model::Action::stringFromModifier(action.m_modifier) + " " +
@@ -46,7 +46,7 @@ void view::widget::ActionEditBox::update(SDL_Renderer* renderer) {
     for (auto& str : m_strings) {
         m_yOffsets.push_back(yOffset);
         const auto text     = str.length() == 0 ? std::string(" ") : str;
-        bool       canParse = model::Action::canParse(str) || text == " ";
+        bool       canParse = model::Action::canParse(str);
         m_textures.emplace_back(Texture::createFromText(
             text, canParse ? cst::color::BLACK : cst::color::TEXT_ERROR, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
         yOffset += m_textures.back()->height();

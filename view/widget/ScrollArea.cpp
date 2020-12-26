@@ -19,12 +19,14 @@ view::widget::ScrollArea::ScrollArea(const SDL_Rect& rect) : RectWidget(rect) {
 
 void view::widget::ScrollArea::loseFocus() {
     RectWidget::loseFocus();
+    for (auto& w : m_children) {
+        w.loseFocus();
+    }
 }
 
 void view::widget::ScrollArea::keyEvent(const SDL_Event& event) {
     const auto w = focusedWidget();
     if (w) {
-        std::cout << "Key event\n";
         w->keyEvent(event);
     }
 }

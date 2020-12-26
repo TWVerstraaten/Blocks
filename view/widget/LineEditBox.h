@@ -30,7 +30,7 @@ namespace view {
             void mouseDragEvent(const SDL_Event& event) override;
 
             void               loseFocus() override;
-            void               setHighLightedLine(size_t index);
+            void               setHighLightedLine(size_t index, bool skipEmpty = true);
             int                width() const;
             int                height() const;
             void               setActive(bool active);

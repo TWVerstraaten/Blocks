@@ -516,10 +516,32 @@ namespace view::widget {
             std::min(m_selectionData.m_first.m_charIndex, m_strings.at(m_selectionData.m_first.m_stringIndex).length());
     }
 
-    void LineEditBox::setHighLightedLine(size_t index) {
-        m_selectionData.m_first.m_stringIndex = index;
-        m_selectionData.m_first.m_charIndex   = 0;
-        m_selectionData.m_mode                = SelectionData::MODE::SINGLE;
+    void LineEditBox::setHighLightedLine(size_t index, bool skipEmpty) {
+        if (not skipEmpty) {
+            m_selectionData.m_first.m_stringIndex = index;
+        } else {
+            NOTE_ONCE("Remove")
+            for (const auto& it : m_strings) {
+                if (fns::trimWhiteSpace(it).empty()) {
+                    assert(it.empty());
+                }
+            }
+
+            auto it = std::find_if(m_strings.begin(), m_strings.end(), [](const std::string& str) { return not str.empty(); });
+            if (it == m_strings.end()) {
+                assert(index == 0);
+                m_selectionData.m_first.m_stringIndex = 0;
+            } else {
+                while (index != 0) {
+                    it = std::find_if(std::next(it), m_strings.end(), [](const auto& str) { return not str.empty(); });
+                    --index;
+                }
+                m_selectionData.m_first.m_stringIndex = std::distance(m_strings.begin(), it);
+            }
+        }
+
+        m_selectionData.m_first.m_charIndex = 0;
+        m_selectionData.m_mode              = SelectionData::MODE::SINGLE;
     }
 
     SelectionData::Data LineEditBox::moveSelectionOneDown(const SelectionData::Data& data) const {

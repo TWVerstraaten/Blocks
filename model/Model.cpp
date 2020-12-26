@@ -66,7 +66,10 @@ namespace model {
 
     void Model::update(double dPhase) {
         assert(dPhase >= 0);
-        assert(dPhase <= 1);
+        if (dPhase >= 1.0) {
+            dPhase = 1.0;
+        }
+        //        assert(dPhase <= 1);
         while (dPhase > cst::MAX_D_PHASE) {
             updateInternal(cst::MAX_D_PHASE);
             dPhase -= cst::MAX_D_PHASE;
@@ -79,14 +82,13 @@ namespace model {
         m_clusters.push_back(Cluster({{5, 5}, {3, 5}, {5, 6}, {6, 5}, {4, 5}, {5, 4}}, "CL" + std::to_string(m_clusters.size())));
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
 
-        m_level.addBlock({5, 3}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
-        m_level.addBlock({-15, -13}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
+        m_level.addBlock({5, 3}, Level::INSTANT_BLOCK_TYPE::KILL);
 
-        for (int i = -20; i != 15; ++i) {
+        for (int i = -2; i != 15; ++i) {
             if (i > 5) {
                 m_level.addLevelBlock({i, -3});
             }
-            for (int j = -20; j != 11; ++j) {
+            for (int j = -2; j != 11; ++j) {
                 if (i == 11 && j == 3) {
                     continue;
                 }
@@ -99,8 +101,8 @@ namespace model {
                 m_level.addLevelBlock({i, j});
             }
         }
-        for (int i = -20; i != 9; ++i) {
-            for (int j = -20; j != 11; ++j) {
+        for (int i = -2; i != 9; ++i) {
+            for (int j = -2; j != 11; ++j) {
                 if (i == 11 && j == 3) {
                     continue;
                 }
@@ -218,14 +220,14 @@ namespace model {
             return;
         }
         for (size_t i = 0; i + 1 != m_clusters.size(); ++i) {
-            if (m_clusters.at(i).isAlive()) {
-                for (size_t j = i + 1; j != m_clusters.size(); ++j) {
-                    if (m_clusters.at(j).isAlive()) {
-                        if (m_clusters.at(i).intersects(m_clusters.at(j), cst::BLOCK_SHRINK_IN_WORLD)) {
-                            m_clusters[i].kill();
-                            m_clusters[j].kill();
-                        }
-                    }
+            for (size_t j = i + 1; j != m_clusters.size(); ++j) {
+                if (not(m_clusters.at(i).isAlive() || m_clusters.at(j).isAlive())) {
+                    continue;
+                }
+
+                if (m_clusters.at(i).intersects(m_clusters.at(j), cst::BLOCK_SHRINK_IN_WORLD)) {
+                    m_clusters[i].kill();
+                    m_clusters[j].kill();
                 }
             }
         }

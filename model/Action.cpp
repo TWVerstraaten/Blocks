@@ -11,10 +11,11 @@
 const std::map<std::string, model::Action::VALUE> model::Action::m_actionMap = {{"RHT", model::Action::VALUE::MOVE_RIGHT},
                                                                                 {"LFT", model::Action::VALUE::MOVE_LEFT},
                                                                                 {"FWD", model::Action::VALUE::MOVE_UP},
-                                                                                {"BCK", model::Action::VALUE::MOVE_DOWN}};
+                                                                                {"BCK", model::Action::VALUE::MOVE_DOWN},
+                                                                                {"SKP", model::Action::VALUE::SKIP}};
 
 const std::map<std::string, model::Action::MODIFIER> model::Action::m_modifierMap = {
-    {"+", model::Action::MODIFIER::IGNORE}, {"-", model::Action::MODIFIER::SKIP}, {".", model::Action::MODIFIER::NONE}};
+    {"+", model::Action::MODIFIER::IGNORE}, {"-", model::Action::MODIFIER::INCREMENT}, {".", model::Action::MODIFIER::NONE}};
 
 model::Action::MODIFIER model::Action::modifierFromString(const std::string& string) {
     const auto trimmed = fns::trimWhiteSpace(string);

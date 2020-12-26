@@ -11,10 +11,10 @@
 namespace model {
 
     struct Action {
-        Action()                    = default;
+        Action() = default;
 
-        enum class VALUE { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
-        enum class MODIFIER { NONE, IGNORE, SKIP };
+        enum class VALUE { SKIP, MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
+        enum class MODIFIER { NONE, IGNORE, INCREMENT };
 
         Action(VALUE action, MODIFIER modifier);
 
@@ -30,8 +30,8 @@ namespace model {
         static const std::map<std::string, VALUE>    m_actionMap;
         static const std::map<std::string, MODIFIER> m_modifierMap;
 
-        VALUE    m_value    = VALUE::MOVE_UP;
-        MODIFIER m_modifier = MODIFIER::NONE;
+        VALUE              m_value    = VALUE::MOVE_UP;
+        MODIFIER           m_modifier = MODIFIER::NONE;
         static std::string formatActionString(std::string& string);
     };
 } // namespace model

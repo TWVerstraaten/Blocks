@@ -33,6 +33,9 @@ namespace model {
         }
         assert(m_actionIndex < m_actions.size());
         resetPhase();
+        if (m_actions.at(m_actionIndex).m_value == Action::VALUE::SKIP) {
+            return;
+        }
         m_phase = PHASE::TRANSLATING;
         std::set<GridXY> newGridXYSet;
         for (auto& idx : m_gridXYVector) {
@@ -52,6 +55,8 @@ namespace model {
                 case Action::VALUE::MOVE_RIGHT:
                     newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::RIGHT));
                     m_worldOffset = {-cst::BLOCK_SIZE_IN_WORLD, 0};
+                    break;
+                default:
                     break;
             }
         }
@@ -358,7 +363,7 @@ namespace model {
                 incrementActionIndex();
                 break;
             case PHASE::ROTATING:
-                if ((not m_actions.empty()) && m_actions[m_actionIndex].m_modifier == Action::MODIFIER::SKIP) {
+                if ((not m_actions.empty()) && m_actions[m_actionIndex].m_modifier == Action::MODIFIER::INCREMENT) {
                     incrementActionIndex();
                 }
                 break;

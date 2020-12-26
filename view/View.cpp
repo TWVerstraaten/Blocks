@@ -244,7 +244,7 @@ namespace view {
     }
 
     void View::clear() {
-        m_scrollArea.children().clear();
+        //        m_scrollArea.children().clear();
     }
 
     void View::initActionBoxes(const std::vector<model::Cluster>& clusters) {
