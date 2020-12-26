@@ -7,6 +7,7 @@
 #include "../../global/cst.h"
 #include "../../global/fns.h"
 #include "../../global/geom.h"
+#include "../../model/Cluster.h"
 #include "../Mouse.h"
 #include "../Rectangle.h"
 #include "LineEditBox.h"
@@ -23,6 +24,7 @@ void view::widget::ScrollArea::loseFocus() {
 void view::widget::ScrollArea::keyEvent(const SDL_Event& event) {
     const auto w = focusedWidget();
     if (w) {
+        std::cout << "Key event\n";
         w->keyEvent(event);
     }
 }
@@ -31,7 +33,7 @@ void view::widget::ScrollArea::leftClickEvent(const SDL_Event& event) {
     assert(pointIsOverWidget(Mouse::getMouseXY()));
     getFocus();
     for (auto& w : m_children) {
-        w->loseFocus();
+        w.loseFocus();
     }
 
     const auto w = widgetUnderMouse();
@@ -54,8 +56,8 @@ void view::widget::ScrollArea::render(SDL_Renderer* renderer) {
     }
     Rectangle::render(geom::pad(m_rect, cst::LINE_EDIT_PADDING), cst::color::SCROLL_AREA_BACKGROUND, renderer);
 
-    for (const auto& w : m_children) {
-        w->render(renderer);
+    for (auto& w : m_children) {
+        w.render(renderer);
     }
     if (m_firstRender) {
         setHeightAndPositions();
@@ -65,19 +67,12 @@ void view::widget::ScrollArea::render(SDL_Renderer* renderer) {
 
 void view::widget::ScrollArea::init(const view::Assets* assets) {
     m_assets = assets;
-    for (size_t i = 0; i != 10; ++i) {
-        m_children.emplace_back(new view::widget::LineEditBox(m_rect.x + 10, 0, m_rect.w - 20, 0, assets, "widget " + std::to_string(i)));
-        dynamic_cast<view::widget::LineEditBox*>(m_children.back().get())->appendString("AAA");
-        dynamic_cast<view::widget::LineEditBox*>(m_children.back().get())->appendString("BBB");
-        dynamic_cast<view::widget::LineEditBox*>(m_children.back().get())->appendString("CCC");
-    }
-    setHeightAndPositions();
 }
 
 void view::widget::ScrollArea::setHeightAndPositions() {
     int yOffset = 10;
     for (const auto& w : m_children) {
-        yOffset += w->height() + 3 * cst::LINE_EDIT_PADDING;
+        yOffset += w.height() + 3 * cst::LINE_EDIT_PADDING;
     }
     m_height = yOffset;
     yOffset  = 10;
@@ -87,9 +82,9 @@ void view::widget::ScrollArea::setHeightAndPositions() {
     } else {
         m_scrollFraction = 0.0;
     }
-    for (const auto& w : m_children) {
-        w->setY(yOffset);
-        yOffset += w->height() + 3 * cst::LINE_EDIT_PADDING;
+    for (auto& w : m_children) {
+        w.setY(yOffset);
+        yOffset += w.height() + 3 * cst::LINE_EDIT_PADDING;
     }
 }
 
@@ -100,23 +95,22 @@ void view::widget::ScrollArea::mouseWheelEvent(const SDL_Event& event) {
     setHeightAndPositions();
 }
 
-view::widget::RectWidget* view::widget::ScrollArea::widgetUnderMouse() const {
+view::widget::ActionEditBox* view::widget::ScrollArea::widgetUnderMouse() {
     auto mousePosition = Mouse::getMouseXY();
-    for (const auto& w : m_children) {
-        if (w->pointIsOverWidget(mousePosition)) {
-            return w.get();
+    for (auto& w : m_children) {
+        if (w.pointIsOverWidget(mousePosition)) {
+            return &w;
         }
     }
 
     return nullptr;
 }
 
-view::widget::RectWidget* view::widget::ScrollArea::focusedWidget() const {
-    RectWidget* result = nullptr;
-    for (const auto& w : m_children) {
-        if (w->hasFocus()) {
-            assert(result == nullptr);
-            result = w.get();
+view::widget::ActionEditBox* view::widget::ScrollArea::focusedWidget() {
+    ActionEditBox* result = nullptr;
+    for (auto& w : m_children) {
+        if (w.hasFocus()) {
+            return &w;
         }
     }
     return result;
@@ -124,7 +118,19 @@ view::widget::RectWidget* view::widget::ScrollArea::focusedWidget() const {
 
 void view::widget::ScrollArea::update(SDL_Renderer* renderer) {
     for (auto& w : m_children) {
-        w->update(renderer);
+        w.update(renderer);
     }
     setHeightAndPositions();
+}
+
+void view::widget::ScrollArea::addActionBox(const model::Cluster& cluster) {
+    m_children.emplace_back(ActionEditBox(m_rect.x + 10, 0, m_rect.w - 20, 0, m_assets, cluster));
+    m_children.back().setHighLightedLine(cluster.actionIndex());
+    m_children.back().setActive(cluster.isAlive());
+
+    m_needsUpdate = true;
+}
+
+std::list<view::widget::ActionEditBox>& view::widget::ScrollArea::children() {
+    return m_children;
 }

@@ -19,7 +19,7 @@
 
 static std::string toUpper(const std::string& text) {
     std::string upperCaseString;
-    std::transform(text.cbegin(), text.cend(), std::back_inserter(upperCaseString), ::tolower);
+    std::transform(text.cbegin(), text.cend(), std::back_inserter(upperCaseString), ::toupper);
     return upperCaseString;
 }
 

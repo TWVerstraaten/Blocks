@@ -70,7 +70,6 @@ namespace view {
         SDL_Renderer*                              m_renderer = nullptr;
         ViewPort                                   m_viewPort;
         std::unique_ptr<Assets>                    m_assets{new Assets()};
-        std::list<widget::ActionEditBox>           m_actionEditBoxes;
         std::map<size_t, std::unique_ptr<Texture>> m_nameTextures;
         view::widget::ScrollArea                   m_scrollArea;
     };

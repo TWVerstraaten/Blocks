@@ -32,7 +32,6 @@ class Application_Edit {
     void mouseReleaseEvent(const SDL_Event& event);
     void mouseMoveEvent(const SDL_Event& event);
     void getActionsFromEditBoxes();
-    void setFocusOnClick();
     void clearBlock(const model::GridXY& gridXY);
     void addBlock(const model::GridXY& gridXY);
     void handleLeftMouseMove();
@@ -43,7 +42,6 @@ class Application_Edit {
     bool                         m_leftMouseButtonPressed  = false;
     Uint32                       m_timeStep                = cst::TIME_STEP_SLOW;
     Application_Level::EDIT_MODE m_editMode                = Application_Level::EDIT_MODE::EDITING;
-    view::widget::Widget*        m_focusedWidget           = nullptr;
     model::GridXY                m_previousGridClickPosition{0, 0};
     view::View*                  m_view;
     model::Model*                m_model;

@@ -94,7 +94,7 @@ namespace view {
 
     void View::drawActionEditBoxes() {
         int yOffset = 2.4 * cst::LINE_EDIT_PADDING;
-        for (auto& actionEditBox : m_actionEditBoxes) {
+        for (auto& actionEditBox : m_scrollArea.children()) {
             actionEditBox.setY(yOffset);
             actionEditBox.render(m_renderer);
             yOffset += actionEditBox.height() + 2.4 * cst::LINE_EDIT_PADDING;
@@ -185,7 +185,7 @@ namespace view {
     }
 
     std::list<widget::ActionEditBox>& View::actionEditBoxes() {
-        return m_actionEditBoxes;
+        return m_scrollArea.children();
     }
 
     void View::drawRectangle(const ScreenXY& point, int width, int height, const SDL_Color& color) const {
@@ -244,11 +244,11 @@ namespace view {
     }
 
     void View::clear() {
-        m_actionEditBoxes.clear();
+        m_scrollArea.children().clear();
     }
 
     void View::initActionBoxes(const std::vector<model::Cluster>& clusters) {
-        m_actionEditBoxes.clear();
+        m_scrollArea.children().clear();
         for (const auto& cluster : clusters) {
             addActionBox(cluster);
         }
@@ -267,19 +267,17 @@ namespace view {
     }
 
     void View::addActionBox(const model::Cluster& cluster) {
-        m_actionEditBoxes.emplace_back(view::widget::ActionEditBox(30, 0, cst::LINE_EDIT_WIDTH, 0, m_assets.get(), cluster));
-        m_actionEditBoxes.back().setHighLightedLine(cluster.actionIndex());
-        m_actionEditBoxes.back().setActive(cluster.isAlive());
+        m_scrollArea.addActionBox(cluster);
     }
 
     void View::updateActionBoxes(const std::vector<model::Cluster>& clusters) {
-        m_actionEditBoxes.remove_if([&](const widget::ActionEditBox& box) {
+        m_scrollArea.children().remove_if([&](const widget::ActionEditBox& box) {
             return std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) {
                        return cluster.index() == box.clusterIndex();
                    }) == clusters.end();
         });
 
-        for (auto& actionBox : m_actionEditBoxes) {
+        for (auto& actionBox : m_scrollArea.children()) {
             auto it = std::find_if(
                 clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.index() == actionBox.clusterIndex(); });
             assert(it != clusters.end());
@@ -289,16 +287,16 @@ namespace view {
             actionBox.setActive(it->isAlive());
         }
         auto it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
-            return std::find_if(m_actionEditBoxes.begin(), m_actionEditBoxes.end(), [&](const widget::ActionEditBox& box) {
+            return std::find_if(m_scrollArea.children().begin(), m_scrollArea.children().end(), [&](const widget::ActionEditBox& box) {
                        return box.clusterIndex() == cluster.index();
-                   }) == m_actionEditBoxes.end();
+                   }) == m_scrollArea.children().end();
         });
         while (it != clusters.end()) {
             addActionBox(*it);
             it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
-                return std::find_if(m_actionEditBoxes.begin(), m_actionEditBoxes.end(), [&](const widget::ActionEditBox& box) {
+                return std::find_if(m_scrollArea.children().begin(), m_scrollArea.children().end(), [&](const widget::ActionEditBox& box) {
                            return box.clusterIndex() == cluster.index();
-                       }) == m_actionEditBoxes.end();
+                       }) == m_scrollArea.children().end();
             });
         }
     }

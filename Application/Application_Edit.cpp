@@ -15,8 +15,7 @@ Application_Edit::Application_Edit(model::Model* model, view::View* view) : m_vi
 }
 
 void Application_Edit::mouseWheelEvent(const SDL_Event& event) {
-    const auto mousePosition = Mouse::getMouseXY();
-    if (m_view->scrollArea().pointIsOverWidget(mousePosition)) {
+    if (m_view->scrollArea().pointIsOverWidget(Mouse::getMouseXY())) {
         m_view->scrollArea().mouseWheelEvent(event);
     } else {
         m_view->zoom(event.wheel.y);
@@ -27,36 +26,17 @@ void Application_Edit::keyEvent(const SDL_Event& event) {
     if (m_view->scrollArea().hasFocus()) {
         m_view->scrollArea().keyEvent(event);
     }
-    if (m_focusedWidget) {
-        m_focusedWidget->keyEvent(event);
-    }
-}
-
-void Application_Edit::setFocusOnClick() {
-    m_focusedWidget          = nullptr;
-    const auto mousePosition = Mouse::getMouseXY();
-    for (auto& actionEditBox : m_view->actionEditBoxes()) {
-        if (not actionEditBox.pointIsOverWidget(mousePosition)) {
-            actionEditBox.loseFocus();
-        } else {
-            actionEditBox.getFocus();
-            m_focusedWidget = &actionEditBox;
-        }
-    }
 }
 
 void Application_Edit::mouseClickEvent(const SDL_Event& event) {
     if (m_view->scrollArea().pointIsOverWidget(Mouse::getMouseXY())) {
-        m_view->scrollArea().leftClickEvent(event);
+        m_view->scrollArea().getFocus();
     } else {
         m_view->scrollArea().loseFocus();
     }
     setButtonBooleans(event);
-    setFocusOnClick();
-    if (m_focusedWidget) {
-        if (m_leftMouseButtonPressed) {
-            m_focusedWidget->leftClickEvent(event);
-        }
+    if (m_view->scrollArea().hasFocus()) {
+        m_view->scrollArea().leftClickEvent(event);
     } else {
         if (event.button.button == SDL_BUTTON_LEFT) {
             m_previousGridClickPosition = model::GridXY::fromScreenXY(Mouse::getMouseXY(), m_view->viewPort());
@@ -88,9 +68,9 @@ void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
             m_view->scrollArea().mouseDragEvent(event);
         }
     }
-    if (m_focusedWidget) {
+    if (m_view->scrollArea().hasFocus()) {
         if (m_leftMouseButtonPressed) {
-            m_focusedWidget->mouseDragEvent(event);
+            m_view->scrollArea().mouseDragEvent(event);
         }
     } else {
         if (m_rightMouseButtonPressed) {
@@ -168,7 +148,7 @@ Application_Level::EDIT_MODE Application_Edit::performSingleLoop() {
 }
 
 bool Application_Edit::hasFocus() {
-    return m_focusedWidget == nullptr;
+    return not m_view->scrollArea().hasFocus();
 }
 
 void Application_Edit::clearBlock(const model::GridXY& gridXY) {
