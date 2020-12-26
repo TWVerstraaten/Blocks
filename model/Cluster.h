@@ -7,14 +7,11 @@
 
 #include "Action.h"
 #include "Level.h"
-#include "WorldLine.h"
+#include "Line.h"
 #include "WorldXY.h"
 
 #include <functional>
-#include <list>
-#include <memory>
 #include <set>
-#include <tuple>
 #include <vector>
 
 class SDL_Renderer;
@@ -25,16 +22,12 @@ namespace model {
         /****** PRIVATE STATICS  ******/
         static size_t s_maxClusterIndex;
 
-        /****** PRIVATE ENUMS / TYPEDEFS  ******/
-        typedef std::pair<const GridXY&, Level::DYNAMIC_BLOCK_TYPE> Block;
-        enum class CORNER { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT };
-
       public:
         /****** PUBLIC ENUMS / TYPEDEFS  ******/
         enum class PHASE { NONE, TRANSLATING, ROTATING };
 
-        explicit Cluster(std::vector<GridXY>&& gridXY, const std::string& name = "");
-        explicit Cluster(const std::vector<GridXY>& gridXY, std::string name = "");
+        explicit Cluster(std::set<GridXY>&& gridXY, const std::string& name = "");
+        explicit Cluster(const std::set<GridXY>& gridXY, std::string name = "");
 
         Cluster& operator=(const Cluster& other) = default;
         Cluster(const Cluster& other)            = default;
@@ -50,39 +43,38 @@ namespace model {
         WorldXY                    dynamicWorldOffset() const;
         const GridXY&              rotationPivot() const;
         std::set<WorldXY>          cornerPoints(int shrinkInWorld) const;
-        std::vector<WorldLine>     sides(int shrinkInWorld) const;
+        std::set<Line<WorldXY>>    sides(int shrinkInWorld) const;
         const std::string&         name() const;
-        const std::vector<GridXY>& gridXY() const;
-        std::vector<GridXY>&       gridXY();
+        const std::set<GridXY>&    gridXY() const;
+        std::set<GridXY>&          gridXY();
         const std::vector<Action>& actions() const;
+        size_t                     blockCount() const;
 
         /****** CONST FUNCTIONS  ******/
-        bool                                                 empty() const;
-        bool                                                 isAlive() const;
-        bool                                                 isConnected() const;
-        bool                                                 contains(const GridXY& gridXY) const;
-        std::function<WorldXY(const GridXY&, const WorldXY)> toWorldFunction() const;
+        bool                                  empty() const;
+        bool                                  isAlive() const;
+        bool                                  isConnected() const;
+        bool                                  contains(const GridXY& gridXY) const;
+        bool                                  intersects(const Cluster& other, int shrinkInWorld) const;
+        std::function<WorldXY(const WorldXY)> phaseTransformation() const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void                          addGridXY(const GridXY& gridXY);
-        void                          preStep();
-        void                          doAction();
-        void                          addPendingOperation(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType);
-        void                          performPendingOperationOrNextAction();
-        void                          update(double dPhase);
-        void                          addAction(Action action);
-        void                          kill();
-        void                          clearActions();
-        void                          sortGridXYVector();
-        model::Cluster                getComponent();
-        std::vector<GridXY>::iterator removeBLock(const GridXY& gridXY);
-        void                          collideWithLevel(const Level& level, int shrinkInWorld);
+        void                       addGridXY(const GridXY& gridXY);
+        void                       preStep();
+        void                       doAction();
+        void                       addPendingOperation(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType);
+        void                       performPendingOperationOrNextAction();
+        void                       update(double dPhase);
+        void                       addAction(Action action);
+        void                       kill();
+        void                       clearActions();
+        void                       collideWithLevel(const Level& level, int shrinkInWorld);
+        model::Cluster             grabSecondComponent();
+        std::set<GridXY>::iterator removeBLock(const GridXY& gridXY);
 
       private:
         /****** PRIVATE  CONST FUNCTIONS  ******/
-        bool             gridXUYAreUnique() const;
-        enums::DIRECTION currentDirection() const;
-        WorldXY          cornerPoint(const GridXY& it, CORNER corner, int shrinkInWorld) const;
+        bool gridXUYAreUnique() const;
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void rotateClockWiseAbout(const GridXY& pivotGridXY);
@@ -93,9 +85,8 @@ namespace model {
         void tryPendingOperation();
 
         /****** PRIVATE STATIC FUNCTIONS  ******/
-        static Action                              rotateActionClockWise(Action action);
-        static Action                              rotateActionCounterClockWise(Action action);
-        static constexpr std::pair<CORNER, CORNER> cornersAtSide(enums::DIRECTION direction);
+        static Action rotateActionClockWise(Action action);
+        static Action rotateActionCounterClockWise(Action action);
 
         /****** DATA MEMBERS  ******/
         bool                                              m_alive         = true;
@@ -109,7 +100,8 @@ namespace model {
         std::string                                       m_name;
         std::vector<Action>                               m_actions           = {};
         std::map<const GridXY, Level::DYNAMIC_BLOCK_TYPE> m_pendingOperations = {};
-        std::vector<GridXY>                               m_gridXYVector      = {};
+        std::set<GridXY>                                  m_gridXYVector      = {};
+        std::set<Line<GridXY>>                            m_sides;
     };
 } // namespace model
 

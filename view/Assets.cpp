@@ -4,8 +4,8 @@
 
 #include "Assets.h"
 
-#include "../global/Global.h"
 #include "../global/cst.h"
+#include "../global/geom.h"
 #include "ScreenXY.h"
 
 #include <cassert>
@@ -18,7 +18,7 @@ namespace view {
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::KILL, renderer);
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ERROR, renderer);
 
-        m_fonts[FONT_ENUM::MAIN] = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", 28);
+        m_fonts[FONT_ENUM::MAIN] = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", cst::EDIT_BOX_FONT_SIZE);
     }
 
     bool Assets::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
@@ -30,7 +30,7 @@ namespace view {
         assert(m_textures.find(textureEnum) != m_textures.end());
         auto* texture = m_textures.at(textureEnum).getTexture(destination.w, destination.h);
         if (texture->loadedCorrectly()) {
-            texture->render(global::pad(destination, 1), renderer, angle, center, flip);
+            texture->render(geom::pad(destination, 1), renderer, angle, center, flip);
             return true;
         } else {
             return false;

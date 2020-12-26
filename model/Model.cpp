@@ -4,7 +4,7 @@
 
 #include "Model.h"
 
-#include "../global/Global.h"
+#include "../global/fns.h"
 
 #include <algorithm>
 #include <cassert>
@@ -51,7 +51,7 @@ namespace model {
         splitDisconnectedClusters();
     }
 
-    void Model::interactClustersWithLevel() {
+    void Model::intersectWithLevel() {
         for (auto& cluster : m_clusters) {
             if (not cluster.isAlive()) {
                 continue;
@@ -76,13 +76,17 @@ namespace model {
 
     void Model::init() {
         clear();
-        m_clusters.push_back(Cluster({{5, 5}, {5, 6}, {6, 5}, {4, 5}, {5, 4}}, "CL" + std::to_string(m_clusters.size())));
+        m_clusters.push_back(Cluster({{5, 5}, {3, 5}, {5, 6}, {6, 5}, {4, 5}, {5, 4}}, "CL" + std::to_string(m_clusters.size())));
         m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
 
-        m_level.addBlock({5, 5}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
+        m_level.addBlock({5, 3}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
+        m_level.addBlock({-15, -13}, Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
 
-        for (int i = -2; i != 15; ++i) {
-            for (int j = -2; j != 11; ++j) {
+        for (int i = -20; i != 15; ++i) {
+            if (i > 5) {
+                m_level.addLevelBlock({i, -3});
+            }
+            for (int j = -20; j != 11; ++j) {
                 if (i == 11 && j == 3) {
                     continue;
                 }
@@ -95,8 +99,8 @@ namespace model {
                 m_level.addLevelBlock({i, j});
             }
         }
-        for (int i = -2; i != 9; ++i) {
-            for (int j = -2; j != 11; ++j) {
+        for (int i = -20; i != 9; ++i) {
+            for (int j = -20; j != 11; ++j) {
                 if (i == 11 && j == 3) {
                     continue;
                 }
@@ -104,7 +108,7 @@ namespace model {
             }
         }
         m_level.sort();
-        m_level.buildBoundaries();
+        m_level.createBoundaries();
     }
 
     void Model::clear() {
@@ -119,8 +123,9 @@ namespace model {
 
     void Model::splitDisconnectedClusters() {
         for (size_t i = 0; i != m_clusters.size(); ++i) {
-            while (not m_clusters[i].isConnected()) {
-                m_clusters.push_back(m_clusters[i].getComponent());
+            m_clusters.push_back(m_clusters[i].grabSecondComponent());
+            if (m_clusters.back().empty()) {
+                m_clusters.erase(m_clusters.end());
             }
         }
     }
@@ -155,8 +160,8 @@ namespace model {
             baseIt->addGridXY(extension);
             assert(baseIt->isConnected());
         } else {
-            std::move(extensionIt->gridXY().begin(), extensionIt->gridXY().end(), std::back_inserter(baseIt->gridXY())); // ##
-            extensionIt->gridXY().erase(extensionIt->gridXY().begin(), extensionIt->gridXY().end());
+            baseIt->gridXY().merge(extensionIt->gridXY());
+            assert(extensionIt->empty());
             clearEmptyClusters();
         }
     }
@@ -201,13 +206,29 @@ namespace model {
         for (auto& cluster : m_clusters) {
             cluster.update(m_phaseFraction);
         }
-        interactClustersWithLevel();
+        intersectWithLevel();
+        intersectClusters();
     }
 
     void Model::finishInteractions() {
-        //        for (auto& cluster : m_clusters) {
-        //                        cluster.sortGridXYVector();
-        //        }
+    }
+
+    void Model::intersectClusters() {
+        if (m_clusters.size() == 1) {
+            return;
+        }
+        for (size_t i = 0; i + 1 != m_clusters.size(); ++i) {
+            if (m_clusters.at(i).isAlive()) {
+                for (size_t j = i + 1; j != m_clusters.size(); ++j) {
+                    if (m_clusters.at(j).isAlive()) {
+                        if (m_clusters.at(i).intersects(m_clusters.at(j), cst::BLOCK_SHRINK_IN_WORLD)) {
+                            m_clusters[i].kill();
+                            m_clusters[j].kill();
+                        }
+                    }
+                }
+            }
+        }
     }
 
 } // namespace model

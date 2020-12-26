@@ -8,6 +8,7 @@
 #include "Assets.h"
 #include "ViewPort.h"
 #include "widget/ActionEditBox.h"
+#include "widget/ScrollArea.h"
 
 #include <iostream>
 #include <list>
@@ -51,6 +52,7 @@ namespace view {
         void      initActionBoxes(const std::vector<model::Cluster>& clusters);
         void      updateActionBoxes(const std::vector<model::Cluster>& clusters);
         SDL_Point windowSize() const;
+        widget::ScrollArea& scrollArea();
 
       private:
         void drawClusters(const std::vector<model::Cluster>& clusters);
@@ -64,13 +66,13 @@ namespace view {
         void drawClusterTranslating(const model::Cluster& cluster) const;
         void drawClusterRotating(const model::Cluster& cluster) const;
 
-        int                                        m_zoomParameter = 0;
-        SDL_Window*                                m_window        = nullptr;
-        SDL_Renderer*                              m_renderer      = nullptr;
+        SDL_Window*                                m_window   = nullptr;
+        SDL_Renderer*                              m_renderer = nullptr;
         ViewPort                                   m_viewPort;
         std::unique_ptr<Assets>                    m_assets{new Assets()};
         std::list<widget::ActionEditBox>           m_actionEditBoxes;
         std::map<size_t, std::unique_ptr<Texture>> m_nameTextures;
+        view::widget::ScrollArea                   m_scrollArea;
     };
 } // namespace view
 

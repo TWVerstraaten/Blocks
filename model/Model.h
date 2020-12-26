@@ -27,7 +27,6 @@ namespace model {
         void                        preStep();
         void                        interactClustersWithDynamicBlocks();
         void                        interactClustersWithInstantBlocks();
-        void                        interactClustersWithLevel();
         void                        update(double dPhase);
         void                        init();
         void                        clear();
@@ -35,15 +34,15 @@ namespace model {
         void                        startPhase();
         void                        addBlock(const GridXY& gridXY);
         void                        linkBlocks(const GridXY& base, const GridXY& extension);
+        void                        clearBlock(const GridXY& gridXY);
+        void                        finishInteractions();
         const Level&                level() const;
         const std::vector<Cluster>& clusters() const;
         std::vector<Cluster>&       clusters();
 
-        void clearBlock(const GridXY& gridXY);
-
-        void finishInteractions();
-
       private:
+        void intersectWithLevel();
+        void intersectClusters();
         void splitDisconnectedClusters();
         void updateInternal(double dPhase);
 

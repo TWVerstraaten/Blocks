@@ -4,10 +4,12 @@
 
 #include "Level.h"
 
-#include "../global/Global.h"
+#include "../global/alg.h"
+#include "../global/fns.h"
 
 #include <algorithm>
 #include <cassert>
+#include <vector>
 
 namespace model {
 
@@ -85,50 +87,16 @@ namespace model {
     void Level::sort() {
     }
 
-    void Level::buildBoundaries() {
-        for (const auto& it : m_levelBlocks) {
-            std::cout << it.x() << " " << it.y() << '\n';
-        }
-
-        auto it = m_levelBlocks.begin();
-        while (it != m_levelBlocks.end()) {
-            if (not contains(*it + GridXY{0, -1})) {
-                const GridXY start = *it;
-                int          idx   = it->x() + 1;
-                ++it;
-                while (it != m_levelBlocks.end() && it->x() == idx && it->y() == start.y() && (not contains(*it + GridXY{0, -1}))) {
-                    idx = it->x() + 1;
-                    ++it;
-                }
-                m_boundaries.emplace(start, GridXY{idx, start.y()});
-            } else {
-                ++it;
-            }
-        }
-
-        it = m_levelBlocks.begin();
-        while (it != m_levelBlocks.end()) {
-            if (not contains(*it + GridXY{0, 1})) {
-                const GridXY start = *it;
-                int          idx   = it->x() + 1;
-                ++it;
-                while (it != m_levelBlocks.end() && it->x() == idx && it->y() == start.y() && (not contains(*it + GridXY{0, 1}))) {
-                    idx = it->x() + 1;
-                    ++it;
-                }
-                m_boundaries.emplace(start + GridXY{0, 1}, GridXY{idx, start.y() + 1});
-            } else {
-                ++it;
-            }
-        }
-    }
-
-    const std::set<WorldLine>& Level::boundaries() const {
+    const std::set<Line<WorldXY>>& Level::boundaries() const {
         return m_boundaries;
     }
 
     bool Level::contains(const GridXY& gridXY) const {
         return m_levelBlocks.find(gridXY) != m_levelBlocks.end();
+    }
+
+    void Level::createBoundaries() {
+        m_boundaries = alg::getSidesInGridXY<WorldXY>(m_levelBlocks);
     }
 
 } // namespace model

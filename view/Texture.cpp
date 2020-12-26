@@ -26,8 +26,8 @@ namespace view {
             if (result->m_texture == nullptr) {
                 printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
             } else {
-                result->m_width           = static_cast<size_t>(loadedSurface->w);
-                result->m_height          = static_cast<size_t>(loadedSurface->h);
+                result->m_width           = loadedSurface->w;
+                result->m_height          = loadedSurface->h;
                 result->m_loadedCorrectly = true;
                 SDL_FreeSurface(loadedSurface);
             }
@@ -39,10 +39,9 @@ namespace view {
                                                      SDL_Color          textColor,
                                                      SDL_Renderer*      renderer,
                                                      TTF_Font*          font) {
-
         std::unique_ptr<Texture> result{new Texture()};
 
-        SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
+        SDL_Surface* textSurface = TTF_RenderText_Blended(font, textureText.c_str(), textColor);
         if (textSurface == nullptr) {
             printf("Unable to drawRectangle text surface! SDL_ttf Error: %s\n", TTF_GetError());
             return result;
@@ -53,8 +52,8 @@ namespace view {
             printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
             return result;
         }
-        result->m_width  = static_cast<size_t>(textSurface->w);
-        result->m_height = static_cast<size_t>(textSurface->h);
+        result->m_width  = textSurface->w;
+        result->m_height = textSurface->h;
 
         SDL_FreeSurface(textSurface);
 

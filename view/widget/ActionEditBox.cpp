@@ -4,7 +4,7 @@
 
 #include "ActionEditBox.h"
 
-#include "../../global/Global.h"
+#include "../../global/fns.h"
 #include "../../model/Action.h"
 #include "../../model/Cluster.h"
 
@@ -25,7 +25,7 @@ void view::widget::ActionEditBox::updateClusterActions(model::Cluster& cluster) 
     cluster.clearActions();
     for (const auto& str : m_strings) {
         if (model::Action::canParse(str)) {
-            if (global::trimWhiteSpace(str).empty()) {
+            if (fns::trimWhiteSpace(str).empty()) {
                 continue;
             }
             cluster.addAction(model::Action::fromString(str));

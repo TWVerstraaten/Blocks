@@ -4,7 +4,10 @@
 
 #include "Cluster.h"
 
-#include "../global/Global.h"
+#include "../global/alg.h"
+#include "../global/fns.h"
+#include "../global/geom.h"
+#include "Model.h"
 
 #include <algorithm>
 #include <cassert>
@@ -14,18 +17,14 @@
 size_t model::Cluster::s_maxClusterIndex = 0;
 
 namespace model {
-    Cluster::Cluster(std::vector<GridXY>&& gridXY, const std::string& name)
+    Cluster::Cluster(std::set<GridXY>&& gridXY, const std::string& name)
         : m_index(s_maxClusterIndex), m_name(name.empty() ? "CL" + std::to_string(s_maxClusterIndex) : name), m_gridXYVector(gridXY) {
-        sortGridXYVector();
-        for (const auto& g : m_gridXYVector) {
-            std::cout << g.x() << " " << g.y() << '\n';
-        }
-
         ++s_maxClusterIndex;
+        m_sides = alg::getSidesInGridXY<GridXY>(m_gridXYVector);
         assert(gridXUYAreUnique());
     }
 
-    Cluster::Cluster(const std::vector<GridXY>& gridXY, std::string name) {
+    Cluster::Cluster(const std::set<GridXY>& gridXY, std::string name) {
     }
 
     void Cluster::doAction() {
@@ -35,41 +34,47 @@ namespace model {
         assert(m_actionIndex < m_actions.size());
         resetPhase();
         m_phase = PHASE::TRANSLATING;
+        std::set<GridXY> newGridXYSet;
         for (auto& idx : m_gridXYVector) {
             switch (m_actions[m_actionIndex].m_value) {
                 case Action::VALUE::MOVE_UP:
-                    idx           = idx.neighbor(enums::DIRECTION::UP);
-                    m_worldOffset = {0, WorldXY::m_blockSizeInWorld};
+                    newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::UP));
+                    m_worldOffset = {0, cst::BLOCK_SIZE_IN_WORLD};
                     break;
                 case Action::VALUE::MOVE_DOWN:
-                    idx           = idx.neighbor(enums::DIRECTION::DOWN);
-                    m_worldOffset = {0, -WorldXY::m_blockSizeInWorld};
+                    newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::DOWN));
+                    m_worldOffset = {0, -cst::BLOCK_SIZE_IN_WORLD};
                     break;
                 case Action::VALUE::MOVE_LEFT:
-                    idx           = idx.neighbor(enums::DIRECTION::LEFT);
-                    m_worldOffset = {WorldXY::m_blockSizeInWorld, 0};
+                    newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::LEFT));
+                    m_worldOffset = {cst::BLOCK_SIZE_IN_WORLD, 0};
                     break;
                 case Action::VALUE::MOVE_RIGHT:
-                    idx           = idx.neighbor(enums::DIRECTION::RIGHT);
-                    m_worldOffset = {-WorldXY::m_blockSizeInWorld, 0};
+                    newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::RIGHT));
+                    m_worldOffset = {-cst::BLOCK_SIZE_IN_WORLD, 0};
                     break;
             }
         }
+        std::swap(m_gridXYVector, newGridXYSet);
     }
 
     void Cluster::rotateClockWiseAbout(const GridXY& pivotGridXY) {
+        std::set<GridXY> newGridXYSet;
         for (auto& gridXY : m_gridXYVector) {
-            gridXY = {pivotGridXY.x() + pivotGridXY.y() - gridXY.y(), pivotGridXY.y() - pivotGridXY.x() + gridXY.x()};
+            newGridXYSet.emplace(GridXY{pivotGridXY.x() + pivotGridXY.y() - gridXY.y(), pivotGridXY.y() - pivotGridXY.x() + gridXY.x()});
         }
+        std::swap(m_gridXYVector, newGridXYSet);
         for (auto& action : m_actions) {
             action = rotateActionClockWise(action);
         }
     }
 
     void Cluster::rotateCounterClockWiseAbout(const GridXY& pivotGridXY) {
+        std::set<GridXY> newGridXYSet;
         for (auto& gridXY : m_gridXYVector) {
-            gridXY = {pivotGridXY.x() - pivotGridXY.y() + gridXY.y(), pivotGridXY.y() + pivotGridXY.x() - gridXY.x()};
+            newGridXYSet.emplace(GridXY{pivotGridXY.x() - pivotGridXY.y() + gridXY.y(), pivotGridXY.y() + pivotGridXY.x() - gridXY.x()});
         }
+        std::swap(m_gridXYVector, newGridXYSet);
         for (auto& m_action : m_actions) {
             m_action = rotateActionCounterClockWise(m_action);
         }
@@ -109,8 +114,8 @@ namespace model {
         m_actions.push_back(action);
     }
 
-    std::vector<GridXY>::iterator Cluster::removeBLock(const GridXY& gridXY) {
-        const std::vector<GridXY>::iterator it = std::find(m_gridXYVector.begin(), m_gridXYVector.end(), gridXY);
+    std::set<GridXY>::iterator Cluster::removeBLock(const GridXY& gridXY) {
+        const auto it = m_gridXYVector.find(gridXY);
         assert(it != m_gridXYVector.end());
         assert(gridXUYAreUnique());
         return m_gridXYVector.erase(it);
@@ -120,7 +125,7 @@ namespace model {
         return m_gridXYVector.empty();
     }
 
-    const std::vector<GridXY>& Cluster::gridXY() const {
+    const std::set<GridXY>& Cluster::gridXY() const {
         assert(empty() || gridXUYAreUnique());
         return m_gridXYVector;
     }
@@ -144,6 +149,7 @@ namespace model {
         } else {
             tryPendingOperation();
         }
+        m_sides = alg::getSidesInGridXY<GridXY>(m_gridXYVector);
     }
 
     void Cluster::update(double dPhase) {
@@ -175,8 +181,8 @@ namespace model {
 
     std::set<WorldXY> Cluster::cornerPoints(int shrinkInWorld) const {
         assert(gridXUYAreUnique());
-        std::set<WorldXY>                                    result;
-        std::function<WorldXY(const GridXY&, const WorldXY)> f = toWorldFunction();
+        std::set<WorldXY>                     result;
+        std::function<WorldXY(const WorldXY)> f = phaseTransformation();
 
         for (const auto& it : m_gridXYVector) {
             const bool          u = contains(it.neighbor(enums::DIRECTION::UP));
@@ -197,8 +203,8 @@ namespace model {
                 corners.emplace_back(1, 1);
             }
             for (const GridXY corner : corners) {
-                result.emplace(f((it + corner),
-                                 WorldXY{shrinkInWorld - 2 * shrinkInWorld * corner.x(), shrinkInWorld - 2 * shrinkInWorld * corner.y()}));
+                result.emplace(f((GridXY(it + corner) + WorldXY{shrinkInWorld - 2 * shrinkInWorld * corner.x(),
+                                                                shrinkInWorld - 2 * shrinkInWorld * corner.y()})));
             }
         }
         return result;
@@ -271,79 +277,61 @@ namespace model {
     }
 
     bool Cluster::isConnected() const {
+        NOTE_ONCE("Implement proper variant of this function")
+
         assert(gridXUYAreUnique());
         assert(not empty());
-
         if (m_gridXYVector.size() == 1) {
             return true;
         }
-
-        std::vector<bool> visited(m_gridXYVector.size(), false);
-        visited[0] = true;
-        std::queue<GridXY> queue;
-        queue.push(m_gridXYVector[0]);
-        while (not queue.empty()) {
-            for (size_t i = 0; i != m_gridXYVector.size(); ++i) {
-                if (visited[i]) {
-                    continue;
-                }
-                if (m_gridXYVector.at(i).isAdjacent(queue.front())) {
-                    queue.push(m_gridXYVector.at(i));
-                    visited[i] = true;
-                }
-            }
-
-            queue.pop();
+        auto       copy = *this;
+        const auto r    = copy.grabSecondComponent();
+        if (copy.blockCount() == blockCount()) {
+            assert(r.empty());
+            return true;
+        } else {
+            return false;
         }
-        return std::all_of(visited.begin(), visited.end(), [](const auto b) { return b; });
     }
 
-    model::Cluster Cluster::getComponent() {
+    model::Cluster Cluster::grabSecondComponent() {
         assert(not empty());
-        assert(not isConnected());
         assert(gridXUYAreUnique());
 
-        std::vector<GridXY> copy;
-
         if (m_gridXYVector.size() == 1) {
-            fprintf(stderr, "Fix naming, %s:%d\n", __FILE__, __LINE__);
+            NOTE_ONCE("Fix naming");
             return Cluster{m_gridXYVector, "dummy"};
         }
 
-        std::vector<bool> visited(m_gridXYVector.size(), false);
-        visited[0] = true;
         std::queue<GridXY> queue;
-        queue.push(m_gridXYVector[0]);
-        copy.push_back(m_gridXYVector[0]);
-        while (not queue.empty()) {
-            for (size_t i = 0; i != m_gridXYVector.size(); ++i) {
-                if (visited[i]) {
-                    continue;
-                }
-                if (m_gridXYVector.at(i).isAdjacent(queue.front())) {
-                    const auto r = m_gridXYVector.at(i);
-                    queue.push({r.x(), r.y()});
-                    copy.push_back({r.x(), r.y()});
-                    visited[i] = true;
+        queue.push(*m_gridXYVector.begin());
+        std::set<GridXY> copy;
+        copy.emplace(*m_gridXYVector.begin());
+        m_gridXYVector.erase(m_gridXYVector.begin());
+        while (not queue.empty() && not m_gridXYVector.empty()) {
+            using dir = enums::DIRECTION;
+            for (const auto direction : {dir::RIGHT, dir::DOWN, dir::UP, dir::LEFT}) {
+                const auto it = m_gridXYVector.find(queue.front().neighbor(direction));
+                if (it != m_gridXYVector.end()) {
+                    queue.push(*it);
+                    m_gridXYVector.erase(it);
                 }
             }
+            copy.emplace(queue.front());
             queue.pop();
         }
-        for (size_t i = visited.size(); i-- > 0;) {
-            if (visited[i]) {
-                m_gridXYVector.erase(m_gridXYVector.begin() + i);
-            }
+        while (not queue.empty()) {
+            copy.emplace(queue.front());
+            queue.pop();
         }
-        assert(not empty());
-
         assert(not copy.empty());
         Cluster result{std::move(copy), name() + "_"};
-        assert(result.isConnected());
         result.resetPhase();
         result.m_alive       = m_alive;
         result.m_actionIndex = m_actionIndex;
         result.m_actions     = m_actions;
         result.m_pendingOperations.clear();
+        std::swap(m_gridXYVector, result.m_gridXYVector);
         return result;
     }
 
@@ -379,14 +367,14 @@ namespace model {
     }
 
     bool Cluster::contains(const GridXY& gridXY) const {
-        return std::find(m_gridXYVector.begin(), m_gridXYVector.end(), gridXY) != m_gridXYVector.end();
+        return m_gridXYVector.find(gridXY) != m_gridXYVector.end();
     }
 
     void Cluster::addGridXY(const GridXY& gridXY) {
         assert(std::find_if(m_gridXYVector.begin(), m_gridXYVector.end(), [&](const GridXY& g) { return g.isAdjacent(gridXY); }) !=
                m_gridXYVector.end());
         if (not contains(gridXY)) {
-            m_gridXYVector.push_back(gridXY);
+            m_gridXYVector.emplace(gridXY);
         }
         assert(gridXUYAreUnique());
         assert(isConnected());
@@ -398,12 +386,12 @@ namespace model {
         return s.size() == m_gridXYVector.size();
     }
 
-    std::vector<GridXY>& Cluster::gridXY() {
+    std::set<GridXY>& Cluster::gridXY() {
         return m_gridXYVector;
     }
 
     WorldXY rotatedPoint(const GridXY& gridXY, const WorldXY& shrinkInWorld, const WorldXY& pivot, double theta) {
-        return global::rotateAboutPivot(WorldXY(gridXY) + shrinkInWorld, pivot, theta);
+        return geom::rotateAboutPivot(WorldXY(gridXY) + shrinkInWorld, pivot, theta);
     }
 
     Cluster::PHASE Cluster::phase() const {
@@ -412,103 +400,50 @@ namespace model {
 
     void Cluster::collideWithLevel(const Level& level, int shrinkInWorld) {
         assert(gridXUYAreUnique());
-        std::set<WorldXY>                                    result;
-        std::function<WorldXY(const GridXY&, const WorldXY)> f = toWorldFunction();
-
-        for (const auto& it : m_gridXYVector) {
-            const bool          u = contains(it.neighbor(enums::DIRECTION::UP));
-            const bool          l = contains(it.neighbor(enums::DIRECTION::LEFT));
-            const bool          d = contains(it.neighbor(enums::DIRECTION::DOWN));
-            const bool          r = contains(it.neighbor(enums::DIRECTION::RIGHT));
-            std::vector<GridXY> corners;
-            if (not(u && l)) {
-                corners.emplace_back(0, 0);
-            }
-            if (not r) {
-                corners.emplace_back(1, 0);
-            }
-            if (not d) {
-                corners.emplace_back(0, 1);
-            }
-            if (not(d || r)) {
-                corners.emplace_back(1, 1);
-            }
-            for (const GridXY corner : corners) {
-                if (not level.isInLevel(
-                        f((it + corner),
-                          WorldXY{shrinkInWorld - 2 * shrinkInWorld * corner.x(), shrinkInWorld - 2 * shrinkInWorld * corner.y()}))) {
-                    kill();
-                    return;
-                }
-            }
+        if (alg::intersect(sides(shrinkInWorld), level.boundaries())) {
+            kill();
         }
     }
 
-    WorldXY Cluster::cornerPoint(const GridXY& it, CORNER corner, int shrinkInWorld) const {
-        switch (corner) {
-            case CORNER::TOP_LEFT:
-                return WorldXY(it) + WorldXY{shrinkInWorld, shrinkInWorld};
-            case CORNER::TOP_RIGHT:
-                return WorldXY(it + GridXY{1, 0}) + WorldXY{-shrinkInWorld, shrinkInWorld};
-            case CORNER::BOTTOM_LEFT:
-                return WorldXY(it + GridXY{0, 1}) + WorldXY{shrinkInWorld, -shrinkInWorld};
-            case CORNER::BOTTOM_RIGHT:
-                return WorldXY(it + GridXY{1, 1}) + WorldXY{-shrinkInWorld, -shrinkInWorld};
+    std::set<Line<WorldXY>> Cluster::sides(int shrinkInWorld) const {
+        const auto              f = phaseTransformation();
+        std::set<Line<WorldXY>> result;
+        for (const auto& line : m_sides) {
+            const int d = contains(line.start()) ? 1 : -1;
+            if (line.start().x() == line.end().x()) {
+                result.insert({f(line.start() + WorldXY{d * shrinkInWorld, shrinkInWorld}),
+                               f(line.end() + WorldXY{d * shrinkInWorld, -shrinkInWorld})});
+            } else {
+                result.insert({f(line.start() + WorldXY{shrinkInWorld, d * shrinkInWorld}),
+                               f(line.end() + WorldXY{-shrinkInWorld, d * shrinkInWorld})});
+            }
         }
-        assert(false);
-    }
-
-    enums::DIRECTION Cluster::currentDirection() const {
-        assert(m_phase == PHASE::TRANSLATING);
-        if (m_worldOffset.x() == 0) {
-            return m_worldOffset.y() < 0 ? enums::DIRECTION::DOWN : enums::DIRECTION::UP;
-        }
-        return m_worldOffset.x() < 0 ? enums::DIRECTION::RIGHT : enums::DIRECTION::LEFT;
-    }
-
-    constexpr std::pair<Cluster::CORNER, Cluster::CORNER> Cluster::cornersAtSide(enums::DIRECTION direction) {
-        switch (direction) {
-            case enums::DIRECTION::UP:
-                return {CORNER::TOP_LEFT, CORNER::TOP_RIGHT};
-            case enums::DIRECTION::DOWN:
-                return {CORNER::BOTTOM_LEFT, CORNER::BOTTOM_RIGHT};
-            case enums::DIRECTION::LEFT:
-                return {CORNER::BOTTOM_LEFT, CORNER::TOP_LEFT};
-            case enums::DIRECTION::RIGHT:
-                return {CORNER::BOTTOM_RIGHT, CORNER::TOP_RIGHT};
-            case enums::DIRECTION::NONE:
-                assert(false);
-        }
-        assert(false);
-    }
-
-    void Cluster::sortGridXYVector() {
-        std::sort(m_gridXYVector.begin(), m_gridXYVector.end());
-    }
-
-    std::vector<WorldLine> Cluster::sides(int shrinkInWorld) const {
-        std::vector<WorldLine> result;
-        //        for (const auto& it : m_gridXYVector) {}
         return result;
     }
 
-    std::function<WorldXY(const GridXY&, const WorldXY)> Cluster::toWorldFunction() const {
+    std::function<WorldXY(const WorldXY)> Cluster::phaseTransformation() const {
         switch (m_phase) {
             case PHASE::NONE:
-                return [](const model::GridXY& a, const model::WorldXY& b) -> WorldXY { return a + b; };
+                return [](const model::WorldXY& b) { return b; };
             case PHASE::TRANSLATING: {
                 const WorldXY offset = dynamicWorldOffset();
-                return [offset](const model::GridXY& a, const model::WorldXY& b) -> WorldXY { return a + b + offset; };
+                return [offset](const model::WorldXY& b) { return b + offset; };
             }
             case PHASE::ROTATING: {
-                const WorldXY center = WorldXY(m_rotationPivot) + WorldXY::halfBlockInWorld;
+                const WorldXY center = WorldXY(m_rotationPivot) + cst::HALF_BLOCK_IN_WORLD;
                 const double  theta  = -angle();
-                return [center, theta](const model::GridXY& a, const model::WorldXY& b) -> WorldXY {
-                    return global::rotateAboutPivot(a + b, center, theta);
-                };
+                return [center, theta](const model::WorldXY& b) { return geom::rotateAboutPivot(b, center, theta); };
             }
         }
         assert(false);
+    }
+
+    size_t Cluster::blockCount() const {
+        return m_gridXYVector.size();
+    }
+
+    bool Cluster::intersects(const Cluster& other, int shrinkInWorld) const {
+        return alg::intersect(sides(shrinkInWorld), other.sides(shrinkInWorld));
     }
 
 } // namespace model

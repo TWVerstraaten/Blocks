@@ -4,7 +4,8 @@
 
 #include "View.h"
 
-#include "../global/Global.h"
+#include "../global/fns.h"
+#include "../global/geom.h"
 #include "../model/Model.h"
 #include "ScreenXY.h"
 
@@ -14,7 +15,7 @@
 
 namespace view {
 
-    View::View() {
+    View::View() : m_scrollArea({static_cast<int>(cst::INITIAL_SCREEN_WIDTH - 200), 0, 200, static_cast<int>(cst::INITIAL_SCREEN_HEIGHT)}) {
         if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
             std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
             exit(255);
@@ -23,11 +24,16 @@ namespace view {
             std::cout << "Warning: Linear texture filtering not enabled!\n";
         }
 
-        Uint32 initialWidth  = 1000;
-        Uint32 initialHeight = 800;
-
-        m_window =
-            SDL_CreateWindow("Blocks", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, initialWidth, initialHeight, SDL_WINDOW_RESIZABLE);
+        //        SDL_DisplayMode DM;
+        //        SDL_GetCurrentDisplayMode(0, &DM);
+        //        auto Width = DM.w;
+        //        auto Height = DM.h;
+        m_window = SDL_CreateWindow("Blocks",
+                                    SDL_WINDOWPOS_CENTERED,
+                                    SDL_WINDOWPOS_CENTERED,
+                                    cst::INITIAL_SCREEN_WIDTH,
+                                    cst::INITIAL_SCREEN_HEIGHT,
+                                    SDL_WINDOW_RESIZABLE);
         if (!m_window) {
             std::cout << "Failed to create window, SDL2 Error: " << SDL_GetError() << "\n";
             return;
@@ -51,6 +57,7 @@ namespace view {
         }
 
         m_assets->init(m_renderer);
+        m_scrollArea.init(m_assets.get());
         SDL_StartTextInput();
     }
 
@@ -75,13 +82,14 @@ namespace view {
             const auto points = cluster.cornerPoints(cst::BLOCK_SHRINK_IN_WORLD);
             for (const auto& it : points) {
                 //                                                                        drawRectangle(model::GridXY::fromWorldXY(actionEditIt),
-                //                                                                        model::WorldXY::m_blockSizeInWorld,
-                //                                                                                      model::WorldXY::m_blockSizeInWorld,
+                //                                                                        model::WorldXY::BLOCK_SIZE_IN_WORLD,
+                //                                                                                      model::WorldXY::BLOCK_SIZE_IN_WORLD,
                 //                                                                                      color::BLUE);
-                drawPoint(it, cst::color::RED, 8);
+                drawPoint(it, cst::color::RED, 2);
             }
         }
         drawActionEditBoxes();
+        m_scrollArea.render(m_renderer);
     }
 
     void View::drawActionEditBoxes() {
@@ -106,6 +114,14 @@ namespace view {
                     drawClusterRotating(cluster);
                     break;
             }
+            setDrawColor(cst::color::RED);
+            for (const auto& side : cluster.sides(cst::BLOCK_SHRINK_IN_WORLD)) {
+                const auto p1 = ScreenXY::fromWorldXY(side.start(), m_viewPort);
+                const auto p2 = ScreenXY::fromWorldXY(side.end(), m_viewPort);
+
+                SDL_RenderDrawLine(m_renderer, p1.x(), p1.y(), p2.x(), p2.y());
+            }
+
             renderClusterName(cluster);
         }
     }
@@ -155,10 +171,7 @@ namespace view {
     }
 
     void View::zoom(int amount) {
-        m_zoomParameter += amount;
-        m_zoomParameter = std::max(m_zoomParameter, -28);
-        m_zoomParameter = std::min(m_zoomParameter, 6);
-        m_viewPort.setScale(m_zoomParameter);
+        m_viewPort.zoom(amount);
     }
 
     void View::translate(int dx, int dy) {
@@ -292,11 +305,10 @@ namespace view {
 
     void View::renderClusterName(const model::Cluster& cluster) {
         const auto worldPosition =
-            global::rotateAboutPivot(cluster.dynamicWorldOffset() + cluster.gridXY().front(), cluster.rotationPivot(), -cluster.angle());
+            geom::rotateAboutPivot(cluster.dynamicWorldOffset() + *cluster.gridXY().begin(), cluster.rotationPivot(), -cluster.angle());
         const auto screenPosition = ScreenXY::fromWorldXY(worldPosition, m_viewPort);
 
         if (m_nameTextures.find(cluster.index()) == m_nameTextures.end()) {
-            std::cout << "Name added\n";
             const std::string name = cluster.name() + " " + std::to_string(cluster.index());
             m_nameTextures.insert(
                 {cluster.index(),
@@ -308,7 +320,7 @@ namespace view {
 
     void View::drawClusterNoPhase(const model::Cluster& cluster) const {
         assert(cluster.phase() == model::Cluster::PHASE::NONE);
-        const auto shrunkBlockSize = m_viewPort.worldToScreenLength(model::WorldXY::m_blockSizeInWorld - 2 * cst::BLOCK_SHRINK_IN_WORLD);
+        const auto shrunkBlockSize = m_viewPort.worldToScreenLength(cst::BLOCK_SIZE_IN_WORLD - 2 * cst::BLOCK_SHRINK_IN_WORLD);
         const auto shrinkWorldXY   = model::WorldXY{cst::BLOCK_SHRINK_IN_WORLD, cst::BLOCK_SHRINK_IN_WORLD};
         for (auto it : cluster.gridXY()) {
             assert(m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
@@ -338,7 +350,7 @@ namespace view {
 
     void View::drawClusterTranslating(const model::Cluster& cluster) const {
         assert(cluster.phase() == model::Cluster::PHASE::TRANSLATING);
-        const auto shrunkBlockSize = m_viewPort.worldToScreenLength(model::WorldXY::m_blockSizeInWorld - 2 * cst::BLOCK_SHRINK_IN_WORLD);
+        const auto shrunkBlockSize = m_viewPort.worldToScreenLength(cst::BLOCK_SIZE_IN_WORLD - 2 * cst::BLOCK_SHRINK_IN_WORLD);
         const auto shrinkWorldXY   = model::WorldXY{cst::BLOCK_SHRINK_IN_WORLD, cst::BLOCK_SHRINK_IN_WORLD};
         const auto offset          = ScreenXY::fromWorldXYAsVector(cluster.dynamicWorldOffset(), m_viewPort);
         for (auto it : cluster.gridXY()) {
@@ -369,46 +381,50 @@ namespace view {
 
     void View::drawClusterRotating(const model::Cluster& cluster) const {
         assert(cluster.phase() == model::Cluster::PHASE::ROTATING);
-        const model::WorldXY center = model::WorldXY(cluster.rotationPivot()) + model::WorldXY::halfBlockInWorld;
-        const double         theta  = cluster.angle();
-        const auto           pivot  = SDL_Point{0, 0};
-        const auto shrunkBlockSize  = m_viewPort.worldToScreenLength(model::WorldXY::m_blockSizeInWorld - 2 * cst::BLOCK_SHRINK_IN_WORLD);
-        const auto shrinkWorldXY    = model::WorldXY{cst::BLOCK_SHRINK_IN_WORLD, cst::BLOCK_SHRINK_IN_WORLD};
+        const model::WorldXY center          = model::WorldXY(cluster.rotationPivot()) + cst::HALF_BLOCK_IN_WORLD;
+        const double         theta           = cluster.angle();
+        const auto           pivot           = SDL_Point{0, 0};
+        const auto           shrunkBlockSize = m_viewPort.worldToScreenLength(cst::BLOCK_SIZE_IN_WORLD - 2 * cst::BLOCK_SHRINK_IN_WORLD);
+        const auto           shrinkWorldXY   = model::WorldXY{cst::BLOCK_SHRINK_IN_WORLD, cst::BLOCK_SHRINK_IN_WORLD};
         for (auto it : cluster.gridXY()) {
-            const auto topLeftWorldXY  = global::rotateAboutPivot(model::WorldXY(it) + shrinkWorldXY, center, -theta);
+            const auto topLeftWorldXY  = geom::rotateAboutPivot(model::WorldXY(it) + shrinkWorldXY, center, -theta);
             const auto topLeftScreenXY = ScreenXY::fromWorldXY(topLeftWorldXY, m_viewPort);
-            assert(m_assets->renderTexture(
-                TextureWrapper::TEXTURE_ENUM::CLUSTER, topLeftScreenXY, shrunkBlockSize, shrunkBlockSize, m_renderer, theta, &pivot));
+            m_assets->renderTexture(
+                TextureWrapper::TEXTURE_ENUM::CLUSTER, topLeftScreenXY, shrunkBlockSize, shrunkBlockSize, m_renderer, theta, &pivot);
             if (m_viewPort.distanceBetweenBlocksInScreenXY() == 0) {
                 continue;
             }
             if (cluster.contains(it.neighbor(enums::DIRECTION::LEFT))) {
-                assert(m_assets->renderTexture(
+                m_assets->renderTexture(
                     TextureWrapper::TEXTURE_ENUM::CLUSTER,
                     ScreenXY::fromWorldXY(
-                        global::rotateAboutPivot(
+                        geom::rotateAboutPivot(
                             model::WorldXY(it) + model::WorldXY{-cst::BLOCK_SHRINK_IN_WORLD, cst::BLOCK_SHRINK_IN_WORLD}, center, -theta),
                         m_viewPort),
                     m_viewPort.distanceBetweenBlocksInScreenXY(),
                     shrunkBlockSize,
                     m_renderer,
                     theta,
-                    &pivot));
+                    &pivot);
             }
             if (cluster.contains(it.neighbor(enums::DIRECTION::UP))) {
-                assert(m_assets->renderTexture(
+                m_assets->renderTexture(
                     TextureWrapper::TEXTURE_ENUM::CLUSTER,
                     ScreenXY::fromWorldXY(
-                        global::rotateAboutPivot(
+                        geom::rotateAboutPivot(
                             model::WorldXY(it) + model::WorldXY{cst::BLOCK_SHRINK_IN_WORLD, -cst::BLOCK_SHRINK_IN_WORLD}, center, -theta),
                         m_viewPort),
                     shrunkBlockSize,
                     m_viewPort.distanceBetweenBlocksInScreenXY(),
                     m_renderer,
                     theta,
-                    &pivot));
+                    &pivot);
             }
         }
+    }
+
+    widget::ScrollArea& View::scrollArea() {
+        return m_scrollArea;
     }
 
 } // namespace view

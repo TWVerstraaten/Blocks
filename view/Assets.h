@@ -7,7 +7,6 @@
 
 #include "../model/Level.h"
 #include "Font.h"
-#include "Texture.h"
 #include "TextureWrapper.h"
 
 #include <map>

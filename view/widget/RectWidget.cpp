@@ -4,7 +4,7 @@
 
 #include "RectWidget.h"
 
-namespace view {
+namespace view::widget {
     RectWidget::RectWidget(SDL_Rect rect) : m_rect(rect) {
     }
 
@@ -24,4 +24,24 @@ namespace view {
         return m_hasFocus;
     }
 
-} // namespace view
+    void RectWidget::setWidth(int width) {
+        m_rect.w = width;
+    }
+
+    void RectWidget::setHeight(int height) {
+        m_rect.h = height;
+    }
+
+    void RectWidget::setX(int x) {
+        m_rect.x = x;
+    }
+
+    void RectWidget::setY(int y) {
+        m_rect.y = y;
+    }
+
+    int RectWidget::height() const {
+        return m_rect.h;
+    }
+
+} // namespace view::widget

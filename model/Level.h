@@ -6,7 +6,7 @@
 #define BLOCKS_LEVEL_H
 
 #include "GridXY.h"
-#include "WorldLine.h"
+#include "Line.h"
 
 #include <map>
 #include <set>
@@ -38,17 +38,18 @@ namespace model {
         const std::set<GridXY>&                     startBlocks() const;
         bool                                        isFreeStartBlock(const GridXY gridXY) const;
         void                                        sort();
-        void                                        buildBoundaries();
-        const std::set<WorldLine>&                  boundaries() const;
+        void                                        createBoundaries();
+        const std::set<Line<WorldXY>>&              boundaries() const;
 
       private:
-        bool contains(const GridXY& gridXY) const;
+        bool                          contains(const GridXY& gridXY) const;
+        static std::set<Line<GridXY>> buildBoundaries(std::set<GridXY> blocks);
 
         std::map<GridXY, DYNAMIC_BLOCK_TYPE> m_dynamicBLocks;
         std::map<GridXY, INSTANT_BLOCK_TYPE> m_instantBLocks;
         std::set<GridXY>                     m_levelBlocks;
         std::set<GridXY>                     m_startBlocks;
-        std::set<WorldLine>                  m_boundaries;
+        std::set<Line<WorldXY>>              m_boundaries;
     };
 } // namespace model
 #endif // BLOCKS_LEVEL_H

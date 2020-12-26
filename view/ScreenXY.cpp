@@ -20,12 +20,11 @@ int view::ScreenXY::y() const {
 }
 
 view::ScreenXY view::ScreenXY::fromWorldXY(const model::WorldXY& worldXY, const view::ViewPort& viewPort) {
-    return {static_cast<int>(worldXY.x() * viewPort.scale()) + viewPort.xOffset(),
-            static_cast<int>(worldXY.y() * viewPort.scale()) + viewPort.yOffset()};
+    return {viewPort.worldToScreenLength(worldXY.x()) + viewPort.xOffset(), viewPort.worldToScreenLength(worldXY.y()) + viewPort.yOffset()};
 }
 
 view::ScreenXY view::ScreenXY::fromWorldXYAsVector(const model::WorldXY& worldXY, const view::ViewPort& viewPort) {
-    return {static_cast<int>(worldXY.x() * viewPort.scale()), static_cast<int>(worldXY.y() * viewPort.scale())};
+    return {viewPort.worldToScreenLength(worldXY.x()), viewPort.worldToScreenLength(worldXY.y())};
 }
 
 view::ScreenXY view::ScreenXY::fromGridXY(const model::GridXY& gridXY, const view::ViewPort& viewPort) {

@@ -5,6 +5,8 @@
 #ifndef BLOCKS_WORLDXY_H
 #define BLOCKS_WORLDXY_H
 
+#include "WorldXY.h"
+
 #include <cstddef>
 
 namespace view {
@@ -21,10 +23,6 @@ namespace model {
 
         int x() const;
         int y() const;
-
-        static const int     m_blockSizeInWorld     = 50;
-        static const int     m_halfBlockSizeInWorld = m_blockSizeInWorld / 2;
-        static const WorldXY halfBlockInWorld;
 
         friend bool operator<(const WorldXY& lhs, const WorldXY& rhs);
         friend bool operator==(const WorldXY& lhs, const WorldXY& rhs);

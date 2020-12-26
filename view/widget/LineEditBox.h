@@ -14,32 +14,29 @@
 #include <string>
 #include <vector>
 
-class SDL_Renderer;
-
 namespace view {
     class Assets;
     namespace widget {
 
         class LineEditBox : public RectWidget {
           public:
-
             LineEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, std::string title);
 
-            void render(SDL_Renderer* renderer);
-            void update(SDL_Renderer* renderer);
+            void update(SDL_Renderer* renderer) override;
+
+            void render(SDL_Renderer* renderer) override;
             void keyEvent(const SDL_Event& event) override;
             void leftClickEvent(const SDL_Event& event) override;
             void mouseDragEvent(const SDL_Event& event) override;
-            void loseFocus() override;
-            void setHighLightedLine(size_t index);
-            bool canParse() const;
-            int  width() const;
-            int  height() const;
-            void setWidth(int width);
-            void setHeight(int height);
-            void setX(int x);
-            void setY(int y);
-            void setActive(bool active);
+
+            void               loseFocus() override;
+            void               setHighLightedLine(size_t index);
+            bool               canParse() const;
+            int                width() const;
+            int                height() const;
+            void               setActive(bool active);
+            void               appendString(const std::string& str);
+            const std::string& title() const;
 
           private:
             enum class HIGHLIGHT_MODE { SOFT, HARD };
@@ -83,7 +80,7 @@ namespace view {
             bool                                  m_needsUpdate     = true;
             Uint32                                m_blinkTimeOffset = 0;
             SelectionData                         m_selectionData;
-            const Assets*                         m_assetHandler;
+            const Assets*                         m_assets;
             std::vector<int>                      m_yOffsets;
             std::vector<std::unique_ptr<Texture>> m_textures;
             const std::string                     m_title;

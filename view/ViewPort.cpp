@@ -5,26 +5,19 @@
 #include "ViewPort.h"
 
 #include "../global/cst.h"
-#include "../model/WorldXY.h"
+#include "../global/fns.h"
 
 #include <cmath>
 
 namespace view {
 
     int ViewPort::blockSizeInScreen() const {
-        return static_cast<int>(model::WorldXY::m_blockSizeInWorld * m_scale);
+        return static_cast<int>(cst::BLOCK_SIZE_IN_WORLD * m_scale);
     }
 
-    int ViewPort::firstColumnInView() const {
-        return -m_xOffset / blockSizeInScreen();
-    }
-
-    int ViewPort::firstRowInView() const {
-        return -m_yOffset / blockSizeInScreen();
-    }
-
-    void ViewPort::setScale(int scaleParameter) {
-        m_scale                           = std::exp(scaleParameter / 10.0);
+    void ViewPort::zoom(int dZoom) {
+        m_zoom                            = fns::clamp(m_zoom + dZoom, -10, 20);
+        m_scale                           = std::exp(m_zoom / 10.0);
         m_distanceBetweenBlocksInScreenXY = worldToScreenLength(2 * cst::BLOCK_SHRINK_IN_WORLD);
     }
 
@@ -39,10 +32,6 @@ namespace view {
 
     int ViewPort::yOffset() const {
         return m_yOffset;
-    }
-
-    double ViewPort::scale() const {
-        return m_scale;
     }
 
     int ViewPort::worldToScreenLength(int worldLength) const {

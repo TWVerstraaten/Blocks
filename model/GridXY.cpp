@@ -58,8 +58,8 @@ namespace model {
     }
 
     GridXY GridXY::fromWorldXY(const WorldXY& worldXY) {
-        return {static_cast<int>(std::floor(static_cast<double>(worldXY.x()) / model::WorldXY::m_blockSizeInWorld)),
-                static_cast<int>(std::floor(static_cast<double>(worldXY.y()) / model::WorldXY::m_blockSizeInWorld))};
+        return {static_cast<int>(std::floor(static_cast<double>(worldXY.x()) / cst::BLOCK_SIZE_IN_WORLD)),
+                static_cast<int>(std::floor(static_cast<double>(worldXY.y()) / cst::BLOCK_SIZE_IN_WORLD))};
     }
 
     GridXY operator+(const GridXY& lhs, const GridXY& rhs) {

@@ -5,10 +5,9 @@
 #include "WorldXY.h"
 
 #include "GridXY.h"
+#include "Model.h"
 
 namespace model {
-
-    const WorldXY WorldXY::halfBlockInWorld(m_halfBlockSizeInWorld, m_halfBlockSizeInWorld);
 
     WorldXY::WorldXY(int x, int y) noexcept : m_x(x), m_y(y) {
     }
@@ -22,11 +21,11 @@ namespace model {
     }
 
     WorldXY WorldXY::fromGridXY(const model::GridXY& gridXY) {
-        return {m_blockSizeInWorld * gridXY.x(), m_blockSizeInWorld * gridXY.y()};
+        return {cst::BLOCK_SIZE_IN_WORLD * gridXY.x(), cst::BLOCK_SIZE_IN_WORLD * gridXY.y()};
     }
 
     bool operator<(const WorldXY& lhs, const WorldXY& rhs) {
-        return lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x();
+        return lhs.y() == rhs.y() ? lhs.x() < rhs.x() : lhs.y() < rhs.y();
     }
 
     bool operator==(const WorldXY& lhs, const WorldXY& rhs) {

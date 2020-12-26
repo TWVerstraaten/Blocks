@@ -15,10 +15,18 @@ Application_Edit::Application_Edit(model::Model* model, view::View* view) : m_vi
 }
 
 void Application_Edit::mouseWheelEvent(const SDL_Event& event) {
-    m_view->zoom(event.wheel.y);
+    const auto mousePosition = Mouse::getMouseXY();
+    if (m_view->scrollArea().pointIsOverWidget(mousePosition)) {
+        m_view->scrollArea().mouseWheelEvent(event);
+    } else {
+        m_view->zoom(event.wheel.y);
+    }
 }
 
 void Application_Edit::keyEvent(const SDL_Event& event) {
+    if (m_view->scrollArea().hasFocus()) {
+        m_view->scrollArea().keyEvent(event);
+    }
     if (m_focusedWidget) {
         m_focusedWidget->keyEvent(event);
     }
@@ -38,6 +46,11 @@ void Application_Edit::setFocusOnClick() {
 }
 
 void Application_Edit::mouseClickEvent(const SDL_Event& event) {
+    if (m_view->scrollArea().pointIsOverWidget(Mouse::getMouseXY())) {
+        m_view->scrollArea().leftClickEvent(event);
+    } else {
+        m_view->scrollArea().loseFocus();
+    }
     setButtonBooleans(event);
     setFocusOnClick();
     if (m_focusedWidget) {
@@ -70,6 +83,11 @@ void Application_Edit::mouseReleaseEvent(const SDL_Event& event) {
 }
 
 void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
+    if (m_leftMouseButtonPressed) {
+        if (m_view->scrollArea().pointIsOverWidget(Mouse::getMouseXY())) {
+            m_view->scrollArea().mouseDragEvent(event);
+        }
+    }
     if (m_focusedWidget) {
         if (m_leftMouseButtonPressed) {
             m_focusedWidget->mouseDragEvent(event);

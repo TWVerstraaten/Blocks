@@ -40,8 +40,8 @@ namespace view {
       private:
         bool         m_loadedCorrectly = false;
         SDL_Texture* m_texture         = nullptr;
-        size_t       m_width           = 0;
-        size_t       m_height          = 0;
+        int          m_width           = 0;
+        int          m_height          = 0;
     };
 } // namespace view
 
