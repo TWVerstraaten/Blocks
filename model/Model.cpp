@@ -162,9 +162,8 @@ namespace model {
             baseIt->addGridXY(extension);
             assert(baseIt->isConnected());
         } else {
-            baseIt->gridXY().merge(extensionIt->gridXY());
-            assert(extensionIt->empty());
-            clearEmptyClusters();
+            baseIt->gridXY().insert(extensionIt->gridXY().begin(), extensionIt->gridXY().end());
+            m_clusters.erase(extensionIt);
         }
     }
 

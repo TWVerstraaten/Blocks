@@ -33,6 +33,7 @@ namespace view::widget {
         void           setHeightAndPositions();
         ActionEditBox* widgetUnderMouse();
         ActionEditBox* focusedWidget();
+        void           renderScrollBar(SDL_Renderer* renderer);
 
         bool                     m_needsUpdate    = true;
         bool                     m_firstRender    = true;

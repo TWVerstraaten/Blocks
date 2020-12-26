@@ -335,11 +335,9 @@ namespace view::widget {
     }
 
     void LineEditBox::doReturn(bool shiftPressed) {
-        if (shiftPressed) {
-            if (m_selectionData.m_mode == SelectionData::MODE::SINGLE) {
-                insertEmptyBeforeLine(m_selectionData.m_first.m_stringIndex);
-                return;
-            }
+        if (shiftPressed && m_selectionData.m_mode == SelectionData::MODE::SINGLE) {
+            insertEmptyBeforeLine(m_selectionData.m_first.m_stringIndex);
+            return;
         }
         switch (m_selectionData.m_mode) {
             case SelectionData::MODE::SINGLE:
@@ -353,13 +351,13 @@ namespace view::widget {
     }
 
     void LineEditBox::splitAt(SelectionData::Data& data) {
-        auto& stringIndex = data.m_stringIndex;
-        auto& charIndex   = data.m_charIndex;
+        const auto stringIndex = data.m_stringIndex;
+        const auto charIndex   = data.m_charIndex;
         m_strings.insert(m_strings.begin() + stringIndex + 1, "");
         m_strings[stringIndex + 1] = m_strings[stringIndex].substr(charIndex);
         m_strings[stringIndex]     = m_strings[stringIndex].substr(0, charIndex);
-        ++stringIndex;
-        charIndex              = 0;
+        ++data.m_stringIndex;
+        data.m_charIndex       = 0;
         m_selectionData.m_mode = SelectionData::MODE::SINGLE;
         m_needsUpdate          = true;
     }
@@ -425,11 +423,9 @@ namespace view::widget {
             case SelectionData::MODE::SINGLE:
                 assert(m_selectionData.m_first.m_stringIndex < m_strings.size());
                 {
-                    auto& stringIndex = m_selectionData.m_first.m_stringIndex;
-                    auto& charIndex   = m_selectionData.m_first.m_charIndex;
-                    if (charIndex != m_strings.at(m_selectionData.m_first.m_stringIndex).length()) {
-                        auto& str = m_strings[stringIndex];
-                        str.erase(str.begin() + charIndex);
+                    if (m_selectionData.m_first.m_charIndex != m_strings.at(m_selectionData.m_first.m_stringIndex).length()) {
+                        auto& str = m_strings[m_selectionData.m_first.m_stringIndex];
+                        str.erase(str.begin() + m_selectionData.m_first.m_charIndex);
                     } else {
                         if (m_selectionData.m_first.m_stringIndex + 1 != m_strings.size()) {
                             concatAt(m_selectionData.m_first.m_stringIndex);
@@ -484,15 +480,13 @@ namespace view::widget {
         if (text.length() == 0) {
             return;
         }
-        std::string upperCaseString = toUpper(text);
-        m_needsUpdate               = true;
-        m_strings[m_selectionData.m_first.m_stringIndex].insert(m_selectionData.m_first.m_charIndex, upperCaseString);
+        m_needsUpdate = true;
+        m_strings[m_selectionData.m_first.m_stringIndex].insert(m_selectionData.m_first.m_charIndex, toUpper(text));
         const auto lastNewLine = m_strings[m_selectionData.m_first.m_stringIndex].find_last_of('\n');
         if (lastNewLine == std::string::npos) {
-            m_selectionData.m_first.m_charIndex += upperCaseString.length();
+            m_selectionData.m_first.m_charIndex += text.length();
         } else {
-            m_selectionData.m_first.m_charIndex += upperCaseString.length() - lastNewLine - 1;
-            std::cout << m_selectionData.m_first.m_charIndex << '\n';
+            m_selectionData.m_first.m_charIndex += text.length() - lastNewLine - 1;
             std::string str = std::move(m_strings[m_selectionData.m_first.m_stringIndex]);
             m_strings.erase(m_strings.begin() + m_selectionData.m_first.m_stringIndex);
 

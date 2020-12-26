@@ -22,7 +22,6 @@ namespace model {
         Model();
 
         Model& operator=(const Model& other);
-        ;
 
         void                        preStep();
         void                        interactClustersWithDynamicBlocks();

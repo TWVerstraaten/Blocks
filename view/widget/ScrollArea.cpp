@@ -65,6 +65,7 @@ void view::widget::ScrollArea::render(SDL_Renderer* renderer) {
         setHeightAndPositions();
         m_firstRender = false;
     }
+    renderScrollBar(renderer);
 }
 
 void view::widget::ScrollArea::init(const view::Assets* assets) {
@@ -72,12 +73,12 @@ void view::widget::ScrollArea::init(const view::Assets* assets) {
 }
 
 void view::widget::ScrollArea::setHeightAndPositions() {
-    int yOffset = 10;
+    int yOffset = 2 * cst::LINE_EDIT_PADDING;
     for (const auto& w : m_children) {
         yOffset += w.height() + 3 * cst::LINE_EDIT_PADDING;
     }
     m_height = yOffset;
-    yOffset  = 10;
+    yOffset  = 2 * cst::LINE_EDIT_PADDING;
     if (static_cast<int>(m_height) > m_rect.h) {
         const auto heightDifference = m_height - m_rect.h;
         yOffset -= heightDifference * m_scrollFraction;
@@ -126,7 +127,7 @@ void view::widget::ScrollArea::update(SDL_Renderer* renderer) {
 }
 
 void view::widget::ScrollArea::addActionBox(const model::Cluster& cluster) {
-    m_children.emplace_back(ActionEditBox(m_rect.x + 10, 0, m_rect.w - 20, 0, m_assets, cluster));
+    m_children.emplace_back(ActionEditBox(m_rect.x + cst::LINE_EDIT_PADDING, 0, cst::LINE_EDIT_WIDTH, 0, m_assets, cluster));
     m_children.back().setHighLightedLine(cluster.actionIndex());
     m_children.back().setActive(cluster.isAlive());
 
@@ -135,4 +136,18 @@ void view::widget::ScrollArea::addActionBox(const model::Cluster& cluster) {
 
 std::list<view::widget::ActionEditBox>& view::widget::ScrollArea::children() {
     return m_children;
+}
+
+void view::widget::ScrollArea::renderScrollBar(SDL_Renderer* renderer) {
+    assert(m_rect.y == 0);
+    Rectangle::render({m_rect.x + m_rect.w - 10, 0, 3, m_rect.h}, cst::color::WHITE, renderer);
+    const int heightDifference = m_height - m_rect.h;
+    if (heightDifference <= 0) {
+        Rectangle::render({m_rect.x + m_rect.w - 10, 2, 5, m_rect.h - 4}, cst::color::BLACK, renderer);
+    } else {
+        const int barHeight = m_rect.h * (m_rect.h / static_cast<double>(m_height));
+        Rectangle::render({m_rect.x + m_rect.w - 10, static_cast<int>(m_scrollFraction * (m_rect.h - barHeight)), 5, barHeight},
+                          cst::color::BLACK,
+                          renderer);
+    }
 }

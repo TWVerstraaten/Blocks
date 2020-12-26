@@ -47,7 +47,7 @@ if (WIN32)
 endif (WIN32)
 
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_LINK_FLAGS "-lSDL2 -lSDL2_image -lSDL2_ttf")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 

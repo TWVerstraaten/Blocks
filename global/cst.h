@@ -34,9 +34,11 @@ namespace cst {
     static const size_t LINE_EDIT_PADDING      = 4;
     static const size_t LINE_EDIT_TITLE_HEIGHT = 44;
 
+    static const int SCROLL_AREA_WIDTH = 200;
+
     static const double MAX_D_PHASE = 0.1;
 
-    static const Uint32 EDIT_BOX_FONT_SIZE = 17;
+    static const Uint32 EDIT_BOX_FONT_SIZE = 25;
 
     namespace color {
         static const SDL_Color WHITE                        = {255, 255, 255, 255};
@@ -52,9 +54,10 @@ namespace cst {
         static const SDL_Color EDIT_BOX_BACKGROUND_INACTIVE = {120, 120, 120, 255};
         static const SDL_Color EDIT_BOX_HIGHLIGHT_DEAD      = {150, 150, 150, 255};
         static const SDL_Color EDIT_BOX_BACKGROUND          = {210, 210, 255, 255};
-        static const SDL_Color SCROLL_AREA_BACKGROUND       = {140, 140, 180, 255};
         static const SDL_Color EDIT_BOX_HIGHLIGHT_HARD      = {255, 200, 250, 255};
         static const SDL_Color EDIT_BOX_HIGHLIGHT_SOFT      = {220, 200, 250, 255};
+        static const SDL_Color SCROLL_AREA_BACKGROUND       = {140, 140, 180, 255};
+
     } // namespace color
 
 } // namespace cst

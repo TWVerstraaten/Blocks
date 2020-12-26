@@ -10,6 +10,8 @@
 #include "../../model/Cluster.h"
 #include "../Assets.h"
 
+#include <algorithm>
+
 view::widget::ActionEditBox::ActionEditBox(
     int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
     : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())), m_clusterIndex(cluster.index()) {
