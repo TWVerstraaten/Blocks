@@ -18,8 +18,11 @@ namespace view {
           public:
             ActionEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, const model::Cluster& cluster);
 
-            void updateClusterActions(model::Cluster& cluster);
+            void   loseFocus() override;
+            void   update(SDL_Renderer* renderer) override;
+            void   updateClusterActions(model::Cluster& cluster);
             size_t clusterIndex() const;
+            bool   canParse() const;
 
           private:
             size_t m_clusterIndex;

@@ -66,3 +66,14 @@ bool model::Action::canParse(const std::string& string) {
 
 model::Action::Action(model::Action::VALUE action, model::Action::MODIFIER modifier) : m_value(action), m_modifier(modifier) {
 }
+
+std::string model::Action::formatActionString(std::string& string) {
+    assert(canParse(string));
+    auto trimmed = fns::trimWhiteSpace(string);
+    if (trimmed.empty()) {
+        return trimmed;
+    }
+    const auto str1 = fns::trimWhiteSpace(trimmed.substr(0, 1));
+    const auto str2 = fns::trimWhiteSpace(trimmed.substr(1));
+    return str1 + " " + str2;
+}

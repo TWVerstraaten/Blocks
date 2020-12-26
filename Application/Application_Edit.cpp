@@ -88,7 +88,7 @@ void Application_Edit::init() {
 }
 
 bool Application_Edit::canStart() const {
-    return std::all_of(m_view->actionEditBoxes().begin(), m_view->actionEditBoxes().end(), [](const view::widget::LineEditBox& box) {
+    return std::all_of(m_view->actionEditBoxes().begin(), m_view->actionEditBoxes().end(), [](const view::widget::ActionEditBox& box) {
         return box.canParse();
     });
 }

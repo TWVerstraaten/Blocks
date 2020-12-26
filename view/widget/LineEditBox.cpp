@@ -7,7 +7,6 @@
 #include "../../global/cst.h"
 #include "../../global/fns.h"
 #include "../../global/geom.h"
-#include "../../model/Cluster.h"
 #include "../Assets.h"
 #include "../Mouse.h"
 #include "../Rectangle.h"
@@ -25,7 +24,7 @@ static std::string toUpper(const std::string& text) {
 
 namespace view::widget {
     LineEditBox::LineEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, std::string title)
-        : RectWidget({x, y, static_cast<int>(w), static_cast<int>(h)}), m_assets(assetHandler), m_title(std::move(title)) {
+        : RectWidget({x, y, static_cast<int>(w), static_cast<int>(h)}), m_title(std::move(title)), m_assets(assetHandler) {
     }
 
     void LineEditBox::update(SDL_Renderer* renderer) {
@@ -35,19 +34,6 @@ namespace view::widget {
 
         m_textures.clear();
         m_yOffsets.clear();
-
-        int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
-        for (const auto& str : m_strings) {
-            m_yOffsets.push_back(yOffset);
-            const auto text     = str.length() == 0 ? std::string(" ") : str;
-            bool       canParse = model::Action::canParse(str) || text == " ";
-            m_textures.emplace_back(Texture::createFromText(
-                text, canParse ? cst::color::BLACK : cst::color::TEXT_ERROR, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
-            yOffset += m_textures.back()->height();
-        }
-        m_yOffsets.push_back(yOffset);
-        m_rect.h      = yOffset;
-        m_needsUpdate = false;
     }
 
     void LineEditBox::render(SDL_Renderer* renderer) {
@@ -528,10 +514,6 @@ namespace view::widget {
     void LineEditBox::potentiallyDecrementFirstCharIndex() {
         m_selectionData.m_first.m_charIndex =
             std::min(m_selectionData.m_first.m_charIndex, m_strings.at(m_selectionData.m_first.m_stringIndex).length());
-    }
-
-    bool LineEditBox::canParse() const {
-        return std::all_of(m_strings.begin(), m_strings.end(), &model::Action::canParse);
     }
 
     void LineEditBox::setHighLightedLine(size_t index) {

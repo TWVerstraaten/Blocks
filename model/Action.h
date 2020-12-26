@@ -32,6 +32,7 @@ namespace model {
 
         VALUE    m_value    = VALUE::MOVE_UP;
         MODIFIER m_modifier = MODIFIER::NONE;
+        static std::string formatActionString(std::string& string);
     };
 } // namespace model
 

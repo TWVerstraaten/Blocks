@@ -31,7 +31,6 @@ namespace view {
 
             void               loseFocus() override;
             void               setHighLightedLine(size_t index);
-            bool               canParse() const;
             int                width() const;
             int                height() const;
             void               setActive(bool active);
@@ -76,18 +75,18 @@ namespace view {
             SelectionData::Data moveSelectionOneDown(const SelectionData::Data& data) const;
             const SDL_Color&    getHighlightColor(HIGHLIGHT_MODE mode) const;
 
-            bool                                  m_active          = true;
-            bool                                  m_needsUpdate     = true;
-            Uint32                                m_blinkTimeOffset = 0;
-            SelectionData                         m_selectionData;
-            const Assets*                         m_assets;
-            std::vector<int>                      m_yOffsets;
-            std::vector<std::unique_ptr<Texture>> m_textures;
-            const std::string                     m_title;
-            std::unique_ptr<Texture>              m_titleTexture;
+            bool                     m_active          = true;
+            Uint32                   m_blinkTimeOffset = 0;
+            SelectionData            m_selectionData;
+            const std::string        m_title;
+            std::unique_ptr<Texture> m_titleTexture;
 
           protected:
-            std::vector<std::string> m_strings;
+            std::vector<std::string>              m_strings;
+            std::vector<int>                      m_yOffsets;
+            std::vector<std::unique_ptr<Texture>> m_textures;
+            bool                                  m_needsUpdate = true;
+            const Assets*                         m_assets;
         };
     } // namespace widget
 } // namespace view
