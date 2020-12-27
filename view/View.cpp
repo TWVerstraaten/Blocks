@@ -426,4 +426,8 @@ namespace view {
         return m_scrollArea;
     }
 
+    void View::draw(widget::ScrollArea* scrollArea) {
+        scrollArea->render(m_renderer);
+    }
+
 } // namespace view

@@ -33,6 +33,7 @@ namespace view {
         View(const View& other) = delete;
 
         void                              draw(const model::Model& model);
+        void                              draw(widget::ScrollArea* scrollArea);
         void                              zoom(int amount);
         void                              translate(int dx, int dy);
         void                              renderPresent() const;

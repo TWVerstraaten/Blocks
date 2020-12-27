@@ -9,9 +9,10 @@
 
 #include <cassert>
 
-Application_Level::Application_Level() {
+Application_Level::Application_Level() : m_scrollArea({0, 0, 200, static_cast<int>(cst::INITIAL_SCREEN_HEIGHT)}) {
     m_model.init();
-};
+    m_scrollArea.init(m_view.assets());
+}
 
 void Application_Level::run() {
     bool isRunning = true;
@@ -54,7 +55,7 @@ Application_Level::EDIT_MODE Application_Level::editLevel() {
     bool isRunning = true;
 
     SDL_Event        event;
-    Application_Edit editApp(&m_model, &m_view);
+    Application_Edit editApp(&m_model, &m_view, &m_scrollArea);
     EDIT_MODE        currentMode;
     while (isRunning) {
         while (SDL_PollEvent(&event) > 0) {

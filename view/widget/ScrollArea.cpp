@@ -56,6 +56,7 @@ void view::widget::ScrollArea::render(SDL_Renderer* renderer) {
     if (m_needsUpdate) {
         update(renderer);
     }
+
     Rectangle::render(geom::pad(m_rect, cst::LINE_EDIT_PADDING), cst::color::SCROLL_AREA_BACKGROUND, renderer);
 
     for (auto& w : m_children) {

@@ -10,7 +10,8 @@
 #include <algorithm>
 #include <cassert>
 
-Application_Edit::Application_Edit(model::Model* model, view::View* view) : m_view(view), m_model(model) {
+Application_Edit::Application_Edit(model::Model* model, view::View* view, view::widget::ScrollArea* scrollArea)
+    : m_view(view), m_model(model), m_scrollArea(scrollArea) {
     init();
 }
 
@@ -144,6 +145,7 @@ Application_Level::EDIT_MODE Application_Edit::performSingleLoop() {
         finalize();
     }
     m_view->draw(*m_model);
+    m_view->draw(m_scrollArea);
     m_view->renderPresent();
     return m_editMode;
 }

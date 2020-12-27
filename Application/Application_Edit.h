@@ -15,7 +15,7 @@
 class Application_Edit {
 
   public:
-    explicit Application_Edit(model::Model* model, view::View* view);
+    explicit Application_Edit(model::Model* model, view::View* view, view::widget::ScrollArea* scrollArea);
 
     void                         handleEvent(const SDL_Event& event);
     Application_Level::EDIT_MODE performSingleLoop();
@@ -45,6 +45,7 @@ class Application_Edit {
     model::GridXY                m_previousGridClickPosition{0, 0};
     view::View*                  m_view;
     model::Model*                m_model;
+    view::widget::ScrollArea*    m_scrollArea;
     SDL_Point                    m_previousMousePosition{};
 };
 

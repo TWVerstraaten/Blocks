@@ -22,10 +22,11 @@ class Application_Level {
     Application_Level::RUN_MODE runLevel();
     EDIT_MODE                   editLevel();
 
-    Uint32       m_timeStep            = cst::TIME_STEP_SLOW;
-    bool         m_pauseAfterFirstStep = false;
-    view::View   m_view;
-    model::Model m_model;
+    Uint32                   m_timeStep            = cst::TIME_STEP_SLOW;
+    bool                     m_pauseAfterFirstStep = false;
+    view::View               m_view;
+    model::Model             m_model;
+    view::widget::ScrollArea m_scrollArea;
 };
 
 #endif // BLOCKS_APPLICATION_LEVEL_H
