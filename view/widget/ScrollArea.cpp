@@ -69,6 +69,7 @@ void view::widget::ScrollArea::render(SDL_Renderer* renderer) {
 }
 
 void view::widget::ScrollArea::init(const view::Assets* assets) {
+    assert(assets->initialized());
     m_assets = assets;
 }
 

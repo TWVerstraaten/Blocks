@@ -16,6 +16,7 @@
 namespace view {
 
     View::View() : m_scrollArea({static_cast<int>(cst::INITIAL_SCREEN_WIDTH - 200), 0, 200, static_cast<int>(cst::INITIAL_SCREEN_HEIGHT)}) {
+        std::cout << "View constructor\n";
         if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
             std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
             exit(255);
@@ -101,7 +102,7 @@ namespace view {
         }
     }
 
-    void View::drawClusters(const std::vector<model::Cluster>& clusters) {
+    void View::drawClusters(const std::list<model::Cluster>& clusters) {
         for (const auto& cluster : clusters) {
             switch (cluster.phase()) {
                 case model::Cluster::PHASE::NONE:
@@ -262,15 +263,15 @@ namespace view {
         return m_renderer;
     }
 
-    Assets& View::assets() const {
-        return *m_assets;
+    Assets* View::assets() const {
+        return m_assets.get();
     }
 
     void View::addActionBox(const model::Cluster& cluster) {
         m_scrollArea.addActionBox(cluster);
     }
 
-    void View::updateActionBoxes(const std::vector<model::Cluster>& clusters) {
+    void View::updateActionBoxes(const std::list<model::Cluster>& clusters) {
         m_scrollArea.children().remove_if([&](const widget::ActionEditBox& box) {
             return std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) {
                        return cluster.index() == box.clusterIndex();

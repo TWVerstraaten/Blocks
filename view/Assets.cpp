@@ -19,6 +19,7 @@ namespace view {
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ERROR, renderer);
 
         m_fonts[FONT_ENUM::MAIN] = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", cst::EDIT_BOX_FONT_SIZE);
+        m_initialized            = true;
     }
 
     bool Assets::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
@@ -112,6 +113,10 @@ namespace view {
     void Assets::renderText(const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer) {
         const auto texture = view::Texture::createFromText(text, cst::color::BLACK, renderer, m_fonts[FONT_ENUM::MAIN].get()->font());
         renderTexture(texture.get(), screenXY, texture->width(), texture->height(), renderer);
+    }
+
+    bool Assets::initialized() const {
+        return m_initialized;
     }
 
 } // namespace view

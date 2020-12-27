@@ -11,7 +11,7 @@ Application_Run::Application_Run(const model::Model& model, view::View* view) : 
     m_model             = model;
     m_timeSinceLastStep = 0;
     m_previousTime      = SDL_GetTicks();
-//    m_view->initActionBoxes(m_model.clusters());
+    //    m_view->initActionBoxes(m_model.clusters());
 }
 
 void Application_Run::mouseWheelEvent(const SDL_Event& event) {
@@ -127,7 +127,7 @@ Application_Level::RUN_MODE Application_Run::performSingleLoop() {
     m_previousTime = SDL_GetTicks();
     m_view->updateActionBoxes(m_model.clusters());
     m_view->draw(m_model);
-    m_view->assets().renderText(std::to_string(1000.0 / dt), view::ScreenXY{10, m_view->windowSize().y - 40}, m_view->renderer());
+    m_view->assets()->renderText(std::to_string(1000.0 / dt), view::ScreenXY{10, m_view->windowSize().y - 40}, m_view->renderer());
     m_view->renderPresent();
 
     return Application_Level::RUN_MODE::RUNNING;

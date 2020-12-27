@@ -2,32 +2,32 @@
 // Created by pc on 16-12-20.
 //
 
-#ifndef BLOCKS_ACTION_H
-#define BLOCKS_ACTION_H
+#ifndef BLOCKS_COMMAND_H
+#define BLOCKS_COMMAND_H
 
 #include <map>
 #include <string>
 
 namespace model {
 
-    struct Action {
-        Action() = default;
+    struct Command {
+        Command() = default;
 
         enum class VALUE { SKIP, MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
         enum class MODIFIER { NONE, IGNORE, INCREMENT };
 
-        Action(VALUE action, MODIFIER modifier);
+        Command(VALUE value, MODIFIER modifier);
 
-        static VALUE    actionFromString(const std::string& string);
+        static VALUE    valueFromString(const std::string& string);
         static MODIFIER modifierFromString(const std::string& string);
 
         static std::string stringFromModifier(MODIFIER modifier);
         static std::string stringFromAction(VALUE modifier);
 
-        static Action fromString(const std::string& string);
-        static bool   canParse(const std::string& string);
+        static Command fromString(const std::string& string);
+        static bool    canParse(const std::string& string);
 
-        static const std::map<std::string, VALUE>    m_actionMap;
+        static const std::map<std::string, VALUE>    m_valueMap;
         static const std::map<std::string, MODIFIER> m_modifierMap;
 
         VALUE              m_value    = VALUE::MOVE_UP;
@@ -36,4 +36,4 @@ namespace model {
     };
 } // namespace model
 
-#endif // BLOCKS_ACTION_H
+#endif // BLOCKS_COMMAND_H

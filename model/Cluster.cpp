@@ -33,26 +33,26 @@ namespace model {
         }
         assert(m_actionIndex < m_actions.size());
         resetPhase();
-        if (m_actions.at(m_actionIndex).m_value == Action::VALUE::SKIP) {
+        if (m_actions.at(m_actionIndex).m_value == Command::VALUE::SKIP) {
             return;
         }
         m_phase = PHASE::TRANSLATING;
         std::set<GridXY> newGridXYSet;
         for (auto& idx : m_gridXYVector) {
             switch (m_actions[m_actionIndex].m_value) {
-                case Action::VALUE::MOVE_UP:
+                case Command::VALUE::MOVE_UP:
                     newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::UP));
                     m_worldOffset = {0, cst::BLOCK_SIZE_IN_WORLD};
                     break;
-                case Action::VALUE::MOVE_DOWN:
+                case Command::VALUE::MOVE_DOWN:
                     newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::DOWN));
                     m_worldOffset = {0, -cst::BLOCK_SIZE_IN_WORLD};
                     break;
-                case Action::VALUE::MOVE_LEFT:
+                case Command::VALUE::MOVE_LEFT:
                     newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::LEFT));
                     m_worldOffset = {cst::BLOCK_SIZE_IN_WORLD, 0};
                     break;
-                case Action::VALUE::MOVE_RIGHT:
+                case Command::VALUE::MOVE_RIGHT:
                     newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::RIGHT));
                     m_worldOffset = {-cst::BLOCK_SIZE_IN_WORLD, 0};
                     break;
@@ -85,37 +85,37 @@ namespace model {
         }
     }
 
-    Action Cluster::rotateActionClockWise(Action action) {
+    Command Cluster::rotateActionClockWise(Command action) {
         switch (action.m_value) {
-            case Action::VALUE::MOVE_UP:
-                return Action{Action::VALUE::MOVE_RIGHT, action.m_modifier};
-            case Action::VALUE::MOVE_DOWN:
-                return Action{Action::VALUE::MOVE_LEFT, action.m_modifier};
-            case Action::VALUE::MOVE_LEFT:
-                return Action{Action::VALUE::MOVE_UP, action.m_modifier};
-            case Action::VALUE::MOVE_RIGHT:
-                return Action{Action::VALUE::MOVE_DOWN, action.m_modifier};
+            case Command::VALUE::MOVE_UP:
+                return Command{Command::VALUE::MOVE_RIGHT, action.m_modifier};
+            case Command::VALUE::MOVE_DOWN:
+                return Command{Command::VALUE::MOVE_LEFT, action.m_modifier};
+            case Command::VALUE::MOVE_LEFT:
+                return Command{Command::VALUE::MOVE_UP, action.m_modifier};
+            case Command::VALUE::MOVE_RIGHT:
+                return Command{Command::VALUE::MOVE_DOWN, action.m_modifier};
             default:
                 return action;
         }
     }
 
-    Action Cluster::rotateActionCounterClockWise(Action action) {
+    Command Cluster::rotateActionCounterClockWise(Command action) {
         switch (action.m_value) {
-            case Action::VALUE::MOVE_UP:
-                return {Action::VALUE::MOVE_LEFT, action.m_modifier};
-            case Action::VALUE::MOVE_DOWN:
-                return {Action::VALUE::MOVE_RIGHT, action.m_modifier};
-            case Action::VALUE::MOVE_LEFT:
-                return {Action::VALUE::MOVE_DOWN, action.m_modifier};
-            case Action::VALUE::MOVE_RIGHT:
-                return {Action::VALUE::MOVE_UP, action.m_modifier};
+            case Command::VALUE::MOVE_UP:
+                return {Command::VALUE::MOVE_LEFT, action.m_modifier};
+            case Command::VALUE::MOVE_DOWN:
+                return {Command::VALUE::MOVE_RIGHT, action.m_modifier};
+            case Command::VALUE::MOVE_LEFT:
+                return {Command::VALUE::MOVE_DOWN, action.m_modifier};
+            case Command::VALUE::MOVE_RIGHT:
+                return {Command::VALUE::MOVE_UP, action.m_modifier};
             default:
                 return action;
         }
     }
 
-    void Cluster::addAction(Action action) {
+    void Cluster::addAction(Command action) {
         m_actions.push_back(action);
     }
 
@@ -147,7 +147,7 @@ namespace model {
             kill();
             return;
         }
-        if (((not m_actions.empty()) && m_actions.at(m_actionIndex).m_modifier == Action::MODIFIER::IGNORE) ||
+        if (((not m_actions.empty()) && m_actions.at(m_actionIndex).m_modifier == Command::MODIFIER::IGNORE) ||
             m_pendingOperations.empty()) {
             doAction();
             m_pendingOperations.clear();
@@ -176,7 +176,7 @@ namespace model {
         return m_rotationPivot;
     }
 
-    const std::vector<Action>& Cluster::actions() const {
+    const std::vector<Command>& Cluster::actions() const {
         return m_actions;
     }
 
@@ -261,6 +261,7 @@ namespace model {
         }
         if (m_pendingOperations.size() > 1) {
             kill();
+            return;
         }
         switch (m_pendingOperations.begin()->second) {
             case Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
@@ -289,17 +290,11 @@ namespace model {
         if (m_gridXYVector.size() == 1) {
             return true;
         }
-        auto       copy = *this;
-        const auto r    = copy.grabSecondComponent();
-        if (copy.blockCount() == blockCount()) {
-            assert(r.empty());
-            return true;
-        } else {
-            return false;
-        }
+        auto copy = *this;
+        return copy.grabAllButFirstComponent().empty();
     }
 
-    model::Cluster Cluster::grabSecondComponent() {
+    model::Cluster Cluster::grabAllButFirstComponent() {
         assert(not empty());
         assert(gridXUYAreUnique());
 
@@ -363,7 +358,7 @@ namespace model {
                 incrementActionIndex();
                 break;
             case PHASE::ROTATING:
-                if ((not m_actions.empty()) && m_actions[m_actionIndex].m_modifier == Action::MODIFIER::INCREMENT) {
+                if ((not m_actions.empty()) && m_actions[m_actionIndex].m_modifier == Command::MODIFIER::INCREMENT) {
                     incrementActionIndex();
                 }
                 break;
@@ -449,6 +444,18 @@ namespace model {
 
     bool Cluster::intersects(const Cluster& other, int shrinkInWorld) const {
         return alg::intersect(sides(shrinkInWorld), other.sides(shrinkInWorld));
+    }
+
+    std::list<Cluster> Cluster::collectAllButFirstComponent() {
+        std::list<Cluster> result;
+        result.emplace_back(grabAllButFirstComponent());
+        while (not result.back().empty()) {
+            result.emplace_back(result.back().grabAllButFirstComponent());
+        }
+        assert(result.back().empty());
+        result.pop_back();
+        assert(isConnected());
+        return result;
     }
 
 } // namespace model

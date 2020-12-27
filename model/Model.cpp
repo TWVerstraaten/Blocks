@@ -5,6 +5,7 @@
 #include "Model.h"
 
 #include "../global/fns.h"
+#include "Actions/ClearBlockAction.h"
 
 #include <algorithm>
 #include <cassert>
@@ -14,11 +15,11 @@ namespace model {
     Model::Model() {
     }
 
-    const std::vector<Cluster>& Model::clusters() const {
+    const std::list<Cluster>& Model::clusters() const {
         return m_clusters;
     }
 
-    std::vector<model::Cluster>& Model::clusters() {
+    std::list<Cluster>& Model::clusters() {
         return m_clusters;
     }
 
@@ -35,20 +36,30 @@ namespace model {
     }
 
     void Model::interactClustersWithInstantBlocks() {
-        for (auto& cluster : m_clusters) {
-            for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end();) {
-                switch (m_level.instantBlockAt(GridXY(it->x(), it->y()))) {
-                    case Level::INSTANT_BLOCK_TYPE::KILL:
-                        it = cluster.removeBLock(*it);
-                        break;
-                    default:
-                        ++it;
-                        break;
-                }
+        for (const auto& block : m_level.instantBlocks()) {
+            switch (block.second) {
+                case Level::INSTANT_BLOCK_TYPE::NONE:
+                    break;
+                case Level::INSTANT_BLOCK_TYPE::KILL:
+                    clearBlock(block.first);
+                    break;
             }
         }
-        clearEmptyClusters();
-        splitDisconnectedClusters();
+        assert(not containsEmptyClusters());
+        //        for (auto& cluster : m_clusters) {
+        //            for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end();) {
+        //                switch (m_level.instantBlockAt(GridXY(it->x(), it->y()))) {
+        //                    case Level::INSTANT_BLOCK_TYPE::KILL:
+        //                        it = cluster.removeBLock(*it);
+        //                        break;
+        //                    default:
+        //                        ++it;
+        //                        break;
+        //                }
+        //            }
+        //        }
+        //        clearEmptyClusters();
+        //        splitDisconnectedClusters();
     }
 
     void Model::intersectWithLevel() {
@@ -60,7 +71,7 @@ namespace model {
         }
     }
 
-    const model::Level& Model::level() const {
+    const Level& Model::level() const {
         return m_level;
     }
 
@@ -80,7 +91,7 @@ namespace model {
     void Model::init() {
         clear();
         m_clusters.push_back(Cluster({{5, 5}, {3, 5}, {5, 6}, {6, 5}, {4, 5}, {5, 4}}, "CL" + std::to_string(m_clusters.size())));
-        m_clusters.back().addAction({Action::VALUE::MOVE_UP, Action::MODIFIER::NONE});
+        m_clusters.back().addAction({Command::VALUE::MOVE_UP, Command::MODIFIER::NONE});
 
         m_level.addBlock({5, 3}, Level::INSTANT_BLOCK_TYPE::KILL);
 
@@ -124,12 +135,13 @@ namespace model {
     }
 
     void Model::splitDisconnectedClusters() {
-        for (size_t i = 0; i != m_clusters.size(); ++i) {
-            m_clusters.push_back(m_clusters[i].grabSecondComponent());
-            if (m_clusters.back().empty()) {
-                m_clusters.erase(m_clusters.end());
+        for (auto it = m_clusters.begin(); it != m_clusters.end(); ++it) {
+            if (not it->isConnected()) {
+                m_clusters.splice(m_clusters.end(), it->collectAllButFirstComponent());
+                assert(it->isConnected());
             }
         }
+        assert(not containsEmptyClusters());
     }
 
     void Model::preStep() {
@@ -167,14 +179,27 @@ namespace model {
         }
     }
 
-    void Model::clearBlock(const GridXY& gridXY) {
+    std::unique_ptr<action::ClearBlockAction> Model::clearBlock(const GridXY& gridXY) {
         const auto it = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); });
         if (it == m_clusters.end()) {
-            return;
+            return nullptr;
         }
         it->removeBLock(gridXY);
-        clearEmptyClusters();
-        splitDisconnectedClusters();
+        if (it->empty()) {
+            m_clusters.erase(it);
+        } else {
+            if (not it->isConnected()) {
+                auto              newComponents = it->collectAllButFirstComponent();
+                std::list<size_t> newIndices;
+                for (const auto& cluster : newComponents) {
+                    newIndices.push_back(cluster.index());
+                }
+                m_clusters.splice(m_clusters.end(), newComponents);
+                assert(it->isConnected());
+                return std::make_unique<action::ClearBlockAction>(action::ClearBlockAction(it->index(), gridXY, std::move(newIndices)));
+            }
+        }
+        return std::make_unique<action::ClearBlockAction>(action::ClearBlockAction(it->index(), gridXY, {}));
     }
 
     Model& Model::operator=(const Model& other) {
@@ -218,18 +243,22 @@ namespace model {
         if (m_clusters.size() == 1) {
             return;
         }
-        for (size_t i = 0; i + 1 != m_clusters.size(); ++i) {
-            for (size_t j = i + 1; j != m_clusters.size(); ++j) {
-                if (not(m_clusters.at(i).isAlive() || m_clusters.at(j).isAlive())) {
+
+        for (auto cluster1 = m_clusters.begin(); cluster1 != m_clusters.end(); ++cluster1) {
+            for (auto cluster2 = std::next(cluster1); cluster2 != m_clusters.end(); ++cluster2) {
+                if (not(cluster1->isAlive() || cluster2->isAlive())) {
                     continue;
                 }
-
-                if (m_clusters.at(i).intersects(m_clusters.at(j), cst::BLOCK_SHRINK_IN_WORLD)) {
-                    m_clusters[i].kill();
-                    m_clusters[j].kill();
+                if (cluster1->intersects(*cluster2, cst::BLOCK_SHRINK_IN_WORLD)) {
+                    cluster1->kill();
+                    cluster2->kill();
                 }
             }
         }
+    }
+
+    bool Model::containsEmptyClusters() const {
+        return std::any_of(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); });
     }
 
 } // namespace model

@@ -6,8 +6,8 @@
 
 #include "../../global/cst.h"
 #include "../../global/fns.h"
-#include "../../model/Action.h"
 #include "../../model/Cluster.h"
+#include "../../model/Command.h"
 #include "../Assets.h"
 
 #include <algorithm>
@@ -19,8 +19,8 @@ view::widget::ActionEditBox::ActionEditBox(
         m_strings.emplace_back("");
     } else {
         for (const auto& action : cluster.actions()) {
-            m_strings.emplace_back(model::Action::stringFromModifier(action.m_modifier) + " " +
-                                   model::Action::stringFromAction(action.m_value));
+            m_strings.emplace_back(model::Command::stringFromModifier(action.m_modifier) + " " +
+                                   model::Command::stringFromAction(action.m_value));
         }
     }
 }
@@ -28,11 +28,11 @@ view::widget::ActionEditBox::ActionEditBox(
 void view::widget::ActionEditBox::updateClusterActions(model::Cluster& cluster) {
     cluster.clearActions();
     for (const auto& str : m_strings) {
-        if (model::Action::canParse(str)) {
+        if (model::Command::canParse(str)) {
             if (fns::trimWhiteSpace(str).empty()) {
                 continue;
             }
-            cluster.addAction(model::Action::fromString(str));
+            cluster.addAction(model::Command::fromString(str));
         }
     }
 }
@@ -48,7 +48,7 @@ void view::widget::ActionEditBox::update(SDL_Renderer* renderer) {
     for (auto& str : m_strings) {
         m_yOffsets.push_back(yOffset);
         const auto text     = str.length() == 0 ? std::string(" ") : str;
-        bool       canParse = model::Action::canParse(str);
+        bool       canParse = model::Command::canParse(str);
         m_textures.emplace_back(Texture::createFromText(
             text, canParse ? cst::color::BLACK : cst::color::TEXT_ERROR, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
         yOffset += m_textures.back()->height();
@@ -59,13 +59,13 @@ void view::widget::ActionEditBox::update(SDL_Renderer* renderer) {
 }
 
 bool view::widget::ActionEditBox::canParse() const {
-    return std::all_of(m_strings.begin(), m_strings.end(), &model::Action::canParse);
+    return std::all_of(m_strings.begin(), m_strings.end(), &model::Command::canParse);
 }
 
 void view::widget::ActionEditBox::loseFocus() {
     for (auto& str : m_strings) {
-        if (model::Action::canParse(str)) {
-            str = model::Action::formatActionString(str);
+        if (model::Command::canParse(str)) {
+            str = model::Command::formatActionString(str);
         }
     }
 

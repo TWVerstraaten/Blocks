@@ -12,7 +12,7 @@
 #include <list>
 #include <memory>
 
-namespace view::widget {
+namespace view { namespace widget {
     class ScrollArea : public RectWidget {
 
       public:
@@ -42,6 +42,6 @@ namespace view::widget {
         const Assets*            m_assets;
         std::list<ActionEditBox> m_children;
     };
-} // namespace view::widget
+} } // namespace view::widget
 
 #endif // BLOCKS_SCROLLAREA_H

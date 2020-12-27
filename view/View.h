@@ -39,7 +39,7 @@ namespace view {
         const ViewPort&                   viewPort() const;
         std::list<widget::ActionEditBox>& actionEditBoxes();
         SDL_Renderer*                     renderer() const;
-        Assets&                           assets() const;
+        Assets*                           assets() const;
         void                              drawRectangle(const ScreenXY& point, int width, int height, const SDL_Color& color) const;
         void      drawRectangle(const model::WorldXY& point, int widthInWorld, int heightInWorld, const SDL_Color& color) const;
         void      drawPoint(const ScreenXY& point, const SDL_Color& color, int pointSize) const;
@@ -50,12 +50,12 @@ namespace view {
         void      drawVerticalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, Uint32 lineThickness) const;
         void      clear();
         void      initActionBoxes(const std::vector<model::Cluster>& clusters);
-        void      updateActionBoxes(const std::vector<model::Cluster>& clusters);
+        void      updateActionBoxes(const std::list<model::Cluster>& clusters);
         SDL_Point windowSize() const;
         widget::ScrollArea& scrollArea();
 
       private:
-        void drawClusters(const std::vector<model::Cluster>& clusters);
+        void drawClusters(const std::list<model::Cluster>& clusters);
         void drawLevel(const model::Level& level) const;
         void drawBlocks(const model::Level& level) const;
         void drawActionEditBoxes();

@@ -24,6 +24,7 @@ namespace view {
         Assets(const Assets& other) = delete;
 
         void init(SDL_Renderer* renderer);
+        bool initialized() const;
 
         bool renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
                            const SDL_Rect&              destination,
@@ -56,14 +57,15 @@ namespace view {
                                   SDL_RendererFlip flip   = SDL_FLIP_NONE);
         void        renderText(const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer);
 
-        const Font* font(FONT_ENUM fontEnum) const;
-
+        const Font*                         font(FONT_ENUM fontEnum) const;
         static TextureWrapper::TEXTURE_ENUM getTextureEnum(model::Level::DYNAMIC_BLOCK_TYPE type);
+
         static TextureWrapper::TEXTURE_ENUM getTextureEnum(model::Level::INSTANT_BLOCK_TYPE type);
 
       private:
         void loadTextureWrapper(TextureWrapper::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
 
+        bool                                                   m_initialized = false;
         std::map<TextureWrapper::TEXTURE_ENUM, TextureWrapper> m_textures;
         std::map<FONT_ENUM, std::unique_ptr<Font>>             m_fonts;
     };

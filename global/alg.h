@@ -18,13 +18,15 @@ namespace alg {
 
     template <typename XY>
     std::set<model::Line<XY>> getSidesInGridXY(std::set<model::GridXY> blocks) {
-        std::set<model::Line<XY>> result;
-        std::vector<model::GridXY>     cornerPoints;
-        int                            yOffset = 0;
+        std::set<model::Line<XY>>  result;
+        std::vector<model::GridXY> cornerPoints;
+        int                        yOffset = 0;
         for (const auto& dir : {enums::DIRECTION::UP, enums::DIRECTION::DOWN}) {
             auto it = blocks.begin();
             while (it != blocks.end()) {
-                if (blocks.find(it->neighbor(dir)) == blocks.end()) {
+                if (blocks.find(it->neighbor(dir)) != blocks.end()) {
+                    ++it;
+                } else {
                     const model::GridXY start = *it;
                     int                 idx   = it->x();
                     do {
@@ -35,8 +37,6 @@ namespace alg {
                     result.emplace(XY(start) + model::GridXY{0, yOffset}, XY(model::GridXY{idx, start.y()} + model::GridXY{0, yOffset}));
                     cornerPoints.emplace_back(start + model::GridXY{0, yOffset});
                     cornerPoints.emplace_back(model::GridXY{idx, start.y()} + model::GridXY{0, yOffset});
-                } else {
-                    ++it;
                 }
             }
             ++yOffset;
