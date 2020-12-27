@@ -7,6 +7,9 @@
 
 #include "../model/Model.h"
 #include "../view/View.h"
+#include "../view/widget/ScrollArea.h"
+
+class Application_Edit;
 
 class Application_Level {
 
@@ -16,11 +19,12 @@ class Application_Level {
     enum class RUN_MODE { QUIT, RUNNING, COMPLETED, FAILED, GIVE_UP };
     enum class EDIT_MODE { QUIT, EDITING, DONE_EDITING };
 
-    void run();
+    void        run();
+    static void updateCommandScrollArea(const std::list<model::Cluster>& clusters, view::widget::ScrollArea* scrollArea);
 
   private:
-    Application_Level::RUN_MODE runLevel();
-    EDIT_MODE                   editLevel();
+    Application_Level::RUN_MODE  runLevel();
+    Application_Level::EDIT_MODE editLevel(Application_Edit& editApp);
 
     Uint32                   m_timeStep            = cst::TIME_STEP_SLOW;
     bool                     m_pauseAfterFirstStep = false;

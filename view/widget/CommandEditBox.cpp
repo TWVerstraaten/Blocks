@@ -2,52 +2,51 @@
 // Created by pc on 23-12-20.
 //
 
-#include "ActionEditBox.h"
+#include "CommandEditBox.h"
 
 #include "../../global/cst.h"
 #include "../../global/fns.h"
 #include "../../model/Cluster.h"
-#include "../../model/Command.h"
 #include "../Assets.h"
 
 #include <algorithm>
 
-view::widget::ActionEditBox::ActionEditBox(
+view::widget::CommandEditBox::CommandEditBox(
     int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
     : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())), m_clusterIndex(cluster.index()) {
-    if (cluster.actions().empty()) {
+    if (cluster.commands().empty()) {
         m_strings.emplace_back("");
     } else {
-        for (const auto& action : cluster.actions()) {
+        for (const auto& action : cluster.commands()) {
             m_strings.emplace_back(model::Command::stringFromModifier(action.m_modifier) + " " +
-                                   model::Command::stringFromAction(action.m_value));
+                                   model::Command::stringFromType(action.m_type));
         }
     }
 }
 
-view::widget::ActionEditBox::ActionEditBox(const view::widget::ActionEditBox& other)
+view::widget::CommandEditBox::CommandEditBox(const view::widget::CommandEditBox& other)
     : LineEditBox(other.m_rect.x, other.m_rect.y, other.m_rect.w, other.m_rect.h, other.m_assets, other.m_title),
       m_clusterIndex(other.m_clusterIndex) {
     m_strings = other.m_strings;
 }
 
-void view::widget::ActionEditBox::updateClusterActions(model::Cluster& cluster) {
-    cluster.clearActions();
+void view::widget::CommandEditBox::updateClusterCommands(model::Cluster& cluster) {
+    cluster.clearCommands();
     for (const auto& str : m_strings) {
         if (model::Command::canParse(str)) {
             if (fns::trimWhiteSpace(str).empty()) {
                 continue;
             }
-            cluster.addAction(model::Command::fromString(str));
+            cluster.addCommand(model::Command::fromString(str));
         }
     }
 }
 
-size_t view::widget::ActionEditBox::clusterIndex() const {
+size_t view::widget::CommandEditBox::clusterIndex() const {
     return m_clusterIndex;
 }
 
-void view::widget::ActionEditBox::update(SDL_Renderer* renderer) {
+void view::widget::CommandEditBox::update(SDL_Renderer* renderer) {
     LineEditBox::update(renderer);
 
     int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
@@ -64,14 +63,14 @@ void view::widget::ActionEditBox::update(SDL_Renderer* renderer) {
     m_needsUpdate = false;
 }
 
-bool view::widget::ActionEditBox::canParse() const {
+bool view::widget::CommandEditBox::canParse() const {
     return std::all_of(m_strings.begin(), m_strings.end(), &model::Command::canParse);
 }
 
-void view::widget::ActionEditBox::loseFocus() {
+void view::widget::CommandEditBox::loseFocus() {
     for (auto& str : m_strings) {
         if (model::Command::canParse(str)) {
-            str = model::Command::formatActionString(str);
+            str = model::Command::formatCommandString(str);
         }
     }
 

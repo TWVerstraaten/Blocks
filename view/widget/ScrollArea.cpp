@@ -100,7 +100,7 @@ void view::widget::ScrollArea::mouseWheelEvent(const SDL_Event& event) {
     setHeightAndPositions();
 }
 
-view::widget::ActionEditBox* view::widget::ScrollArea::widgetUnderMouse() {
+view::widget::CommandEditBox* view::widget::ScrollArea::widgetUnderMouse() {
     auto mousePosition = Mouse::getMouseXY();
     for (auto& w : m_children) {
         if (w.pointIsOverWidget(mousePosition)) {
@@ -111,8 +111,8 @@ view::widget::ActionEditBox* view::widget::ScrollArea::widgetUnderMouse() {
     return nullptr;
 }
 
-view::widget::ActionEditBox* view::widget::ScrollArea::focusedWidget() {
-    ActionEditBox* result = nullptr;
+view::widget::CommandEditBox* view::widget::ScrollArea::focusedWidget() {
+    CommandEditBox* result = nullptr;
     for (auto& w : m_children) {
         if (w.hasFocus()) {
             return &w;
@@ -123,22 +123,20 @@ view::widget::ActionEditBox* view::widget::ScrollArea::focusedWidget() {
 
 void view::widget::ScrollArea::update(SDL_Renderer* renderer) {
     for (auto& w : m_children) {
-        std::cout << w.width() << " " << w.height() << '\n';
         w.update(renderer);
-        std::cout << "Result:\t" << w.width() << " " << w.height() << '\n';
     }
     setHeightAndPositions();
     m_needsUpdate = false;
 }
 
 void view::widget::ScrollArea::addActionBox(const model::Cluster& cluster) {
-    m_children.emplace_back(ActionEditBox(m_rect.x + cst::LINE_EDIT_PADDING, 0, cst::LINE_EDIT_WIDTH, 0, m_assets, cluster));
-    m_children.back().setHighLightedLine(cluster.actionIndex());
+    m_children.emplace_back(CommandEditBox(m_rect.x + cst::LINE_EDIT_PADDING, 0, cst::LINE_EDIT_WIDTH, 0, m_assets, cluster));
+    m_children.back().setHighLightedLine(cluster.commandIndex());
     m_children.back().setActive(cluster.isAlive());
     m_needsUpdate = true;
 }
 
-std::list<view::widget::ActionEditBox>& view::widget::ScrollArea::children() {
+std::list<view::widget::CommandEditBox>& view::widget::ScrollArea::children() {
     return m_children;
 }
 
@@ -154,4 +152,13 @@ void view::widget::ScrollArea::renderScrollBar(SDL_Renderer* renderer) {
                           cst::color::BLACK,
                           renderer);
     }
+}
+
+view::widget::ScrollArea::ScrollArea(const view::widget::ScrollArea& other) : RectWidget(other.m_rect), m_children(other.m_children) {
+    m_rect           = other.m_rect;
+    m_needsUpdate    = other.m_needsUpdate;
+    m_firstRender    = other.m_firstRender;
+    m_scrollFraction = other.m_scrollFraction;
+    m_height         = other.m_height;
+    m_assets         = other.m_assets;
 }

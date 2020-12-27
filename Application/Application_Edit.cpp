@@ -24,6 +24,25 @@ void Application_Edit::mouseWheelEvent(const SDL_Event& event) {
 }
 
 void Application_Edit::keyEvent(const SDL_Event& event) {
+    if (event.type == SDL_KEYDOWN) {
+        if (SDL_GetModState() & KMOD_CTRL) {
+            if (event.key.keysym.sym == SDLK_z) {
+                if (not m_undoStack.empty()) {
+                    m_undoStack.top()->undoAction(*this);
+                    m_redoStack.push(std::move(m_undoStack.top()));
+                    m_undoStack.pop();
+                    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea);
+                }
+            } else if (event.key.keysym.sym == SDLK_r) {
+                if (not m_redoStack.empty()) {
+                    m_redoStack.top()->redoAction(*this);
+                    m_undoStack.push(std::move(m_redoStack.top()));
+                    m_redoStack.pop();
+                    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea);
+                }
+            }
+        }
+    }
     if (m_scrollArea->hasFocus()) {
         m_scrollArea->keyEvent(event);
     }
@@ -44,7 +63,7 @@ void Application_Edit::mouseClickEvent(const SDL_Event& event) {
             if (SDL_GetModState() & KMOD_CTRL) {
                 clearBlock(m_previousGridClickPosition);
             } else {
-                addBlock(m_previousGridClickPosition);
+                addAction(m_model->addBlock(m_previousGridClickPosition));
             }
         }
     }
@@ -85,12 +104,12 @@ void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
 void Application_Edit::init() {
     SDL_StartTextInput();
     m_view->clear();
-    m_view->updateActionBoxes(m_model->clusters(), m_scrollArea);
+    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea);
     m_scrollArea->update(m_view->renderer());
 }
 
 bool Application_Edit::canStart() const {
-    return std::all_of(m_scrollArea->children().begin(), m_scrollArea->children().end(), [](const view::widget::ActionEditBox& box) {
+    return std::all_of(m_scrollArea->children().begin(), m_scrollArea->children().end(), [](const view::widget::CommandEditBox& box) {
         return box.canParse();
     });
 }
@@ -99,7 +118,7 @@ void Application_Edit::getActionsFromEditBoxes() {
     assert(m_model->clusters().size() == m_scrollArea->children().size());
     auto actionEditIt = m_scrollArea->children().begin();
     for (auto& cluster : m_model->clusters()) {
-        actionEditIt->updateClusterActions(cluster);
+        actionEditIt->updateClusterCommands(cluster);
         ++actionEditIt;
     }
 }
@@ -157,7 +176,6 @@ bool Application_Edit::hasFocus() {
 void Application_Edit::clearBlock(const model::GridXY& gridXY) {
     if (m_model->level().isFreeStartBlock(gridXY)) {
         m_model->clearBlock(gridXY);
-        m_view->updateActionBoxes(m_model->clusters(), m_scrollArea);
     }
 }
 
@@ -166,11 +184,15 @@ void Application_Edit::addBlock(const model::GridXY& gridXY) {
         return;
     }
     if (m_model->level().isFreeStartBlock(m_previousGridClickPosition)) {
-        m_model->linkBlocks(m_previousGridClickPosition, gridXY);
+        addAction(m_model->linkBlocks(m_previousGridClickPosition, gridXY));
     } else {
-        m_model->addBlock(gridXY);
+
+        auto a = m_model->addBlock(gridXY);
+        if (a) {
+            m_undoStack.push(std::move(a));
+        }
     }
-    m_view->updateActionBoxes(m_model->clusters(), m_scrollArea);
+    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea);
 }
 
 void Application_Edit::handleLeftMouseMove() {
@@ -185,7 +207,7 @@ void Application_Edit::handleLeftMouseMove() {
         }
         m_previousGridClickPosition = currentGridPosition;
     }
-    m_view->updateActionBoxes(m_model->clusters(), m_scrollArea);
+    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea);
 }
 
 void Application_Edit::handleRightMouseMove() {
@@ -209,5 +231,14 @@ void Application_Edit::setButtonBooleans(const SDL_Event& event) {
             break;
         default:
             break;
+    }
+}
+model::Model* Application_Edit::model() const {
+    return m_model;
+}
+void Application_Edit::addAction(std::unique_ptr<model::action::Action>&& action) {
+    if (action) {
+        m_undoStack.push(std::move(action));
+        m_redoStack = {};
     }
 }

@@ -248,37 +248,6 @@ namespace view {
         return m_assets.get();
     }
 
-    void View::updateActionBoxes(const std::list<model::Cluster>& clusters, view::widget::ScrollArea* scrollArea) {
-        scrollArea->children().remove_if([&](const widget::ActionEditBox& box) {
-            return std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) {
-                       return cluster.index() == box.clusterIndex();
-                   }) == clusters.end();
-        });
-
-        for (auto& actionBox : scrollArea->children()) {
-            auto it = std::find_if(
-                clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.index() == actionBox.clusterIndex(); });
-            assert(it != clusters.end());
-            if (it->isAlive()) {
-                actionBox.setHighLightedLine(it->actionIndex());
-            }
-            actionBox.setActive(it->isAlive());
-        }
-        auto it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
-            return std::find_if(scrollArea->children().begin(), scrollArea->children().end(), [&](const widget::ActionEditBox& box) {
-                       return box.clusterIndex() == cluster.index();
-                   }) == scrollArea->children().end();
-        });
-        while (it != clusters.end()) {
-            scrollArea->addActionBox(*it);
-            it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
-                return std::find_if(scrollArea->children().begin(), scrollArea->children().end(), [&](const widget::ActionEditBox& box) {
-                           return box.clusterIndex() == cluster.index();
-                       }) == scrollArea->children().end();
-            });
-        }
-    }
-
     void View::renderClusterName(const model::Cluster& cluster) {
         const auto worldPosition =
             geom::rotateAboutPivot(cluster.dynamicWorldOffset() + *cluster.gridXY().begin(), cluster.rotationPivot(), -cluster.angle());

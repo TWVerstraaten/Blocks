@@ -6,7 +6,7 @@
 #define BLOCKS_SCROLLAREA_H
 
 #include "../Assets.h"
-#include "ActionEditBox.h"
+#include "CommandEditBox.h"
 #include "RectWidget.h"
 
 #include <list>
@@ -18,14 +18,7 @@ namespace view {
 
           public:
             ScrollArea(const SDL_Rect& rect);
-            ScrollArea(const ScrollArea& other) : RectWidget(other.m_rect), m_children(other.m_children) {
-                m_rect           = other.m_rect;
-                m_needsUpdate    = other.m_needsUpdate;
-                m_firstRender    = other.m_firstRender;
-                m_scrollFraction = other.m_scrollFraction;
-                m_height         = other.m_height;
-                m_assets         = other.m_assets;
-            }
+            ScrollArea(const ScrollArea& other);
             //            ScrollArea(SDL_Rect rect, const view::widget::ScrollArea& other);
 
             void                                    update(SDL_Renderer* renderer) override;
@@ -37,12 +30,12 @@ namespace view {
             void                                    mouseDragEvent(const SDL_Event& event) override;
             void                                    mouseWheelEvent(const SDL_Event& event) override;
             void                                    addActionBox(const model::Cluster& cluster);
-            std::list<view::widget::ActionEditBox>& children();
+            void                                    setHeightAndPositions();
+            std::list<view::widget::CommandEditBox>& children();
 
           private:
-            void           setHeightAndPositions();
-            ActionEditBox* widgetUnderMouse();
-            ActionEditBox* focusedWidget();
+            CommandEditBox* widgetUnderMouse();
+            CommandEditBox* focusedWidget();
             void           renderScrollBar(SDL_Renderer* renderer);
 
             bool                     m_needsUpdate    = true;
@@ -50,7 +43,7 @@ namespace view {
             double                   m_scrollFraction = 0.0;
             size_t                   m_height         = 0;
             const Assets*            m_assets;
-            std::list<ActionEditBox> m_children;
+            std::list<CommandEditBox> m_children;
         };
     } // namespace widget
 } // namespace view

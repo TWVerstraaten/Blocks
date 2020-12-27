@@ -2,8 +2,8 @@
 // Created by pc on 23-12-20.
 //
 
-#ifndef BLOCKS_ACTIONEDITBOX_H
-#define BLOCKS_ACTIONEDITBOX_H
+#ifndef BLOCKS_COMMANDEDITBOX_H
+#define BLOCKS_COMMANDEDITBOX_H
 
 #include "LineEditBox.h"
 
@@ -13,15 +13,15 @@ namespace model {
 
 namespace view {
     namespace widget {
-        class ActionEditBox : public LineEditBox {
+        class CommandEditBox : public LineEditBox {
 
           public:
-            ActionEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, const model::Cluster& cluster);
-            ActionEditBox(const ActionEditBox& other);
+            CommandEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, const model::Cluster& cluster);
+            CommandEditBox(const CommandEditBox& other);
 
             void   loseFocus() override;
             void   update(SDL_Renderer* renderer) override;
-            void   updateClusterActions(model::Cluster& cluster);
+            void   updateClusterCommands(model::Cluster& cluster);
             size_t clusterIndex() const;
             bool   canParse() const;
 
@@ -32,4 +32,4 @@ namespace view {
     } // namespace widget
 } // namespace view
 
-#endif // BLOCKS_ACTIONEDITBOX_H
+#endif // BLOCKS_COMMANDEDITBOX_H

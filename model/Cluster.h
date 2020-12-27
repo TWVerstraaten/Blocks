@@ -11,6 +11,7 @@
 #include "WorldXY.h"
 
 #include <functional>
+#include <iostream>
 #include <list>
 #include <set>
 #include <vector>
@@ -36,20 +37,20 @@ namespace model {
         Cluster& operator=(Cluster&& other) = default;
 
         /****** CONST GETTERS  ******/
-        double                     angle() const;
-        size_t                     index() const;
-        size_t                     actionIndex() const;
-        size_t                     blockCount() const;
-        PHASE                      phase() const;
-        WorldXY                    dynamicWorldOffset() const;
-        std::string                string() const;
-        std::set<WorldXY>          cornerPoints(int shrinkInWorld) const;
-        std::set<Line<WorldXY>>    sides(int shrinkInWorld) const;
-        std::set<GridXY>&          gridXY();
-        const GridXY&              rotationPivot() const;
-        const std::string&         name() const;
-        const std::set<GridXY>&    gridXY() const;
-        const std::vector<Command>& actions() const;
+        double                      angle() const;
+        size_t                      index() const;
+        size_t                      commandIndex() const;
+        size_t                      size() const;
+        PHASE                       phase() const;
+        WorldXY                     dynamicWorldOffset() const;
+        std::string                 string() const;
+        std::set<WorldXY>           cornerPoints(int shrinkInWorld) const;
+        std::set<Line<WorldXY>>     sides(int shrinkInWorld) const;
+        std::set<GridXY>&           gridXY();
+        const GridXY&               rotationPivot() const;
+        const std::string&          name() const;
+        const std::set<GridXY>&     gridXY() const;
+        const std::vector<Command>& commands() const;
 
         /****** CONST FUNCTIONS  ******/
         bool                                  empty() const;
@@ -62,17 +63,20 @@ namespace model {
         /****** NON CONST FUNCTIONS  ******/
         void                       addGridXY(const GridXY& gridXY);
         void                       preStep();
-        void                       doAction();
+        void                       doCommand();
         void                       addPendingOperation(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType);
-        void                       performPendingOperationOrNextAction();
-        void                       update(double dPhase);
-        void                       addAction(Command action);
+        void                       performPendingOperationOrNextCommand();
+        void                       update(double phaseFraction);
+        void                       addCommand(Command command);
         void                       kill();
-        void                       clearActions();
+        void                       clearCommands();
         void                       collideWithLevel(const Level& level, int shrinkInWorld);
         model::Cluster             grabAllButFirstComponent();
         std::set<GridXY>::iterator removeBLock(const GridXY& gridXY);
         std::list<Cluster>         collectAllButFirstComponent();
+
+        /****** FRIENDS  ******/
+        friend std::ostream& operator<<(std::ostream& out, const Cluster& other);
 
       private:
         /****** PRIVATE  CONST FUNCTIONS  ******/
@@ -83,26 +87,26 @@ namespace model {
         void rotateCounterClockWiseAbout(const GridXY& pivotGridXY);
         void resetPhase();
         void setRotation(double angle, const GridXY& pivot);
-        void incrementActionIndex();
+        void incrementCommandIndex();
         void tryPendingOperation();
 
         /****** PRIVATE STATIC FUNCTIONS  ******/
-        static Command rotateActionClockWise(Command action);
-        static Command rotateActionCounterClockWise(Command action);
+        static Command rotateCommandClockWise(Command command);
+        static Command rotateCommandCounterClockWise(Command command);
 
         /****** DATA MEMBERS  ******/
         bool                                              m_alive         = true;
         double                                            m_phaseFraction = 0.0;
         double                                            m_angle         = 0.0;
-        size_t                                            m_index         = 0;
-        size_t                                            m_actionIndex   = 0;
+        size_t                                            m_index;
+        size_t                                            m_commandIndex  = 0;
         PHASE                                             m_phase         = PHASE::NONE;
         WorldXY                                           m_worldOffset   = {0, 0};
         GridXY                                            m_rotationPivot = {0, 0};
         std::string                                       m_name;
-        std::vector<Command>                               m_actions           = {};
-        std::map<const GridXY, Level::DYNAMIC_BLOCK_TYPE> m_pendingOperations = {};
-        std::set<GridXY>                                  m_gridXYVector      = {};
+        std::vector<Command>                              m_commands;
+        std::map<const GridXY, Level::DYNAMIC_BLOCK_TYPE> m_pendingOperations;
+        std::set<GridXY>                                  m_gridXYVector;
         std::set<Line<GridXY>>                            m_sides;
     };
 } // namespace model

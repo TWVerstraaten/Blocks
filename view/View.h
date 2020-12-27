@@ -7,7 +7,7 @@
 
 #include "Assets.h"
 #include "ViewPort.h"
-#include "widget/ActionEditBox.h"
+#include "widget/CommandEditBox.h"
 #include "widget/ScrollArea.h"
 
 #include <iostream>
@@ -49,7 +49,6 @@ namespace view {
         void      drawVerticalLine(const ScreenXY& point, int length, const SDL_Color& color, size_t lineThickness) const;
         void      drawVerticalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, Uint32 lineThickness) const;
         void      clear();
-        void      updateActionBoxes(const std::list<model::Cluster>& clusters, view::widget::ScrollArea* scrollArea);
         SDL_Point windowSize() const;
 
       private:

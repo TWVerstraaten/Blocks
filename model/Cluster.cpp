@@ -9,7 +9,6 @@
 #include "../global/geom.h"
 #include "Model.h"
 
-#include <algorithm>
 #include <cassert>
 #include <queue>
 #include <utility>
@@ -27,32 +26,32 @@ namespace model {
     Cluster::Cluster(const std::set<GridXY>& gridXY, std::string name) {
     }
 
-    void Cluster::doAction() {
-        if (m_actions.empty() || not m_alive) {
+    void Cluster::doCommand() {
+        if (m_commands.empty() || not m_alive) {
             return;
         }
-        assert(m_actionIndex < m_actions.size());
+        assert(m_commandIndex < m_commands.size());
         resetPhase();
-        if (m_actions.at(m_actionIndex).m_value == Command::VALUE::SKIP) {
+        if (m_commands.at(m_commandIndex).m_type == Command::TYPE::SKIP) {
             return;
         }
         m_phase = PHASE::TRANSLATING;
         std::set<GridXY> newGridXYSet;
         for (auto& idx : m_gridXYVector) {
-            switch (m_actions[m_actionIndex].m_value) {
-                case Command::VALUE::MOVE_UP:
+            switch (m_commands[m_commandIndex].m_type) {
+                case Command::TYPE::MOVE_UP:
                     newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::UP));
                     m_worldOffset = {0, cst::BLOCK_SIZE_IN_WORLD};
                     break;
-                case Command::VALUE::MOVE_DOWN:
+                case Command::TYPE::MOVE_DOWN:
                     newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::DOWN));
                     m_worldOffset = {0, -cst::BLOCK_SIZE_IN_WORLD};
                     break;
-                case Command::VALUE::MOVE_LEFT:
+                case Command::TYPE::MOVE_LEFT:
                     newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::LEFT));
                     m_worldOffset = {cst::BLOCK_SIZE_IN_WORLD, 0};
                     break;
-                case Command::VALUE::MOVE_RIGHT:
+                case Command::TYPE::MOVE_RIGHT:
                     newGridXYSet.emplace(idx.neighbor(enums::DIRECTION::RIGHT));
                     m_worldOffset = {-cst::BLOCK_SIZE_IN_WORLD, 0};
                     break;
@@ -69,8 +68,8 @@ namespace model {
             newGridXYSet.emplace(GridXY{pivotGridXY.x() + pivotGridXY.y() - gridXY.y(), pivotGridXY.y() - pivotGridXY.x() + gridXY.x()});
         }
         std::swap(m_gridXYVector, newGridXYSet);
-        for (auto& action : m_actions) {
-            action = rotateActionClockWise(action);
+        for (auto& command : m_commands) {
+            command = rotateCommandClockWise(command);
         }
     }
 
@@ -80,43 +79,43 @@ namespace model {
             newGridXYSet.emplace(GridXY{pivotGridXY.x() - pivotGridXY.y() + gridXY.y(), pivotGridXY.y() + pivotGridXY.x() - gridXY.x()});
         }
         std::swap(m_gridXYVector, newGridXYSet);
-        for (auto& m_action : m_actions) {
-            m_action = rotateActionCounterClockWise(m_action);
+        for (auto& command : m_commands) {
+            command = rotateCommandCounterClockWise(command);
         }
     }
 
-    Command Cluster::rotateActionClockWise(Command action) {
-        switch (action.m_value) {
-            case Command::VALUE::MOVE_UP:
-                return Command{Command::VALUE::MOVE_RIGHT, action.m_modifier};
-            case Command::VALUE::MOVE_DOWN:
-                return Command{Command::VALUE::MOVE_LEFT, action.m_modifier};
-            case Command::VALUE::MOVE_LEFT:
-                return Command{Command::VALUE::MOVE_UP, action.m_modifier};
-            case Command::VALUE::MOVE_RIGHT:
-                return Command{Command::VALUE::MOVE_DOWN, action.m_modifier};
+    Command Cluster::rotateCommandClockWise(Command command) {
+        switch (command.m_type) {
+            case Command::TYPE::MOVE_UP:
+                return Command{Command::TYPE::MOVE_RIGHT, command.m_modifier};
+            case Command::TYPE::MOVE_DOWN:
+                return Command{Command::TYPE::MOVE_LEFT, command.m_modifier};
+            case Command::TYPE::MOVE_LEFT:
+                return Command{Command::TYPE::MOVE_UP, command.m_modifier};
+            case Command::TYPE::MOVE_RIGHT:
+                return Command{Command::TYPE::MOVE_DOWN, command.m_modifier};
             default:
-                return action;
+                return command;
         }
     }
 
-    Command Cluster::rotateActionCounterClockWise(Command action) {
-        switch (action.m_value) {
-            case Command::VALUE::MOVE_UP:
-                return {Command::VALUE::MOVE_LEFT, action.m_modifier};
-            case Command::VALUE::MOVE_DOWN:
-                return {Command::VALUE::MOVE_RIGHT, action.m_modifier};
-            case Command::VALUE::MOVE_LEFT:
-                return {Command::VALUE::MOVE_DOWN, action.m_modifier};
-            case Command::VALUE::MOVE_RIGHT:
-                return {Command::VALUE::MOVE_UP, action.m_modifier};
+    Command Cluster::rotateCommandCounterClockWise(Command command) {
+        switch (command.m_type) {
+            case Command::TYPE::MOVE_UP:
+                return {Command::TYPE::MOVE_LEFT, command.m_modifier};
+            case Command::TYPE::MOVE_DOWN:
+                return {Command::TYPE::MOVE_RIGHT, command.m_modifier};
+            case Command::TYPE::MOVE_LEFT:
+                return {Command::TYPE::MOVE_DOWN, command.m_modifier};
+            case Command::TYPE::MOVE_RIGHT:
+                return {Command::TYPE::MOVE_UP, command.m_modifier};
             default:
-                return action;
+                return command;
         }
     }
 
-    void Cluster::addAction(Command action) {
-        m_actions.push_back(action);
+    void Cluster::addCommand(Command command) {
+        m_commands.push_back(command);
     }
 
     std::set<GridXY>::iterator Cluster::removeBLock(const GridXY& gridXY) {
@@ -142,14 +141,14 @@ namespace model {
         m_pendingOperations.emplace(gridXY, blockType);
     }
 
-    void Cluster::performPendingOperationOrNextAction() {
+    void Cluster::performPendingOperationOrNextCommand() {
         if (m_pendingOperations.size() > 1) {
             kill();
             return;
         }
-        if (((not m_actions.empty()) && m_actions.at(m_actionIndex).m_modifier == Command::MODIFIER::IGNORE) ||
+        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == Command::MODIFIER::IGNORE) ||
             m_pendingOperations.empty()) {
-            doAction();
+            doCommand();
             m_pendingOperations.clear();
         } else {
             tryPendingOperation();
@@ -157,12 +156,12 @@ namespace model {
         m_sides = alg::getSidesInGridXY<GridXY>(m_gridXYVector);
     }
 
-    void Cluster::update(double dPhase) {
+    void Cluster::update(double phaseFraction) {
         assert(gridXUYAreUnique());
         if (not m_alive) {
             return;
         }
-        m_phaseFraction = dPhase;
+        m_phaseFraction = phaseFraction;
         if (m_phaseFraction <= 0.0) {
             resetPhase();
         }
@@ -176,8 +175,8 @@ namespace model {
         return m_rotationPivot;
     }
 
-    const std::vector<Command>& Cluster::actions() const {
-        return m_actions;
+    const std::vector<Command>& Cluster::commands() const {
+        return m_commands;
     }
 
     WorldXY Cluster::dynamicWorldOffset() const {
@@ -237,22 +236,22 @@ namespace model {
         m_rotationPivot = pivot;
     }
 
-    void Cluster::clearActions() {
-        m_actions.clear();
-        m_actionIndex = 0;
+    void Cluster::clearCommands() {
+        m_commands.clear();
+        m_commandIndex = 0;
     }
 
-    size_t Cluster::actionIndex() const {
-        return m_actionIndex;
+    size_t Cluster::commandIndex() const {
+        return m_commandIndex;
     }
 
-    void Cluster::incrementActionIndex() {
-        if (m_actions.empty()) {
+    void Cluster::incrementCommandIndex() {
+        if (m_commands.empty()) {
             return;
         }
-        ++m_actionIndex;
-        m_actionIndex %= m_actions.size();
-        assert(m_actionIndex < m_actions.size());
+        ++m_commandIndex;
+        m_commandIndex %= m_commands.size();
+        assert(m_commandIndex < m_commands.size());
     }
 
     void Cluster::tryPendingOperation() {
@@ -327,9 +326,9 @@ namespace model {
         assert(not copy.empty());
         Cluster result{std::move(copy), name() + "_"};
         result.resetPhase();
-        result.m_alive       = m_alive;
-        result.m_actionIndex = m_actionIndex;
-        result.m_actions     = m_actions;
+        result.m_alive        = m_alive;
+        result.m_commandIndex = m_commandIndex;
+        result.m_commands     = m_commands;
         result.m_pendingOperations.clear();
         std::swap(m_gridXYVector, result.m_gridXYVector);
         return result;
@@ -355,11 +354,11 @@ namespace model {
         switch (m_phase) {
             case PHASE::NONE:
             case PHASE::TRANSLATING:
-                incrementActionIndex();
+                incrementCommandIndex();
                 break;
             case PHASE::ROTATING:
-                if ((not m_actions.empty()) && m_actions[m_actionIndex].m_modifier == Command::MODIFIER::INCREMENT) {
-                    incrementActionIndex();
+                if ((not m_commands.empty()) && m_commands[m_commandIndex].m_modifier == Command::MODIFIER::INCREMENT) {
+                    incrementCommandIndex();
                 }
                 break;
         }
@@ -371,13 +370,9 @@ namespace model {
     }
 
     void Cluster::addGridXY(const GridXY& gridXY) {
-        assert(std::find_if(m_gridXYVector.begin(), m_gridXYVector.end(), [&](const GridXY& g) { return g.isAdjacent(gridXY); }) !=
-               m_gridXYVector.end());
         if (not contains(gridXY)) {
             m_gridXYVector.emplace(gridXY);
         }
-        assert(gridXUYAreUnique());
-        assert(isConnected());
     }
 
     bool Cluster::gridXUYAreUnique() const {
@@ -438,7 +433,7 @@ namespace model {
         assert(false);
     }
 
-    size_t Cluster::blockCount() const {
+    size_t Cluster::size() const {
         return m_gridXYVector.size();
     }
 
@@ -456,6 +451,39 @@ namespace model {
         result.pop_back();
         assert(isConnected());
         return result;
+    }
+
+    std::ostream& operator<<(std::ostream& out, const Cluster& cluster) {
+        if (cluster.empty()) {
+            return out;
+        }
+        assert(not cluster.empty());
+        const int minX =
+            std::min_element(cluster.m_gridXYVector.begin(), cluster.m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) {
+                return lhs.x() < rhs.x();
+            })->x();
+        const int minY = cluster.m_gridXYVector.begin()->y();
+        const int maxX =
+            std::max_element(cluster.m_gridXYVector.begin(), cluster.m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) {
+                return lhs.x() < rhs.x();
+            })->x();
+        const int maxY = cluster.m_gridXYVector.rbegin()->y();
+        assert(minX <= maxX);
+        assert(minY <= maxY);
+
+        out << "Cluster " << cluster.m_index << '\n';
+        for (int j = minY; j <= maxY; ++j) {
+            for (int i = minX; i <= maxX; ++i) {
+                if (cluster.contains(GridXY{i, j})) {
+                    out << "o";
+                } else {
+                    out << " ";
+                }
+            }
+            out << "\n";
+        }
+
+        return out;
     }
 
 } // namespace model

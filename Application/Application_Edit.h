@@ -6,11 +6,14 @@
 #define BLOCKS_APPLICATION_EDIT_H
 
 #include "../global/cst.h"
+#include "../model/Actions/Action.h"
 #include "../model/Model.h"
 #include "../view/View.h"
+#include "Application_Edit.h"
 #include "Application_Level.h"
 
 #include <SDL.h>
+#include <stack>
 
 class Application_Edit {
 
@@ -23,6 +26,8 @@ class Application_Edit {
     bool                         canStart() const;
     bool                         hasFocus();
     void                         finalize();
+
+    model::Model* model() const;
 
   private:
     void init();
@@ -37,16 +42,19 @@ class Application_Edit {
     void handleLeftMouseMove();
     void handleRightMouseMove();
     void setButtonBooleans(const SDL_Event& event);
+    void addAction(std::unique_ptr<model::action::Action>&& action);
 
-    bool                         m_rightMouseButtonPressed = false;
-    bool                         m_leftMouseButtonPressed  = false;
-    Uint32                       m_timeStep                = cst::TIME_STEP_SLOW;
-    Application_Level::EDIT_MODE m_editMode                = Application_Level::EDIT_MODE::EDITING;
-    model::GridXY                m_previousGridClickPosition{0, 0};
-    view::View*                  m_view;
-    model::Model*                m_model;
-    view::widget::ScrollArea*    m_scrollArea;
-    SDL_Point                    m_previousMousePosition{};
+    bool                                               m_rightMouseButtonPressed = false;
+    bool                                               m_leftMouseButtonPressed  = false;
+    Uint32                                             m_timeStep                = cst::TIME_STEP_SLOW;
+    Application_Level::EDIT_MODE                       m_editMode                = Application_Level::EDIT_MODE::EDITING;
+    model::GridXY                                      m_previousGridClickPosition{0, 0};
+    view::View*                                        m_view;
+    model::Model*                                      m_model;
+    view::widget::ScrollArea*                          m_scrollArea;
+    SDL_Point                                          m_previousMousePosition{};
+    std::stack<std::unique_ptr<model::action::Action>> m_undoStack;
+    std::stack<std::unique_ptr<model::action::Action>> m_redoStack;
 };
 
 #endif // BLOCKS_APPLICATION_EDIT_H
