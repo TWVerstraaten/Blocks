@@ -17,6 +17,7 @@ namespace view {
 
           public:
             ActionEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, const model::Cluster& cluster);
+            ActionEditBox(const ActionEditBox& other);
 
             void   loseFocus() override;
             void   update(SDL_Renderer* renderer) override;

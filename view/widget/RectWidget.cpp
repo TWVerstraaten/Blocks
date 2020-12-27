@@ -4,8 +4,14 @@
 
 #include "RectWidget.h"
 
-namespace view::widget {
+#include <cassert>
+
+namespace view { namespace widget {
     RectWidget::RectWidget(SDL_Rect rect) : m_rect(rect) {
+        assert(m_rect.x >= -10);
+        assert(m_rect.y >= -10);
+        assert(m_rect.w <= 3200);
+        assert(m_rect.h  <= 3200);
     }
 
     void RectWidget::getFocus() {
@@ -44,4 +50,4 @@ namespace view::widget {
         return m_rect.h;
     }
 
-} // namespace view::widget
+} } // namespace view::widget

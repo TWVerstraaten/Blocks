@@ -9,7 +9,8 @@
 
 #include <cassert>
 
-Application_Level::Application_Level() : m_scrollArea({0, 0, 200, static_cast<int>(cst::INITIAL_SCREEN_HEIGHT)}) {
+Application_Level::Application_Level()
+    : m_scrollArea({cst::INITIAL_SCREEN_WIDTH - 200, 0, 200, static_cast<int>(cst::INITIAL_SCREEN_HEIGHT)}) {
     m_model.init();
     m_scrollArea.init(m_view.assets());
 }
@@ -107,7 +108,7 @@ Application_Level::RUN_MODE Application_Level::runLevel() {
     bool isRunning = true;
 
     SDL_Event       event;
-    Application_Run runApp(m_model, &m_view);
+    Application_Run runApp(m_model, &m_view, m_scrollArea);
     runApp.setTimeStep(m_timeStep);
     runApp.setPauseAfterNextStep(m_pauseAfterFirstStep);
 

@@ -123,16 +123,18 @@ view::widget::ActionEditBox* view::widget::ScrollArea::focusedWidget() {
 
 void view::widget::ScrollArea::update(SDL_Renderer* renderer) {
     for (auto& w : m_children) {
+        std::cout << w.width() << " " << w.height() << '\n';
         w.update(renderer);
+        std::cout << "Result:\t" << w.width() << " " << w.height() << '\n';
     }
     setHeightAndPositions();
+    m_needsUpdate = false;
 }
 
 void view::widget::ScrollArea::addActionBox(const model::Cluster& cluster) {
     m_children.emplace_back(ActionEditBox(m_rect.x + cst::LINE_EDIT_PADDING, 0, cst::LINE_EDIT_WIDTH, 0, m_assets, cluster));
     m_children.back().setHighLightedLine(cluster.actionIndex());
     m_children.back().setActive(cluster.isAlive());
-
     m_needsUpdate = true;
 }
 

@@ -12,7 +12,7 @@
 class Application_Run {
 
   public:
-    Application_Run(const model::Model& model, view::View* view);
+    Application_Run(const model::Model& model, view::View* view, const view::widget::ScrollArea& scrollArea);
 
     void                        setTimeStep(Uint32 timeStep);
     void                        handleEvent(const SDL_Event& event);
@@ -41,6 +41,7 @@ class Application_Run {
     SDL_Point                   m_previousMousePosition{};
     model::Model                m_model;
     view::View*                 m_view;
+    view::widget::ScrollArea    m_scrollArea;
 };
 
 #endif // BLOCKS_APPLICATION_RUN_H

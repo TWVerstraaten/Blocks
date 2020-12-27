@@ -25,6 +25,12 @@ view::widget::ActionEditBox::ActionEditBox(
     }
 }
 
+view::widget::ActionEditBox::ActionEditBox(const view::widget::ActionEditBox& other)
+    : LineEditBox(other.m_rect.x, other.m_rect.y, other.m_rect.w, other.m_rect.h, other.m_assets, other.m_title),
+      m_clusterIndex(other.m_clusterIndex) {
+    m_strings = other.m_strings;
+}
+
 void view::widget::ActionEditBox::updateClusterActions(model::Cluster& cluster) {
     cluster.clearActions();
     for (const auto& str : m_strings) {

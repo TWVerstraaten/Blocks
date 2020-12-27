@@ -7,11 +7,11 @@
 #include "../view/Mouse.h"
 #include "../view/ScreenXY.h"
 
-Application_Run::Application_Run(const model::Model& model, view::View* view) : m_view(view) {
+Application_Run::Application_Run(const model::Model& model, view::View* view, const view::widget::ScrollArea& scrollArea)
+    : m_view(view), m_scrollArea(scrollArea) {
     m_model             = model;
     m_timeSinceLastStep = 0;
     m_previousTime      = SDL_GetTicks();
-    //    m_view->initActionBoxes(m_model.clusters());
 }
 
 void Application_Run::mouseWheelEvent(const SDL_Event& event) {
@@ -102,7 +102,7 @@ void Application_Run::performTimeStep() {
     m_model.interactClustersWithInstantBlocks();
     m_model.interactClustersWithDynamicBlocks();
     m_model.finishInteractions();
-    m_view->updateActionBoxes(m_model.clusters());
+    m_view->updateActionBoxes(m_model.clusters(), &m_scrollArea);
     if (m_pauseAfterNextStep) {
         m_pauseAfterNextStep = false;
         m_paused             = true;
@@ -125,8 +125,9 @@ Application_Level::RUN_MODE Application_Run::performSingleLoop() {
         m_timeSinceLastStep += dt;
     }
     m_previousTime = SDL_GetTicks();
-    m_view->updateActionBoxes(m_model.clusters());
+    m_view->updateActionBoxes(m_model.clusters(), &m_scrollArea);
     m_view->draw(m_model);
+    m_view->draw(&m_scrollArea);
     m_view->assets()->renderText(std::to_string(1000.0 / dt), view::ScreenXY{10, m_view->windowSize().y - 40}, m_view->renderer());
     m_view->renderPresent();
 

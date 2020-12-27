@@ -78,7 +78,6 @@ namespace view {
             bool                     m_active          = true;
             Uint32                   m_blinkTimeOffset = 0;
             SelectionData            m_selectionData;
-            const std::string        m_title;
             std::unique_ptr<Texture> m_titleTexture;
 
           protected:
@@ -87,6 +86,7 @@ namespace view {
             std::vector<std::unique_ptr<Texture>> m_textures;
             bool                                  m_needsUpdate = true;
             const Assets*                         m_assets;
+            const std::string        m_title;
         };
     } // namespace widget
 } // namespace view

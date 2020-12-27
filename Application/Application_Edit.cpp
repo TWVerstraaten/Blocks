@@ -16,28 +16,28 @@ Application_Edit::Application_Edit(model::Model* model, view::View* view, view::
 }
 
 void Application_Edit::mouseWheelEvent(const SDL_Event& event) {
-    if (m_view->scrollArea().pointIsOverWidget(Mouse::getMouseXY())) {
-        m_view->scrollArea().mouseWheelEvent(event);
+    if (m_scrollArea->pointIsOverWidget(Mouse::getMouseXY())) {
+        m_scrollArea->mouseWheelEvent(event);
     } else {
         m_view->zoom(event.wheel.y);
     }
 }
 
 void Application_Edit::keyEvent(const SDL_Event& event) {
-    if (m_view->scrollArea().hasFocus()) {
-        m_view->scrollArea().keyEvent(event);
+    if (m_scrollArea->hasFocus()) {
+        m_scrollArea->keyEvent(event);
     }
 }
 
 void Application_Edit::mouseClickEvent(const SDL_Event& event) {
-    if (m_view->scrollArea().pointIsOverWidget(Mouse::getMouseXY())) {
-        m_view->scrollArea().getFocus();
+    if (m_scrollArea->pointIsOverWidget(Mouse::getMouseXY())) {
+        m_scrollArea->getFocus();
     } else {
-        m_view->scrollArea().loseFocus();
+        m_scrollArea->loseFocus();
     }
     setButtonBooleans(event);
-    if (m_view->scrollArea().hasFocus()) {
-        m_view->scrollArea().leftClickEvent(event);
+    if (m_scrollArea->hasFocus()) {
+        m_scrollArea->leftClickEvent(event);
     } else {
         if (event.button.button == SDL_BUTTON_LEFT) {
             m_previousGridClickPosition = model::GridXY::fromScreenXY(Mouse::getMouseXY(), m_view->viewPort());
@@ -65,13 +65,13 @@ void Application_Edit::mouseReleaseEvent(const SDL_Event& event) {
 
 void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
     if (m_leftMouseButtonPressed) {
-        if (m_view->scrollArea().pointIsOverWidget(Mouse::getMouseXY())) {
-            m_view->scrollArea().getFocus();
+        if (m_scrollArea->pointIsOverWidget(Mouse::getMouseXY())) {
+            m_scrollArea->getFocus();
         }
     }
-    if (m_view->scrollArea().hasFocus()) {
+    if (m_scrollArea->hasFocus()) {
         if (m_leftMouseButtonPressed) {
-            m_view->scrollArea().mouseDragEvent(event);
+            m_scrollArea->mouseDragEvent(event);
         }
     } else {
         if (m_rightMouseButtonPressed) {
@@ -85,19 +85,19 @@ void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
 void Application_Edit::init() {
     SDL_StartTextInput();
     m_view->clear();
-    //        m_view->initActionBoxes(m_model->clusters());
-    m_view->updateActionBoxes(m_model->clusters());
+    m_view->updateActionBoxes(m_model->clusters(), m_scrollArea);
+    m_scrollArea->update(m_view->renderer());
 }
 
 bool Application_Edit::canStart() const {
-    return std::all_of(m_view->actionEditBoxes().begin(), m_view->actionEditBoxes().end(), [](const view::widget::ActionEditBox& box) {
+    return std::all_of(m_scrollArea->children().begin(), m_scrollArea->children().end(), [](const view::widget::ActionEditBox& box) {
         return box.canParse();
     });
 }
 
 void Application_Edit::getActionsFromEditBoxes() {
-    assert(m_model->clusters().size() == m_view->actionEditBoxes().size());
-    auto actionEditIt = m_view->actionEditBoxes().begin();
+    assert(m_model->clusters().size() == m_scrollArea->children().size());
+    auto actionEditIt = m_scrollArea->children().begin();
     for (auto& cluster : m_model->clusters()) {
         actionEditIt->updateClusterActions(cluster);
         ++actionEditIt;
@@ -151,13 +151,13 @@ Application_Level::EDIT_MODE Application_Edit::performSingleLoop() {
 }
 
 bool Application_Edit::hasFocus() {
-    return not m_view->scrollArea().hasFocus();
+    return not m_scrollArea->hasFocus();
 }
 
 void Application_Edit::clearBlock(const model::GridXY& gridXY) {
     if (m_model->level().isFreeStartBlock(gridXY)) {
         m_model->clearBlock(gridXY);
-        m_view->updateActionBoxes(m_model->clusters());
+        m_view->updateActionBoxes(m_model->clusters(), m_scrollArea);
     }
 }
 
@@ -170,7 +170,7 @@ void Application_Edit::addBlock(const model::GridXY& gridXY) {
     } else {
         m_model->addBlock(gridXY);
     }
-    m_view->updateActionBoxes(m_model->clusters());
+    m_view->updateActionBoxes(m_model->clusters(), m_scrollArea);
 }
 
 void Application_Edit::handleLeftMouseMove() {
@@ -185,7 +185,7 @@ void Application_Edit::handleLeftMouseMove() {
         }
         m_previousGridClickPosition = currentGridPosition;
     }
-    m_view->updateActionBoxes(m_model->clusters());
+    m_view->updateActionBoxes(m_model->clusters(), m_scrollArea);
 }
 
 void Application_Edit::handleRightMouseMove() {
