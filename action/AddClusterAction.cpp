@@ -22,3 +22,7 @@ void action::AddClusterAction::redoAction(app::Application_Edit& applicationEdit
     assert(applicationEdit.model()->clusterWithIndex(m_cluster.index()) == applicationEdit.model()->clusters().end());
     applicationEdit.model()->clusters().push_back(m_cluster);
 }
+
+action::ACTION_TYPE action::AddClusterAction::type() const {
+    return ACTION_TYPE::ADD_CLUSTER;
+}

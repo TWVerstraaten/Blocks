@@ -8,7 +8,7 @@ set(ASSETS_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets)
 
 # Copy assets
 file(GLOB ASSET_FILES ${Blocks_SOURCE_DIR}/assets/*)
-set(assets_files "" action/RemoveBlockFromClusterAction.cpp action/RemoveBlockFromClusterAction.h action/RemoveClusterAction.cpp action/RemoveClusterAction.h view/color.h model/Level_enums.h app/Application_enums.h app/ModelViewInterface.cpp app/ModelViewInterface.h action/GenericCommandEditBoxAction.cpp action/GenericCommandEditBoxAction.h)
+set(assets_files "" action/RemoveBlockFromClusterAction.cpp action/RemoveBlockFromClusterAction.h action/RemoveClusterAction.cpp action/RemoveClusterAction.h view/color.h model/Level_enums.h app/Application_enums.h app/ModelViewInterface.cpp app/ModelViewInterface.h action/GenericCommandEditBoxAction.cpp action/GenericCommandEditBoxAction.h action/Action_enums.h)
 foreach (file ${ASSET_FILES})
     get_filename_component(nam ${file} NAME)
     add_custom_command(

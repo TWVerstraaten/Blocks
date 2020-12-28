@@ -15,3 +15,7 @@ void action::RemoveBlockFromClusterAction::undoAction(app::Application_Edit& app
 void action::RemoveBlockFromClusterAction::redoAction(app::Application_Edit& applicationEdit) {
     AddBlockToClusterAction::undoAction(applicationEdit);
 }
+
+action::ACTION_TYPE action::RemoveBlockFromClusterAction::type() const {
+    return ACTION_TYPE::REMOVE_BLOCK_FROM_CLUSTER;
+}

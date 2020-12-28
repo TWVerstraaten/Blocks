@@ -17,3 +17,7 @@ void action::GenericModelAction::undoAction(app::Application_Edit& applicationEd
 void action::GenericModelAction::redoAction(app::Application_Edit& applicationEdit) {
     *applicationEdit.model() = m_new;
 }
+
+action::ACTION_TYPE action::GenericModelAction::type() const {
+    return ACTION_TYPE::GENERIC_MODEL;
+}

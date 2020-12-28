@@ -16,3 +16,7 @@ void action::RemoveClusterAction::undoAction(app::Application_Edit& applicationE
 void action::RemoveClusterAction::redoAction(app::Application_Edit& applicationEdit) {
     AddClusterAction::undoAction(applicationEdit);
 }
+
+action::ACTION_TYPE action::RemoveClusterAction::type() const {
+    return ACTION_TYPE::REMOVE_CLUSTER;
+}

@@ -26,3 +26,7 @@ void action::GenericCommandEditBoxAction::redoAction(app::Application_Edit& appl
     assert(it != applicationEdit.scrollArea()->children().end());
     *it = m_new;
 }
+
+action::ACTION_TYPE action::GenericCommandEditBoxAction::type() const {
+    return ACTION_TYPE::GENERIC_COMMAND_EDIT_BOX;
+}

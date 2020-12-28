@@ -23,3 +23,7 @@ void action::AddBlockToClusterAction::redoAction(app::Application_Edit& applicat
     assert(it != applicationEdit.model()->clusters().end());
     it->addGridXY(m_gridXY);
 }
+
+action::ACTION_TYPE action::AddBlockToClusterAction::type() const {
+    return ACTION_TYPE::ADD_BLOCK_TO_CLUSTER;
+}

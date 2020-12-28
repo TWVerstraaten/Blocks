@@ -15,8 +15,9 @@ namespace action {
         GenericModelAction(const model::Model& oldModel, const model::Model& newModel);
 
         /****** VIRTUAL FUNCTIONS  ******/
-        void undoAction(app::Application_Edit& applicationEdit) override;
-        void redoAction(app::Application_Edit& applicationEdit) override;
+        void        undoAction(app::Application_Edit& applicationEdit) override;
+        void        redoAction(app::Application_Edit& applicationEdit) override;
+        ACTION_TYPE type() const override;
 
       private:
         /****** DATA MEMBERS  ******/

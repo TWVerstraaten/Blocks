@@ -215,16 +215,6 @@ namespace app {
         m_modelViewInterface.redo(*this);
     }
 
-    void Application_Edit::updateClusterActions() {
-        for (const auto& commandEditBox : m_scrollArea->children()) {
-            if (commandEditBox.clusterShouldBeUpdated()) {
-                auto it = m_model->clusterWithIndex(commandEditBox.index());
-                assert(it != m_model->clusters().end());
-                commandEditBox.updateClusterCommands(*it);
-            }
-        }
-    }
-
     view::widget::ScrollArea* Application_Edit::scrollArea() const {
         return m_scrollArea;
     }

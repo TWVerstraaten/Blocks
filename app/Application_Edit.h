@@ -23,8 +23,8 @@ namespace app {
         Application_Edit(model::Model* model, view::View* view, view::widget::ScrollArea* scrollArea);
 
         /****** CONST GETTERS  ******/
-        Uint32        timeStep() const;
-        model::Model* model() const;
+        Uint32                    timeStep() const;
+        model::Model*             model() const;
         view::widget::ScrollArea* scrollArea() const;
 
         /****** CONST FUNCTIONS  ******/
@@ -50,7 +50,6 @@ namespace app {
         void setButtonBooleans(const SDL_Event& event);
         void undo();
         void redo();
-        void updateClusterActions();
 
         /****** DATA MEMBERS  ******/
         bool                                        m_rightMouseButtonPressed = false;

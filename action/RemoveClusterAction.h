@@ -15,8 +15,9 @@ namespace action {
         explicit RemoveClusterAction(const model::Cluster& cluster);
 
         /****** VIRTUAL FUNCTIONS  ******/
-        void undoAction(app::Application_Edit& applicationEdit) override;
-        void redoAction(app::Application_Edit& applicationEdit) override;
+        void        undoAction(app::Application_Edit& applicationEdit) override;
+        void        redoAction(app::Application_Edit& applicationEdit) override;
+        ACTION_TYPE type() const override;
     };
 
 } // namespace action

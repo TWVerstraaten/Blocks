@@ -20,6 +20,7 @@ namespace action {
         /****** PUBLIC VIRTUAL FUNCTIONS  ******/
         void undoAction(app::Application_Edit& applicationEdit) override;
         void redoAction(app::Application_Edit& applicationEdit) override;
+        ACTION_TYPE type() const override;
 
       private:
         /****** DATA MEMBERS  ******/

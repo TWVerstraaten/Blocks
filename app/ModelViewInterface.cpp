@@ -167,7 +167,6 @@ std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockStatic(model:
         auto commandEditIt = findCommandEditBox(*it, scrollArea.children());
         assert(commandEditIt != scrollArea.children().end());
         addActionBoxesOfNewClusters(newClusters, scrollArea);
-
         for (const auto& cluster : newClusters) {
             auto newCommandEditIt = findCommandEditBox(cluster, scrollArea.children());
             assert(newCommandEditIt != scrollArea.children().end());
@@ -184,7 +183,6 @@ std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockStatic(model:
 void app::ModelViewInterface::handleKeyEvent(const SDL_Event&          event,
                                              view::widget::ScrollArea& scrollArea,
                                              model::Model&             model) {
-
     const auto w = scrollArea.focusedWidget();
     if (w) {
         view::widget::CommandEditBox copy(*w);
