@@ -4,7 +4,6 @@
 
 #include "geom.h"
 
-#include <cassert>
 #include <iostream>
 
 namespace geom {

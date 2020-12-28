@@ -8,6 +8,9 @@
 #include "../model/WorldXY.h"
 #include "ViewPort.h"
 
+view::ScreenXY::ScreenXY() : m_x(0), m_y(0) {
+}
+
 view::ScreenXY::ScreenXY(int x, int y) : m_x(x), m_y(y) {
 }
 
@@ -20,7 +23,8 @@ int view::ScreenXY::y() const {
 }
 
 view::ScreenXY view::ScreenXY::fromWorldXY(const model::WorldXY& worldXY, const view::ViewPort& viewPort) {
-    return {viewPort.worldToScreenLength(worldXY.x()) + viewPort.xOffset(), viewPort.worldToScreenLength(worldXY.y()) + viewPort.yOffset()};
+    return {viewPort.worldToScreenLength(worldXY.x()) + viewPort.xOffset(),
+            viewPort.worldToScreenLength(worldXY.y()) + viewPort.yOffset()};
 }
 
 view::ScreenXY view::ScreenXY::fromWorldXYAsVector(const model::WorldXY& worldXY, const view::ViewPort& viewPort) {

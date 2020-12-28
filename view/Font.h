@@ -12,18 +12,21 @@ namespace view {
 
     class Font {
       public:
+        /****** CONSTRUCTORS / DESTRUCTORS  ******/
         Font(const std::string& path, Uint32 fontSize);
         ~Font();
 
-        Font(const Font& other) = delete;
-
+        /****** CONST GETTERS  ******/
         bool      loadedCorrectly() const;
         TTF_Font* font() const;
-        int       widthOfString(const std::string& str) const;
+
+        /****** CONST FUNCTIONS  ******/
+        int widthOfString(const std::string& str) const;
 
       private:
-        TTF_Font* m_font;
+        /****** DATA MEMBERS  ******/
         bool      m_loadedCorrectly = false;
+        TTF_Font* m_font;
     };
 } // namespace view
 #endif // BLOCKS_FONT_H

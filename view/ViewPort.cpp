@@ -4,10 +4,7 @@
 
 #include "ViewPort.h"
 
-#include "../global/cst.h"
 #include "../global/fns.h"
-
-#include <cmath>
 
 namespace view {
 

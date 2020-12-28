@@ -13,12 +13,12 @@ namespace view {
         class Widget {
 
           public:
+            /****** PUBLIC VIRTUAL FUNCTIONS  ******/
             virtual void render(SDL_Renderer* renderer) = 0;
-
-            virtual void keyEvent(const SDL_Event& event) = 0;
+            virtual void keyEvent(const SDL_Event& event){};
+            virtual void leftClickEvent(const SDL_Event& event){};
+            virtual void mouseDragEvent(const SDL_Event& event){};
             virtual void mouseWheelEvent(const SDL_Event& event){};
-            virtual void leftClickEvent(const SDL_Event& event) = 0;
-            virtual void mouseDragEvent(const SDL_Event& event) = 0;
         };
     } // namespace widget
 } // namespace view

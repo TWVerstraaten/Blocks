@@ -24,7 +24,7 @@ view::TextureWrapper::TextureWrapper(TextureWrapper::TEXTURE_ENUM textureEnum, S
     init(textureEnum, renderer);
 }
 
-view::Texture* view::TextureWrapper::getTexture(int width, int height) const {
+view::Texture* view::TextureWrapper::texture(int width, int height) const {
     assert(!m_textures.empty());
 
     Texture* result = m_textures.back().get();

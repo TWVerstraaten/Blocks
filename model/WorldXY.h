@@ -14,26 +14,34 @@ namespace view {
 }
 
 namespace model {
+
     class GridXY;
 
     class WorldXY {
+
+        /****** PRIVATE ENUMS / TYPEDEFS  ******/
+        friend class GridXY;
+
       public:
+        /****** PUBLIC ENUMS / TYPEDEFS  ******/
         WorldXY(int x, int y) noexcept;
         WorldXY(const model::GridXY& gridXY);
 
+        /****** CONST GETTERS  ******/
         int x() const;
         int y() const;
 
-        friend bool operator<(const WorldXY& lhs, const WorldXY& rhs);
-        friend bool operator==(const WorldXY& lhs, const WorldXY& rhs);
-
+        /****** FRIENDS  ******/
+        friend bool    operator<(const WorldXY& lhs, const WorldXY& rhs);
+        friend bool    operator==(const WorldXY& lhs, const WorldXY& rhs);
         friend WorldXY operator-(const WorldXY& lhs, const WorldXY& rhs);
         friend WorldXY operator+(const WorldXY& lhs, const WorldXY& rhs);
 
       private:
-        friend class GridXY;
+        /****** PRIVATE STATIC FUNCTIONS  ******/
         static WorldXY fromGridXY(const model::GridXY& gridXY);
 
+        /****** DATA MEMBERS  ******/
         int m_x = 0;
         int m_y = 0;
     };

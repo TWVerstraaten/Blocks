@@ -5,6 +5,7 @@
 #ifndef BLOCKS_RECTWIDGET_H
 #define BLOCKS_RECTWIDGET_H
 
+#include "../ScreenXY.h"
 #include "Widget.h"
 
 #include <SDL.h>
@@ -14,21 +15,29 @@ namespace view {
         class RectWidget : public Widget {
 
           public:
+            /****** CONSTRUCTORS / DESTRUCTORS  ******/
             explicit RectWidget(SDL_Rect rect);
 
+            /****** PUBLIC VIRTUAL FUNCTIONS  ******/
             virtual void loseFocus();
             virtual void update(SDL_Renderer* renderer) = 0;
-
-            bool         pointIsOverWidget(const SDL_Point& point) const;
-            bool         hasFocus() const;
-            void         getFocus();
-            void         setWidth(int width);
             virtual void setHeight(int height);
             virtual void setX(int x);
-            void         setY(int y);
-            int          height() const;
+
+            /****** CONST GETTERS  ******/
+            bool hasFocus() const;
+            int  height() const;
+
+            /****** CONST FUNCTIONS  ******/
+            bool pointIsOverWidget(const ScreenXY& point) const;
+
+            /****** NON CONST FUNCTIONS  ******/
+            void getFocus();
+            void setWidth(int width);
+            void setY(int y);
 
           protected:
+            /****** DATA MEMBERS  ******/
             SDL_Rect m_rect;
 
           private:

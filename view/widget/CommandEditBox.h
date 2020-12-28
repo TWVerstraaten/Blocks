@@ -16,17 +16,32 @@ namespace view {
         class CommandEditBox : public LineEditBox {
 
           public:
+            /****** CONSTRUCTORS / DESTRUCTORS  ******/
             CommandEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, const model::Cluster& cluster);
             CommandEditBox(const CommandEditBox& other);
+            CommandEditBox(CommandEditBox&& other) = default;
+            CommandEditBox& operator               =(const CommandEditBox& other);
 
-            void   loseFocus() override;
-            void   update(SDL_Renderer* renderer) override;
-            void   updateClusterCommands(model::Cluster& cluster);
-            size_t clusterIndex() const;
-            bool   canParse() const;
+            /****** PUBLIC VIRTUAL FUNCTIONS  ******/
+            void loseFocus() override;
+            void setNeedsUpdate() override;
+            void update(SDL_Renderer* renderer) override;
+
+            /****** CONST GETTERS  ******/
+            bool   clusterShouldBeUpdated() const;
+            size_t index() const;
+
+            /****** CONST FUNCTIONS  ******/
+            void updateClusterCommands(model::Cluster& cluster) const;
+            bool canParse() const;
+
+            /****** NON CONST FUNCTIONS  ******/
+            void setStrings(const std::vector<std::string>& strings);
 
           private:
-            size_t m_clusterIndex;
+            /****** DATA MEMBERS  ******/
+            mutable bool m_clusterShouldBeUpdated = true;
+            size_t       m_index;
         };
 
     } // namespace widget

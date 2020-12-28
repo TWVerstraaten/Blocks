@@ -21,7 +21,7 @@ class SDL_Renderer;
 namespace model {
 
     class Cluster {
-        /****** PRIVATE STATICS  ******/
+        /****** PRIVATE STATIC DATA MEMBERS  ******/
         static size_t s_maxClusterIndex;
 
       public:
@@ -64,7 +64,7 @@ namespace model {
         void                       addGridXY(const GridXY& gridXY);
         void                       preStep();
         void                       doCommand();
-        void                       addPendingOperation(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType);
+        void                       addPendingOperation(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
         void                       performPendingOperationOrNextCommand();
         void                       update(double phaseFraction);
         void                       addCommand(Command command);
@@ -95,19 +95,19 @@ namespace model {
         static Command rotateCommandCounterClockWise(Command command);
 
         /****** DATA MEMBERS  ******/
-        bool                                              m_alive         = true;
-        double                                            m_phaseFraction = 0.0;
-        double                                            m_angle         = 0.0;
-        size_t                                            m_index;
-        size_t                                            m_commandIndex  = 0;
-        PHASE                                             m_phase         = PHASE::NONE;
-        WorldXY                                           m_worldOffset   = {0, 0};
-        GridXY                                            m_rotationPivot = {0, 0};
-        std::string                                       m_name;
-        std::vector<Command>                              m_commands;
-        std::map<const GridXY, Level::DYNAMIC_BLOCK_TYPE> m_pendingOperations;
-        std::set<GridXY>                                  m_gridXYVector;
-        std::set<Line<GridXY>>                            m_sides;
+        bool                                       m_alive         = true;
+        double                                     m_phaseFraction = 0.0;
+        double                                     m_angle         = 0.0;
+        size_t                                     m_index;
+        size_t                                     m_commandIndex  = 0;
+        PHASE                                      m_phase         = PHASE::NONE;
+        WorldXY                                    m_worldOffset   = {0, 0};
+        GridXY                                     m_rotationPivot = {0, 0};
+        std::string                                m_name;
+        std::vector<Command>                       m_commands;
+        std::map<const GridXY, DYNAMIC_BLOCK_TYPE> m_pendingOperations;
+        std::set<GridXY>                           m_gridXYVector;
+        std::set<Line<GridXY>>                     m_sides;
     };
 } // namespace model
 

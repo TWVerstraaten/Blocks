@@ -7,6 +7,7 @@
 #include "../global/cst.h"
 #include "../global/geom.h"
 #include "ScreenXY.h"
+#include "color.h"
 
 #include <cassert>
 
@@ -29,7 +30,7 @@ namespace view {
                                const SDL_Point*             center,
                                SDL_RendererFlip             flip) const {
         assert(m_textures.find(textureEnum) != m_textures.end());
-        auto* texture = m_textures.at(textureEnum).getTexture(destination.w, destination.h);
+        auto* texture = m_textures.at(textureEnum).texture(destination.w, destination.h);
         if (texture->loadedCorrectly()) {
             texture->render(geom::pad(destination, 1), renderer, angle, center, flip);
             return true;
@@ -61,11 +62,14 @@ namespace view {
                                const SDL_Point*             center,
                                SDL_RendererFlip             flip) const {
         if (width < 0) {
-            return renderTexture(textureEnum, {screenXY.x() + width, screenXY.y()}, -width, height, renderer, angle, center, flip);
+            return renderTexture(
+                textureEnum, {screenXY.x() + width, screenXY.y()}, -width, height, renderer, angle, center, flip);
         } else if (height < 0) {
-            return renderTexture(textureEnum, {screenXY.x(), screenXY.y() + height}, width, -height, renderer, angle, center, flip);
+            return renderTexture(
+                textureEnum, {screenXY.x(), screenXY.y() + height}, width, -height, renderer, angle, center, flip);
         } else {
-            return renderTexture(textureEnum, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
+            return renderTexture(
+                textureEnum, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
         }
     }
 
@@ -80,24 +84,26 @@ namespace view {
         return renderTexture(texture, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
     }
 
-    TextureWrapper::TEXTURE_ENUM Assets::getTextureEnum(model::Level::DYNAMIC_BLOCK_TYPE type) {
+    TextureWrapper::TEXTURE_ENUM Assets::getTextureEnum(model::DYNAMIC_BLOCK_TYPE type) {
         switch (type) {
-            case model::Level::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
+            case model::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
                 return TextureWrapper::TEXTURE_ENUM::ARROW_CW;
-            case model::Level::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
+            case model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
                 return TextureWrapper::TEXTURE_ENUM::ARROW_CCW;
-            default:
+            case model::DYNAMIC_BLOCK_TYPE::NONE:
                 return TextureWrapper::TEXTURE_ENUM::ERROR;
         }
+        return TextureWrapper::TEXTURE_ENUM::ERROR;
     }
 
-    TextureWrapper::TEXTURE_ENUM Assets::getTextureEnum(model::Level::INSTANT_BLOCK_TYPE type) {
+    TextureWrapper::TEXTURE_ENUM Assets::getTextureEnum(model::INSTANT_BLOCK_TYPE type) {
         switch (type) {
-            case model::Level::INSTANT_BLOCK_TYPE::KILL:
+            case model::INSTANT_BLOCK_TYPE::KILL:
                 return TextureWrapper::TEXTURE_ENUM::KILL;
-            default:
+            case model::INSTANT_BLOCK_TYPE::NONE:
                 return TextureWrapper::TEXTURE_ENUM::ERROR;
         }
+        return TextureWrapper::TEXTURE_ENUM::ERROR;
     }
 
     const Font* Assets::font(Assets::FONT_ENUM fontEnum) const {
@@ -111,7 +117,8 @@ namespace view {
     }
 
     void Assets::renderText(const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer) {
-        const auto texture = view::Texture::createFromText(text, cst::color::BLACK, renderer, m_fonts[FONT_ENUM::MAIN].get()->font());
+        const auto texture =
+            view::Texture::createFromText(text, view::color::BLACK, renderer, m_fonts[FONT_ENUM::MAIN].get()->font());
         renderTexture(texture.get(), screenXY, texture->width(), texture->height(), renderer);
     }
 

@@ -92,11 +92,11 @@ namespace view {
     }
 
     int Texture::width() const {
-        return static_cast<int>(m_width);
+        return m_width;
     }
 
     int Texture::height() const {
-        return static_cast<int>(m_height);
+        return m_height;
     }
 
     bool Texture::loadedCorrectly() const {

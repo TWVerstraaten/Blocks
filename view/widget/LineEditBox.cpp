@@ -10,11 +10,10 @@
 #include "../Assets.h"
 #include "../Mouse.h"
 #include "../Rectangle.h"
+#include "../color.h"
 
 #include <algorithm>
-#include <cassert>
 #include <sstream>
-#include <utility>
 
 static std::string toUpper(const std::string& text) {
     std::string upperCaseString;
@@ -25,17 +24,30 @@ static std::string toUpper(const std::string& text) {
 namespace view {
     namespace widget {
         LineEditBox::LineEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, std::string title)
-            : RectWidget({x, y, static_cast<int>(w), static_cast<int>(h)}), m_assets(assetHandler), m_title(std::move(title)) {
+            : RectWidget({x, y, static_cast<int>(w), static_cast<int>(h)}), m_assets(assetHandler),
+              m_title(std::move(title)) {
         }
 
         void LineEditBox::update(SDL_Renderer* renderer) {
-            if (not m_titleTexture) {
-                m_titleTexture =
-                    Texture::createFromText(m_title, cst::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font());
+            if (!m_needsUpdate) {
+                return;
             }
-
+            if (not m_titleTexture) {
+                m_titleTexture = Texture::createFromText(
+                    m_title, view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font());
+            }
             m_textures.clear();
             m_yOffsets.clear();
+            int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
+            for (auto& str : m_strings) {
+                m_yOffsets.push_back(yOffset);
+                m_textures.emplace_back(Texture::createFromText(
+                    str, view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
+                yOffset += m_textures.back()->height();
+            }
+            m_yOffsets.push_back(yOffset);
+            m_rect.h      = yOffset;
+            m_needsUpdate = false;
         }
 
         void LineEditBox::render(SDL_Renderer* renderer) {
@@ -43,24 +55,27 @@ namespace view {
                 update(renderer);
             }
             Rectangle::render(geom::pad(m_rect, cst::LINE_EDIT_PADDING),
-                              m_active ? cst::color::EDIT_BOX_BACKGROUND : cst::color::EDIT_BOX_BACKGROUND_INACTIVE,
+                              m_active ? view::color::EDIT_BOX_BACKGROUND : view::color::EDIT_BOX_BACKGROUND_INACTIVE,
                               renderer);
 
-            Assets::renderTexture(m_titleTexture.get(), {m_rect.x, m_rect.y, m_titleTexture->width(), m_titleTexture->height()}, renderer);
+            Assets::renderTexture(m_titleTexture.get(),
+                                  {m_rect.x, m_rect.y, m_titleTexture->width(), m_titleTexture->height()},
+                                  renderer);
             renderHighlightIfSelected(renderer);
             renderStrings(renderer);
         }
 
-        void LineEditBox::renderHighlightIfSelected(SDL_Renderer* renderer) {
+        void LineEditBox::renderHighlightIfSelected(SDL_Renderer* renderer) const {
             if (not m_selectionData.empty()) {
                 renderSelection(renderer);
             }
         }
 
-        void LineEditBox::renderStrings(SDL_Renderer* renderer) {
+        void LineEditBox::renderStrings(SDL_Renderer* renderer) const {
             int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
             for (const auto& texture : m_textures) {
-                Assets::renderTexture(texture.get(), {m_rect.x, m_rect.y + yOffset, texture->width(), texture->height()}, renderer);
+                Assets::renderTexture(
+                    texture.get(), {m_rect.x, m_rect.y + yOffset, texture->width(), texture->height()}, renderer);
                 yOffset += texture->height();
             }
         }
@@ -87,7 +102,6 @@ namespace view {
             assert(event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP);
             m_selectionData.reset();
             const auto mousePoint = Mouse::MouseXY();
-            assert(SDL_PointInRect(&mousePoint, &m_rect));
             getSelectionFromMousePoint(m_selectionData.m_first, mousePoint);
             m_selectionData.m_mode = SelectionData::MODE::SINGLE;
             m_blinkTimeOffset      = SDL_GetTicks();
@@ -103,7 +117,7 @@ namespace view {
             m_selectionData.m_mode                = SelectionData::MODE::SINGLE;
             m_selectionData.m_first.m_charIndex   = 0;
             m_selectionData.m_first.m_stringIndex = lineNumber;
-            m_needsUpdate                         = true;
+            setNeedsUpdate();
         }
 
         void LineEditBox::handleKeyDown(const SDL_Event& event) {
@@ -156,10 +170,11 @@ namespace view {
             }
         }
 
-        void LineEditBox::getSelectionFromMousePoint(SelectionData::Data& data, const SDL_Point& mousePoint) const {
+        void LineEditBox::getSelectionFromMousePoint(SelectionData::Data& data, const ScreenXY& mousePoint) const {
             data.m_stringIndex = 0;
-            if (mousePoint.y >= m_rect.y) {
-                while (data.m_stringIndex < m_yOffsets.size() && mousePoint.y > m_yOffsets.at(data.m_stringIndex) + m_rect.y) {
+            if (mousePoint.y() >= m_rect.y) {
+                while (data.m_stringIndex < m_yOffsets.size() &&
+                       mousePoint.y() > m_yOffsets.at(data.m_stringIndex) + m_rect.y) {
                     ++data.m_stringIndex;
                 }
                 if (data.m_stringIndex > 0) {
@@ -173,18 +188,16 @@ namespace view {
 
             const auto& selected = m_strings.at(data.m_stringIndex);
             data.m_charIndex     = selected.length();
-            while (widthOfString(selected.substr(0, data.m_charIndex)) > mousePoint.x - m_rect.x) {
+            while (widthOfString(selected.substr(0, data.m_charIndex)) > mousePoint.x() - m_rect.x) {
                 --data.m_charIndex;
             }
         }
 
         void LineEditBox::mouseDragEvent(const SDL_Event& event) {
-
             const auto mousePoint = Mouse::MouseXY();
-
             getSelectionFromMousePoint(m_selectionData.m_last,
-                                       SDL_Point{fns::clamp(mousePoint.x, m_rect.x, m_rect.x + m_rect.w),
-                                                 fns::clamp(mousePoint.y, m_rect.y, m_rect.y + m_rect.h)});
+                                       SDL_Point{fns::clamp(mousePoint.x(), m_rect.x, m_rect.x + m_rect.w),
+                                                 fns::clamp(mousePoint.y(), m_rect.y, m_rect.y + m_rect.h)});
             m_selectionData.m_mode = SelectionData::MODE::DOUBLE;
             m_selectionData.fix();
             m_blinkTimeOffset = SDL_GetTicks();
@@ -192,7 +205,8 @@ namespace view {
 
         void LineEditBox::drawDashAt(const SelectionData::Data& data, SDL_Renderer* renderer) const {
             if (not(((SDL_GetTicks() - m_blinkTimeOffset) / 400) % 2)) {
-                Rectangle::render(m_rect.x + widthOfString(m_strings.at(data.m_stringIndex).substr(0, data.m_charIndex)),
+                Rectangle::render(m_rect.x +
+                                      widthOfString(m_strings.at(data.m_stringIndex).substr(0, data.m_charIndex)),
                                   m_rect.y + m_yOffsets.at(data.m_stringIndex),
                                   3,
                                   m_yOffsets.at(data.m_stringIndex + 1) - m_yOffsets.at(data.m_stringIndex),
@@ -201,7 +215,7 @@ namespace view {
             }
         }
 
-        void LineEditBox::renderSelection(SDL_Renderer* renderer) {
+        void LineEditBox::renderSelection(SDL_Renderer* renderer) const {
             switch (m_selectionData.m_mode) {
                 case SelectionData::MODE::SINGLE:
                     highlightString(m_selectionData.m_first.m_stringIndex, renderer, HIGHLIGHT_MODE::SOFT);
@@ -211,7 +225,8 @@ namespace view {
                     break;
             }
             if (hasFocus()) {
-                drawDashAt(m_selectionData.m_mode == SelectionData::MODE::DOUBLE ? m_selectionData.m_last : m_selectionData.m_first,
+                drawDashAt(m_selectionData.m_mode == SelectionData::MODE::DOUBLE ? m_selectionData.m_last
+                                                                                 : m_selectionData.m_first,
                            renderer);
             }
         }
@@ -226,16 +241,20 @@ namespace view {
                               renderer);
         }
 
-        void LineEditBox::highlightStringPartial(
-            size_t stringIndex, size_t firstCharIndex, size_t lastCharIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const {
+        void LineEditBox::highlightStringPartial(size_t         stringIndex,
+                                                 size_t         firstCharIndex,
+                                                 size_t         lastCharIndex,
+                                                 SDL_Renderer*  renderer,
+                                                 HIGHLIGHT_MODE mode) const {
             assert(stringIndex < m_strings.size());
             assert(lastCharIndex >= firstCharIndex);
             if (lastCharIndex == firstCharIndex) {
                 return;
             }
             const auto leftOffset  = widthOfString(m_strings.at(stringIndex).substr(0, firstCharIndex));
-            const auto rightOffset = lastCharIndex == std::string ::npos ? -m_rect.w + m_textures.at(stringIndex)->width()
-                                                                         : widthOfString(m_strings.at(stringIndex).substr(lastCharIndex));
+            const auto rightOffset = lastCharIndex == std::string ::npos
+                                       ? -m_rect.w + m_textures.at(stringIndex)->width()
+                                       : widthOfString(m_strings.at(stringIndex).substr(lastCharIndex));
             Rectangle::render(m_rect.x + leftOffset,
                               m_rect.y + m_yOffsets.at(stringIndex),
                               m_textures.at(stringIndex)->width() - (leftOffset + rightOffset),
@@ -292,7 +311,7 @@ namespace view {
                     if (m_selectionData.isAtStart()) {
                         return;
                     }
-                    m_needsUpdate = true;
+                    setNeedsUpdate();
                     {
                         auto& stringIndex = m_selectionData.m_first.m_stringIndex;
                         auto& charIndex   = m_selectionData.m_first.m_charIndex;
@@ -310,7 +329,7 @@ namespace view {
                     break;
                 case SelectionData::MODE::DOUBLE:
                     deleteRange(m_selectionData.m_first, m_selectionData.m_last);
-                    m_needsUpdate = true;
+                    setNeedsUpdate();
                     break;
             }
         }
@@ -320,7 +339,7 @@ namespace view {
                 deleteRange(last, first);
                 return;
             }
-            m_needsUpdate = true;
+            setNeedsUpdate();
             assert(first.m_stringIndex <= last.m_stringIndex);
             if (first.m_stringIndex == last.m_stringIndex) {
                 assert(first.m_charIndex < last.m_charIndex);
@@ -333,7 +352,8 @@ namespace view {
                 m_strings.insert(m_strings.begin() + first.m_stringIndex,
                                  m_strings[first.m_stringIndex].substr(0, first.m_charIndex) +
                                      m_strings.at(last.m_stringIndex).substr(last.m_charIndex));
-                m_strings.erase(m_strings.begin() + first.m_stringIndex + 1, m_strings.begin() + last.m_stringIndex + 2);
+                m_strings.erase(m_strings.begin() + first.m_stringIndex + 1,
+                                m_strings.begin() + last.m_stringIndex + 2);
                 m_selectionData.m_mode                = SelectionData::MODE::SINGLE;
                 m_selectionData.m_first.m_stringIndex = first.m_stringIndex;
                 m_selectionData.m_first.m_charIndex   = first.m_charIndex;
@@ -365,7 +385,7 @@ namespace view {
             ++data.m_stringIndex;
             data.m_charIndex       = 0;
             m_selectionData.m_mode = SelectionData::MODE::SINGLE;
-            m_needsUpdate          = true;
+            setNeedsUpdate();
         }
 
         void LineEditBox::moveUp() {
@@ -379,7 +399,7 @@ namespace view {
             swapIfRangeIsSelected();
             if (m_selectionData.m_first.m_stringIndex + 1 == m_strings.size()) {
                 m_strings.emplace_back("");
-                m_needsUpdate = true;
+                setNeedsUpdate();
             }
             m_selectionData.m_first = moveSelectionOneDown(m_selectionData.m_first);
             m_selectionData.m_mode  = SelectionData::MODE::SINGLE;
@@ -390,7 +410,8 @@ namespace view {
             if (shiftPressed) {
                 m_selectionData.m_first.m_charIndex = m_strings.at(m_selectionData.m_first.m_stringIndex).length();
             } else {
-                if (m_selectionData.m_first.m_charIndex != m_strings.at(m_selectionData.m_first.m_stringIndex).length()) {
+                if (m_selectionData.m_first.m_charIndex !=
+                    m_strings.at(m_selectionData.m_first.m_stringIndex).length()) {
                     ++m_selectionData.m_first.m_charIndex;
                 } else {
                     if (m_selectionData.m_first.m_stringIndex + 1 != m_strings.size()) {
@@ -429,7 +450,8 @@ namespace view {
                 case SelectionData::MODE::SINGLE:
                     assert(m_selectionData.m_first.m_stringIndex < m_strings.size());
                     {
-                        if (m_selectionData.m_first.m_charIndex != m_strings.at(m_selectionData.m_first.m_stringIndex).length()) {
+                        if (m_selectionData.m_first.m_charIndex !=
+                            m_strings.at(m_selectionData.m_first.m_stringIndex).length()) {
                             auto& str = m_strings[m_selectionData.m_first.m_stringIndex];
                             str.erase(str.begin() + m_selectionData.m_first.m_charIndex);
                         } else {
@@ -438,16 +460,17 @@ namespace view {
                             }
                         }
                     }
-                    m_needsUpdate = true;
+                    setNeedsUpdate();
                     break;
                 case SelectionData::MODE::DOUBLE:
                     deleteRange(m_selectionData.m_first, m_selectionData.m_last);
-                    m_needsUpdate = true;
+                    setNeedsUpdate();
                     break;
             }
         }
 
-        std::string LineEditBox::selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const {
+        std::string LineEditBox::selectionToString(const SelectionData::Data& first,
+                                                   const SelectionData::Data& last) const {
             assert(m_selectionData.m_mode != SelectionData::MODE::SINGLE);
             if (SelectionData::isReversed(first, last)) {
                 return selectionToString(last, first);
@@ -487,7 +510,7 @@ namespace view {
             if (text.length() == 0) {
                 return;
             }
-            m_needsUpdate = true;
+            setNeedsUpdate();
             m_strings[m_selectionData.m_first.m_stringIndex].insert(m_selectionData.m_first.m_charIndex, toUpper(text));
             const auto lastNewLine = m_strings[m_selectionData.m_first.m_stringIndex].find_last_of('\n');
             if (lastNewLine == std::string::npos) {
@@ -513,8 +536,8 @@ namespace view {
         }
 
         void LineEditBox::potentiallyDecrementFirstCharIndex() {
-            m_selectionData.m_first.m_charIndex =
-                std::min(m_selectionData.m_first.m_charIndex, m_strings.at(m_selectionData.m_first.m_stringIndex).length());
+            m_selectionData.m_first.m_charIndex = std::min(
+                m_selectionData.m_first.m_charIndex, m_strings.at(m_selectionData.m_first.m_stringIndex).length());
         }
 
         void LineEditBox::setHighLightedLine(size_t index, bool skipEmpty) {
@@ -528,13 +551,15 @@ namespace view {
                     }
                 }
 
-                auto it = std::find_if(m_strings.begin(), m_strings.end(), [](const std::string& str) { return not str.empty(); });
+                auto it = std::find_if(
+                    m_strings.begin(), m_strings.end(), [](const std::string& str) { return not str.empty(); });
                 if (it == m_strings.end()) {
                     assert(index == 0);
                     m_selectionData.m_first.m_stringIndex = 0;
                 } else {
                     while (index != 0) {
-                        it = std::find_if(std::next(it), m_strings.end(), [](const auto& str) { return not str.empty(); });
+                        it = std::find_if(
+                            std::next(it), m_strings.end(), [](const auto& str) { return not str.empty(); });
                         --index;
                     }
                     m_selectionData.m_first.m_stringIndex = std::distance(m_strings.begin(), it);
@@ -557,17 +582,14 @@ namespace view {
             return m_rect.w;
         }
 
-        int LineEditBox::height() const {
-            return m_rect.h;
-        }
-
         void LineEditBox::setActive(bool active) {
             m_active = active;
         }
 
         const SDL_Color& LineEditBox::getHighlightColor(HIGHLIGHT_MODE mode) const {
-            return m_active ? (mode == HIGHLIGHT_MODE::HARD ? cst::color::EDIT_BOX_HIGHLIGHT_HARD : cst::color::EDIT_BOX_HIGHLIGHT_SOFT)
-                            : cst::color::EDIT_BOX_HIGHLIGHT_DEAD;
+            return m_active ? (mode == HIGHLIGHT_MODE::HARD ? view::color::EDIT_BOX_HIGHLIGHT_HARD
+                                                            : view::color::EDIT_BOX_HIGHLIGHT_SOFT)
+                            : view::color::EDIT_BOX_HIGHLIGHT_DEAD;
         }
 
         void LineEditBox::appendString(const std::string& str) {
@@ -576,6 +598,14 @@ namespace view {
 
         const std::string& LineEditBox::title() const {
             return m_title;
+        }
+
+        void LineEditBox::setNeedsUpdate() {
+            m_needsUpdate = true;
+        }
+
+        const std::vector<std::string>& LineEditBox::strings() const {
+            return m_strings;
         }
 
     } // namespace widget

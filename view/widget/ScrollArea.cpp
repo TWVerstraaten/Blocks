@@ -10,9 +10,9 @@
 #include "../../model/Cluster.h"
 #include "../Mouse.h"
 #include "../Rectangle.h"
-#include "LineEditBox.h"
+#include "../color.h"
 
-#include <cassert>
+#include <algorithm>
 
 view::widget::ScrollArea::ScrollArea(const SDL_Rect& rect) : RectWidget(rect) {
 }
@@ -55,7 +55,7 @@ void view::widget::ScrollArea::mouseDragEvent(const SDL_Event& event) {
 void view::widget::ScrollArea::render(SDL_Renderer* renderer) {
     update(renderer);
 
-    Rectangle::render(geom::pad(m_rect, cst::LINE_EDIT_PADDING), cst::color::SCROLL_AREA_BACKGROUND, renderer);
+    Rectangle::render(geom::pad(m_rect, cst::LINE_EDIT_PADDING), view::color::SCROLL_AREA_BACKGROUND, renderer);
 
     for (auto& w : m_children) {
         w.render(renderer);
@@ -128,7 +128,8 @@ void view::widget::ScrollArea::update(SDL_Renderer* renderer) {
 }
 
 void view::widget::ScrollArea::addCommandEditBox(const model::Cluster& cluster) {
-    m_children.emplace_back(CommandEditBox(m_rect.x + cst::LINE_EDIT_PADDING, 0, cst::LINE_EDIT_WIDTH, 0, m_assets, cluster));
+    m_children.emplace_back(
+        CommandEditBox(m_rect.x + cst::LINE_EDIT_PADDING, 0, cst::LINE_EDIT_WIDTH, 0, m_assets, cluster));
     m_children.back().setHighLightedLine(cluster.commandIndex());
     m_children.back().setActive(cluster.isAlive());
     m_needsUpdate = true;
@@ -140,19 +141,21 @@ std::list<view::widget::CommandEditBox>& view::widget::ScrollArea::children() {
 
 void view::widget::ScrollArea::renderScrollBar(SDL_Renderer* renderer) {
     assert(m_rect.y == 0);
-    Rectangle::render({m_rect.x + m_rect.w - 10, 0, 3, m_rect.h}, cst::color::WHITE, renderer);
+    Rectangle::render({m_rect.x + m_rect.w - 10, 0, 3, m_rect.h}, view::color::WHITE, renderer);
     const int heightDifference = m_height - m_rect.h;
     if (heightDifference <= 0) {
-        Rectangle::render({m_rect.x + m_rect.w - 10, 2, 5, m_rect.h - 4}, cst::color::BLACK, renderer);
+        Rectangle::render({m_rect.x + m_rect.w - 10, 2, 5, m_rect.h - 4}, view::color::BLACK, renderer);
     } else {
         const int barHeight = m_rect.h * (m_rect.h / static_cast<double>(m_height));
-        Rectangle::render({m_rect.x + m_rect.w - 10, static_cast<int>(m_scrollFraction * (m_rect.h - barHeight)), 5, barHeight},
-                          cst::color::BLACK,
-                          renderer);
+        Rectangle::render(
+            {m_rect.x + m_rect.w - 10, static_cast<int>(m_scrollFraction * (m_rect.h - barHeight)), 5, barHeight},
+            view::color::BLACK,
+            renderer);
     }
 }
 
-view::widget::ScrollArea::ScrollArea(const view::widget::ScrollArea& other) : RectWidget(other.m_rect), m_children(other.m_children) {
+view::widget::ScrollArea::ScrollArea(const view::widget::ScrollArea& other)
+    : RectWidget(other.m_rect), m_children(other.m_children) {
     m_rect           = other.m_rect;
     m_needsUpdate    = other.m_needsUpdate;
     m_firstRender    = other.m_firstRender;
@@ -170,4 +173,10 @@ void view::widget::ScrollArea::setX(int x) {
     for (auto& w : m_children) {
         w.setX(m_rect.x + cst::LINE_EDIT_PADDING);
     }
+}
+
+std::list<view::widget::CommandEditBox>::iterator view::widget::ScrollArea::findCommandEditBox(size_t index) {
+    return std::find_if(m_children.begin(), m_children.end(), [index](const auto& commandEditBox) {
+        return commandEditBox.index() == index;
+    });
 }

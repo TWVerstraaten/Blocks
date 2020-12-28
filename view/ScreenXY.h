@@ -18,17 +18,27 @@ namespace view {
 
     class ScreenXY {
       public:
+        /****** CONSTRUCTORS / DESTRUCTORS  ******/
+        ScreenXY();
         ScreenXY(int x, int y);
         ScreenXY(const SDL_Point& point);
 
+        /****** PUBLIC STATIC FUNCTIONS  ******/
         static ScreenXY fromWorldXY(const model::WorldXY& worldXY, const ViewPort& viewPort);
         static ScreenXY fromWorldXYAsVector(const model::WorldXY& worldXY, const ViewPort& viewPort);
         static ScreenXY fromGridXY(const model::GridXY& gridXY, const ViewPort& viewPort);
 
+        /****** CONST GETTERS  ******/
         int x() const;
         int y() const;
 
+        /****** OPERATORS  ******/
+        operator SDL_Point() const {
+            return {m_x, m_y};
+        }
+
       private:
+        /****** DATA MEMBERS  ******/
         int m_x;
         int m_y;
     };

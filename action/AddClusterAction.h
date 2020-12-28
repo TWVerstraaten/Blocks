@@ -6,21 +6,22 @@
 #define BLOCKS_ADDCLUSTERACTION_H
 
 #include "../model/Cluster.h"
-#include "../model/GridXY.h"
 #include "Action.h"
 
-#include <cstddef>
 namespace action {
 
     class AddClusterAction : public Action {
 
       public:
-        AddClusterAction(model::Cluster cluster);
+        /****** CONSTRUCTORS / DESTRUCTORS  ******/
+        explicit AddClusterAction(model::Cluster cluster);
 
-        void undoAction(Application_Edit& applicationEdit) override;
-        void redoAction(Application_Edit& applicationEdit) override;
+        /****** VIRTUAL FUNCTIONS  ******/
+        void undoAction(app::Application_Edit& applicationEdit) override;
+        void redoAction(app::Application_Edit& applicationEdit) override;
 
       private:
+        /****** DATA MEMBERS  ******/
         const model::Cluster m_cluster;
     };
 

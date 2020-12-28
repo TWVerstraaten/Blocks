@@ -21,7 +21,7 @@ namespace alg {
         std::set<model::Line<XY>>  result;
         std::vector<model::GridXY> cornerPoints;
         int                        yOffset = 0;
-        for (const auto& dir : {enums::DIRECTION::UP, enums::DIRECTION::DOWN}) {
+        for (const auto& dir : {model::GridXY:: DIRECTION::UP, model::GridXY::DIRECTION::DOWN}) {
             auto it = blocks.begin();
             while (it != blocks.end()) {
                 if (blocks.find(it->neighbor(dir)) != blocks.end()) {

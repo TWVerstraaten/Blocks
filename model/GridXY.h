@@ -5,7 +5,6 @@
 #ifndef BLOCKS_GRIDXY_H
 #define BLOCKS_GRIDXY_H
 
-#include "Enums.h"
 
 #include <iostream>
 
@@ -21,29 +20,41 @@ namespace model {
     class GridXY {
 
       public:
+        /****** PUBLIC ENUMS / TYPEDEFS  ******/
+        enum class DIRECTION { UP, DOWN, LEFT, RIGHT, NONE };
+
+        /****** CONSTRUCTORS / DESTRUCTORS  ******/
         GridXY(const GridXY& other) = default;
         GridXY(GridXY&& other)      = default;
         GridXY(int x, int y);
-
         GridXY& operator=(const GridXY& rhs) = default;
         GridXY& operator=(GridXY&& rhs) = default;
 
-        int           x() const;
-        int           y() const;
-        int           manhattanDistance(const GridXY& other) const;
-        GridXY        neighbor(enums::DIRECTION direction) const;
+        /****** PUBLIC STATIC FUNCTIONS  ******/
         static GridXY fromWorldXY(const model::WorldXY& worldXY);
         static GridXY fromScreenXY(const view::ScreenXY& screenXY, const view::ViewPort& viewPort);
-        bool          isAdjacent(const GridXY& other) const;
 
-        explicit      operator WorldXY() const;
-        GridXY&       operator+=(const GridXY& gridXY);
+        /****** CONST GETTERS  ******/
+        int x() const;
+        int y() const;
+
+        /****** CONST FUNCTIONS  ******/
+        bool   isAdjacent(const GridXY& other) const;
+        int    manhattanDistance(const GridXY& other) const;
+        GridXY neighbor(DIRECTION direction) const;
+
+        /****** OPERATORS  ******/
+        explicit operator WorldXY() const;
+        GridXY&  operator+=(const GridXY& gridXY);
+
+        /****** FRIENDS  ******/
         friend GridXY operator+(const GridXY& lhs, const GridXY& rhs);
         friend bool   operator<(const GridXY& lhs, const GridXY& rhs);
         friend bool   operator==(const GridXY& lhs, const GridXY& rhs);
         friend bool   operator!=(const GridXY& lhs, const GridXY& rhs);
 
       private:
+        /****** DATA MEMBERS  ******/
         int m_x;
         int m_y;
     };

@@ -11,25 +11,31 @@
 namespace view {
     namespace widget {
         struct SelectionData {
-            void reset();
 
-            void fix();
-
-            bool empty() const;
-
+            /****** PUBLIC ENUMS / TYPEDEFS  ******/
+            enum class MODE { SINGLE, DOUBLE };
             struct Data {
                 size_t m_stringIndex = std::numeric_limits<size_t>::max();
                 size_t m_charIndex   = std::numeric_limits<size_t>::max();
             };
 
+            /****** PUBLIC STATIC FUNCTIONS  ******/
+            static bool isReversed(const Data& first, const Data& last);
+
+            /****** CONST GETTERS  ******/
+            bool empty() const;
+
+            /****** CONST FUNCTIONS  ******/
+            bool isAtStart() const;
+
+            /****** NON CONST FUNCTIONS  ******/
+            void reset();
+            void fix();
+
+            /****** DATA MEMBERS  ******/
+            MODE m_mode = MODE::SINGLE;
             Data m_first;
             Data m_last;
-
-            static bool isReversed(const Data& first, const Data& last);
-            bool        isAtStart() const;
-
-            enum class MODE { SINGLE, DOUBLE };
-            MODE m_mode = MODE::SINGLE;
         };
 
     } // namespace widget

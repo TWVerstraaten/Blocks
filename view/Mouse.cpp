@@ -4,8 +4,10 @@
 
 #include "Mouse.h"
 
-SDL_Point Mouse::MouseXY() {
-    int xMouse, yMouse;
-    SDL_GetMouseState(&xMouse, &yMouse);
-    return {xMouse, yMouse};
-}
+namespace view {
+    ScreenXY Mouse::MouseXY() {
+        int xMouse, yMouse;
+        SDL_GetMouseState(&xMouse, &yMouse);
+        return {xMouse, yMouse};
+    }
+} // namespace view

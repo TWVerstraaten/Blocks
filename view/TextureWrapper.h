@@ -10,20 +10,24 @@
 #include <memory>
 #include <vector>
 
-class SDL_Renderer;
-
 namespace view {
     class TextureWrapper {
 
       public:
+        /****** PUBLIC ENUMS / TYPEDEFS  ******/
         enum class TEXTURE_ENUM { ERROR, ARROW_CW, ARROW_CCW, CLUSTER, KILL };
 
+        /****** CONSTRUCTORS / DESTRUCTORS  ******/
         TextureWrapper(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
 
-        Texture* getTexture(int width, int height)const;
+        /****** CONST GETTERS  ******/
+        Texture* texture(int width, int height) const;
 
       private:
-        void                                  init(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
+        /****** PRIVATE NON CONST FUNCTIONS  ******/
+        void init(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
+
+        /****** DATA MEMBERS  ******/
         std::vector<std::unique_ptr<Texture>> m_textures;
     };
 } // namespace view

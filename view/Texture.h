@@ -15,9 +15,23 @@ namespace view {
     class Texture {
 
       public:
+        /****** CONSTRUCTORS / DESTRUCTORS  ******/
         Texture() = default;
         ~Texture();
 
+        /****** PUBLIC STATIC FUNCTIONS  ******/
+        static std::unique_ptr<Texture> createFromImagePath(const std::string& path, SDL_Renderer* renderer);
+        static std::unique_ptr<Texture> createFromText(const std::string& textureText,
+                                                       SDL_Color          textColor,
+                                                       SDL_Renderer*      renderer,
+                                                       TTF_Font*          font);
+
+        /****** CONST FUNCTIONS  ******/
+        int  width() const;
+        int  height() const;
+        bool loadedCorrectly() const;
+
+        /****** NON CONST FUNCTIONS  ******/
         void free();
         void setColor(Uint8 red, Uint8 green, Uint8 blue);
         void setBlendMode(SDL_BlendMode blending);
@@ -27,17 +41,9 @@ namespace view {
                     double           angle  = 0.0,
                     const SDL_Point* center = nullptr,
                     SDL_RendererFlip flip   = SDL_FLIP_NONE);
-        int  width() const;
-        int  height() const;
-        bool loadedCorrectly() const;
-
-        static std::unique_ptr<Texture> createFromImagePath(const std::string& path, SDL_Renderer* renderer);
-        static std::unique_ptr<Texture> createFromText(const std::string& textureText,
-                                                       SDL_Color          textColor,
-                                                       SDL_Renderer*      renderer,
-                                                       TTF_Font*          font);
 
       private:
+        /****** DATA MEMBERS  ******/
         bool         m_loadedCorrectly = false;
         SDL_Texture* m_texture         = nullptr;
         int          m_width           = 0;

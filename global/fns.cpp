@@ -4,8 +4,6 @@
 
 #include "fns.h"
 
-#include <cassert>
-
 namespace fns {
 
     std::string trimWhiteSpace(const std::string& string) {

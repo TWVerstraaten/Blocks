@@ -6,10 +6,8 @@
 
 #include "../view/ScreenXY.h"
 #include "../view/ViewPort.h"
-#include "WorldXY.h"
 
 #include <cassert>
-#include <cmath>
 
 namespace model {
     GridXY::GridXY(int x, int y) : m_x(x), m_y(y) {
@@ -31,16 +29,16 @@ namespace model {
         return std::abs(other.y() - y()) + std::abs(other.x() - x());
     }
 
-    GridXY GridXY::neighbor(enums::DIRECTION direction) const {
-        assert(direction != enums::DIRECTION::NONE);
+    GridXY GridXY::neighbor(model::GridXY::DIRECTION direction) const {
+        assert(direction != model::GridXY::DIRECTION::NONE);
         switch (direction) {
-            case enums::DIRECTION::UP:
+            case model::GridXY::DIRECTION::UP:
                 return {x(), y() - 1};
-            case enums::DIRECTION::DOWN:
+            case model::GridXY::DIRECTION::DOWN:
                 return {x(), y() + 1};
-            case enums::DIRECTION::LEFT:
+            case model::GridXY::DIRECTION::LEFT:
                 return {x() - 1, y()};
-            case enums::DIRECTION::RIGHT:
+            case model::GridXY::DIRECTION::RIGHT:
                 return {x() + 1, y()};
             default:
                 return {x(), y()};

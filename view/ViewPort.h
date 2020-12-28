@@ -7,23 +7,28 @@
 
 #include "../global/cst.h"
 
-#include <cstddef>
-
 namespace view {
 
     class ViewPort {
       public:
+        /****** CONSTRUCTORS / DESTRUCTORS  ******/
         ViewPort() = default;
 
-        int  blockSizeInScreen() const;
-        int  xOffset() const;
-        int  yOffset() const;
-        int  worldToScreenLength(int worldLength) const;
+        /****** CONST GETTERS  ******/
+        int blockSizeInScreen() const;
+        int xOffset() const;
+        int yOffset() const;
+
+        /****** CONST FUNCTIONS  ******/
+        int worldToScreenLength(int worldLength) const;
+        int distanceBetweenBlocksInScreenXY() const;
+
+        /****** NON CONST FUNCTIONS  ******/
         void zoom(int dZoom);
         void translate(int dx, int dy);
-        int  distanceBetweenBlocksInScreenXY() const;
 
       private:
+        /****** DATA MEMBERS  ******/
         double m_scale                           = 1.0;
         int    m_zoom                            = 0;
         int    m_xOffset                         = 0;

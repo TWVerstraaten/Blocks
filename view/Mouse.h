@@ -5,12 +5,14 @@
 #ifndef BLOCKS_MOUSE_H
 #define BLOCKS_MOUSE_H
 
-#include <SDL.h>
+#include "ScreenXY.h"
 
-class Mouse {
+namespace view {
+    class Mouse {
 
-  public:
-    static SDL_Point MouseXY();
-};
-
+      public:
+        /****** PUBLIC STATIC FUNCTIONS  ******/
+        static ScreenXY MouseXY();
+    };
+} // namespace view
 #endif // BLOCKS_MOUSE_H

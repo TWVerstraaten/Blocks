@@ -7,40 +7,36 @@
 #include "../global/alg.h"
 #include "../global/fns.h"
 
-#include <algorithm>
-#include <cassert>
-#include <vector>
-
 namespace model {
 
-    Level::DYNAMIC_BLOCK_TYPE Level::dynamicBlockAt(const GridXY& gridXY) {
+    DYNAMIC_BLOCK_TYPE Level::dynamicBlockAt(const GridXY& gridXY) const {
         if (m_dynamicBLocks.find(gridXY) == m_dynamicBLocks.end()) {
             return DYNAMIC_BLOCK_TYPE::NONE;
         }
-        return m_dynamicBLocks[gridXY];
+        return m_dynamicBLocks.at(gridXY);
     }
 
-    const std::map<GridXY, Level::DYNAMIC_BLOCK_TYPE>& Level::dynamicBlocks() const {
+    const std::map<GridXY, DYNAMIC_BLOCK_TYPE>& Level::dynamicBlocks() const {
         return m_dynamicBLocks;
     }
 
-    Level::INSTANT_BLOCK_TYPE Level::instantBlockAt(const GridXY& gridXY) {
+    INSTANT_BLOCK_TYPE Level::instantBlockAt(const GridXY& gridXY) const {
         if (m_instantBLocks.find(gridXY) == m_instantBLocks.end()) {
             return INSTANT_BLOCK_TYPE::NONE;
         }
-        return m_instantBLocks[gridXY];
+        return m_instantBLocks.at(gridXY);
     }
 
-    const std::map<GridXY, Level::INSTANT_BLOCK_TYPE>& Level::instantBlocks() const {
+    const std::map<GridXY, INSTANT_BLOCK_TYPE>& Level::instantBlocks() const {
         return m_instantBLocks;
     }
 
-    void Level::addBlock(const GridXY& gridXY, Level::DYNAMIC_BLOCK_TYPE blockType) {
+    void Level::addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
         assert(m_dynamicBLocks.find(gridXY) == m_dynamicBLocks.end());
         m_dynamicBLocks[gridXY] = blockType;
     }
 
-    void Level::addBlock(const GridXY& gridXY, Level::INSTANT_BLOCK_TYPE blockType) {
+    void Level::addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType) {
         assert(m_instantBLocks.find(gridXY) == m_instantBLocks.end());
         m_instantBLocks[gridXY] = blockType;
     }
@@ -71,7 +67,7 @@ namespace model {
     const std::set<GridXY>& Level::startBlocks() const {
         return m_startBlocks;
     }
-    bool Level::isFreeStartBlock(const GridXY gridXY) const {
+    bool Level::isFreeStartBlock(const GridXY& gridXY) const {
         if (m_startBlocks.find(gridXY) == m_startBlocks.end()) {
             return false;
         }
@@ -82,9 +78,6 @@ namespace model {
             return false;
         }
         return true;
-    }
-
-    void Level::sort() {
     }
 
     const std::set<Line<WorldXY>>& Level::boundaries() const {

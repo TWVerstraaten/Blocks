@@ -4,13 +4,13 @@
 
 #include "Model.h"
 
-#include "../Actions/AddClusterAction.h"
-#include "../Actions/GenericModelAction.h"
+#include "../action/AddBlockToClusterAction.h"
+#include "../action/GenericModelAction.h"
+#include "../action/RemoveBlockFromClusterAction.h"
+#include "../action/RemoveClusterAction.h"
 #include "../global/fns.h"
 
 #include <algorithm>
-#include <cassert>
-#include <memory>
 
 namespace model {
 
@@ -40,28 +40,14 @@ namespace model {
     void Model::interactClustersWithInstantBlocks() {
         for (const auto& block : m_level.instantBlocks()) {
             switch (block.second) {
-                case Level::INSTANT_BLOCK_TYPE::NONE:
+                case model::INSTANT_BLOCK_TYPE::NONE:
                     break;
-                case Level::INSTANT_BLOCK_TYPE::KILL:
+                case model::INSTANT_BLOCK_TYPE::KILL:
                     clearBlock(block.first);
                     break;
             }
         }
         assert(not containsEmptyClusters());
-        //        for (auto& cluster : m_clusters) {
-        //            for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end();) {
-        //                switch (m_level.instantBlockAt(GridXY(it->x(), it->y()))) {
-        //                    case Level::INSTANT_BLOCK_TYPE::KILL:
-        //                        it = cluster.removeBLock(*it);
-        //                        break;
-        //                    default:
-        //                        ++it;
-        //                        break;
-        //                }
-        //            }
-        //        }
-        //        clearEmptyClusters();
-        //        splitDisconnectedClusters();
     }
 
     void Model::intersectWithLevel() {
@@ -82,7 +68,7 @@ namespace model {
         if (dPhase >= 1.0) {
             dPhase = 1.0;
         }
-        //        assert(dPhase <= 1);
+        assert(dPhase <= 1);
         while (dPhase > cst::MAX_D_PHASE) {
             updateInternal(cst::MAX_D_PHASE);
             dPhase -= cst::MAX_D_PHASE;
@@ -92,10 +78,11 @@ namespace model {
 
     void Model::init() {
         clear();
-        m_clusters.push_back(Cluster({{5, 5}, {3, 5}, {5, 6}, {6, 5}, {4, 5}, {5, 4}}, "CL" + std::to_string(m_clusters.size())));
+        m_clusters.push_back(
+            Cluster({{5, 5}, {3, 5}, {5, 6}, {6, 5}, {4, 5}, {5, 4}}, "CL" + std::to_string(m_clusters.size())));
         m_clusters.back().addCommand({Command::TYPE::MOVE_UP, Command::MODIFIER::NONE});
 
-        m_level.addBlock({5, 3}, Level::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({5, 3}, model::INSTANT_BLOCK_TYPE::KILL);
 
         for (int i = -2; i != 15; ++i) {
             if (i > 5) {
@@ -122,7 +109,6 @@ namespace model {
                 m_level.addStartBlock({i, j});
             }
         }
-        m_level.sort();
         m_level.createBoundaries();
     }
 
@@ -132,18 +118,9 @@ namespace model {
     }
 
     void Model::clearEmptyClusters() {
-        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const auto& cluster) { return cluster.empty(); }),
-                         m_clusters.end());
-    }
-
-    void Model::splitDisconnectedClusters() {
-        for (auto it = m_clusters.begin(); it != m_clusters.end(); ++it) {
-            if (not it->isConnected()) {
-                m_clusters.splice(m_clusters.end(), it->collectAllButFirstComponent());
-                assert(it->isConnected());
-            }
-        }
-        assert(not containsEmptyClusters());
+        m_clusters.erase(
+            std::remove_if(m_clusters.begin(), m_clusters.end(), [](const auto& cluster) { return cluster.empty(); }),
+            m_clusters.end());
     }
 
     void Model::preStep() {
@@ -156,8 +133,9 @@ namespace model {
 
     std::unique_ptr<action::Action> Model::addCluster(const GridXY& gridXY) {
         assert(m_level.isFreeStartBlock(gridXY));
-        if (std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); }) ==
-            m_clusters.end()) {
+        if (std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) {
+                return cluster.contains(gridXY);
+            }) == m_clusters.end()) {
             Model copy = *this;
             m_clusters.push_back(Cluster({gridXY}, "CL" + std::to_string(m_clusters.size())));
             return std::make_unique<action::AddClusterAction>(m_clusters.back());
@@ -166,44 +144,46 @@ namespace model {
     }
 
     std::unique_ptr<action::Action> Model::linkBlocks(const GridXY& base, const GridXY& extension) {
-        const auto baseIt = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(base); });
-
-        Model copyOfModel = *this;
+        const auto baseIt = std::find_if(
+            m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(base); });
         if (baseIt == m_clusters.end() || (not base.isAdjacent(extension))) {
             return addCluster(extension);
         }
-        auto extensionIt =
-            std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(extension); });
+        auto extensionIt = std::find_if(
+            m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(extension); });
         if (baseIt == extensionIt) {
             return nullptr;
-        } else if (extensionIt == m_clusters.end()) {
+        }
+        if (extensionIt == m_clusters.end()) {
             baseIt->addGridXY(extension);
             assert(baseIt->isConnected());
-        } else {
-            baseIt->gridXY().insert(extensionIt->gridXY().begin(), extensionIt->gridXY().end());
-            m_clusters.erase(extensionIt);
+            return std::unique_ptr<action::Action>(new action::AddBlockToClusterAction(baseIt->index(), extension));
         }
-        return nullptr;
-        //        return std::unique_ptr<action::Action>(new action::GenericModelAction(copyOfModel, *this));
+        Model copyOfModel = *this;
+        baseIt->gridXY().insert(extensionIt->gridXY().begin(), extensionIt->gridXY().end());
+        m_clusters.erase(extensionIt);
+        return std::unique_ptr<action::Action>(new action::GenericModelAction(copyOfModel, *this));
     }
 
     std::unique_ptr<action::Action> Model::clearBlock(const GridXY& gridXY) {
-        Model      copy = *this;
-        const auto it   = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); });
+        const auto it = std::find_if(
+            m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); });
         if (it == m_clusters.end()) {
             return nullptr;
         }
-        it->removeBLock(gridXY);
-        if (it->empty()) {
+        if (it->size() == 1) {
+            auto result = std::unique_ptr<action::Action>(new action::RemoveClusterAction(*it));
             m_clusters.erase(it);
-        } else {
-            if (not it->isConnected()) {
-                m_clusters.splice(m_clusters.end(), it->collectAllButFirstComponent());
-                assert(it->isConnected());
-            }
+            return result;
         }
-        return nullptr;
-        //        return std::unique_ptr<action::Action>(new action::GenericModelAction(copy, *this));
+        Model copy = *this;
+        it->removeBLock(gridXY);
+        if (not it->isConnected()) {
+            m_clusters.splice(m_clusters.end(), it->collectAllButFirstComponent());
+            assert(it->isConnected());
+            return std::unique_ptr<action::Action>(new action::GenericModelAction(copy, *this));
+        }
+        return std::unique_ptr<action::Action>(new action::RemoveBlockFromClusterAction(it->index(), gridXY));
     }
 
     Model& Model::operator=(const Model& other) {
@@ -262,11 +242,13 @@ namespace model {
     }
 
     bool Model::containsEmptyClusters() const {
-        return std::any_of(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); });
+        return std::any_of(
+            m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); });
     }
 
     std::list<Cluster>::iterator Model::clusterWithIndex(size_t index) {
-        return std::find_if(m_clusters.begin(), m_clusters.end(), [&](const Cluster& cluster) { return cluster.index() == index; });
+        return std::find_if(
+            m_clusters.begin(), m_clusters.end(), [&](const Cluster& cluster) { return cluster.index() == index; });
     }
 
 } // namespace model

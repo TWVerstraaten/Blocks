@@ -8,29 +8,32 @@
 #include "../../global/fns.h"
 #include "../../model/Cluster.h"
 #include "../Assets.h"
+#include "../color.h"
 
 #include <algorithm>
 
 view::widget::CommandEditBox::CommandEditBox(
     int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
-    : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())), m_clusterIndex(cluster.index()) {
+    : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())),
+      m_index(cluster.index()) {
     if (cluster.commands().empty()) {
         m_strings.emplace_back("");
     } else {
-        for (const auto& action : cluster.commands()) {
-            m_strings.emplace_back(model::Command::stringFromModifier(action.m_modifier) + " " +
-                                   model::Command::stringFromType(action.m_type));
+        for (const auto& command : cluster.commands()) {
+            m_strings.emplace_back(model::Command::stringFromModifier(command.m_modifier) + " " +
+                                   model::Command::stringFromType(command.m_type));
         }
     }
 }
 
 view::widget::CommandEditBox::CommandEditBox(const view::widget::CommandEditBox& other)
     : LineEditBox(other.m_rect.x, other.m_rect.y, other.m_rect.w, other.m_rect.h, other.m_assets, other.m_title),
-      m_clusterIndex(other.m_clusterIndex) {
-    m_strings = other.m_strings;
+      m_index(other.m_index) {
+    m_strings       = other.m_strings;
+    m_selectionData = other.m_selectionData;
 }
 
-void view::widget::CommandEditBox::updateClusterCommands(model::Cluster& cluster) {
+void view::widget::CommandEditBox::updateClusterCommands(model::Cluster& cluster) const {
     cluster.clearCommands();
     for (const auto& str : m_strings) {
         if (model::Command::canParse(str)) {
@@ -40,25 +43,34 @@ void view::widget::CommandEditBox::updateClusterCommands(model::Cluster& cluster
             cluster.addCommand(model::Command::fromString(str));
         }
     }
+    m_clusterShouldBeUpdated = false;
 }
 
-size_t view::widget::CommandEditBox::clusterIndex() const {
-    return m_clusterIndex;
+size_t view::widget::CommandEditBox::index() const {
+    return m_index;
 }
 
 void view::widget::CommandEditBox::update(SDL_Renderer* renderer) {
     if (!m_needsUpdate) {
         return;
     }
-    LineEditBox::update(renderer);
+    if (not m_titleTexture) {
+        m_titleTexture = Texture::createFromText(
+            m_title, view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font());
+    }
+
+    m_textures.clear();
+    m_yOffsets.clear();
 
     int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
     for (auto& str : m_strings) {
         m_yOffsets.push_back(yOffset);
         const auto text     = str.length() == 0 ? std::string(" ") : str;
         bool       canParse = model::Command::canParse(str);
-        m_textures.emplace_back(Texture::createFromText(
-            text, canParse ? cst::color::BLACK : cst::color::TEXT_ERROR, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
+        m_textures.emplace_back(Texture::createFromText(text,
+                                                        canParse ? view::color::BLACK : view::color::TEXT_ERROR,
+                                                        renderer,
+                                                        m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
         yOffset += m_textures.back()->height();
     }
     m_yOffsets.push_back(yOffset);
@@ -76,6 +88,26 @@ void view::widget::CommandEditBox::loseFocus() {
             str = model::Command::formatCommandString(str);
         }
     }
-
     LineEditBox::loseFocus();
+}
+
+void view::widget::CommandEditBox::setNeedsUpdate() {
+    LineEditBox::setNeedsUpdate();
+    m_clusterShouldBeUpdated = true;
+}
+
+bool view::widget::CommandEditBox::clusterShouldBeUpdated() const {
+    return m_clusterShouldBeUpdated;
+}
+
+void view::widget::CommandEditBox::setStrings(const std::vector<std::string>& strings) {
+    m_strings = strings;
+    setNeedsUpdate();
+}
+
+view::widget::CommandEditBox& view::widget::CommandEditBox::operator=(const view::widget::CommandEditBox& other) {
+    m_selectionData = other.m_selectionData;
+    m_strings       = other.m_strings;
+    setNeedsUpdate();
+    return *this;
 }

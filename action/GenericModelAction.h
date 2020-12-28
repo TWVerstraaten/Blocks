@@ -11,12 +11,15 @@
 namespace action {
     class GenericModelAction : public Action {
       public:
-        GenericModelAction(const model::Model& old, const model::Model& aNew);
+        /****** CONSTRUCTORS / DESTRUCTORS  ******/
+        GenericModelAction(const model::Model& oldModel, const model::Model& newModel);
 
-        void undoAction(Application_Edit& applicationEdit) override;
-        void redoAction(Application_Edit& applicationEdit) override;
+        /****** VIRTUAL FUNCTIONS  ******/
+        void undoAction(app::Application_Edit& applicationEdit) override;
+        void redoAction(app::Application_Edit& applicationEdit) override;
 
       private:
+        /****** DATA MEMBERS  ******/
         const model::Model m_old;
         const model::Model m_new;
     };
