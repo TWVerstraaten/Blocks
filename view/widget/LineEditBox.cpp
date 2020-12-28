@@ -86,7 +86,7 @@ namespace view {
         void LineEditBox::leftClickEvent(const SDL_Event& event) {
             assert(event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP);
             m_selectionData.reset();
-            const auto mousePoint = Mouse::getMouseXY();
+            const auto mousePoint = Mouse::MouseXY();
             assert(SDL_PointInRect(&mousePoint, &m_rect));
             getSelectionFromMousePoint(m_selectionData.m_first, mousePoint);
             m_selectionData.m_mode = SelectionData::MODE::SINGLE;
@@ -180,7 +180,7 @@ namespace view {
 
         void LineEditBox::mouseDragEvent(const SDL_Event& event) {
 
-            const auto mousePoint = Mouse::getMouseXY();
+            const auto mousePoint = Mouse::MouseXY();
 
             getSelectionFromMousePoint(m_selectionData.m_last,
                                        SDL_Point{fns::clamp(mousePoint.x, m_rect.x, m_rect.x + m_rect.w),

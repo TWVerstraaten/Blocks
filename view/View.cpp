@@ -171,7 +171,7 @@ namespace view {
         m_viewPort.translate(dx, dy);
     }
 
-    SDL_Point View::windowSize() const {
+    ScreenXY View::windowSize() const {
         int windowWidth, windowHeight;
         SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
         return {windowWidth, windowHeight};

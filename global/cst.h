@@ -40,6 +40,8 @@ namespace cst {
 
     static const Uint32 EDIT_BOX_FONT_SIZE = 25;
 
+    static const int COMMAND_SCROLL_AREA_WIDTH = 200;
+
     namespace color {
         static const SDL_Color WHITE                        = {255, 255, 255, 255};
         static const SDL_Color RED                          = {255, 0, 0, 255};

@@ -16,7 +16,7 @@ Application_Edit::Application_Edit(model::Model* model, view::View* view, view::
 }
 
 void Application_Edit::mouseWheelEvent(const SDL_Event& event) {
-    if (m_scrollArea->pointIsOverWidget(Mouse::getMouseXY())) {
+    if (m_scrollArea->pointIsOverWidget(Mouse::MouseXY())) {
         m_scrollArea->mouseWheelEvent(event);
     } else {
         m_view->zoom(event.wheel.y);
@@ -24,23 +24,13 @@ void Application_Edit::mouseWheelEvent(const SDL_Event& event) {
 }
 
 void Application_Edit::keyEvent(const SDL_Event& event) {
-    if (event.type == SDL_KEYDOWN) {
-        if (SDL_GetModState() & KMOD_CTRL) {
-            if (event.key.keysym.sym == SDLK_z) {
-                if (not m_undoStack.empty()) {
-                    m_undoStack.top()->undoAction(*this);
-                    m_redoStack.push(std::move(m_undoStack.top()));
-                    m_undoStack.pop();
-                    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea);
-                }
-            } else if (event.key.keysym.sym == SDLK_r) {
-                if (not m_redoStack.empty()) {
-                    m_redoStack.top()->redoAction(*this);
-                    m_undoStack.push(std::move(m_redoStack.top()));
-                    m_redoStack.pop();
-                    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea);
-                }
-            }
+    if (event.type == SDL_KEYDOWN && SDL_GetModState() & KMOD_CTRL) {
+        if (event.key.keysym.sym == SDLK_z) {
+            undo();
+            return;
+        } else if (event.key.keysym.sym == SDLK_r) {
+            redo();
+            return;
         }
     }
     if (m_scrollArea->hasFocus()) {
@@ -49,24 +39,24 @@ void Application_Edit::keyEvent(const SDL_Event& event) {
 }
 
 void Application_Edit::mouseClickEvent(const SDL_Event& event) {
-    if (m_scrollArea->pointIsOverWidget(Mouse::getMouseXY())) {
+    m_scrollArea->loseFocus();
+    if (m_scrollArea->pointIsOverWidget(Mouse::MouseXY())) {
         m_scrollArea->getFocus();
-    } else {
-        m_scrollArea->loseFocus();
     }
     setButtonBooleans(event);
     if (m_scrollArea->hasFocus()) {
         m_scrollArea->leftClickEvent(event);
     } else {
         if (event.button.button == SDL_BUTTON_LEFT) {
-            m_previousGridClickPosition = model::GridXY::fromScreenXY(Mouse::getMouseXY(), m_view->viewPort());
+            m_previousGridClickPosition = model::GridXY::fromScreenXY(Mouse::MouseXY(), m_view->viewPort());
             if (SDL_GetModState() & KMOD_CTRL) {
                 clearBlock(m_previousGridClickPosition);
             } else {
-                addAction(m_model->addBlock(m_previousGridClickPosition));
+                addBlock(m_previousGridClickPosition);
             }
         }
     }
+    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea, Application_Level::MODE::EDITING);
 }
 
 void Application_Edit::mouseReleaseEvent(const SDL_Event& event) {
@@ -84,7 +74,7 @@ void Application_Edit::mouseReleaseEvent(const SDL_Event& event) {
 
 void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
     if (m_leftMouseButtonPressed) {
-        if (m_scrollArea->pointIsOverWidget(Mouse::getMouseXY())) {
+        if (m_scrollArea->pointIsOverWidget(Mouse::MouseXY())) {
             m_scrollArea->getFocus();
         }
     }
@@ -102,9 +92,8 @@ void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
 }
 
 void Application_Edit::init() {
-    SDL_StartTextInput();
     m_view->clear();
-    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea);
+    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea, Application_Level::MODE::EDITING);
     m_scrollArea->update(m_view->renderer());
 }
 
@@ -129,7 +118,7 @@ Uint32 Application_Edit::timeStep() const {
 
 void Application_Edit::finalize() {
     getActionsFromEditBoxes();
-    SDL_StopTextInput();
+    m_scrollArea->loseFocus();
 }
 
 void Application_Edit::handleEvent(const SDL_Event& event) {
@@ -186,19 +175,15 @@ void Application_Edit::addBlock(const model::GridXY& gridXY) {
     if (m_model->level().isFreeStartBlock(m_previousGridClickPosition)) {
         addAction(m_model->linkBlocks(m_previousGridClickPosition, gridXY));
     } else {
-
-        auto a = m_model->addBlock(gridXY);
-        if (a) {
-            m_undoStack.push(std::move(a));
-        }
+        addAction(m_model->addCluster(gridXY));
     }
-    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea);
+    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea, Application_Level::MODE::EDITING);
 }
 
 void Application_Edit::handleLeftMouseMove() {
     assert(m_leftMouseButtonPressed);
     assert(not m_rightMouseButtonPressed);
-    const auto currentGridPosition = model::GridXY::fromScreenXY(Mouse::getMouseXY(), m_view->viewPort());
+    const auto currentGridPosition = model::GridXY::fromScreenXY(Mouse::MouseXY(), m_view->viewPort());
     if (currentGridPosition != m_previousGridClickPosition) {
         if (SDL_GetModState() & KMOD_CTRL) {
             clearBlock(currentGridPosition);
@@ -207,13 +192,13 @@ void Application_Edit::handleLeftMouseMove() {
         }
         m_previousGridClickPosition = currentGridPosition;
     }
-    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea);
+    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea, Application_Level::MODE::EDITING);
 }
 
 void Application_Edit::handleRightMouseMove() {
     assert(m_rightMouseButtonPressed);
     assert(not m_leftMouseButtonPressed);
-    const auto mouseXY = Mouse::getMouseXY();
+    const auto mouseXY = Mouse::MouseXY();
     m_view->translate((mouseXY.x - m_previousMousePosition.x), mouseXY.y - m_previousMousePosition.y);
     m_previousMousePosition = mouseXY;
 }
@@ -223,11 +208,11 @@ void Application_Edit::setButtonBooleans(const SDL_Event& event) {
     switch (event.button.button) {
         case SDL_BUTTON_RIGHT:
             m_rightMouseButtonPressed = true;
-            m_previousMousePosition   = Mouse::getMouseXY();
+            m_previousMousePosition   = Mouse::MouseXY();
             break;
         case SDL_BUTTON_LEFT:
             m_leftMouseButtonPressed = true;
-            m_previousMousePosition  = Mouse::getMouseXY();
+            m_previousMousePosition  = Mouse::MouseXY();
             break;
         default:
             break;
@@ -236,9 +221,33 @@ void Application_Edit::setButtonBooleans(const SDL_Event& event) {
 model::Model* Application_Edit::model() const {
     return m_model;
 }
-void Application_Edit::addAction(std::unique_ptr<model::action::Action>&& action) {
+
+void Application_Edit::addAction(std::unique_ptr<action::Action>&& action) {
     if (action) {
         m_undoStack.push(std::move(action));
         m_redoStack = {};
+        Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea, Application_Level::MODE::EDITING);
     }
+}
+
+void Application_Edit::undo() {
+    if (m_undoStack.empty()) {
+        return;
+    }
+    m_undoStack.top()->undoAction(*this);
+    m_redoStack.push(std::move(m_undoStack.top()));
+    assert(m_undoStack.top() == nullptr);
+    m_undoStack.pop();
+    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea, Application_Level::MODE::EDITING);
+}
+
+void Application_Edit::redo() {
+    if (m_redoStack.empty()) {
+        return;
+    }
+    m_redoStack.top()->redoAction(*this);
+    m_undoStack.push(std::move(m_redoStack.top()));
+    assert(m_redoStack.top() == nullptr);
+    m_redoStack.pop();
+    Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea, Application_Level::MODE::EDITING);
 }

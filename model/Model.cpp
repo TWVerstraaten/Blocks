@@ -4,9 +4,9 @@
 
 #include "Model.h"
 
+#include "../Actions/AddClusterAction.h"
+#include "../Actions/GenericModelAction.h"
 #include "../global/fns.h"
-#include "Actions/AddClusterAction.h"
-#include "Actions/GenericModelAction.h"
 
 #include <algorithm>
 #include <cassert>
@@ -154,23 +154,25 @@ namespace model {
         m_needsPreStep = false;
     }
 
-    std::unique_ptr<model::action::AddClusterAction> Model::addBlock(const GridXY& gridXY) {
+    std::unique_ptr<action::Action> Model::addCluster(const GridXY& gridXY) {
         assert(m_level.isFreeStartBlock(gridXY));
         if (std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); }) ==
             m_clusters.end()) {
+            Model copy = *this;
             m_clusters.push_back(Cluster({gridXY}, "CL" + std::to_string(m_clusters.size())));
-            return std::make_unique<action::AddClusterAction>(m_clusters.back(), gridXY);
+            return std::make_unique<action::AddClusterAction>(m_clusters.back());
         }
         return nullptr;
     }
 
-    std::unique_ptr<model::action::Action> Model::linkBlocks(const GridXY& base, const GridXY& extension) {
+    std::unique_ptr<action::Action> Model::linkBlocks(const GridXY& base, const GridXY& extension) {
         const auto baseIt = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(base); });
-        if (baseIt == m_clusters.end() || (not base.isAdjacent(extension))) {
-            return addBlock(extension);
-        }
+
         Model copyOfModel = *this;
-        auto  extensionIt =
+        if (baseIt == m_clusters.end() || (not base.isAdjacent(extension))) {
+            return addCluster(extension);
+        }
+        auto extensionIt =
             std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(extension); });
         if (baseIt == extensionIt) {
             return nullptr;
@@ -181,15 +183,16 @@ namespace model {
             baseIt->gridXY().insert(extensionIt->gridXY().begin(), extensionIt->gridXY().end());
             m_clusters.erase(extensionIt);
         }
-        return std::unique_ptr<action::Action>(new action::GenericModelAction(copyOfModel, *this));
+        return nullptr;
+        //        return std::unique_ptr<action::Action>(new action::GenericModelAction(copyOfModel, *this));
     }
 
-    std::unique_ptr<model::action::Action> Model::clearBlock(const GridXY& gridXY) {
-        const auto it = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); });
+    std::unique_ptr<action::Action> Model::clearBlock(const GridXY& gridXY) {
+        Model      copy = *this;
+        const auto it   = std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); });
         if (it == m_clusters.end()) {
             return nullptr;
         }
-        Model copyOfModel = *this;
         it->removeBLock(gridXY);
         if (it->empty()) {
             m_clusters.erase(it);
@@ -199,7 +202,8 @@ namespace model {
                 assert(it->isConnected());
             }
         }
-        return std::unique_ptr<action::Action>(new action::GenericModelAction(copyOfModel, *this));
+        return nullptr;
+        //        return std::unique_ptr<action::Action>(new action::GenericModelAction(copy, *this));
     }
 
     Model& Model::operator=(const Model& other) {

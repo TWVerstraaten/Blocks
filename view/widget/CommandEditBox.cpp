@@ -47,6 +47,9 @@ size_t view::widget::CommandEditBox::clusterIndex() const {
 }
 
 void view::widget::CommandEditBox::update(SDL_Renderer* renderer) {
+    if (!m_needsUpdate) {
+        return;
+    }
     LineEditBox::update(renderer);
 
     int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;

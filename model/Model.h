@@ -5,8 +5,8 @@
 #ifndef BLOCKS_MODEL_H
 #define BLOCKS_MODEL_H
 
+#include "../Actions/AddClusterAction.h"
 #include "../global/cst.h"
-#include "Actions/AddClusterAction.h"
 #include "Cluster.h"
 #include "Level.h"
 
@@ -24,22 +24,22 @@ namespace model {
 
         Model& operator=(const Model& other);
 
-        void                                             preStep();
-        void                                             interactClustersWithDynamicBlocks();
-        void                                             interactClustersWithInstantBlocks();
-        void                                             update(double dPhase);
-        void                                             init();
-        void                                             clear();
-        void                                             clearEmptyClusters();
-        void                                             startPhase();
-        std::unique_ptr<model::action::AddClusterAction> addBlock(const GridXY& gridXY);
-        std::unique_ptr<model::action::Action>           linkBlocks(const GridXY& base, const GridXY& extension);
-        std::unique_ptr<model::action::Action>           clearBlock(const GridXY& gridXY);
-        void                                             finishInteractions();
-        const Level&                                     level() const;
-        const std::list<Cluster>&                        clusters() const;
-        std::list<Cluster>&                              clusters();
-        std::list<Cluster>::iterator                     clusterWithIndex(size_t index);
+        void                            preStep();
+        void                            interactClustersWithDynamicBlocks();
+        void                            interactClustersWithInstantBlocks();
+        void                            update(double dPhase);
+        void                            init();
+        void                            clear();
+        void                            clearEmptyClusters();
+        void                            startPhase();
+        std::unique_ptr<action::Action> addCluster(const GridXY& gridXY);
+        std::unique_ptr<action::Action> linkBlocks(const GridXY& base, const GridXY& extension);
+        std::unique_ptr<action::Action> clearBlock(const GridXY& gridXY);
+        void                            finishInteractions();
+        const Level&                    level() const;
+        const std::list<Cluster>&       clusters() const;
+        std::list<Cluster>&             clusters();
+        std::list<Cluster>::iterator    clusterWithIndex(size_t index);
 
       private:
         void intersectWithLevel();

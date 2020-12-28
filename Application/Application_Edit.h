@@ -5,8 +5,8 @@
 #ifndef BLOCKS_APPLICATION_EDIT_H
 #define BLOCKS_APPLICATION_EDIT_H
 
+#include "../Actions/Action.h"
 #include "../global/cst.h"
-#include "../model/Actions/Action.h"
 #include "../model/Model.h"
 #include "../view/View.h"
 #include "Application_Edit.h"
@@ -42,19 +42,21 @@ class Application_Edit {
     void handleLeftMouseMove();
     void handleRightMouseMove();
     void setButtonBooleans(const SDL_Event& event);
-    void addAction(std::unique_ptr<model::action::Action>&& action);
+    void addAction(std::unique_ptr<action::Action>&& action);
+    void undo();
+    void redo();
 
-    bool                                               m_rightMouseButtonPressed = false;
-    bool                                               m_leftMouseButtonPressed  = false;
-    Uint32                                             m_timeStep                = cst::TIME_STEP_SLOW;
-    Application_Level::EDIT_MODE                       m_editMode                = Application_Level::EDIT_MODE::EDITING;
-    model::GridXY                                      m_previousGridClickPosition{0, 0};
-    view::View*                                        m_view;
-    model::Model*                                      m_model;
-    view::widget::ScrollArea*                          m_scrollArea;
-    SDL_Point                                          m_previousMousePosition{};
-    std::stack<std::unique_ptr<model::action::Action>> m_undoStack;
-    std::stack<std::unique_ptr<model::action::Action>> m_redoStack;
+    bool                                        m_rightMouseButtonPressed = false;
+    bool                                        m_leftMouseButtonPressed  = false;
+    Uint32                                      m_timeStep                = cst::TIME_STEP_SLOW;
+    Application_Level::EDIT_MODE                m_editMode                = Application_Level::EDIT_MODE::EDITING;
+    model::GridXY                               m_previousGridClickPosition{0, 0};
+    view::View*                                 m_view;
+    model::Model*                               m_model;
+    view::widget::ScrollArea*                   m_scrollArea;
+    SDL_Point                                   m_previousMousePosition{};
+    std::stack<std::unique_ptr<action::Action>> m_undoStack;
+    std::stack<std::unique_ptr<action::Action>> m_redoStack;
 };
 
 #endif // BLOCKS_APPLICATION_EDIT_H

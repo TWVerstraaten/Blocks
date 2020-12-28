@@ -4,6 +4,7 @@
 
 #include "Application_Level.h"
 
+#include "../view/ScreenXY.h"
 #include "Application_Edit.h"
 #include "Application_Run.h"
 
@@ -11,7 +12,10 @@
 #include <cassert>
 
 Application_Level::Application_Level()
-    : m_scrollArea({cst::INITIAL_SCREEN_WIDTH - 200, 0, 200, static_cast<int>(cst::INITIAL_SCREEN_HEIGHT)}) {
+    : m_scrollArea({cst::INITIAL_SCREEN_WIDTH - cst::COMMAND_SCROLL_AREA_WIDTH,
+                    0,
+                    cst::COMMAND_SCROLL_AREA_WIDTH,
+                    static_cast<int>(cst::INITIAL_SCREEN_HEIGHT)}) {
     m_model.init();
     m_scrollArea.init(m_view.assets());
 }
@@ -21,6 +25,7 @@ void Application_Level::run() {
 
     Application_Edit editApp(&m_model, &m_view, &m_scrollArea);
     while (isRunning) {
+        SDL_StartTextInput();
         switch (editLevel(editApp)) {
             case EDIT_MODE::QUIT:
                 isRunning = false;
@@ -30,6 +35,7 @@ void Application_Level::run() {
             case EDIT_MODE::DONE_EDITING:
                 break;
         }
+        SDL_StopTextInput();
         if (not isRunning) {
             break;
         }
@@ -56,13 +62,18 @@ Application_Level::EDIT_MODE Application_Level::editLevel(Application_Edit& edit
     bool isRunning = true;
 
     SDL_Event event;
-    //    Application_Edit editApp(&m_model, &m_view, &m_scrollArea);
+
     EDIT_MODE currentMode;
     while (isRunning) {
         while (SDL_PollEvent(&event) > 0) {
             switch (event.type) {
                 case SDL_QUIT:
                     isRunning = false;
+                    break;
+                case SDL_WINDOWEVENT:
+                    if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                        handleWindowEvent();
+                    }
                     break;
                 case SDL_KEYDOWN:
                     if (editApp.hasFocus() && editApp.canStart()) {
@@ -160,7 +171,7 @@ static void addActionBoxesOfNewClusters(const std::list<model::Cluster>& cluster
                }) == scrollArea->children().end();
     });
     while (it != clusters.end()) {
-        scrollArea->addActionBox(*it);
+        scrollArea->addCommandEditBox(*it);
         it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
             return std::find_if(scrollArea->children().begin(), scrollArea->children().end(), [&](const view::widget::CommandEditBox& box) {
                        return box.clusterIndex() == cluster.index();
@@ -169,9 +180,19 @@ static void addActionBoxesOfNewClusters(const std::list<model::Cluster>& cluster
     }
 }
 
-void Application_Level::updateCommandScrollArea(const std::list<model::Cluster>& clusters, view::widget::ScrollArea* scrollArea) {
+void Application_Level::updateCommandScrollArea(const std::list<model::Cluster>& clusters,
+                                                view::widget::ScrollArea*        scrollArea,
+                                                MODE                             mode) {
     removeActionBoxesOfRemovedClusters(clusters, scrollArea);
-    highlightActionBoxLines(clusters, scrollArea);
+    if (mode == MODE::RUNNING) {
+        highlightActionBoxLines(clusters, scrollArea);
+    }
     addActionBoxesOfNewClusters(clusters, scrollArea);
     scrollArea->setHeightAndPositions();
+}
+
+void Application_Level::handleWindowEvent() {
+    const auto windowSize = m_view.windowSize();
+    m_scrollArea.setX(windowSize.x() - cst::COMMAND_SCROLL_AREA_WIDTH);
+    m_scrollArea.setHeight(windowSize.y());
 }

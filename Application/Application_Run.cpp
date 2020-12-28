@@ -50,7 +50,7 @@ void Application_Run::keyEvent(const SDL_Event& event) {
 }
 
 void Application_Run::mouseClickEvent(const SDL_Event& event) {
-    const auto mousePosition = Mouse::getMouseXY();
+    const auto mousePosition = Mouse::MouseXY();
 
     switch (event.button.button) {
         case SDL_BUTTON_RIGHT:
@@ -81,7 +81,7 @@ void Application_Run::mouseReleaseEvent(const SDL_Event& event) {
 
 void Application_Run::mouseMoveEvent(const SDL_Event& event) {
     if (m_rightMouseButtonPressed) {
-        const auto mouseXY = Mouse::getMouseXY();
+        const auto mouseXY = Mouse::MouseXY();
         m_view->translate((mouseXY.x - m_previousMousePosition.x), mouseXY.y - m_previousMousePosition.y);
         m_previousMousePosition = mouseXY;
     }
@@ -105,7 +105,7 @@ void Application_Run::performTimeStep() {
     m_model.interactClustersWithInstantBlocks();
     m_model.interactClustersWithDynamicBlocks();
     m_model.finishInteractions();
-    Application_Level::updateCommandScrollArea(m_model.clusters(), &m_scrollArea);
+    Application_Level::updateCommandScrollArea(m_model.clusters(), &m_scrollArea, Application_Level::MODE::RUNNING);
     if (m_pauseAfterNextStep) {
         m_pauseAfterNextStep = false;
         m_paused             = true;
@@ -128,10 +128,10 @@ Application_Level::RUN_MODE Application_Run::performSingleLoop() {
         m_timeSinceLastStep += dt;
     }
     m_previousTime = SDL_GetTicks();
-    Application_Level::updateCommandScrollArea(m_model.clusters(), &m_scrollArea);
+    Application_Level::updateCommandScrollArea(m_model.clusters(), &m_scrollArea, Application_Level::MODE::RUNNING);
     m_view->draw(m_model);
     m_view->draw(&m_scrollArea);
-    m_view->assets()->renderText(std::to_string(1000.0 / dt), view::ScreenXY{10, m_view->windowSize().y - 40}, m_view->renderer());
+    m_view->assets()->renderText(std::to_string(1000.0 / dt), view::ScreenXY{10, m_view->windowSize().y() - 40}, m_view->renderer());
     m_view->renderPresent();
 
     return Application_Level::RUN_MODE::RUNNING;

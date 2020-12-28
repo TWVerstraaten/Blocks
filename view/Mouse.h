@@ -10,7 +10,7 @@
 class Mouse {
 
   public:
-    static SDL_Point getMouseXY();
+    static SDL_Point MouseXY();
 };
 
 #endif // BLOCKS_MOUSE_H

@@ -32,7 +32,7 @@ void view::widget::ScrollArea::keyEvent(const SDL_Event& event) {
 }
 
 void view::widget::ScrollArea::leftClickEvent(const SDL_Event& event) {
-    assert(pointIsOverWidget(Mouse::getMouseXY()));
+    assert(pointIsOverWidget(Mouse::MouseXY()));
     getFocus();
     for (auto& w : m_children) {
         w.loseFocus();
@@ -53,9 +53,7 @@ void view::widget::ScrollArea::mouseDragEvent(const SDL_Event& event) {
 }
 
 void view::widget::ScrollArea::render(SDL_Renderer* renderer) {
-    if (m_needsUpdate) {
-        update(renderer);
-    }
+    update(renderer);
 
     Rectangle::render(geom::pad(m_rect, cst::LINE_EDIT_PADDING), cst::color::SCROLL_AREA_BACKGROUND, renderer);
 
@@ -101,7 +99,7 @@ void view::widget::ScrollArea::mouseWheelEvent(const SDL_Event& event) {
 }
 
 view::widget::CommandEditBox* view::widget::ScrollArea::widgetUnderMouse() {
-    auto mousePosition = Mouse::getMouseXY();
+    auto mousePosition = Mouse::MouseXY();
     for (auto& w : m_children) {
         if (w.pointIsOverWidget(mousePosition)) {
             return &w;
@@ -129,7 +127,7 @@ void view::widget::ScrollArea::update(SDL_Renderer* renderer) {
     m_needsUpdate = false;
 }
 
-void view::widget::ScrollArea::addActionBox(const model::Cluster& cluster) {
+void view::widget::ScrollArea::addCommandEditBox(const model::Cluster& cluster) {
     m_children.emplace_back(CommandEditBox(m_rect.x + cst::LINE_EDIT_PADDING, 0, cst::LINE_EDIT_WIDTH, 0, m_assets, cluster));
     m_children.back().setHighLightedLine(cluster.commandIndex());
     m_children.back().setActive(cluster.isAlive());
@@ -161,4 +159,15 @@ view::widget::ScrollArea::ScrollArea(const view::widget::ScrollArea& other) : Re
     m_scrollFraction = other.m_scrollFraction;
     m_height         = other.m_height;
     m_assets         = other.m_assets;
+}
+
+void view::widget::ScrollArea::setHeight(int height) {
+    RectWidget::setHeight(height);
+}
+
+void view::widget::ScrollArea::setX(int x) {
+    RectWidget::setX(x);
+    for (auto& w : m_children) {
+        w.setX(m_rect.x + cst::LINE_EDIT_PADDING);
+    }
 }
