@@ -6,6 +6,8 @@
 
 #include "../global/fns.h"
 
+#include <cmath>
+
 namespace view {
 
     int ViewPort::blockSizeInScreen() const {

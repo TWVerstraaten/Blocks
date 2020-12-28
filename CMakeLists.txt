@@ -22,11 +22,11 @@ foreach (file ${ASSET_FILES})
 endforeach ()
 
 if (WIN32)
-#    set(SDL2_INCLUDE_DIRS "C:/build/SDL2-2.0.14/include")
-#    set(SDL2_TTF_INCLUDE_DIRS "C:/build/SDL2_ttf-2.0.15")
-#    set(SDL2_IMAGE_INCLUDE_DIRS "C:/build/SDL2_image-2.0.5")
-#
-#    include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+    set(SDL2_INCLUDE_DIRS "C:/build/SDL2-2.0.14/include")
+    set(SDL2_TTF_INCLUDE_DIRS "C:/build/SDL2_ttf-2.0.15")
+    set(SDL2_IMAGE_INCLUDE_DIRS "C:/build/SDL2_image-2.0.5")
+
+    include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 #
 #    # Copy dlls
 #    file(GLOB DLL_FILES "C:/build/dll/*")
