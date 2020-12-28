@@ -44,4 +44,16 @@ namespace model {
         *this = fromGridXY(gridXY);
     }
 
+    WorldXY& WorldXY::operator+=(const WorldXY& other) {
+        m_x += other.m_x;
+        m_y += other.m_y;
+        return *this;
+    }
+
+    WorldXY& WorldXY::operator/=(int divisor) {
+        m_x /= divisor;
+        m_y /= divisor;
+        return *this;
+    }
+
 } // namespace model

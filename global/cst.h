@@ -26,7 +26,7 @@ namespace cst {
     static const model::WorldXY HALF_BLOCK_IN_WORLD       = {HALF_BLOCK_SIZE_IN_WORLD, HALF_BLOCK_SIZE_IN_WORLD};
     static const Uint32         TIME_STEP_SLOW            = 1000;
     static const Uint32         TIME_STEP_MEDIUM          = 300;
-    static const Uint32         TIME_STEP_FAST            = 50;
+    static const Uint32         TIME_STEP_FAST            = 20;
     static const Uint32         LINE_EDIT_WIDTH           = 150;
     static const size_t         LINE_EDIT_PADDING         = 4;
     static const size_t         LINE_EDIT_TITLE_HEIGHT    = 44;

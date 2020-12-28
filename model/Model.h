@@ -28,8 +28,6 @@ namespace model {
 
         /****** NON CONST FUNCTIONS  ******/
         void                            preStep();
-        void                            interactClustersWithDynamicBlocks();
-        void                            interactClustersWithInstantBlocks();
         void                            init();
         void                            clear();
         void                            clearEmptyClusters();

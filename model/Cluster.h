@@ -43,6 +43,8 @@ namespace model {
         size_t                      size() const;
         PHASE                       phase() const;
         WorldXY                     dynamicWorldOffset() const;
+        WorldXY                     approximateCenter() const;
+        Command                     currentCommand() const;
         std::string                 string() const;
         std::set<WorldXY>           cornerPoints(int shrinkInWorld) const;
         std::set<Line<WorldXY>>     sides(int shrinkInWorld) const;

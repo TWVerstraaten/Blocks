@@ -31,6 +31,10 @@ namespace model {
         int x() const;
         int y() const;
 
+        /****** OPERATORS  ******/
+        WorldXY& operator+=(const WorldXY& other);
+        WorldXY& operator/=(int divisor);
+
         /****** FRIENDS  ******/
         friend bool    operator<(const WorldXY& lhs, const WorldXY& rhs);
         friend bool    operator==(const WorldXY& lhs, const WorldXY& rhs);

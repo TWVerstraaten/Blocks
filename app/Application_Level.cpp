@@ -7,7 +7,6 @@
 #include "Application_Edit.h"
 #include "Application_Run.h"
 
-#include <algorithm>
 #include <cassert>
 
 namespace app {
@@ -59,11 +58,11 @@ namespace app {
     }
 
     EDIT_MODE Application_Level::editLevel(Application_Edit& editApp) {
-        bool isRunning = true;
-
+        m_runningScrollArea = nullptr;
+        m_appMode           = APP_MODE::EDITING;
         SDL_Event event;
-
         EDIT_MODE currentMode;
+        bool      isRunning = true;
         while (isRunning) {
             while (SDL_PollEvent(&event) > 0) {
                 switch (event.type) {
@@ -116,20 +115,24 @@ namespace app {
     }
 
     RUN_MODE Application_Level::runLevel() {
-        bool isRunning = true;
-
+        m_appMode = APP_MODE::RUNNING;
         SDL_Event       event;
         Application_Run runApp(m_model, &m_view, m_scrollArea);
+        m_runningScrollArea = &runApp.scrollArea();
         runApp.setTimeStep(m_timeStep);
         runApp.setPauseAfterNextStep(m_pauseAfterFirstStep);
-
         RUN_MODE currentMode;
+        bool     isRunning = true;
         while (isRunning) {
             while (SDL_PollEvent(&event) > 0) {
                 switch (event.type) {
                     case SDL_QUIT:
                         isRunning = false;
                         break;
+                    case SDL_WINDOWEVENT:
+                        if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                            handleWindowEvent();
+                        }
                     default:
                         runApp.handleEvent(event);
                 }
@@ -145,64 +148,14 @@ namespace app {
         return RUN_MODE::QUIT;
     }
 
-    static void removeActionBoxesOfRemovedClusters(const std::list<model::Cluster>& clusters,
-                                                   view::widget::ScrollArea*        scrollArea) {
-        scrollArea->children().remove_if([&](const view::widget::CommandEditBox& box) {
-            return std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) {
-                       return cluster.index() == box.index();
-                   }) == clusters.end();
-        });
-    }
-
-    static void highlightActionBoxLines(const std::list<model::Cluster>& clusters,
-                                        view::widget::ScrollArea*        scrollArea) {
-        for (auto& commandEditBox : scrollArea->children()) {
-            auto it = std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) {
-                return cluster.index() == commandEditBox.index();
-            });
-            assert(it != clusters.end());
-            if (it->isAlive()) {
-                commandEditBox.setHighLightedLine(it->commandIndex());
-            }
-            commandEditBox.setActive(it->isAlive());
-        }
-    }
-
-    static void addActionBoxesOfNewClusters(const std::list<model::Cluster>& clusters,
-                                            view::widget::ScrollArea*        scrollArea) {
-        auto it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
-            return std::find_if(scrollArea->children().begin(),
-                                scrollArea->children().end(),
-                                [&](const view::widget::CommandEditBox& box) {
-                                    return box.index() == cluster.index();
-                                }) == scrollArea->children().end();
-        });
-        while (it != clusters.end()) {
-            scrollArea->addCommandEditBox(*it);
-            it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
-                return std::find_if(scrollArea->children().begin(),
-                                    scrollArea->children().end(),
-                                    [&](const view::widget::CommandEditBox& box) {
-                                        return box.index() == cluster.index();
-                                    }) == scrollArea->children().end();
-            });
-        }
-    }
-
-    void Application_Level::updateCommandScrollArea(const std::list<model::Cluster>& clusters,
-                                                    view::widget::ScrollArea*        scrollArea,
-                                                    APP_MODE                         mode) {
-        removeActionBoxesOfRemovedClusters(clusters, scrollArea);
-        if (mode == APP_MODE::RUNNING) {
-            highlightActionBoxLines(clusters, scrollArea);
-        }
-        addActionBoxesOfNewClusters(clusters, scrollArea);
-        scrollArea->setHeightAndPositions();
-    }
-
     void Application_Level::handleWindowEvent() {
         const auto windowSize = m_view.windowSize();
         m_scrollArea.setX(windowSize.x() - cst::COMMAND_SCROLL_AREA_WIDTH);
         m_scrollArea.setHeight(windowSize.y());
+        if (m_appMode == APP_MODE::RUNNING) {
+            assert(m_runningScrollArea != nullptr);
+            m_runningScrollArea->setX(windowSize.x() - cst::COMMAND_SCROLL_AREA_WIDTH);
+            m_runningScrollArea->setHeight(windowSize.y());
+        }
     }
 } // namespace app

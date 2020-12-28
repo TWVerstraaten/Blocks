@@ -7,7 +7,8 @@
 
 #include "../model/Model.h"
 #include "../view/View.h"
-#include "Application_Level.h"
+#include "../view/widget/ScrollArea.h"
+#include "Application_enums.h"
 
 namespace app {
 
@@ -18,10 +19,11 @@ namespace app {
         Application_Run(const model::Model& model, view::View* view, const view::widget::ScrollArea& scrollArea);
 
         /****** NON CONST FUNCTIONS  ******/
-        void     setTimeStep(Uint32 timeStep);
-        void     handleEvent(const SDL_Event& event);
-        void     setPauseAfterNextStep(bool pauseAfterNextStep);
-        RUN_MODE performSingleLoop();
+        void                            setTimeStep(Uint32 timeStep);
+        void                            handleEvent(const SDL_Event& event);
+        void                            setPauseAfterNextStep(bool pauseAfterNextStep);
+        RUN_MODE                        performSingleLoop();
+        view::widget::ScrollArea&       scrollArea();
 
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/

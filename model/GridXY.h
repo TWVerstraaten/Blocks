@@ -5,7 +5,6 @@
 #ifndef BLOCKS_GRIDXY_H
 #define BLOCKS_GRIDXY_H
 
-
 #include <iostream>
 
 namespace view {

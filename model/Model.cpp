@@ -25,31 +25,6 @@ namespace model {
         return m_clusters;
     }
 
-    void Model::interactClustersWithDynamicBlocks() {
-        for (auto& cluster : m_clusters) {
-            if (not cluster.isAlive()) {
-                continue;
-            }
-            for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end(); ++it) {
-                cluster.addPendingOperation(*it, m_level.dynamicBlockAt(GridXY(it->x(), it->y())));
-            }
-            cluster.performPendingOperationOrNextCommand();
-        }
-    }
-
-    void Model::interactClustersWithInstantBlocks() {
-        for (const auto& block : m_level.instantBlocks()) {
-            switch (block.second) {
-                case model::INSTANT_BLOCK_TYPE::NONE:
-                    break;
-                case model::INSTANT_BLOCK_TYPE::KILL:
-                    clearBlock(block.first);
-                    break;
-            }
-        }
-        assert(not containsEmptyClusters());
-    }
-
     void Model::intersectWithLevel() {
         for (auto& cluster : m_clusters) {
             if (not cluster.isAlive()) {
@@ -82,7 +57,8 @@ namespace model {
             Cluster({{5, 5}, {3, 5}, {5, 6}, {6, 5}, {4, 5}, {5, 4}}, "CL" + std::to_string(m_clusters.size())));
         m_clusters.back().addCommand({Command::TYPE::MOVE_UP, Command::MODIFIER::NONE});
 
-        m_level.addBlock({5, 3}, model::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({8, 3}, model::INSTANT_BLOCK_TYPE::KILL);
+        m_level.addBlock({3, 3}, model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
 
         for (int i = -2; i != 15; ++i) {
             if (i > 5) {
@@ -101,11 +77,8 @@ namespace model {
                 m_level.addLevelBlock({i, j});
             }
         }
-        for (int i = -2; i != 9; ++i) {
-            for (int j = -2; j != 11; ++j) {
-                if (i == 11 && j == 3) {
-                    continue;
-                }
+        for (int i = -2; i != 4; ++i) {
+            for (int j = -2; j != 3; ++j) {
                 m_level.addStartBlock({i, j});
             }
         }

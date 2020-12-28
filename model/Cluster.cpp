@@ -9,6 +9,7 @@
 #include "../global/geom.h"
 #include "Model.h"
 
+#include <numeric>
 #include <queue>
 
 size_t model::Cluster::s_maxClusterIndex = 0;
@@ -187,8 +188,8 @@ namespace model {
 
     std::set<WorldXY> Cluster::cornerPoints(int shrinkInWorld) const {
         assert(gridXUYAreUnique());
-        std::set<WorldXY>                     result;
-        std::function<WorldXY(const WorldXY)> f = phaseTransformation();
+        std::set<WorldXY> result;
+        const auto        f = phaseTransformation();
 
         for (const auto& it : m_gridXYVector) {
             const bool          u = contains(it.neighbor(model::GridXY::DIRECTION::UP));
@@ -285,7 +286,6 @@ namespace model {
 
     bool Cluster::isConnected() const {
         NOTE_ONCE("Implement proper variant of this function")
-
         assert(gridXUYAreUnique());
         assert(not empty());
         if (m_gridXYVector.size() == 1) {
@@ -387,10 +387,6 @@ namespace model {
         return m_gridXYVector;
     }
 
-    WorldXY rotatedPoint(const GridXY& gridXY, const WorldXY& shrinkInWorld, const WorldXY& pivot, double theta) {
-        return geom::rotateAboutPivot(WorldXY(gridXY) + shrinkInWorld, pivot, theta);
-    }
-
     Cluster::PHASE Cluster::phase() const {
         return m_phase;
     }
@@ -486,6 +482,20 @@ namespace model {
         }
 
         return out;
+    }
+
+    WorldXY Cluster::approximateCenter() const {
+        const auto f = phaseTransformation();
+        WorldXY    result{0, 0};
+        for (const auto& g : m_gridXYVector) {
+            result += f(g);
+        }
+        result /= m_gridXYVector.size();
+        return result;
+    }
+
+    Command Cluster::currentCommand() const {
+        return m_commands.at(m_commandIndex);
     }
 
 } // namespace model

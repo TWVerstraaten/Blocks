@@ -19,11 +19,6 @@ namespace app {
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         Application_Level();
 
-        /****** PUBLIC STATIC FUNCTIONS  ******/
-        static void updateCommandScrollArea(const std::list<model::Cluster>& clusters,
-                                            view::widget::ScrollArea*        scrollArea,
-                                            APP_MODE                         mode);
-
         /****** NON CONST FUNCTIONS  ******/
         void run();
 
@@ -34,11 +29,13 @@ namespace app {
         void      handleWindowEvent();
 
         /****** DATA MEMBERS  ******/
-        Uint32                   m_timeStep            = cst::TIME_STEP_SLOW;
-        bool                     m_pauseAfterFirstStep = false;
-        view::View               m_view;
-        model::Model             m_model;
-        view::widget::ScrollArea m_scrollArea;
+        APP_MODE                  m_appMode;
+        bool                      m_pauseAfterFirstStep = false;
+        Uint32                    m_timeStep            = cst::TIME_STEP_SLOW;
+        view::View                m_view;
+        model::Model              m_model;
+        view::widget::ScrollArea  m_scrollArea;
+        view::widget::ScrollArea* m_runningScrollArea;
     };
 } // namespace app
 #endif // BLOCKS_APPLICATION_LEVEL_H

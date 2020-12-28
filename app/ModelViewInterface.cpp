@@ -11,7 +11,6 @@
 #include "../view/View.h"
 #include "../view/widget/ScrollArea.h"
 #include "Application_Edit.h"
-#include "Application_enums.h"
 
 #include <algorithm>
 #include <cassert>
@@ -172,7 +171,6 @@ std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockStatic(model:
             assert(newCommandEditIt != scrollArea.children().end());
             newCommandEditIt->setStrings(commandEditIt->strings());
         }
-
         clusters.splice(clusters.end(), newClusters);
         assert(it->isConnected());
         return std::unique_ptr<action::Action>(new action::GenericModelAction(copy, model));
@@ -187,10 +185,34 @@ void app::ModelViewInterface::handleKeyEvent(const SDL_Event&          event,
     if (w) {
         view::widget::CommandEditBox copy(*w);
         w->keyEvent(event);
-        auto clusterIt = findCluster(*w, model.clusters());
-        w->updateClusterCommands(*clusterIt);
-        if (w->strings() != copy.strings()) {
+        if (w->clusterShouldBeUpdated()) {
+            auto clusterIt = findCluster(*w, model.clusters());
+            w->updateClusterCommands(*clusterIt);
             addAction(std::unique_ptr<action::Action>(new action::GenericCommandEditBoxAction(copy, *w)));
         }
+    }
+}
+
+void app::ModelViewInterface::interactWithInstantBlocks(model::Model& model, view::widget::ScrollArea& scrollArea) {
+    for (const auto& block : model.level().instantBlocks()) {
+        switch (block.second) {
+            case model::INSTANT_BLOCK_TYPE::NONE:
+                break;
+            case model::INSTANT_BLOCK_TYPE::KILL:
+                clearBlockStatic(model, scrollArea, block.first);
+                break;
+        }
+    }
+}
+
+void app::ModelViewInterface::interactWithDynamicBlocks(model::Model& model, view::widget::ScrollArea& scrollArea) {
+    for (auto& cluster : model.clusters()) {
+        if (not cluster.isAlive()) {
+            continue;
+        }
+        for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end(); ++it) {
+            cluster.addPendingOperation(*it, model.level().dynamicBlockAt(*it));
+        }
+        cluster.performPendingOperationOrNextCommand();
     }
 }

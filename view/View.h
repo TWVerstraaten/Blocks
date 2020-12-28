@@ -61,7 +61,7 @@ namespace view {
 
         /****** NON CONST FUNCTIONS  ******/
         void draw(const model::Model& model);
-        void draw(widget::ScrollArea* scrollArea);
+        void drawScrollArea(widget::ScrollArea* scrollArea);
         void zoom(int amount);
         void translate(int dx, int dy);
         void clear();

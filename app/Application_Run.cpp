@@ -5,8 +5,7 @@
 #include "Application_Run.h"
 
 #include "../view/Mouse.h"
-
-#include <algorithm>
+#include "ModelViewInterface.h"
 
 namespace app {
     Application_Run::Application_Run(const model::Model&             model,
@@ -101,10 +100,10 @@ namespace app {
 
     void Application_Run::performTimeStep() {
         m_model.startPhase();
-        m_model.interactClustersWithInstantBlocks();
-        m_model.interactClustersWithDynamicBlocks();
+        ModelViewInterface::interactWithInstantBlocks(m_model, m_scrollArea);
+        ModelViewInterface::interactWithDynamicBlocks(m_model, m_scrollArea);
         m_model.finishInteractions();
-        Application_Level::updateCommandScrollArea(m_model.clusters(), &m_scrollArea, APP_MODE::RUNNING);
+        ModelViewInterface::updateCommandScrollArea(m_model.clusters(), m_scrollArea, APP_MODE::RUNNING);
         if (m_pauseAfterNextStep) {
             m_pauseAfterNextStep = false;
             m_paused             = true;
@@ -126,9 +125,8 @@ namespace app {
             m_timeSinceLastStep += dt;
         }
         m_previousTime = SDL_GetTicks();
-        Application_Level::updateCommandScrollArea(m_model.clusters(), &m_scrollArea, APP_MODE::RUNNING);
         m_view->draw(m_model);
-        m_view->draw(&m_scrollArea);
+        m_view->drawScrollArea(&m_scrollArea);
         m_view->assets()->renderText(
             std::to_string(1000.0 / dt), view::ScreenXY{10, m_view->windowSize().y() - 40}, m_view->renderer());
         m_view->renderPresent();
@@ -162,5 +160,9 @@ namespace app {
 
     void Application_Run::setPauseAfterNextStep(bool pauseAfterNextStep) {
         m_pauseAfterNextStep = pauseAfterNextStep;
+    }
+
+    view::widget::ScrollArea& Application_Run::scrollArea() {
+        return m_scrollArea;
     }
 } // namespace app

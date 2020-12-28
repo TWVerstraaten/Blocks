@@ -41,6 +41,8 @@ namespace app {
         static std::unique_ptr<action::Action> clearBlockStatic(model::Model&             model,
                                                                 view::widget::ScrollArea& scrollArea,
                                                                 const model::GridXY&      point);
+        static void interactWithInstantBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
+        static void interactWithDynamicBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
 
         /****** NON CONST FUNCTIONS  ******/
         void handleKeyEvent(const SDL_Event& event, view::widget::ScrollArea& scrollArea, model::Model& model);
@@ -59,10 +61,6 @@ namespace app {
                             const model::GridXY&      point);
         void undo(Application_Edit& applicationEdit);
         void redo(Application_Edit& applicationEdit);
-
-        /****** OPERATORS  ******/
-
-        /****** FRIENDS  ******/
 
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/

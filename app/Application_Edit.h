@@ -13,7 +13,6 @@
 #include "ModelViewInterface.h"
 
 #include <SDL.h>
-#include <stack>
 
 namespace app {
     class Application_Edit {
@@ -52,18 +51,16 @@ namespace app {
         void redo();
 
         /****** DATA MEMBERS  ******/
-        bool                                        m_rightMouseButtonPressed = false;
-        bool                                        m_leftMouseButtonPressed  = false;
-        Uint32                                      m_timeStep                = cst::TIME_STEP_SLOW;
-        EDIT_MODE                                   m_editMode                = EDIT_MODE::EDITING;
-        model::GridXY                               m_previousGridClickPosition{0, 0};
-        view::View*                                 m_view;
-        model::Model*                               m_model;
-        view::widget::ScrollArea*                   m_scrollArea;
-        view::ScreenXY                              m_previousMousePosition;
-        std::stack<std::unique_ptr<action::Action>> m_undoStack;
-        std::stack<std::unique_ptr<action::Action>> m_redoStack;
-        ModelViewInterface                          m_modelViewInterface;
+        bool                      m_rightMouseButtonPressed = false;
+        bool                      m_leftMouseButtonPressed  = false;
+        Uint32                    m_timeStep                = cst::TIME_STEP_SLOW;
+        EDIT_MODE                 m_editMode                = EDIT_MODE::EDITING;
+        model::GridXY             m_previousGridClickPosition{0, 0};
+        view::View*               m_view;
+        model::Model*             m_model;
+        view::widget::ScrollArea* m_scrollArea;
+        view::ScreenXY            m_previousMousePosition;
+        ModelViewInterface        m_modelViewInterface;
     };
 } // namespace app
 #endif // BLOCKS_APPLICATION_EDIT_H

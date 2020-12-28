@@ -7,7 +7,6 @@
 #include "../app/Application_Edit.h"
 
 #include <cassert>
-#include <utility>
 
 action::AddClusterAction::AddClusterAction(model::Cluster cluster) : m_cluster(std::move(cluster)) {
 }

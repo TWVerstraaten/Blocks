@@ -78,12 +78,12 @@ namespace view {
         drawClusters(model.clusters());
         drawBlocks(model.level());
 
-        for (auto& cluster : model.clusters()) {
-            const auto points = cluster.cornerPoints(cst::BLOCK_SHRINK_IN_WORLD);
-            for (const auto& it : points) {
-                drawPoint(it, view::color::RED, 2);
-            }
-        }
+        //        for (auto& cluster : model.clusters()) {
+        //            const auto points = cluster.cornerPoints(cst::BLOCK_SHRINK_IN_WORLD);
+        //            for (const auto& it : points) {
+        //                drawPoint(it, view::color::RED, 2);
+        //            }
+        //        }
     }
 
     void View::drawClusters(const std::list<model::Cluster>& clusters) {
@@ -100,12 +100,12 @@ namespace view {
                     break;
             }
             setDrawColor(view::color::RED);
-            for (const auto& side : cluster.sides(cst::BLOCK_SHRINK_IN_WORLD)) {
-                const auto p1 = ScreenXY::fromWorldXY(side.start(), m_viewPort);
-                const auto p2 = ScreenXY::fromWorldXY(side.end(), m_viewPort);
-
-                SDL_RenderDrawLine(m_renderer, p1.x(), p1.y(), p2.x(), p2.y());
-            }
+            //            for (const auto& side : cluster.sides(cst::BLOCK_SHRINK_IN_WORLD)) {
+            //                const auto p1 = ScreenXY::fromWorldXY(side.start(), m_viewPort);
+            //                const auto p2 = ScreenXY::fromWorldXY(side.end(), m_viewPort);
+            //
+            //                SDL_RenderDrawLine(m_renderer, p1.x(), p1.y(), p2.x(), p2.y());
+            //            }
 
             renderClusterName(cluster);
         }
@@ -261,8 +261,7 @@ namespace view {
     }
 
     void View::renderClusterName(const model::Cluster& cluster) {
-        const auto worldPosition = geom::rotateAboutPivot(
-            cluster.dynamicWorldOffset() + *cluster.gridXY().begin(), cluster.rotationPivot(), -cluster.angle());
+        const auto worldPosition  = cluster.approximateCenter();
         const auto screenPosition = ScreenXY::fromWorldXY(worldPosition, m_viewPort);
 
         if (m_nameTextures.find(cluster.index()) == m_nameTextures.end()) {
@@ -273,6 +272,8 @@ namespace view {
                      name, view::color::BLACK, m_renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font())});
         }
         const auto& texture = m_nameTextures.at(cluster.index());
+        drawRectangle(screenPosition, texture->width(), texture->height(), SDL_Color{105, 115, 133, 255});
+
         m_assets->renderTexture(texture.get(), screenPosition, texture->width(), texture->height(), m_renderer);
     }
 
@@ -311,30 +312,27 @@ namespace view {
         assert(cluster.phase() == model::Cluster::PHASE::TRANSLATING);
         const auto shrunkBlockSize =
             m_viewPort.worldToScreenLength(cst::BLOCK_SIZE_IN_WORLD - 2 * cst::BLOCK_SHRINK_IN_WORLD);
+        const auto f             = cluster.phaseTransformation();
         const auto shrinkWorldXY = model::WorldXY{cst::BLOCK_SHRINK_IN_WORLD, cst::BLOCK_SHRINK_IN_WORLD};
-        const auto offset        = ScreenXY::fromWorldXYAsVector(cluster.dynamicWorldOffset(), m_viewPort);
         for (auto it : cluster.gridXY()) {
-            assert(
-                m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
-                                        ScreenXY::fromWorldXY(model::WorldXY(it) + shrinkWorldXY, m_viewPort) + offset,
-                                        shrunkBlockSize,
-                                        shrunkBlockSize,
-                                        m_renderer));
+            assert(m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
+                                           ScreenXY::fromWorldXY(f(model::WorldXY(it) + shrinkWorldXY), m_viewPort),
+                                           shrunkBlockSize,
+                                           shrunkBlockSize,
+                                           m_renderer));
             if (m_viewPort.distanceBetweenBlocksInScreenXY() == 0) {
                 continue;
             }
             if (cluster.contains(it.neighbor(model::GridXY::DIRECTION::LEFT))) {
                 assert(m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
-                                               ScreenXY::fromWorldXY(model::WorldXY(it) + shrinkWorldXY, m_viewPort) +
-                                                   offset,
+                                               ScreenXY::fromWorldXY(f(model::WorldXY(it) + shrinkWorldXY), m_viewPort),
                                                -m_viewPort.distanceBetweenBlocksInScreenXY(),
                                                shrunkBlockSize,
                                                m_renderer));
             }
             if (cluster.contains(it.neighbor(model::GridXY::DIRECTION::UP))) {
                 assert(m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
-                                               ScreenXY::fromWorldXY(model::WorldXY(it) + shrinkWorldXY, m_viewPort) +
-                                                   offset,
+                                               ScreenXY::fromWorldXY(f(model::WorldXY(it) + shrinkWorldXY), m_viewPort),
                                                shrunkBlockSize,
                                                -m_viewPort.distanceBetweenBlocksInScreenXY(),
                                                m_renderer));
@@ -396,7 +394,7 @@ namespace view {
         }
     }
 
-    void View::draw(widget::ScrollArea* scrollArea) {
+    void View::drawScrollArea(widget::ScrollArea* scrollArea) {
         scrollArea->render(m_renderer);
     }
 

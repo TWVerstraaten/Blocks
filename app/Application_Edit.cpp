@@ -58,7 +58,6 @@ namespace app {
                 }
             }
         }
-        Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea, APP_MODE::EDITING);
     }
 
     void Application_Edit::mouseReleaseEvent(const SDL_Event& event) {
@@ -95,7 +94,7 @@ namespace app {
 
     void Application_Edit::init() {
         m_view->clear();
-        Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea, APP_MODE::EDITING);
+        ModelViewInterface::updateCommandScrollArea(m_model->clusters(), *m_scrollArea, APP_MODE::EDITING);
         m_scrollArea->update(m_view->renderer());
     }
 
@@ -154,7 +153,7 @@ namespace app {
             finalize();
         }
         m_view->draw(*m_model);
-        m_view->draw(m_scrollArea);
+        m_view->drawScrollArea(m_scrollArea);
         m_view->renderPresent();
         return m_editMode;
     }
@@ -176,7 +175,6 @@ namespace app {
             }
             m_previousGridClickPosition = currentGridPosition;
         }
-        Application_Level::updateCommandScrollArea(m_model->clusters(), m_scrollArea, APP_MODE::EDITING);
     }
 
     void Application_Edit::handleRightMouseMove() {
