@@ -6,6 +6,7 @@
 
 #include "../global/alg.h"
 #include "../global/fns.h"
+#include "../global/overloaded.h"
 
 namespace model {
 
@@ -90,6 +91,10 @@ namespace model {
 
     void Level::createBoundaries() {
         m_boundaries = alg::getSidesInGridXY<WorldXY>(m_levelBlocks);
+    }
+
+    void Level::addBlock(const GridXY& gridXY, const std::variant<DYNAMIC_BLOCK_TYPE, INSTANT_BLOCK_TYPE>& type) {
+        std::visit(overloaded{[&](const auto type) { addBlock(gridXY, type); }}, type);
     }
 
 } // namespace model

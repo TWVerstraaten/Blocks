@@ -53,11 +53,11 @@ namespace app {
         switch (event.button.button) {
             case SDL_BUTTON_RIGHT:
                 m_rightMouseButtonPressed = true;
-                m_previousMousePosition   = view::Mouse::MouseXY();
+                m_previousMousePosition   = view::Mouse::mouseXY();
                 break;
             case SDL_BUTTON_LEFT:
                 m_leftMouseButtonPressed = true;
-                m_previousMousePosition  = view::Mouse::MouseXY();
+                m_previousMousePosition  = view::Mouse::mouseXY();
                 break;
             default:
                 break;
@@ -79,7 +79,7 @@ namespace app {
 
     void Application_Run::mouseMoveEvent(const SDL_Event& event) {
         if (m_rightMouseButtonPressed) {
-            const auto mouseXY = view::Mouse::MouseXY();
+            const auto mouseXY = view::Mouse::mouseXY();
             m_view->translate((mouseXY.x() - m_previousMousePosition.x()), mouseXY.y() - m_previousMousePosition.y());
             m_previousMousePosition = mouseXY;
         }

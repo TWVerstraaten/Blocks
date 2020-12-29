@@ -5,8 +5,6 @@
 #ifndef BLOCKS_MODEL_H
 #define BLOCKS_MODEL_H
 
-#include "../action/AddClusterAction.h"
-#include "../global/cst.h"
 #include "Cluster.h"
 #include "Level.h"
 
@@ -23,26 +21,24 @@ namespace model {
         Model& operator=(const Model& other);
 
         /****** CONST GETTERS  ******/
-        const Level&              level() const;
-        const std::list<Cluster>& clusters() const;
+        [[nodiscard]] const Level&              level() const;
+        [[nodiscard]] const std::list<Cluster>& clusters() const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void                            preStep();
-        void                            init();
-        void                            clear();
-        void                            clearEmptyClusters();
-        void                            startPhase();
-        void                            finishInteractions();
-        void                            update(double dPhase);
-        std::list<Cluster>&             clusters();
-        std::list<Cluster>::iterator    clusterWithIndex(size_t index);
-        std::unique_ptr<action::Action> addCluster(const GridXY& gridXY);
-        std::unique_ptr<action::Action> linkBlocks(const GridXY& base, const GridXY& extension);
-        std::unique_ptr<action::Action> clearBlock(const GridXY& gridXY);
+        void                         preStep();
+        void                         init();
+        void                         clear();
+        void                         clearEmptyClusters();
+        void                         startPhase();
+        void                         finishInteractions();
+        void                         update(double dPhase);
+        Level&                       level();
+        std::list<Cluster>&          clusters();
+        std::list<Cluster>::iterator clusterWithIndex(size_t index);
 
       private:
         /****** PRIVATE CONST FUNCTIONS  ******/
-        bool containsEmptyClusters() const;
+        [[nodiscard]] bool containsEmptyClusters() const;
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void intersectWithLevel();

@@ -4,10 +4,8 @@
 
 #include "Model.h"
 
-#include "../action/AddBlockToClusterAction.h"
-#include "../action/GenericModelAction.h"
-#include "../action/RemoveBlockFromClusterAction.h"
 #include "../action/RemoveClusterAction.h"
+#include "../global/cst.h"
 #include "../global/fns.h"
 
 #include <algorithm>
@@ -53,12 +51,11 @@ namespace model {
 
     void Model::init() {
         clear();
-        m_clusters.push_back(
-            Cluster({{5, 5}, {3, 5}, {5, 6}, {6, 5}, {4, 5}, {5, 4}}, "CL" + std::to_string(m_clusters.size())));
+        m_clusters.push_back(Cluster({{5, 5}, {3, 5}, {5, 6}, {6, 5}, {4, 5}, {5, 4}}, "CL" + std::to_string(m_clusters.size())));
         m_clusters.back().addCommand({Command::TYPE::MOVE_UP, Command::MODIFIER::NONE});
 
-        m_level.addBlock({8, 3}, model::INSTANT_BLOCK_TYPE::KILL);
-        m_level.addBlock({3, 3}, model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW);
+        m_level.addBlock({8, 3}, std::variant<DYNAMIC_BLOCK_TYPE, INSTANT_BLOCK_TYPE>(model::INSTANT_BLOCK_TYPE::KILL));
+        m_level.addBlock({3, 3}, std::variant<DYNAMIC_BLOCK_TYPE, INSTANT_BLOCK_TYPE>(model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW));
 
         for (int i = -2; i != 15; ++i) {
             if (i > 5) {
@@ -91,9 +88,8 @@ namespace model {
     }
 
     void Model::clearEmptyClusters() {
-        m_clusters.erase(
-            std::remove_if(m_clusters.begin(), m_clusters.end(), [](const auto& cluster) { return cluster.empty(); }),
-            m_clusters.end());
+        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const auto& cluster) { return cluster.empty(); }),
+                         m_clusters.end());
     }
 
     void Model::preStep() {
@@ -102,61 +98,6 @@ namespace model {
             cluster.preStep();
         }
         m_needsPreStep = false;
-    }
-
-    std::unique_ptr<action::Action> Model::addCluster(const GridXY& gridXY) {
-        assert(m_level.isFreeStartBlock(gridXY));
-        if (std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) {
-                return cluster.contains(gridXY);
-            }) == m_clusters.end()) {
-            Model copy = *this;
-            m_clusters.push_back(Cluster({gridXY}, "CL" + std::to_string(m_clusters.size())));
-            return std::make_unique<action::AddClusterAction>(m_clusters.back());
-        }
-        return nullptr;
-    }
-
-    std::unique_ptr<action::Action> Model::linkBlocks(const GridXY& base, const GridXY& extension) {
-        const auto baseIt = std::find_if(
-            m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(base); });
-        if (baseIt == m_clusters.end() || (not base.isAdjacent(extension))) {
-            return addCluster(extension);
-        }
-        auto extensionIt = std::find_if(
-            m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(extension); });
-        if (baseIt == extensionIt) {
-            return nullptr;
-        }
-        if (extensionIt == m_clusters.end()) {
-            baseIt->addGridXY(extension);
-            assert(baseIt->isConnected());
-            return std::unique_ptr<action::Action>(new action::AddBlockToClusterAction(baseIt->index(), extension));
-        }
-        Model copyOfModel = *this;
-        baseIt->gridXY().insert(extensionIt->gridXY().begin(), extensionIt->gridXY().end());
-        m_clusters.erase(extensionIt);
-        return std::unique_ptr<action::Action>(new action::GenericModelAction(copyOfModel, *this));
-    }
-
-    std::unique_ptr<action::Action> Model::clearBlock(const GridXY& gridXY) {
-        const auto it = std::find_if(
-            m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(gridXY); });
-        if (it == m_clusters.end()) {
-            return nullptr;
-        }
-        if (it->size() == 1) {
-            auto result = std::unique_ptr<action::Action>(new action::RemoveClusterAction(*it));
-            m_clusters.erase(it);
-            return result;
-        }
-        Model copy = *this;
-        it->removeBLock(gridXY);
-        if (not it->isConnected()) {
-            m_clusters.splice(m_clusters.end(), it->collectAllButFirstComponent());
-            assert(it->isConnected());
-            return std::unique_ptr<action::Action>(new action::GenericModelAction(copy, *this));
-        }
-        return std::unique_ptr<action::Action>(new action::RemoveBlockFromClusterAction(it->index(), gridXY));
     }
 
     Model& Model::operator=(const Model& other) {
@@ -215,13 +156,15 @@ namespace model {
     }
 
     bool Model::containsEmptyClusters() const {
-        return std::any_of(
-            m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); });
+        return std::any_of(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); });
     }
 
     std::list<Cluster>::iterator Model::clusterWithIndex(size_t index) {
-        return std::find_if(
-            m_clusters.begin(), m_clusters.end(), [&](const Cluster& cluster) { return cluster.index() == index; });
+        return std::find_if(m_clusters.begin(), m_clusters.end(), [&](const Cluster& cluster) { return cluster.index() == index; });
+    }
+
+    Level& Model::level() {
+        return m_level;
     }
 
 } // namespace model

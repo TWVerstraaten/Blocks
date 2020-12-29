@@ -12,7 +12,7 @@ namespace view {
 
       public:
         /****** PUBLIC STATIC FUNCTIONS  ******/
-        static ScreenXY MouseXY();
+        static ScreenXY mouseXY();
     };
 } // namespace view
 #endif // BLOCKS_MOUSE_H

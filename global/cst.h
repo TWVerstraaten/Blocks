@@ -18,6 +18,9 @@
 
 namespace cst {
 
+    static const Uint32 BLOCK_SELECT_WIDGET_HEIGHT = 150;
+    static const Uint32 BLOCK_SELECT_WIDGET_WIDTH  = 230;
+
     static const Uint32         INITIAL_SCREEN_WIDTH      = 1000;
     static const Uint32         INITIAL_SCREEN_HEIGHT     = 800;
     static const int            BLOCK_SHRINK_IN_WORLD     = 4;

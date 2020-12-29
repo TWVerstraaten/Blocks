@@ -12,7 +12,7 @@ namespace action {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        explicit RemoveClusterAction(const model::Cluster& cluster);
+        RemoveClusterAction(const model::Cluster& cluster, const view::widget::CommandEditBox& commandEditBox);
 
         /****** VIRTUAL FUNCTIONS  ******/
         void        undoAction(app::Application_Edit& applicationEdit) override;

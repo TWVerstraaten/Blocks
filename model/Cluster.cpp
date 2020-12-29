@@ -6,6 +6,7 @@
 
 #include "../global/alg.h"
 #include "../global/fns.h"
+#include "../global/cst.h"
 #include "../global/geom.h"
 #include "Model.h"
 

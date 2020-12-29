@@ -5,6 +5,7 @@
 #ifndef BLOCKS_MODELVIEWINTERFACE_H
 #define BLOCKS_MODELVIEWINTERFACE_H
 
+#include "../model/BlockType_typedef.h"
 #include "../model/Cluster.h"
 #include "../view/widget/CommandEditBox.h"
 #include "Application_enums.h"
@@ -33,16 +34,15 @@ namespace app {
 
     class ModelViewInterface {
 
+        /****** PRIVATE ENUMS / TYPEDEFS  ******/
+        typedef std::unique_ptr<action::Action> Action_u_ptr;
+
       public:
         /****** PUBLIC STATIC FUNCTIONS  ******/
-        static void                            updateCommandScrollArea(const std::list<model::Cluster>& clusters,
-                                                                       view::widget::ScrollArea&        scrollArea,
-                                                                       APP_MODE                         mode);
-        static std::unique_ptr<action::Action> clearBlockStatic(model::Model&             model,
-                                                                view::widget::ScrollArea& scrollArea,
-                                                                const model::GridXY&      point);
+        static void updateCommandScrollArea(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea, APP_MODE mode);
         static void interactWithInstantBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
         static void interactWithDynamicBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
+        static Action_u_ptr clearBlockStatic(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
 
         /****** NON CONST FUNCTIONS  ******/
         void handleKeyEvent(const SDL_Event& event, view::widget::ScrollArea& scrollArea, model::Model& model);
@@ -51,24 +51,52 @@ namespace app {
                            view::widget::ScrollArea& scrollArea,
                            const model::GridXY&      point,
                            const model::GridXY&      previousPoint);
-        void clearBlock(model::Model&             model,
-                        view::View&               view,
-                        view::widget::ScrollArea& scrollArea,
-                        const model::GridXY&      point);
+        void leftClickControl(model::Model&             model,
+                              view::View&               view,
+                              view::widget::ScrollArea& scrollArea,
+                              const model::GridXY&      point,
+                              const model::BlockType&   selectedBlockType);
         void leftMouseClick(model::Model&             model,
                             view::View&               view,
                             view::widget::ScrollArea& scrollArea,
-                            const model::GridXY&      point);
+                            const model::GridXY&      point,
+                            const model::BlockType&   selectedBlockType);
         void undo(Application_Edit& applicationEdit);
         void redo(Application_Edit& applicationEdit);
 
       private:
+        /****** PRIVATE STATIC FUNCTIONS  ******/
+        static Action_u_ptr clearBlockFromCluster(model::Model&                       model,
+                                                  view::widget::ScrollArea&           scrollArea,
+                                                  const model::GridXY&                point,
+                                                  std::list<model::Cluster>::iterator clusterIt);
+        static Action_u_ptr addCluster(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
+        static Action_u_ptr linkBlocks(model::Model&             model,
+                                       view::widget::ScrollArea& scrollArea,
+                                       const model::GridXY&      point,
+                                       const model::GridXY&      previousPoint);
+
         /****** PRIVATE NON CONST FUNCTIONS  ******/
-        void addAction(std::unique_ptr<action::Action> action);
+        void addAction(Action_u_ptr&& action);
+        void leftMouseClick(model::Model&             model,
+                            view::View&               view,
+                            view::widget::ScrollArea& scrollArea,
+                            const model::GridXY&      point,
+                            model::DYNAMIC_BLOCK_TYPE selectedBlockType);
+        void leftMouseClick(model::Model&             model,
+                            view::View&               view,
+                            view::widget::ScrollArea& scrollArea,
+                            const model::GridXY&      point,
+                            model::INSTANT_BLOCK_TYPE selectedBlockType);
+        void leftMouseClick(model::Model&             model,
+                            view::View&               view,
+                            view::widget::ScrollArea& scrollArea,
+                            const model::GridXY&      point,
+                            model::FLOOR_BLOCK        selectedBlockType);
 
         /****** PUBLIC STATIC DATA MEMBERS  ******/
-        std::stack<std::unique_ptr<action::Action>> m_undoStack;
-        std::stack<std::unique_ptr<action::Action>> m_redoStack;
+        std::stack<Action_u_ptr> m_undoStack;
+        std::stack<Action_u_ptr> m_redoStack;
     };
 } // namespace app
 

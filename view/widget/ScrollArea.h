@@ -10,8 +10,7 @@
 
 #include <list>
 
-namespace view {
-    namespace widget {
+namespace view::widget {
         class ScrollArea : public RectWidget {
 
           public:
@@ -51,7 +50,6 @@ namespace view {
             const Assets*             m_assets;
             std::list<CommandEditBox> m_children;
         };
-    } // namespace widget
-} // namespace view
+    } // namespace view
 
 #endif // BLOCKS_SCROLLAREA_H

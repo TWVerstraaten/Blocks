@@ -55,26 +55,11 @@ void view::widget::CommandEditBox::update(SDL_Renderer* renderer) {
         return;
     }
     if (not m_titleTexture) {
-        m_titleTexture = Texture::createFromText(
-            m_title, view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font());
+        createTitleTexture(renderer);
     }
 
-    m_textures.clear();
-    m_yOffsets.clear();
-
-    int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
-    for (auto& str : m_strings) {
-        m_yOffsets.push_back(yOffset);
-        const auto text     = str.length() == 0 ? std::string(" ") : str;
-        bool       canParse = model::Command::canParse(str);
-        m_textures.emplace_back(Texture::createFromText(text,
-                                                        canParse ? view::color::BLACK : view::color::TEXT_ERROR,
-                                                        renderer,
-                                                        m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
-        yOffset += m_textures.back()->height();
-    }
-    m_yOffsets.push_back(yOffset);
-    m_rect.h      = yOffset;
+    createStringTextures(renderer);
+    m_rect.h      = m_yOffsets.back();
     m_needsUpdate = false;
 }
 
@@ -84,8 +69,9 @@ bool view::widget::CommandEditBox::canParse() const {
 
 void view::widget::CommandEditBox::loseFocus() {
     for (auto& str : m_strings) {
-        if (model::Command::canParse(str)) {
-            str = model::Command::formatCommandString(str);
+        if (model::Command::canParse(str) && (not model::Command::isFormatted(str))) {
+            str           = model::Command::formatCommandString(str);
+            m_needsUpdate = true;
         }
     }
     LineEditBox::loseFocus();
@@ -110,4 +96,27 @@ view::widget::CommandEditBox& view::widget::CommandEditBox::operator=(const view
     m_strings       = other.m_strings;
     setNeedsUpdate();
     return *this;
+}
+
+void view::widget::CommandEditBox::createTitleTexture(SDL_Renderer* renderer) {
+    m_titleTexture =
+        Texture::createFromText(m_title, view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font());
+}
+
+void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) {
+    m_textures.clear();
+    m_yOffsets.clear();
+
+    int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
+    for (auto& str : m_strings) {
+        m_yOffsets.push_back(yOffset);
+        const auto text     = str.length() == 0 ? std::string(" ") : str;
+        bool       canParse = model::Command::canParse(str);
+        m_textures.emplace_back(Texture::createFromText(text,
+                                                        canParse ? view::color::BLACK : view::color::TEXT_ERROR,
+                                                        renderer,
+                                                        m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
+        yOffset += m_textures.back()->height();
+    }
+    m_yOffsets.push_back(yOffset);
 }

@@ -8,6 +8,7 @@
 #include "../global/geom.h"
 #include "../model/Model.h"
 #include "color.h"
+#include "widget/BlockSelectWidget.h"
 #include "widget/ScrollArea.h"
 
 #include <SDL_image.h>
@@ -100,13 +101,6 @@ namespace view {
                     break;
             }
             setDrawColor(view::color::RED);
-            //            for (const auto& side : cluster.sides(cst::BLOCK_SHRINK_IN_WORLD)) {
-            //                const auto p1 = ScreenXY::fromWorldXY(side.start(), m_viewPort);
-            //                const auto p2 = ScreenXY::fromWorldXY(side.end(), m_viewPort);
-            //
-            //                SDL_RenderDrawLine(m_renderer, p1.x(), p1.y(), p2.x(), p2.y());
-            //            }
-
             renderClusterName(cluster);
         }
     }
@@ -116,16 +110,14 @@ namespace view {
         const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
         const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
         for (const auto& block : level.levelBlocks()) {
-            drawRectangle(ScreenXY::fromGridXY(block, m_viewPort) + shrinkInScreenXY,
-                          shrunkBlockSize,
-                          shrunkBlockSize,
-                          view::color::BACKGROUND_PLAYABLE);
+            drawSquare(ScreenXY::fromGridXY(block, m_viewPort) + shrinkInScreenXY,
+                       shrunkBlockSize,
+                       view::color::BACKGROUND_PLAYABLE);
         }
         for (const auto& block : level.startBlocks()) {
-            drawRectangle(ScreenXY::fromGridXY(block, m_viewPort) + shrinkInScreenXY,
-                          shrunkBlockSize,
-                          shrunkBlockSize,
-                          view::color::BACKGROUND_START);
+            drawSquare(ScreenXY::fromGridXY(block, m_viewPort) + shrinkInScreenXY,
+                       shrunkBlockSize,
+                       view::color::BACKGROUND_START);
         }
 
         for (const auto& line : level.boundaries()) {
@@ -177,10 +169,15 @@ namespace view {
         SDL_RenderFillRect(m_renderer, &rect);
     }
 
+    void View::drawSquare(const ScreenXY& point, int length, const SDL_Color& color) const {
+        drawRectangle(point, length, length, color);
+    }
+
     void View::drawRectangle(const model::WorldXY& point,
                              int                   widthInWorld,
                              int                   heightInWorld,
                              const SDL_Color&      color) const {
+        assert(widthInWorld != heightInWorld);
         drawRectangle(ScreenXY::fromWorldXY(point, m_viewPort),
                       m_viewPort.worldToScreenLength(widthInWorld),
                       m_viewPort.worldToScreenLength(heightInWorld),
@@ -396,6 +393,45 @@ namespace view {
 
     void View::drawScrollArea(widget::ScrollArea* scrollArea) {
         scrollArea->render(m_renderer);
+    }
+
+    void View::drawBlockSelectWidget(widget::BlockSelectWidget& widget) {
+        widget.render(m_renderer);
+    }
+
+    int View::windowHeight() const {
+        return windowSize().y();
+    }
+
+    int View::windowWidth() const {
+        return windowSize().x();
+    }
+
+    void View::drawRectangle(
+        const ScreenXY& point, int width, int height, const SDL_Color& color, SDL_Renderer* renderer) {
+        setDrawColor(color, renderer);
+        const SDL_Rect rect{point.x(), point.y(), width, height};
+        SDL_RenderFillRect(renderer, &rect);
+    }
+
+    void View::drawSquare(const ScreenXY& point, int length, const SDL_Color& color, SDL_Renderer* renderer) {
+        drawRectangle(point, length, length, color, renderer);
+    }
+
+    void View::setDrawColor(const SDL_Color& color, SDL_Renderer* renderer) {
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+    }
+
+    void View::drawSquareOutline(
+        const ScreenXY& point, int length, int lineThickness, const SDL_Color& color, SDL_Renderer* renderer) {
+        drawRectangle(
+            point - ScreenXY{lineThickness, lineThickness}, length + 2 * lineThickness, lineThickness, color, renderer);
+        drawRectangle(
+            point + ScreenXY{-lineThickness, length}, length + 2 * lineThickness, lineThickness, color, renderer);
+        drawRectangle(
+            point - ScreenXY{lineThickness, lineThickness}, lineThickness, length + 2 * lineThickness, color, renderer);
+        drawRectangle(
+            point + ScreenXY{length, -lineThickness}, lineThickness, length + 2 * lineThickness, color, renderer);
     }
 
 } // namespace view

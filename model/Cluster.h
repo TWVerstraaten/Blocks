@@ -16,8 +16,6 @@
 #include <set>
 #include <vector>
 
-class SDL_Renderer;
-
 namespace model {
 
     class Cluster {

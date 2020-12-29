@@ -9,6 +9,7 @@
 #include "../global/cst.h"
 #include "../model/Model.h"
 #include "../view/View.h"
+#include "../view/widget/BlockSelectWidget.h"
 #include "Application_enums.h"
 #include "ModelViewInterface.h"
 
@@ -51,16 +52,18 @@ namespace app {
         void redo();
 
         /****** DATA MEMBERS  ******/
-        bool                      m_rightMouseButtonPressed = false;
-        bool                      m_leftMouseButtonPressed  = false;
-        Uint32                    m_timeStep                = cst::TIME_STEP_SLOW;
-        EDIT_MODE                 m_editMode                = EDIT_MODE::EDITING;
-        model::GridXY             m_previousGridClickPosition{0, 0};
-        view::View*               m_view;
-        model::Model*             m_model;
-        view::widget::ScrollArea* m_scrollArea;
-        view::ScreenXY            m_previousMousePosition;
-        ModelViewInterface        m_modelViewInterface;
+        bool                            m_rightMouseButtonPressed = false;
+        bool                            m_leftMouseButtonPressed  = false;
+        Uint32                          m_timeStep                = cst::TIME_STEP_SLOW;
+        EDIT_MODE                       m_editMode                = EDIT_MODE::EDITING;
+        model::GridXY                   m_previousGridClickPosition{0, 0};
+        view::View*                     m_view;
+        model::Model*                   m_model;
+        view::widget::ScrollArea*       m_scrollArea;
+        view::widget::BlockSelectWidget m_blockSelectWidget;
+        view::ScreenXY                  m_previousMousePosition;
+        ModelViewInterface              m_modelViewInterface;
+        void                            determineFocus(view::ScreenXY screenXY);
     };
 } // namespace app
 #endif // BLOCKS_APPLICATION_EDIT_H

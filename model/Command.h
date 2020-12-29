@@ -22,12 +22,13 @@ namespace model {
 
         /****** PUBLIC STATIC FUNCTIONS  ******/
         static bool        canParse(const std::string& string);
+        static bool        isFormatted(const std::string& string);
         static TYPE        typeFromString(const std::string& string);
         static MODIFIER    modifierFromString(const std::string& string);
         static Command     fromString(const std::string& string);
         static std::string stringFromModifier(MODIFIER modifier);
         static std::string stringFromType(TYPE modifier);
-        static std::string formatCommandString(std::string& string);
+        static std::string formatCommandString(const std::string& string);
 
         /****** DATA MEMBERS  ******/
         TYPE     m_type     = TYPE::MOVE_UP;

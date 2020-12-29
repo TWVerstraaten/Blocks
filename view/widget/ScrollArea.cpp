@@ -32,7 +32,7 @@ void view::widget::ScrollArea::keyEvent(const SDL_Event& event) {
 }
 
 void view::widget::ScrollArea::leftClickEvent(const SDL_Event& event) {
-    assert(pointIsOverWidget(Mouse::MouseXY()));
+    assert(pointIsOverWidget(Mouse::mouseXY()));
     getFocus();
     for (auto& w : m_children) {
         w.loseFocus();
@@ -99,7 +99,7 @@ void view::widget::ScrollArea::mouseWheelEvent(const SDL_Event& event) {
 }
 
 view::widget::CommandEditBox* view::widget::ScrollArea::widgetUnderMouse() {
-    auto mousePosition = Mouse::MouseXY();
+    auto mousePosition = Mouse::mouseXY();
     for (auto& w : m_children) {
         if (w.pointIsOverWidget(mousePosition)) {
             return &w;

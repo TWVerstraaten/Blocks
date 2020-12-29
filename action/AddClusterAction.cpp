@@ -7,8 +7,10 @@
 #include "../app/Application_Edit.h"
 
 #include <cassert>
+#include <utility>
 
-action::AddClusterAction::AddClusterAction(model::Cluster cluster) : m_cluster(std::move(cluster)) {
+action::AddClusterAction::AddClusterAction(model::Cluster cluster, view::widget::CommandEditBox commandEditBox)
+    : m_cluster(std::move(cluster)), m_commandEditBox(std::move(commandEditBox)) {
 }
 
 void action::AddClusterAction::undoAction(app::Application_Edit& applicationEdit) {
@@ -21,7 +23,6 @@ void action::AddClusterAction::redoAction(app::Application_Edit& applicationEdit
     assert(applicationEdit.model()->clusterWithIndex(m_cluster.index()) == applicationEdit.model()->clusters().end());
     applicationEdit.model()->clusters().push_back(m_cluster);
 }
-
 action::ACTION_TYPE action::AddClusterAction::type() const {
     return ACTION_TYPE::ADD_CLUSTER;
 }

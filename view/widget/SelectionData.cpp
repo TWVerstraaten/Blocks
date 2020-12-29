@@ -12,7 +12,7 @@ void view::widget::SelectionData::reset() {
     m_mode                = MODE::SINGLE;
 }
 
-void view::widget::SelectionData::fix() {
+void view::widget::SelectionData::potentiallyMakeSingle() {
     if (m_first.m_stringIndex == m_last.m_stringIndex && m_first.m_charIndex == m_last.m_charIndex) {
         m_mode = MODE::SINGLE;
     }

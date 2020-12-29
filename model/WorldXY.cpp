@@ -4,8 +4,8 @@
 
 #include "WorldXY.h"
 
+#include "../global/cst.h"
 #include "GridXY.h"
-#include "Model.h"
 
 namespace model {
 

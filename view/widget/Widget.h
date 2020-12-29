@@ -8,19 +8,17 @@
 union SDL_Event;
 struct SDL_Renderer;
 
-namespace view {
-    namespace widget {
-        class Widget {
+namespace view ::widget {
+    class Widget {
 
-          public:
-            /****** PUBLIC VIRTUAL FUNCTIONS  ******/
-            virtual void render(SDL_Renderer* renderer) = 0;
-            virtual void keyEvent(const SDL_Event& event){};
-            virtual void leftClickEvent(const SDL_Event& event){};
-            virtual void mouseDragEvent(const SDL_Event& event){};
-            virtual void mouseWheelEvent(const SDL_Event& event){};
-        };
-    } // namespace widget
-} // namespace view
+      public:
+        /****** PUBLIC VIRTUAL FUNCTIONS  ******/
+        virtual void render(SDL_Renderer* renderer) = 0;
+        virtual void keyEvent(const SDL_Event& event){};
+        virtual void leftClickEvent(const SDL_Event& event){};
+        virtual void mouseDragEvent(const SDL_Event& event){};
+        virtual void mouseWheelEvent(const SDL_Event& event){};
+    };
+} // namespace view::widget
 
 #endif // BLOCKS_WIDGET_H

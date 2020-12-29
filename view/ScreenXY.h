@@ -33,9 +33,9 @@ namespace view {
         int y() const;
 
         /****** OPERATORS  ******/
-        operator SDL_Point() const {
-            return {m_x, m_y};
-        }
+        operator SDL_Point() const;
+
+        /****** FRIENDS  ******/
 
       private:
         /****** DATA MEMBERS  ******/
@@ -46,5 +46,6 @@ namespace view {
 } // namespace view
 
 view::ScreenXY operator+(const view::ScreenXY& lhs, const view::ScreenXY& rhs);
+view::ScreenXY operator-(const view::ScreenXY& lhs, const view::ScreenXY& rhs);
 
 #endif // BLOCKS_SCREENXY_H

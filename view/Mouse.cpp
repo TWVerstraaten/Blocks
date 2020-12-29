@@ -5,7 +5,7 @@
 #include "Mouse.h"
 
 namespace view {
-    ScreenXY Mouse::MouseXY() {
+    ScreenXY Mouse::mouseXY() {
         int xMouse, yMouse;
         SDL_GetMouseState(&xMouse, &yMouse);
         return {xMouse, yMouse};

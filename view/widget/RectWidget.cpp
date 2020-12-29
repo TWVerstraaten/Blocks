@@ -6,8 +6,7 @@
 
 #include <cassert>
 
-namespace view {
-    namespace widget {
+namespace view::widget {
         RectWidget::RectWidget(SDL_Rect rect) : m_rect(rect) {
             assert(m_rect.x >= -10);
             assert(m_rect.y >= -10);
@@ -52,5 +51,4 @@ namespace view {
             return m_rect.h;
         }
 
-    } // namespace widget
-} // namespace view
+    } // namespace view

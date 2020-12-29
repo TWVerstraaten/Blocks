@@ -70,10 +70,12 @@ namespace view {
                                        HIGHLIGHT_MODE             mode) const;
             int         widthOfString(const std::string& string) const;
             std::string selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
-            SelectionData::Data moveSelectionOneDown(const SelectionData::Data& data) const;
-            const SDL_Color&    getHighlightColor(HIGHLIGHT_MODE mode) const;
+            const SDL_Color& getHighlightColor(HIGHLIGHT_MODE mode) const;
+            std::string      prefixOfString(const SelectionData::Data& data) const;
+            std::string      suffixOfString(const SelectionData::Data& data) const;
 
             /****** PRIVATE NON CONST FUNCTIONS  ******/
+            void moveFirstSelectionOneDown();
             void insertEmptyBeforeLine(size_t lineNumber);
             void handleKeyDown(const SDL_Event& event);
             void handleKeyDownControlPressed(const SDL_Event& event);
@@ -81,7 +83,7 @@ namespace view {
             void doDelete();
             void doReturn(bool shiftPressed = false);
             void deleteRange(const SelectionData::Data& first, const SelectionData::Data& last);
-            void splitAt(SelectionData::Data& data);
+            void splitAtFirstSelectionData();
             void moveUp();
             void moveDown();
             void moveLeft(bool shiftPressed = false);
@@ -91,6 +93,12 @@ namespace view {
             void insertText(const std::string& text);
             void concatAt(size_t index);
             void potentiallyDecrementFirstCharIndex();
+            void removeCharacterAfter(const SelectionData::Data& data);
+            void decrementFirstSelectionData();
+            void incrementFirstSelectionData();
+            void setFirstCharIndexToMaximum();
+            void moveFirstSelectionDataToStartOfNextLine();
+            void setFirstSelection(size_t stringIndex, size_t charIndex);
 
           protected:
             /****** DATA MEMBERS  ******/

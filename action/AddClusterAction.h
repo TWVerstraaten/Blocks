@@ -6,6 +6,7 @@
 #define BLOCKS_ADDCLUSTERACTION_H
 
 #include "../model/Cluster.h"
+#include "../view/widget/CommandEditBox.h"
 #include "Action.h"
 
 namespace action {
@@ -14,7 +15,7 @@ namespace action {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        explicit AddClusterAction(model::Cluster cluster);
+        AddClusterAction(model::Cluster cluster, view::widget::CommandEditBox commandEditBox);
 
         /****** VIRTUAL FUNCTIONS  ******/
         void        undoAction(app::Application_Edit& applicationEdit) override;
@@ -23,7 +24,8 @@ namespace action {
 
       private:
         /****** DATA MEMBERS  ******/
-        const model::Cluster m_cluster;
+        const model::Cluster               m_cluster;
+        const view::widget::CommandEditBox m_commandEditBox;
     };
 
 } // namespace action

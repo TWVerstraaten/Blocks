@@ -22,7 +22,8 @@ namespace model {
 namespace view {
     namespace widget {
         class ScrollArea;
-    }
+        class BlockSelectWidget;
+    } // namespace widget
 
     class ScreenXY;
 
@@ -33,15 +34,25 @@ namespace view {
         View(const View& other) = delete;
         ~View();
 
+        /****** PUBLIC STATIC FUNCTIONS  ******/
+        static void drawRectangle(
+            const ScreenXY& point, int width, int height, const SDL_Color& color, SDL_Renderer* renderer);
+        static void drawSquare(const ScreenXY& point, int length, const SDL_Color& color, SDL_Renderer* renderer);
+        static void drawSquareOutline(
+            const ScreenXY& point, int length, int lineThickness, const SDL_Color& color, SDL_Renderer* renderer);
+
         /****** CONST GETTERS  ******/
-        ScreenXY        windowSize() const;
-        const ViewPort& viewPort() const;
-        SDL_Renderer*   renderer() const;
-        Assets*         assets() const;
+        [[nodiscard]] ScreenXY        windowSize() const;
+        [[nodiscard]] int             windowHeight() const;
+        [[nodiscard]] int             windowWidth() const;
+        [[nodiscard]] const ViewPort& viewPort() const;
+        [[nodiscard]] SDL_Renderer*   renderer() const;
+        [[nodiscard]] Assets*         assets() const;
 
         /****** CONST FUNCTIONS  ******/
         void renderPresent() const;
         void drawRectangle(const ScreenXY& point, int width, int height, const SDL_Color& color) const;
+        void drawSquare(const ScreenXY& point, int length, const SDL_Color& color) const;
         void drawRectangle(const model::WorldXY& point,
                            int                   widthInWorld,
                            int                   heightInWorld,
@@ -62,11 +73,15 @@ namespace view {
         /****** NON CONST FUNCTIONS  ******/
         void draw(const model::Model& model);
         void drawScrollArea(widget::ScrollArea* scrollArea);
+        void drawBlockSelectWidget(widget::BlockSelectWidget& widget);
         void zoom(int amount);
         void translate(int dx, int dy);
         void clear();
 
       private:
+        /****** PRIVATE STATIC FUNCTIONS  ******/
+        static void setDrawColor(const SDL_Color& color, SDL_Renderer* renderer);
+
         /****** PRIVATE CONST FUNCTIONS  ******/
         void drawLevel(const model::Level& level) const;
         void drawBlocks(const model::Level& level) const;

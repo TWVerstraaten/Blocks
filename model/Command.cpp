@@ -6,14 +6,17 @@
 
 #include "../global/fns.h"
 
-const std::map<std::string, model::Command::TYPE> model::Command::s_typeMap = {{"RHT", model::Command::TYPE::MOVE_RIGHT},
-                                                                               {"LFT", model::Command::TYPE::MOVE_LEFT},
-                                                                               {"FWD", model::Command::TYPE::MOVE_UP},
-                                                                               {"BCK", model::Command::TYPE::MOVE_DOWN},
-                                                                               {"SKP", model::Command::TYPE::SKIP}};
+const std::map<std::string, model::Command::TYPE> model::Command::s_typeMap = {
+    {"RHT", model::Command::TYPE::MOVE_RIGHT},
+    {"LFT", model::Command::TYPE::MOVE_LEFT},
+    {"FWD", model::Command::TYPE::MOVE_UP},
+    {"BCK", model::Command::TYPE::MOVE_DOWN},
+    {"SKP", model::Command::TYPE::SKIP}};
 
 const std::map<std::string, model::Command::MODIFIER> model::Command::s_modifierMap = {
-    {"+", model::Command::MODIFIER::IGNORE}, {"-", model::Command::MODIFIER::INCREMENT}, {".", model::Command::MODIFIER::NONE}};
+    {"+", model::Command::MODIFIER::IGNORE},
+    {"-", model::Command::MODIFIER::INCREMENT},
+    {".", model::Command::MODIFIER::NONE}};
 
 model::Command::MODIFIER model::Command::modifierFromString(const std::string& string) {
     const auto trimmed = fns::trimWhiteSpace(string);
@@ -63,10 +66,11 @@ bool model::Command::canParse(const std::string& string) {
     return (s_modifierMap.find(str1) != s_modifierMap.end()) && (s_typeMap.find(str2) != s_typeMap.end());
 }
 
-model::Command::Command(model::Command::TYPE type, model::Command::MODIFIER modifier) : m_type(type), m_modifier(modifier) {
+model::Command::Command(model::Command::TYPE type, model::Command::MODIFIER modifier)
+    : m_type(type), m_modifier(modifier) {
 }
 
-std::string model::Command::formatCommandString(std::string& string) {
+std::string model::Command::formatCommandString(const std::string& string) {
     assert(canParse(string));
     auto trimmed = fns::trimWhiteSpace(string);
     if (trimmed.empty()) {
@@ -75,4 +79,9 @@ std::string model::Command::formatCommandString(std::string& string) {
     const auto str1 = fns::trimWhiteSpace(trimmed.substr(0, 1));
     const auto str2 = fns::trimWhiteSpace(trimmed.substr(1));
     return str1 + " " + str2;
+}
+
+bool model::Command::isFormatted(const std::string& string) {
+    assert(canParse(string));
+    return string == formatCommandString(string);
 }
