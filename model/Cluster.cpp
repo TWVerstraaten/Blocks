@@ -430,6 +430,7 @@ namespace model {
             }
         }
         assert(false);
+        return [](const model::WorldXY& b) { return b; };
     }
 
     size_t Cluster::size() const {

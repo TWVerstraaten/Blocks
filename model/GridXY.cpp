@@ -8,6 +8,7 @@
 #include "../view/ViewPort.h"
 
 #include <cassert>
+#include <cmath>
 
 namespace model {
     GridXY::GridXY(int x, int y) : m_x(x), m_y(y) {
@@ -73,8 +74,9 @@ namespace model {
     }
 
     GridXY GridXY::fromScreenXY(const view::ScreenXY& screenXY, const view::ViewPort& viewPort) {
-        return GridXY(std::floor((screenXY.x() - viewPort.xOffset()) / static_cast<double>(viewPort.blockSizeInScreen())),
-                      std::floor((screenXY.y() - viewPort.yOffset()) / static_cast<double>(viewPort.blockSizeInScreen())));
+        return GridXY(
+            std::floor((screenXY.x() - viewPort.xOffset()) / static_cast<double>(viewPort.blockSizeInScreen())),
+            std::floor((screenXY.y() - viewPort.yOffset()) / static_cast<double>(viewPort.blockSizeInScreen())));
     }
 
     bool operator!=(const GridXY& lhs, const GridXY& rhs) {
