@@ -6,6 +6,7 @@
 #define BLOCKS_ACTION_H
 
 #include "Action_enums.h"
+
 namespace app {
     class Application_Edit;
 }

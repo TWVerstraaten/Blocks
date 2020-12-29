@@ -28,31 +28,23 @@ namespace view::widget {
         Rectangle::render(geom::pad(m_rect, LINE_EDIT_PADDING), color::EDIT_BOX_BACKGROUND, renderer);
 
         for (const BlockType type : s_allTypes) {
-            std::visit(overloaded{[renderer, this](const model::FLOOR_BLOCK type) {
-                                      switch (type) {
-                                          case model::FLOOR_BLOCK::CLUSTER:
-                                              m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
-                                                                      screenXY(type),
-                                                                      BLOCK_SIZE_IN_WORLD,
-                                                                      BLOCK_SIZE_IN_WORLD,
-                                                                      renderer);
-                                              break;
-                                          default:
-                                              view::View::drawSquare(screenXY(type),
-                                                                     BLOCK_SIZE_IN_WORLD,
-                                                                     type == model::FLOOR_BLOCK::LEVEL
-                                                                         ? view::color::BACKGROUND_PLAYABLE
-                                                                         : view::color::BACKGROUND_START,
-                                                                     renderer);
-                                              break;
-                                      }
+            std::visit(overloaded{[renderer, this](const model::FLOOR_BLOCK_TYPE type) {
+                                      view::View::drawSquare(screenXY(type),
+                                                             BLOCK_SIZE_IN_WORLD,
+                                                             type == model::FLOOR_BLOCK_TYPE::LEVEL ? view::color::BACKGROUND_PLAYABLE
+                                                                                               : view::color::BACKGROUND_START,
+                                                             renderer);
                                   },
-                                  [renderer, this](const auto type) {
-                                      m_assets->renderTexture(Assets::getTextureEnum(type),
+                                  [renderer, this](const CLUSTER_TYPE type) {
+                                      m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
                                                               screenXY(type),
                                                               BLOCK_SIZE_IN_WORLD,
                                                               BLOCK_SIZE_IN_WORLD,
                                                               renderer);
+                                  },
+                                  [renderer, this](const auto type) {
+                                      m_assets->renderTexture(
+                                          Assets::getTextureEnum(type), screenXY(type), BLOCK_SIZE_IN_WORLD, BLOCK_SIZE_IN_WORLD, renderer);
                                   }},
                        type);
             if (type == selectedBlockType()) {
@@ -71,9 +63,8 @@ namespace view::widget {
     }
 
     ScreenXY BlockSelectWidget::screenXY(const model::BlockType& type) {
-        const auto it = std::find_if(model::s_allTypes.begin(),
-                                     model::s_allTypes.end(),
-                                     [&](const model::BlockType& blockType) { return blockType == type; });
+        const auto it = std::find_if(
+            model::s_allTypes.begin(), model::s_allTypes.end(), [&](const model::BlockType& blockType) { return blockType == type; });
         assert(it != model::s_allTypes.end());
         return indexToScreenXY(std::distance(model::s_allTypes.begin(), it));
     }
@@ -83,8 +74,8 @@ namespace view::widget {
         const auto       y            = screenXY.y() - m_rect.y;
         static const int margin       = 10;
         const int        blocksPerRow = (m_rect.w - margin) / (cst::BLOCK_SIZE_IN_WORLD + margin);
-        int              index        = ((x - margin) / (cst::BLOCK_SIZE_IN_WORLD + margin)) +
-                    blocksPerRow * ((y - margin) / (cst::BLOCK_SIZE_IN_WORLD + margin));
+        int              index =
+            ((x - margin) / (cst::BLOCK_SIZE_IN_WORLD + margin)) + blocksPerRow * ((y - margin) / (cst::BLOCK_SIZE_IN_WORLD + margin));
         if (index >= 0 && static_cast<size_t>(index) < model::s_allTypes.size()) {
             m_selected = index;
         }
@@ -95,9 +86,8 @@ namespace view::widget {
         static const int margin       = 10;
         const int        blocksPerRow = (m_rect.w - margin) / (cst::BLOCK_SIZE_IN_WORLD + margin);
 
-        return ScreenXY{
-            static_cast<int>(m_rect.x + margin + (index % blocksPerRow) * (cst::BLOCK_SIZE_IN_WORLD + margin)),
-            static_cast<int>(m_rect.y + margin + (index / blocksPerRow) * (cst::BLOCK_SIZE_IN_WORLD + margin))};
+        return ScreenXY{static_cast<int>(m_rect.x + margin + (index % blocksPerRow) * (cst::BLOCK_SIZE_IN_WORLD + margin)),
+                        static_cast<int>(m_rect.y + margin + (index / blocksPerRow) * (cst::BLOCK_SIZE_IN_WORLD + margin))};
     }
 
     model::BlockType BlockSelectWidget::selectedBlockType() const {

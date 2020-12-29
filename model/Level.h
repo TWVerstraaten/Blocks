@@ -5,11 +5,13 @@
 #ifndef BLOCKS_LEVEL_H
 #define BLOCKS_LEVEL_H
 
+#include "../action/Action.h"
 #include "GridXY.h"
 #include "Level_enums.h"
 #include "Line.h"
 
 #include <map>
+#include <memory>
 #include <set>
 #include <variant>
 
@@ -25,26 +27,29 @@ namespace model {
         Level& operator=(const Level& other) = default;
 
         /****** CONST GETTERS  ******/
-        const std::set<GridXY>&                     levelBlocks() const;
-        const std::set<GridXY>&                     startBlocks() const;
-        const std::set<Line<WorldXY>>&              boundaries() const;
-        const std::map<GridXY, DYNAMIC_BLOCK_TYPE>& dynamicBlocks() const;
-        const std::map<GridXY, INSTANT_BLOCK_TYPE>& instantBlocks() const;
+        [[nodiscard]] const std::set<GridXY>&                     levelBlocks() const;
+        [[nodiscard]] const std::set<GridXY>&                     startBlocks() const;
+        [[nodiscard]] const std::set<Line<WorldXY>>&              boundaries() const;
+        [[nodiscard]] const std::map<GridXY, DYNAMIC_BLOCK_TYPE>& dynamicBlocks() const;
+        [[nodiscard]] const std::map<GridXY, INSTANT_BLOCK_TYPE>& instantBlocks() const;
 
         /****** CONST FUNCTIONS  ******/
-        bool               isInLevel(const model::WorldXY& worldXY) const;
-        bool               isFreeStartBlock(const GridXY& gridXY) const;
-        DYNAMIC_BLOCK_TYPE dynamicBlockAt(const GridXY& gridXY) const;
-        INSTANT_BLOCK_TYPE instantBlockAt(const GridXY& gridXY) const;
+        [[nodiscard]] bool               isInLevel(const model::WorldXY& worldXY) const;
+        [[nodiscard]] bool               isFreeStartBlock(const GridXY& gridXY) const;
+        [[nodiscard]] DYNAMIC_BLOCK_TYPE dynamicBlockAt(const GridXY& gridXY) const;
+        [[nodiscard]] INSTANT_BLOCK_TYPE instantBlockAt(const GridXY& gridXY) const;
 
-        /****** NON CONST FUNCTIONS  ******/
-        void addBlock(const GridXY& gridXY, const std::variant<DYNAMIC_BLOCK_TYPE, INSTANT_BLOCK_TYPE>& type);
-        void addLevelBlock(const GridXY& gridXY);
-        void addStartBlock(const GridXY& gridXY);
-        void clear();
-        void createBoundaries();
-        void addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
-        void addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
+        void                            addLevelBlock(const GridXY& gridXY);
+        void                            addStartBlock(const GridXY& gridXY);
+        void                            clear();
+        void                            createBoundaries();
+        void                            removeBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
+        void                            removeBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
+        void                            removeBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
+        std::unique_ptr<action::Action> addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
+        std::unique_ptr<action::Action> addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
+        std::unique_ptr<action::Action> addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
+        std::unique_ptr<action::Action> removeBlock(const GridXY& gridXY);
 
       private:
         /****** PRIVATE CONST FUNCTIONS  ******/

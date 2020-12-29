@@ -24,6 +24,9 @@ namespace model {
         [[nodiscard]] const Level&              level() const;
         [[nodiscard]] const std::list<Cluster>& clusters() const;
 
+        /****** CONST FUNCTIONS  ******/
+        [[nodiscard]] bool noClusterOnBlock(const GridXY& gridXY) const;
+
         /****** NON CONST FUNCTIONS  ******/
         void                         preStep();
         void                         init();

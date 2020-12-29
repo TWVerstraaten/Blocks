@@ -50,7 +50,8 @@ namespace app {
                            view::View&               view,
                            view::widget::ScrollArea& scrollArea,
                            const model::GridXY&      point,
-                           const model::GridXY&      previousPoint);
+                           const model::GridXY&      previousPoint,
+                           const model::BlockType&   selectedBlockType);
         void leftClickControl(model::Model&             model,
                               view::View&               view,
                               view::widget::ScrollArea& scrollArea,
@@ -78,21 +79,13 @@ namespace app {
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void addAction(Action_u_ptr&& action);
-        void leftMouseClick(model::Model&             model,
-                            view::View&               view,
-                            view::widget::ScrollArea& scrollArea,
-                            const model::GridXY&      point,
-                            model::DYNAMIC_BLOCK_TYPE selectedBlockType);
-        void leftMouseClick(model::Model&             model,
-                            view::View&               view,
-                            view::widget::ScrollArea& scrollArea,
-                            const model::GridXY&      point,
-                            model::INSTANT_BLOCK_TYPE selectedBlockType);
-        void leftMouseClick(model::Model&             model,
-                            view::View&               view,
-                            view::widget::ScrollArea& scrollArea,
-                            const model::GridXY&      point,
-                            model::FLOOR_BLOCK        selectedBlockType);
+        void leftMouseClick(model::Model& model, view::View& view, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
+        void clearBlock(model::Model& model, view::View& view, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
+        void clusterDrag(model::Model&             model,
+                         view::View&               view,
+                         view::widget::ScrollArea& scrollArea,
+                         const model::GridXY&      point,
+                         const model::GridXY&      previousPoint);
 
         /****** PUBLIC STATIC DATA MEMBERS  ******/
         std::stack<Action_u_ptr> m_undoStack;

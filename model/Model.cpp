@@ -51,11 +51,6 @@ namespace model {
 
     void Model::init() {
         clear();
-        m_clusters.push_back(Cluster({{5, 5}, {3, 5}, {5, 6}, {6, 5}, {4, 5}, {5, 4}}, "CL" + std::to_string(m_clusters.size())));
-        m_clusters.back().addCommand({Command::TYPE::MOVE_UP, Command::MODIFIER::NONE});
-
-        m_level.addBlock({8, 3}, std::variant<DYNAMIC_BLOCK_TYPE, INSTANT_BLOCK_TYPE>(model::INSTANT_BLOCK_TYPE::KILL));
-        m_level.addBlock({3, 3}, std::variant<DYNAMIC_BLOCK_TYPE, INSTANT_BLOCK_TYPE>(model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW));
 
         for (int i = -2; i != 15; ++i) {
             if (i > 5) {
@@ -165,6 +160,10 @@ namespace model {
 
     Level& Model::level() {
         return m_level;
+    }
+    bool Model::noClusterOnBlock(const GridXY& gridXY) const {
+        return std::find_if(m_clusters.begin(), m_clusters.end(), [&](const Cluster& cluster) { return cluster.contains(gridXY); }) ==
+               m_clusters.end();
     }
 
 } // namespace model

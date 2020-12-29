@@ -66,16 +66,11 @@ void app::ModelViewInterface::leftMouseDrag(model::Model&             model,
                                             view::View&               view,
                                             view::widget::ScrollArea& scrollArea,
                                             const model::GridXY&      point,
-                                            const model::GridXY&      previousPoint) {
-    if (not model.level().isFreeStartBlock(point)) {
-        return;
-    }
-    if (model.level().isFreeStartBlock(previousPoint)) {
-        addAction(linkBlocks(model, scrollArea, point, previousPoint));
-    } else {
-        addAction(addCluster(model, scrollArea, point));
-    }
-    updateCommandScrollArea(model.clusters(), scrollArea, APP_MODE::EDITING);
+                                            const model::GridXY&      previousPoint,
+                                            const model::BlockType&   selectedBlockType) {
+    std::visit(overloaded{[&](const model::CLUSTER_TYPE type) { clusterDrag(model, view, scrollArea, point, previousPoint); },
+                          [&](const auto type) { addAction(model.level().addBlock(point, type)); }},
+               selectedBlockType);
 }
 
 void app::ModelViewInterface::leftClickControl(model::Model&             model,
@@ -83,11 +78,15 @@ void app::ModelViewInterface::leftClickControl(model::Model&             model,
                                                view::widget::ScrollArea& scrollArea,
                                                const model::GridXY&      point,
                                                const model::BlockType&   selectedBlockType) {
-    if (model.level().isFreeStartBlock(point)) {
-        addAction(clearBlockStatic(model, scrollArea, point));
-    }
-    removeActionBoxesOfRemovedClusters(model.clusters(), scrollArea);
-    scrollArea.setHeightAndPositions();
+    std::visit(overloaded{[&](const model::CLUSTER_TYPE type) { clearBlock(model, view, scrollArea, point); },
+                          [&](const auto type) {
+                              if (model.noClusterOnBlock(point)) {
+                                  addAction(model.level().removeBlock(point));
+                              } else {
+                                  clearBlock(model, view, scrollArea, point);
+                              }
+                          }},
+               selectedBlockType);
 }
 
 void app::ModelViewInterface::leftMouseClick(model::Model&             model,
@@ -95,8 +94,9 @@ void app::ModelViewInterface::leftMouseClick(model::Model&             model,
                                              view::widget::ScrollArea& scrollArea,
                                              const model::GridXY&      point,
                                              const model::BlockType&   selectedBlockType) {
-
-    std::visit(overloaded{[&](const auto type) { leftMouseClick(model, view, scrollArea, point, type); }}, selectedBlockType);
+    std::visit(overloaded{[&](const model::CLUSTER_TYPE type) { leftMouseClick(model, view, scrollArea, point); },
+                          [&](const auto type) { addAction(model.level().addBlock(point, type)); }},
+               selectedBlockType);
 }
 
 void app::ModelViewInterface::addAction(Action_u_ptr&& action) {
@@ -262,35 +262,37 @@ std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(model::Model
 void app::ModelViewInterface::leftMouseClick(model::Model&             model,
                                              view::View&               view,
                                              view::widget::ScrollArea& scrollArea,
-                                             const model::GridXY&      point,
-                                             model::DYNAMIC_BLOCK_TYPE selectedBlockType) {
-    model.level().addBlock(point, selectedBlockType);
-}
-
-void app::ModelViewInterface::leftMouseClick(model::Model&             model,
-                                             view::View&               view,
-                                             view::widget::ScrollArea& scrollArea,
-                                             const model::GridXY&      point,
-                                             model::INSTANT_BLOCK_TYPE selectedBlockType) {
-    model.level().addBlock(point, selectedBlockType);
-}
-
-void app::ModelViewInterface::leftMouseClick(model::Model&             model,
-                                             view::View&               view,
-                                             view::widget::ScrollArea& scrollArea,
-                                             const model::GridXY&      point,
-                                             model::FLOOR_BLOCK        selectedBlockType) {
-    switch (selectedBlockType) {
-        case model::FLOOR_BLOCK::CLUSTER:
-            if (not model.level().isFreeStartBlock(point)) {
-                return;
-            }
-            addAction(addCluster(model, scrollArea, point));
-            updateCommandScrollArea(model.clusters(), scrollArea, APP_MODE::EDITING);
-            break;
-        case model::FLOOR_BLOCK::LEVEL:
-            break;
-        case model::FLOOR_BLOCK::START:
-            break;
+                                             const model::GridXY&      point) {
+    if (not model.level().isFreeStartBlock(point)) {
+        return;
     }
+    addAction(addCluster(model, scrollArea, point));
+    updateCommandScrollArea(model.clusters(), scrollArea, APP_MODE::EDITING);
+}
+
+void app::ModelViewInterface::clearBlock(model::Model&             model,
+                                         view::View&               view,
+                                         view::widget::ScrollArea& scrollArea,
+                                         const model::GridXY&      point) {
+    if (model.level().isFreeStartBlock(point)) {
+        addAction(clearBlockStatic(model, scrollArea, point));
+    }
+    removeActionBoxesOfRemovedClusters(model.clusters(), scrollArea);
+    scrollArea.setHeightAndPositions();
+}
+
+void app::ModelViewInterface::clusterDrag(model::Model&             model,
+                                          view::View&               view,
+                                          view::widget::ScrollArea& scrollArea,
+                                          const model::GridXY&      point,
+                                          const model::GridXY&      previousPoint) {
+    if (not model.level().isFreeStartBlock(point)) {
+        return;
+    }
+    if (model.level().isFreeStartBlock(previousPoint)) {
+        addAction(linkBlocks(model, scrollArea, point, previousPoint));
+    } else {
+        addAction(addCluster(model, scrollArea, point));
+    }
+    updateCommandScrollArea(model.clusters(), scrollArea, APP_MODE::EDITING);
 }

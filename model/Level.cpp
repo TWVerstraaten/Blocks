@@ -4,6 +4,8 @@
 
 #include "Level.h"
 
+#include "../action/AddLevelBlockAction.h"
+#include "../action/RemoveLevelBlockAction.h"
 #include "../global/alg.h"
 #include "../global/fns.h"
 #include "../global/overloaded.h"
@@ -32,14 +34,40 @@ namespace model {
         return m_instantBLocks;
     }
 
-    void Level::addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
-        assert(m_dynamicBLocks.find(gridXY) == m_dynamicBLocks.end());
+    std::unique_ptr<action::Action> Level::addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
+        bool levelBlockAdded = false;
+        if (m_levelBlocks.find(gridXY) == m_levelBlocks.end()) {
+            levelBlockAdded = true;
+            addBlock(gridXY, model::FLOOR_BLOCK_TYPE::LEVEL);
+        }
+        if (m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end() && m_dynamicBLocks[gridXY] == blockType) {
+            assert(not levelBlockAdded);
+            return nullptr;
+        }
         m_dynamicBLocks[gridXY] = blockType;
+        if (levelBlockAdded) {
+            return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({blockType, FLOOR_BLOCK_TYPE::LEVEL}, gridXY));
+        } else {
+            return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({blockType}, gridXY));
+        }
     }
 
-    void Level::addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType) {
-        assert(m_instantBLocks.find(gridXY) == m_instantBLocks.end());
+    std::unique_ptr<action::Action> Level::addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType) {
+        bool levelBlockAdded = false;
+        if (m_levelBlocks.find(gridXY) == m_levelBlocks.end()) {
+            levelBlockAdded = true;
+            addBlock(gridXY, model::FLOOR_BLOCK_TYPE::LEVEL);
+        }
+        if (m_instantBLocks.find(gridXY) != m_instantBLocks.end() && m_instantBLocks[gridXY] == blockType) {
+            assert(not levelBlockAdded);
+            return nullptr;
+        }
         m_instantBLocks[gridXY] = blockType;
+        if (levelBlockAdded) {
+            return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({blockType, FLOOR_BLOCK_TYPE::LEVEL}, gridXY));
+        } else {
+            return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({blockType}, gridXY));
+        }
     }
 
     void Level::addLevelBlock(const GridXY& gridXY) {
@@ -93,8 +121,71 @@ namespace model {
         m_boundaries = alg::getSidesInGridXY<WorldXY>(m_levelBlocks);
     }
 
-    void Level::addBlock(const GridXY& gridXY, const std::variant<DYNAMIC_BLOCK_TYPE, INSTANT_BLOCK_TYPE>& type) {
-        std::visit(overloaded{[&](const auto type) { addBlock(gridXY, type); }}, type);
+    std::unique_ptr<action::Action> Level::addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType) {
+        bool levelBlockAdded = false;
+        switch (blockType) {
+            case FLOOR_BLOCK_TYPE::LEVEL:
+                m_levelBlocks.emplace(gridXY);
+                break;
+            case FLOOR_BLOCK_TYPE::START:
+                levelBlockAdded = true;
+                m_levelBlocks.emplace(gridXY);
+                m_startBlocks.emplace(gridXY);
+                break;
+        }
+        createBoundaries();
+        if (levelBlockAdded) {
+            return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({blockType, FLOOR_BLOCK_TYPE::LEVEL}, gridXY));
+        } else {
+            return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({blockType}, gridXY));
+        }
+    }
+
+    std::unique_ptr<action::Action> Level::removeBlock(const GridXY& gridXY) {
+        if (m_instantBLocks.find(gridXY) != m_instantBLocks.end()) {
+            const auto type = m_instantBLocks[gridXY];
+            m_instantBLocks.erase(gridXY);
+            return std::unique_ptr<action::Action>(new action::RemoveLevelBlockAction(type, gridXY));
+        } else if (m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end()) {
+            const auto type = m_instantBLocks[gridXY];
+            m_dynamicBLocks.erase(gridXY);
+            return std::unique_ptr<action::Action>(new action::RemoveLevelBlockAction(type, gridXY));
+        } else if (m_startBlocks.find(gridXY) != m_startBlocks.end()) {
+            m_startBlocks.erase(gridXY);
+            return std::unique_ptr<action::Action>(new action::RemoveLevelBlockAction(FLOOR_BLOCK_TYPE::START, gridXY));
+        } else if (m_levelBlocks.find(gridXY) != m_levelBlocks.end()) {
+            m_levelBlocks.erase(gridXY);
+            createBoundaries();
+            return std::unique_ptr<action::Action>(new action::RemoveLevelBlockAction(FLOOR_BLOCK_TYPE::LEVEL, gridXY));
+        }
+        assert(false);
+        return nullptr;
+    }
+
+    void Level::removeBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
+        assert(m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end() && m_dynamicBLocks[gridXY] == blockType);
+        m_dynamicBLocks.erase(gridXY);
+        createBoundaries();
+    }
+
+    void Level::removeBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType) {
+        assert(m_instantBLocks.find(gridXY) != m_instantBLocks.end() && m_instantBLocks[gridXY] == blockType);
+        m_instantBLocks.erase(gridXY);
+        createBoundaries();
+    }
+
+    void Level::removeBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType) {
+        switch (blockType) {
+            case FLOOR_BLOCK_TYPE::LEVEL:
+                assert(m_levelBlocks.find(gridXY) != m_levelBlocks.end());
+                m_levelBlocks.erase(gridXY);
+                createBoundaries();
+                break;
+            case FLOOR_BLOCK_TYPE::START:
+                assert(m_startBlocks.find(gridXY) != m_startBlocks.end());
+                m_startBlocks.erase(gridXY);
+                break;
+        }
     }
 
 } // namespace model
