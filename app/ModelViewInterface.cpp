@@ -149,7 +149,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockStatic(model:
     }
     if (it->size() == 1) {
         auto commandEditBoxIt = findCommandEditBox(*it, scrollArea.children());
-        auto result           = std::unique_ptr<action::Action>(new action::RemoveClusterAction(*it, *commandEditBoxIt));
+        auto result           = std::make_unique<action::RemoveClusterAction>(*it, *commandEditBoxIt);
         clusters.erase(it);
         return result;
     }
@@ -164,7 +164,7 @@ void app::ModelViewInterface::handleKeyEvent(const SDL_Event& event, view::widge
         if (w->clusterShouldBeUpdated()) {
             auto clusterIt = findCluster(*w, model.clusters());
             w->updateClusterCommands(*clusterIt);
-            addAction(std::unique_ptr<action::Action>(new action::GenericCommandEditBoxAction(copy, *w)));
+            addAction(std::make_unique<action::GenericCommandEditBoxAction>(copy, *w));
         }
     }
 }
@@ -213,9 +213,9 @@ std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockFromCluster(m
         }
         assert(clusterIt->isConnected());
         model.clusters().splice(model.clusters().end(), newClusters);
-        return std::unique_ptr<action::Action>(new action::GenericModelAction(copy, model));
+        return std::make_unique<action::GenericModelAction>(copy, model);
     }
-    return std::unique_ptr<action::Action>(new action::RemoveBlockFromClusterAction(clusterIt->index(), point));
+    return std::make_unique<action::RemoveBlockFromClusterAction>(clusterIt->index(), point);
 }
 
 std::unique_ptr<action::Action> app::ModelViewInterface::addCluster(model::Model&             model,
@@ -251,12 +251,12 @@ std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(model::Model
     if (extensionIt == clusters.end()) {
         baseIt->addGridXY(point);
         assert(baseIt->isConnected());
-        return std::unique_ptr<action::Action>(new action::AddBlockToClusterAction(baseIt->index(), point));
+        return std::make_unique<action::AddBlockToClusterAction>(baseIt->index(), point);
     }
     auto copyOfModel = model;
     baseIt->gridXY().insert(extensionIt->gridXY().begin(), extensionIt->gridXY().end());
     clusters.erase(extensionIt);
-    return std::unique_ptr<action::Action>(new action::GenericModelAction(copyOfModel, model));
+    return std::make_unique<action::GenericModelAction>(copyOfModel, model);
 }
 
 void app::ModelViewInterface::leftMouseClick(model::Model&             model,

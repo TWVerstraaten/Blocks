@@ -19,6 +19,9 @@ namespace model {
 
     class Level {
 
+        /****** PRIVATE ENUMS / TYPEDEFS  ******/
+        typedef std::unique_ptr<action::Action> Action_u_ptr;
+
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         Level()                   = default;
@@ -39,21 +42,21 @@ namespace model {
         [[nodiscard]] DYNAMIC_BLOCK_TYPE dynamicBlockAt(const GridXY& gridXY) const;
         [[nodiscard]] INSTANT_BLOCK_TYPE instantBlockAt(const GridXY& gridXY) const;
 
-        void                            addLevelBlock(const GridXY& gridXY);
-        void                            addStartBlock(const GridXY& gridXY);
-        void                            clear();
-        void                            createBoundaries();
-        void                            removeBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
-        void                            removeBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
-        void                            removeBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
-        std::unique_ptr<action::Action> addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
-        std::unique_ptr<action::Action> addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
-        std::unique_ptr<action::Action> addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
-        std::unique_ptr<action::Action> removeBlock(const GridXY& gridXY);
+        void         addLevelBlock(const GridXY& gridXY);
+        void         addStartBlock(const GridXY& gridXY);
+        void         clear();
+        void         createBoundaries();
+        void         removeBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
+        void         removeBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
+        void         removeBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
+        Action_u_ptr addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
+        Action_u_ptr addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
+        Action_u_ptr addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
+        Action_u_ptr removeBlock(const GridXY& gridXY);
 
       private:
         /****** PRIVATE CONST FUNCTIONS  ******/
-        bool contains(const GridXY& gridXY) const;
+        [[nodiscard]] bool contains(const GridXY& gridXY) const;
 
         /****** DATA MEMBERS  ******/
         std::map<GridXY, DYNAMIC_BLOCK_TYPE> m_dynamicBLocks;
