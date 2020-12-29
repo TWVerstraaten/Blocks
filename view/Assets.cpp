@@ -62,14 +62,11 @@ namespace view {
                                const SDL_Point*             center,
                                SDL_RendererFlip             flip) const {
         if (width < 0) {
-            return renderTexture(
-                textureEnum, {screenXY.x() + width, screenXY.y()}, -width, height, renderer, angle, center, flip);
+            return renderTexture(textureEnum, {screenXY.x() + width, screenXY.y()}, -width, height, renderer, angle, center, flip);
         } else if (height < 0) {
-            return renderTexture(
-                textureEnum, {screenXY.x(), screenXY.y() + height}, width, -height, renderer, angle, center, flip);
+            return renderTexture(textureEnum, {screenXY.x(), screenXY.y() + height}, width, -height, renderer, angle, center, flip);
         } else {
-            return renderTexture(
-                textureEnum, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
+            return renderTexture(textureEnum, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
         }
     }
 
@@ -90,8 +87,6 @@ namespace view {
                 return TextureWrapper::TEXTURE_ENUM::ARROW_CW;
             case model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
                 return TextureWrapper::TEXTURE_ENUM::ARROW_CCW;
-            case model::DYNAMIC_BLOCK_TYPE::NONE:
-                return TextureWrapper::TEXTURE_ENUM::ERROR;
         }
         return TextureWrapper::TEXTURE_ENUM::ERROR;
     }
@@ -100,8 +95,6 @@ namespace view {
         switch (type) {
             case model::INSTANT_BLOCK_TYPE::KILL:
                 return TextureWrapper::TEXTURE_ENUM::KILL;
-            case model::INSTANT_BLOCK_TYPE::NONE:
-                return TextureWrapper::TEXTURE_ENUM::ERROR;
         }
         return TextureWrapper::TEXTURE_ENUM::ERROR;
     }
@@ -117,8 +110,7 @@ namespace view {
     }
 
     void Assets::renderText(const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer) {
-        const auto texture =
-            view::Texture::createFromText(text, view::color::BLACK, renderer, m_fonts[FONT_ENUM::MAIN].get()->font());
+        const auto texture = view::Texture::createFromText(text, view::color::BLACK, renderer, m_fonts[FONT_ENUM::MAIN].get()->font());
         renderTexture(texture.get(), screenXY, texture->width(), texture->height(), renderer);
     }
 

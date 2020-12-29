@@ -40,19 +40,18 @@ namespace model {
         [[nodiscard]] bool               isInLevel(const model::WorldXY& worldXY) const;
         [[nodiscard]] bool               isFreeStartBlock(const GridXY& gridXY) const;
         [[nodiscard]] DYNAMIC_BLOCK_TYPE dynamicBlockAt(const GridXY& gridXY) const;
-        [[nodiscard]] INSTANT_BLOCK_TYPE instantBlockAt(const GridXY& gridXY) const;
 
         void         addLevelBlock(const GridXY& gridXY);
         void         addStartBlock(const GridXY& gridXY);
         void         clear();
         void         createBoundaries();
-        void         removeBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
-        void         removeBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
-        void         removeBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
+        Action_u_ptr removeBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
+        Action_u_ptr removeBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
+        Action_u_ptr removeBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
+        Action_u_ptr removeBlock(const GridXY& gridXY);
         Action_u_ptr addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
         Action_u_ptr addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
         Action_u_ptr addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
-        Action_u_ptr removeBlock(const GridXY& gridXY);
 
       private:
         /****** PRIVATE CONST FUNCTIONS  ******/

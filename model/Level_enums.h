@@ -8,8 +8,8 @@
 #include <vector>
 
 namespace model {
-    enum class DYNAMIC_BLOCK_TYPE { NONE, ROTATE_CW, ROTATE_CCW };
-    enum class INSTANT_BLOCK_TYPE { NONE, KILL };
+    enum class DYNAMIC_BLOCK_TYPE { ROTATE_CW, ROTATE_CCW };
+    enum class INSTANT_BLOCK_TYPE { KILL };
     enum class FLOOR_BLOCK_TYPE { LEVEL, START };
 
 } // namespace model

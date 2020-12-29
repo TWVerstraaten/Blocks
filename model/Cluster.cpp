@@ -5,8 +5,8 @@
 #include "Cluster.h"
 
 #include "../global/alg.h"
-#include "../global/fns.h"
 #include "../global/cst.h"
+#include "../global/fns.h"
 #include "../global/geom.h"
 #include "Model.h"
 
@@ -17,8 +17,7 @@ size_t model::Cluster::s_maxClusterIndex = 0;
 
 namespace model {
     Cluster::Cluster(std::set<GridXY>&& gridXY, const std::string& name)
-        : m_index(s_maxClusterIndex), m_name(name.empty() ? "CL" + std::to_string(s_maxClusterIndex) : name),
-          m_gridXYVector(gridXY) {
+        : m_index(s_maxClusterIndex), m_name(name.empty() ? "CL" + std::to_string(s_maxClusterIndex) : name), m_gridXYVector(gridXY) {
         ++s_maxClusterIndex;
         m_sides = alg::getSidesInGridXY<GridXY>(m_gridXYVector);
         assert(gridXUYAreUnique());
@@ -66,8 +65,7 @@ namespace model {
     void Cluster::rotateClockWiseAbout(const GridXY& pivotGridXY) {
         std::set<GridXY> newGridXYSet;
         for (auto& gridXY : m_gridXYVector) {
-            newGridXYSet.emplace(
-                GridXY{pivotGridXY.x() + pivotGridXY.y() - gridXY.y(), pivotGridXY.y() - pivotGridXY.x() + gridXY.x()});
+            newGridXYSet.emplace(GridXY{pivotGridXY.x() + pivotGridXY.y() - gridXY.y(), pivotGridXY.y() - pivotGridXY.x() + gridXY.x()});
         }
         std::swap(m_gridXYVector, newGridXYSet);
         for (auto& command : m_commands) {
@@ -78,8 +76,7 @@ namespace model {
     void Cluster::rotateCounterClockWiseAbout(const GridXY& pivotGridXY) {
         std::set<GridXY> newGridXYSet;
         for (auto& gridXY : m_gridXYVector) {
-            newGridXYSet.emplace(
-                GridXY{pivotGridXY.x() - pivotGridXY.y() + gridXY.y(), pivotGridXY.y() + pivotGridXY.x() - gridXY.x()});
+            newGridXYSet.emplace(GridXY{pivotGridXY.x() - pivotGridXY.y() + gridXY.y(), pivotGridXY.y() + pivotGridXY.x() - gridXY.x()});
         }
         std::swap(m_gridXYVector, newGridXYSet);
         for (auto& command : m_commands) {
@@ -138,9 +135,6 @@ namespace model {
     }
 
     void Cluster::addPendingOperation(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
-        if (blockType == DYNAMIC_BLOCK_TYPE::NONE) {
-            return;
-        }
         m_pendingOperations.emplace(gridXY, blockType);
     }
 
@@ -183,8 +177,7 @@ namespace model {
     }
 
     WorldXY Cluster::dynamicWorldOffset() const {
-        return {static_cast<int>(m_worldOffset.x() * m_phaseFraction),
-                static_cast<int>(m_worldOffset.y() * m_phaseFraction)};
+        return {static_cast<int>(m_worldOffset.x() * m_phaseFraction), static_cast<int>(m_worldOffset.y() * m_phaseFraction)};
     }
 
     std::set<WorldXY> Cluster::cornerPoints(int shrinkInWorld) const {
@@ -274,8 +267,6 @@ namespace model {
             case model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
                 setRotation(90.0, m_pendingOperations.begin()->first);
                 rotateCounterClockWiseAbout(m_pendingOperations.begin()->first);
-                break;
-            case model::DYNAMIC_BLOCK_TYPE::NONE:
                 break;
         }
         m_pendingOperations.clear();
@@ -458,15 +449,15 @@ namespace model {
             return out;
         }
         assert(not cluster.empty());
-        const int minX = std::min_element(cluster.m_gridXYVector.begin(),
-                                          cluster.m_gridXYVector.end(),
-                                          [](const GridXY& lhs, const GridXY& rhs) { return lhs.x() < rhs.x(); })
-                             ->x();
+        const int minX =
+            std::min_element(cluster.m_gridXYVector.begin(), cluster.m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) {
+                return lhs.x() < rhs.x();
+            })->x();
         const int minY = cluster.m_gridXYVector.begin()->y();
-        const int maxX = std::max_element(cluster.m_gridXYVector.begin(),
-                                          cluster.m_gridXYVector.end(),
-                                          [](const GridXY& lhs, const GridXY& rhs) { return lhs.x() < rhs.x(); })
-                             ->x();
+        const int maxX =
+            std::max_element(cluster.m_gridXYVector.begin(), cluster.m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) {
+                return lhs.x() < rhs.x();
+            })->x();
         const int maxY = cluster.m_gridXYVector.rbegin()->y();
         assert(minX <= maxX);
         assert(minY <= maxY);

@@ -172,8 +172,6 @@ void app::ModelViewInterface::handleKeyEvent(const SDL_Event& event, view::widge
 void app::ModelViewInterface::interactWithInstantBlocks(model::Model& model, view::widget::ScrollArea& scrollArea) {
     for (const auto& block : model.level().instantBlocks()) {
         switch (block.second) {
-            case model::INSTANT_BLOCK_TYPE::NONE:
-                break;
             case model::INSTANT_BLOCK_TYPE::KILL:
                 clearBlockStatic(model, scrollArea, block.first);
                 break;
