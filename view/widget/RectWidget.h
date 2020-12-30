@@ -24,11 +24,11 @@ namespace view::widget {
         virtual void setX(int x);
 
         /****** CONST GETTERS  ******/
-        bool hasFocus() const;
-        int  height() const;
+        [[nodiscard]] bool hasFocus() const;
+        [[nodiscard]] int  height() const;
 
         /****** CONST FUNCTIONS  ******/
-        bool pointIsOverWidget(const ScreenXY& point) const;
+        [[nodiscard]] bool pointIsOverWidget(const ScreenXY& point) const;
 
         /****** NON CONST FUNCTIONS  ******/
         void getFocus();

@@ -29,13 +29,11 @@ namespace view {
         static ScreenXY fromGridXY(const model::GridXY& gridXY, const ViewPort& viewPort);
 
         /****** CONST GETTERS  ******/
-        int x() const;
-        int y() const;
+        [[nodiscard]] int x() const;
+        [[nodiscard]] int y() const;
 
         /****** OPERATORS  ******/
         operator SDL_Point() const;
-
-        /****** FRIENDS  ******/
 
       private:
         /****** DATA MEMBERS  ******/

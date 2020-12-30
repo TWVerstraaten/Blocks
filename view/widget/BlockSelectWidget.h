@@ -26,7 +26,7 @@ namespace view {
             void leftClickEvent(const SDL_Event& event) override;
 
             /****** CONST GETTERS  ******/
-            model::BlockType selectedBlockType() const;
+            [[nodiscard]] model::BlockType selectedBlockType() const;
 
             /****** CONST FUNCTIONS  ******/
             ScreenXY screenXY(const model::BlockType& type);
@@ -37,11 +37,11 @@ namespace view {
 
           private:
             /****** PRIVATE CONST FUNCTIONS  ******/
-            ScreenXY indexToScreenXY(size_t index) const;
+            [[nodiscard]] ScreenXY indexToScreenXY(size_t index) const;
 
             /****** DATA MEMBERS  ******/
             size_t        m_selected = 0;
-            const Assets* m_assets;
+            const Assets* m_assets   = nullptr;
         };
     } // namespace widget
 } // namespace view

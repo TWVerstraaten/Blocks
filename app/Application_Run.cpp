@@ -8,9 +8,7 @@
 #include "ModelViewInterface.h"
 
 namespace app {
-    Application_Run::Application_Run(const model::Model&             model,
-                                     view::View*                     view,
-                                     const view::widget::ScrollArea& scrollArea)
+    Application_Run::Application_Run(const model::Model& model, view::View* view, const view::widget::ScrollArea& scrollArea)
         : m_view(view), m_scrollArea(scrollArea) {
         m_model             = model;
         m_timeSinceLastStep = 0;
@@ -102,8 +100,18 @@ namespace app {
         m_model.startPhase();
         ModelViewInterface::interactWithInstantBlocks(m_model, m_scrollArea);
         ModelViewInterface::interactWithDynamicBlocks(m_model, m_scrollArea);
+        for (auto& cluster : m_model.clusters()) {
+            cluster.performPendingOperationOrNextCommand(m_model);
+        }
+
+        auto it = std::partition(m_model.clusters().begin(), m_model.clusters().end(), [](const auto& cluster) {
+            return cluster.state() != model::CLUSTER_STATE::STOPPED;
+        });
+
+        m_model.level().stoppedClusters().splice(m_model.level().stoppedClusters().end(), m_model.clusters(), it, m_model.clusters().end());
+        m_model.level().createBoundaries();
         m_model.finishInteractions();
-        ModelViewInterface::updateCommandScrollArea(m_model.clusters(), m_scrollArea, APP_MODE::RUNNING);
+        ModelViewInterface::updateCommandScrollArea(m_model, m_scrollArea, APP_MODE::RUNNING);
         if (m_pauseAfterNextStep) {
             m_pauseAfterNextStep = false;
             m_paused             = true;
@@ -127,8 +135,7 @@ namespace app {
         m_previousTime = SDL_GetTicks();
         m_view->draw(m_model);
         m_view->drawScrollArea(&m_scrollArea);
-        m_view->assets()->renderText(
-            std::to_string(1000.0 / dt), view::ScreenXY{10, m_view->windowSize().y() - 40}, m_view->renderer());
+        m_view->assets()->renderText(std::to_string(1000.0 / dt), view::ScreenXY{10, m_view->windowSize().y() - 40}, m_view->renderer());
         m_view->renderPresent();
 
         return RUN_MODE::RUNNING;

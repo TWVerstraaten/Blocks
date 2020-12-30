@@ -37,7 +37,7 @@ namespace view {
         return static_cast<int>(m_scale * worldLength);
     }
 
-    int ViewPort::distanceBetweenBlocksInScreenXY() const {
+    int ViewPort::blockSeparationInScreenXY() const {
         return m_distanceBetweenBlocksInScreenXY;
     }
 } // namespace view

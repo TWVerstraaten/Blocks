@@ -1,9 +1,9 @@
 #define SDL_MAIN_HANDLED
 
-#include "app/Application_Level.h"
+#include "app/Application.h"
 
 int main(int argc, char* argv[]) {
-    app::Application_Level applicationLevel;
+    app::Application applicationLevel;
     applicationLevel.run();
 
     return 0;

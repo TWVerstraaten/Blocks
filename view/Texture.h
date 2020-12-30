@@ -27,9 +27,9 @@ namespace view {
                                                        TTF_Font*          font);
 
         /****** CONST FUNCTIONS  ******/
-        int  width() const;
-        int  height() const;
-        bool loadedCorrectly() const;
+        [[nodiscard]] int  width() const;
+        [[nodiscard]] int  height() const;
+        [[nodiscard]] bool loadedCorrectly() const;
 
         /****** NON CONST FUNCTIONS  ******/
         void free();

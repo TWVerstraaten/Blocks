@@ -44,8 +44,8 @@ namespace view {
         static TextureWrapper::TEXTURE_ENUM getTextureEnum(model::INSTANT_BLOCK_TYPE type);
 
         /****** CONST GETTERS  ******/
-        bool        initialized() const;
-        const Font* font(FONT_ENUM fontEnum) const;
+        [[nodiscard]] bool        initialized() const;
+        [[nodiscard]] const Font* font(FONT_ENUM fontEnum) const;
 
         /****** CONST FUNCTIONS  ******/
         bool renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,

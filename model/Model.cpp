@@ -12,8 +12,7 @@
 
 namespace model {
 
-    Model::Model() {
-    }
+    Model::Model() = default;
 
     const std::list<Cluster>& Model::clusters() const {
         return m_clusters;
@@ -82,11 +81,6 @@ namespace model {
         m_level.clear();
     }
 
-    void Model::clearEmptyClusters() {
-        m_clusters.erase(std::remove_if(m_clusters.begin(), m_clusters.end(), [](const auto& cluster) { return cluster.empty(); }),
-                         m_clusters.end());
-    }
-
     void Model::preStep() {
         m_phaseFraction = 0.0;
         for (auto& cluster : m_clusters) {
@@ -150,10 +144,6 @@ namespace model {
         }
     }
 
-    bool Model::containsEmptyClusters() const {
-        return std::any_of(m_clusters.begin(), m_clusters.end(), [](const Cluster& cluster) { return cluster.empty(); });
-    }
-
     std::list<Cluster>::iterator Model::clusterWithIndex(size_t index) {
         return std::find_if(m_clusters.begin(), m_clusters.end(), [&](const Cluster& cluster) { return cluster.index() == index; });
     }
@@ -161,9 +151,14 @@ namespace model {
     Level& Model::level() {
         return m_level;
     }
+
     bool Model::noClusterOnBlock(const GridXY& gridXY) const {
         return std::find_if(m_clusters.begin(), m_clusters.end(), [&](const Cluster& cluster) { return cluster.contains(gridXY); }) ==
                m_clusters.end();
+    }
+
+    std::list<Cluster>::iterator Model::clusterContaining(const GridXY& point) {
+        return std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(point); });
     }
 
 } // namespace model

@@ -22,10 +22,10 @@ namespace view::widget {
         static bool isReversed(const Data& first, const Data& last);
 
         /****** CONST GETTERS  ******/
-        bool empty() const;
+        [[nodiscard]] bool empty() const;
 
         /****** CONST FUNCTIONS  ******/
-        bool isAtStart() const;
+        [[nodiscard]] bool isAtStart() const;
 
         /****** NON CONST FUNCTIONS  ******/
         void reset();

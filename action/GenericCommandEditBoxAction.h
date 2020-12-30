@@ -14,8 +14,7 @@ namespace action {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        GenericCommandEditBoxAction(const view::widget::CommandEditBox& oldCommandEditBox,
-                                    const view::widget::CommandEditBox& newCommandEditBox);
+        GenericCommandEditBoxAction(const view::widget::CommandEditBox& oldCommandEditBox, view::widget::CommandEditBox newCommandEditBox);
 
         /****** PUBLIC VIRTUAL FUNCTIONS  ******/
         void        undoAction(app::Application_Edit& applicationEdit) override;

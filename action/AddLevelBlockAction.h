@@ -23,7 +23,7 @@ namespace action {
 
         void        undoAction(app::Application_Edit& applicationEdit) override;
         void        redoAction(app::Application_Edit& applicationEdit) override;
-        ACTION_TYPE type() const override;
+        [[nodiscard]] ACTION_TYPE type() const override;
 
       private:
         const std::set<std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE, model::FLOOR_BLOCK_TYPE>> m_blockTypes;

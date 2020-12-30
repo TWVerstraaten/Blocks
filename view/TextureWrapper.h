@@ -21,7 +21,7 @@ namespace view {
         TextureWrapper(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
 
         /****** CONST GETTERS  ******/
-        Texture* texture(int width, int height) const;
+        [[nodiscard]] Texture* texture(int width, int height) const;
 
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/

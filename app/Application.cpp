@@ -2,7 +2,7 @@
 // Created by pc on 15-12-20.
 //
 
-#include "Application_Level.h"
+#include "Application.h"
 
 #include "Application_Edit.h"
 #include "Application_Run.h"
@@ -10,16 +10,14 @@
 #include <cassert>
 
 namespace app {
-    Application_Level::Application_Level()
-        : m_scrollArea({cst::INITIAL_SCREEN_WIDTH - cst::COMMAND_SCROLL_AREA_WIDTH,
-                        0,
-                        cst::COMMAND_SCROLL_AREA_WIDTH,
-                        static_cast<int>(cst::INITIAL_SCREEN_HEIGHT)}) {
+    Application::Application()
+        : m_scrollArea(
+              {cst::INITIAL_SCREEN_WIDTH - cst::COMMAND_SCROLL_AREA_WIDTH, 0, cst::COMMAND_SCROLL_AREA_WIDTH, cst::INITIAL_SCREEN_HEIGHT}) {
         m_model.init();
         m_scrollArea.init(m_view.assets());
     }
 
-    void Application_Level::run() {
+    void Application::run() {
         bool isRunning = true;
 
         Application_Edit editApp(&m_model, &m_view, &m_scrollArea);
@@ -57,7 +55,7 @@ namespace app {
         }
     }
 
-    EDIT_MODE Application_Level::editLevel(Application_Edit& editApp) {
+    EDIT_MODE Application::editLevel(Application_Edit& editApp) {
         m_runningScrollArea = nullptr;
         m_appMode           = APP_MODE::EDITING;
         SDL_Event event;
@@ -114,7 +112,7 @@ namespace app {
         return EDIT_MODE::QUIT;
     }
 
-    RUN_MODE Application_Level::runLevel() {
+    RUN_MODE Application::runLevel() {
         m_appMode = APP_MODE::RUNNING;
         SDL_Event       event;
         Application_Run runApp(m_model, &m_view, m_scrollArea);
@@ -148,7 +146,7 @@ namespace app {
         return RUN_MODE::QUIT;
     }
 
-    void Application_Level::handleWindowEvent() {
+    void Application::handleWindowEvent() {
         const auto windowSize = m_view.windowSize();
         m_scrollArea.setX(windowSize.x() - cst::COMMAND_SCROLL_AREA_WIDTH);
         m_scrollArea.setHeight(windowSize.y());

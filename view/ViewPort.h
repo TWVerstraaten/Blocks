@@ -15,13 +15,13 @@ namespace view {
         ViewPort() = default;
 
         /****** CONST GETTERS  ******/
-        int blockSizeInScreen() const;
-        int xOffset() const;
-        int yOffset() const;
+        [[nodiscard]] int blockSizeInScreen() const;
+        [[nodiscard]] int xOffset() const;
+        [[nodiscard]] int yOffset() const;
 
         /****** CONST FUNCTIONS  ******/
-        int worldToScreenLength(int worldLength) const;
-        int distanceBetweenBlocksInScreenXY() const;
+        [[nodiscard]] int worldToScreenLength(int worldLength) const;
+        [[nodiscard]] int blockSeparationInScreenXY() const;
 
         /****** NON CONST FUNCTIONS  ******/
         void zoom(int dZoom);

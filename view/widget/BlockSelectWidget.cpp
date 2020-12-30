@@ -13,7 +13,6 @@
 #include "../View.h"
 #include "../color.h"
 
-#include <SDL.h>
 #include <algorithm>
 #include <cassert>
 
@@ -32,7 +31,7 @@ namespace view::widget {
                                       view::View::drawSquare(screenXY(type),
                                                              BLOCK_SIZE_IN_WORLD,
                                                              type == model::FLOOR_BLOCK_TYPE::LEVEL ? view::color::BACKGROUND_PLAYABLE
-                                                                                               : view::color::BACKGROUND_START,
+                                                                                                    : view::color::BACKGROUND_START,
                                                              renderer);
                                   },
                                   [renderer, this](const CLUSTER_TYPE type) {

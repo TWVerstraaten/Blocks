@@ -12,7 +12,8 @@
 namespace model {
     enum class CLUSTER_TYPE { CLUSTER };
     typedef std::variant<DYNAMIC_BLOCK_TYPE, INSTANT_BLOCK_TYPE, FLOOR_BLOCK_TYPE, CLUSTER_TYPE> BlockType;
-    static const std::vector<BlockType>                                                     s_allTypes{INSTANT_BLOCK_TYPE::KILL,
+
+    static const std::vector<BlockType> s_allTypes{INSTANT_BLOCK_TYPE::KILL,
                                                    DYNAMIC_BLOCK_TYPE::ROTATE_CCW,
                                                    DYNAMIC_BLOCK_TYPE::ROTATE_CW,
                                                    FLOOR_BLOCK_TYPE::LEVEL,

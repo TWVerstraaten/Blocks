@@ -5,8 +5,6 @@
 #ifndef BLOCKS_APPLICATION_EDIT_H
 #define BLOCKS_APPLICATION_EDIT_H
 
-#include "../action/Action.h"
-#include "../global/cst.h"
 #include "../model/Model.h"
 #include "../view/View.h"
 #include "../view/widget/BlockSelectWidget.h"
@@ -23,13 +21,13 @@ namespace app {
         Application_Edit(model::Model* model, view::View* view, view::widget::ScrollArea* scrollArea);
 
         /****** CONST GETTERS  ******/
-        Uint32                    timeStep() const;
-        model::Model*             model() const;
-        view::widget::ScrollArea* scrollArea() const;
+        [[nodiscard]] Uint32                    timeStep() const;
+        [[nodiscard]] model::Model*             model() const;
+        [[nodiscard]] view::widget::ScrollArea* scrollArea() const;
 
         /****** CONST FUNCTIONS  ******/
-        bool canStart() const;
-        bool hasFocus() const;
+        [[nodiscard]] bool canStart() const;
+        [[nodiscard]] bool hasFocus() const;
 
         /****** NON CONST FUNCTIONS  ******/
         void      handleEvent(const SDL_Event& event);
@@ -39,17 +37,18 @@ namespace app {
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void init();
+        void undo();
+        void redo();
+        void getActionsFromEditBoxes();
+        void handleLeftMouseMove();
+        void handleRightMouseMove();
         void mouseWheelEvent(const SDL_Event& event);
         void keyEvent(const SDL_Event& event);
         void mouseClickEvent(const SDL_Event& event);
         void mouseReleaseEvent(const SDL_Event& event);
         void mouseMoveEvent(const SDL_Event& event);
-        void getActionsFromEditBoxes();
-        void handleLeftMouseMove();
-        void handleRightMouseMove();
         void setButtonBooleans(const SDL_Event& event);
-        void undo();
-        void redo();
+        void determineFocus(view::ScreenXY screenXY);
 
         /****** DATA MEMBERS  ******/
         bool                            m_rightMouseButtonPressed = false;
@@ -63,7 +62,6 @@ namespace app {
         view::widget::BlockSelectWidget m_blockSelectWidget;
         view::ScreenXY                  m_previousMousePosition;
         ModelViewInterface              m_modelViewInterface;
-        void                            determineFocus(view::ScreenXY screenXY);
     };
 } // namespace app
 #endif // BLOCKS_APPLICATION_EDIT_H

@@ -545,14 +545,6 @@ namespace view::widget {
                             : view::color::EDIT_BOX_HIGHLIGHT_DEAD;
         }
 
-        void LineEditBox::appendString(const std::string& str) {
-            m_strings.emplace_back(str);
-        }
-
-        const std::string& LineEditBox::title() const {
-            return m_title;
-        }
-
         void LineEditBox::setNeedsUpdate() {
             m_needsUpdate = true;
         }

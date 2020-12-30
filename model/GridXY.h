@@ -34,13 +34,13 @@ namespace model {
         static GridXY fromScreenXY(const view::ScreenXY& screenXY, const view::ViewPort& viewPort);
 
         /****** CONST GETTERS  ******/
-        int x() const;
-        int y() const;
+        [[nodiscard]] int x() const;
+        [[nodiscard]] int y() const;
 
         /****** CONST FUNCTIONS  ******/
-        bool   isAdjacent(const GridXY& other) const;
-        int    manhattanDistance(const GridXY& other) const;
-        GridXY neighbor(DIRECTION direction) const;
+        [[nodiscard]] bool   isAdjacent(const GridXY& other) const;
+        [[nodiscard]] int    manhattanDistance(const GridXY& other) const;
+        [[nodiscard]] GridXY neighbor(DIRECTION direction) const;
 
         /****** OPERATORS  ******/
         explicit operator WorldXY() const;

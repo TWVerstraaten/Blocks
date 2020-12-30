@@ -2,8 +2,8 @@
 // Created by pc on 15-12-20.
 //
 
-#ifndef BLOCKS_APPLICATION_LEVEL_H
-#define BLOCKS_APPLICATION_LEVEL_H
+#ifndef BLOCKS_APPLICATION_H
+#define BLOCKS_APPLICATION_H
 
 #include "../model/Model.h"
 #include "../view/View.h"
@@ -13,11 +13,11 @@
 namespace app {
     class Application_Edit;
 
-    class Application_Level {
+    class Application {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        Application_Level();
+        Application();
 
         /****** NON CONST FUNCTIONS  ******/
         void run();
@@ -29,7 +29,7 @@ namespace app {
         void      handleWindowEvent();
 
         /****** DATA MEMBERS  ******/
-        APP_MODE                  m_appMode;
+        APP_MODE                  m_appMode             = APP_MODE::EDITING;
         bool                      m_pauseAfterFirstStep = false;
         Uint32                    m_timeStep            = cst::TIME_STEP_SLOW;
         view::View                m_view;
@@ -38,4 +38,4 @@ namespace app {
         view::widget::ScrollArea* m_runningScrollArea;
     };
 } // namespace app
-#endif // BLOCKS_APPLICATION_LEVEL_H
+#endif // BLOCKS_APPLICATION_H

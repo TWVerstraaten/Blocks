@@ -6,6 +6,9 @@
 
 #include "geom.h"
 
+#include <algorithm>
+#include <vector>
+
 bool alg::intersect(const std::set<model::Line<model::WorldXY>>& lines1, const std::set<model::Line<model::WorldXY>>& lines2) {
     for (const auto& line1 : lines1) {
         for (auto line2 : lines2) {
@@ -15,4 +18,38 @@ bool alg::intersect(const std::set<model::Line<model::WorldXY>>& lines1, const s
         }
     }
     return false;
+}
+
+std::set<model::Line<model::WorldXY>> alg::getSidesFromGridXY(std::set<model::GridXY> blocks) {
+    std::set<model::Line<model::WorldXY>> result;
+    std::vector<model::GridXY>            cornerPoints;
+    int                                   yOffset = 0;
+    for (const auto& dir : {model::GridXY::DIRECTION::UP, model::GridXY::DIRECTION::DOWN}) {
+        auto it = blocks.begin();
+        while (it != blocks.end()) {
+            if (blocks.find(it->neighbor(dir)) != blocks.end()) {
+                ++it;
+            } else {
+                const model::GridXY start = *it;
+                int                 idx   = it->x();
+                do {
+                    ++it;
+                    ++idx;
+                } while (it != blocks.end() && it->x() == idx && it->y() == start.y() && (blocks.find(it->neighbor(dir)) == blocks.end()));
+                result.emplace(model::WorldXY(start) + model::GridXY{0, yOffset},
+                               model::WorldXY(model::GridXY{idx, start.y()} + model::GridXY{0, yOffset}));
+                cornerPoints.emplace_back(start + model::GridXY{0, yOffset});
+                cornerPoints.emplace_back(model::GridXY{idx, start.y()} + model::GridXY{0, yOffset});
+            }
+        }
+        ++yOffset;
+    }
+    std::sort(cornerPoints.begin(), cornerPoints.end(), [](const model::GridXY& lhs, const model::GridXY& rhs) {
+        return lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x();
+    });
+    while (not cornerPoints.empty()) {
+        result.emplace(model::Line<model::WorldXY>{*(cornerPoints.rbegin() + 1), *cornerPoints.rbegin()});
+        cornerPoints.erase(cornerPoints.end() - 2, cornerPoints.end());
+    }
+    return result;
 }

@@ -17,11 +17,11 @@ namespace view {
         ~Font();
 
         /****** CONST GETTERS  ******/
-        bool      loadedCorrectly() const;
-        TTF_Font* font() const;
+        [[nodiscard]] bool      loadedCorrectly() const;
+        [[nodiscard]] TTF_Font* font() const;
 
         /****** CONST FUNCTIONS  ******/
-        int widthOfString(const std::string& str) const;
+        [[nodiscard]] int widthOfString(const std::string& str) const;
 
       private:
         /****** DATA MEMBERS  ******/

@@ -10,10 +10,10 @@
 #include <SDL.h>
 
 #define NOTE(x) fprintf(stderr, x ": %s:%d\n", __FILE__, __LINE__);
-#define NOTE_ONCE(x)                                                                                                   \
-    static bool noteSeen = false;                                                                                      \
-    if (not noteSeen)                                                                                                  \
-        NOTE(x)                                                                                                        \
+#define NOTE_ONCE(x)                                                                                                                       \
+    static bool noteSeen = false;                                                                                                          \
+    if (not noteSeen)                                                                                                                      \
+        NOTE(x)                                                                                                                            \
     noteSeen = true;
 
 namespace cst {
@@ -21,9 +21,9 @@ namespace cst {
     static const Uint32 BLOCK_SELECT_WIDGET_HEIGHT = 150;
     static const Uint32 BLOCK_SELECT_WIDGET_WIDTH  = 230;
 
-    static const Uint32         INITIAL_SCREEN_WIDTH      = 1000;
-    static const Uint32         INITIAL_SCREEN_HEIGHT     = 800;
-    static const int            BLOCK_SHRINK_IN_WORLD     = 4;
+    static const int            INITIAL_SCREEN_WIDTH      = 1000;
+    static const int            INITIAL_SCREEN_HEIGHT     = 800;
+    static const int            BLOCK_SHRINK_IN_WORLD     = 2;
     static const int            BLOCK_SIZE_IN_WORLD       = 40;
     static const int            HALF_BLOCK_SIZE_IN_WORLD  = BLOCK_SIZE_IN_WORLD / 2;
     static const model::WorldXY HALF_BLOCK_IN_WORLD       = {HALF_BLOCK_SIZE_IN_WORLD, HALF_BLOCK_SIZE_IN_WORLD};

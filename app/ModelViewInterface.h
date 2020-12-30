@@ -7,7 +7,6 @@
 
 #include "../model/BlockType_typedef.h"
 #include "../model/Cluster.h"
-#include "../view/widget/CommandEditBox.h"
 #include "Application_enums.h"
 
 #include <memory>
@@ -29,6 +28,8 @@ namespace action {
     class Action;
 }
 
+union SDL_Event;
+
 namespace app {
     class Application_Edit;
 
@@ -39,9 +40,9 @@ namespace app {
 
       public:
         /****** PUBLIC STATIC FUNCTIONS  ******/
-        static void updateCommandScrollArea(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea, APP_MODE mode);
-        static void interactWithInstantBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
-        static void interactWithDynamicBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
+        static void         updateCommandScrollArea(model::Model& model, view::widget::ScrollArea& scrollArea, APP_MODE mode);
+        static void         interactWithInstantBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
+        static void         interactWithDynamicBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
         static Action_u_ptr clearBlockStatic(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
 
         /****** NON CONST FUNCTIONS  ******/

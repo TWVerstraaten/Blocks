@@ -5,8 +5,6 @@
 #ifndef BLOCKS_WORLDXY_H
 #define BLOCKS_WORLDXY_H
 
-#include "WorldXY.h"
-
 #include <cstddef>
 
 namespace view {
@@ -28,8 +26,8 @@ namespace model {
         WorldXY(const model::GridXY& gridXY);
 
         /****** CONST GETTERS  ******/
-        int x() const;
-        int y() const;
+        [[nodiscard]] int x() const;
+        [[nodiscard]] int y() const;
 
         /****** OPERATORS  ******/
         WorldXY& operator+=(const WorldXY& other);

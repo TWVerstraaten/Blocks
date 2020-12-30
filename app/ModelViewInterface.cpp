@@ -106,14 +106,12 @@ void app::ModelViewInterface::addAction(Action_u_ptr&& action) {
     }
 }
 
-void app::ModelViewInterface::updateCommandScrollArea(const std::list<model::Cluster>& clusters,
-                                                      view::widget::ScrollArea&        scrollArea,
-                                                      app::APP_MODE                    mode) {
-    removeActionBoxesOfRemovedClusters(clusters, scrollArea);
+void app::ModelViewInterface::updateCommandScrollArea(model::Model& model, view::widget::ScrollArea& scrollArea, app::APP_MODE mode) {
+    removeActionBoxesOfRemovedClusters(model.clusters(), scrollArea);
     if (mode == APP_MODE::RUNNING) {
-        highlightActionBoxLines(clusters, scrollArea);
+        highlightActionBoxLines(model.clusters(), scrollArea);
     }
-    addActionBoxesOfNewClusters(clusters, scrollArea);
+    addActionBoxesOfNewClusters(model.clusters(), scrollArea);
     scrollArea.setHeightAndPositions();
 }
 
@@ -125,7 +123,7 @@ void app::ModelViewInterface::undo(app::Application_Edit& applicationEdit) {
     m_redoStack.push(std::move(m_undoStack.top()));
     assert(m_undoStack.top() == nullptr);
     m_undoStack.pop();
-    updateCommandScrollArea(applicationEdit.model()->clusters(), *applicationEdit.scrollArea(), APP_MODE::EDITING);
+    updateCommandScrollArea(*applicationEdit.model(), *applicationEdit.scrollArea(), APP_MODE::EDITING);
 }
 
 void app::ModelViewInterface::redo(app::Application_Edit& applicationEdit) {
@@ -136,7 +134,7 @@ void app::ModelViewInterface::redo(app::Application_Edit& applicationEdit) {
     m_undoStack.push(std::move(m_redoStack.top()));
     assert(m_redoStack.top() == nullptr);
     m_redoStack.pop();
-    updateCommandScrollArea(applicationEdit.model()->clusters(), *applicationEdit.scrollArea(), APP_MODE::EDITING);
+    updateCommandScrollArea(*applicationEdit.model(), *applicationEdit.scrollArea(), APP_MODE::EDITING);
 }
 
 std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockStatic(model::Model&             model,
@@ -180,14 +178,16 @@ void app::ModelViewInterface::interactWithInstantBlocks(model::Model& model, vie
 }
 
 void app::ModelViewInterface::interactWithDynamicBlocks(model::Model& model, view::widget::ScrollArea& scrollArea) {
+    for (const auto& dynamicBlock : model.level().dynamicBlocks()) {
+        auto clusterIt = model.clusterContaining(dynamicBlock.first);
+        if (clusterIt != model.clusters().end() && clusterIt->isAlive()) {
+            clusterIt->addPendingOperation(dynamicBlock.first, dynamicBlock.second);
+        }
+    }
     for (auto& cluster : model.clusters()) {
         if (not cluster.isAlive()) {
             continue;
         }
-        for (auto it = cluster.gridXY().begin(); it != cluster.gridXY().end(); ++it) {
-            cluster.addPendingOperation(*it, model.level().dynamicBlockAt(*it));
-        }
-        cluster.performPendingOperationOrNextCommand();
     }
 }
 
@@ -265,7 +265,7 @@ void app::ModelViewInterface::leftMouseClick(model::Model&             model,
         return;
     }
     addAction(addCluster(model, scrollArea, point));
-    updateCommandScrollArea(model.clusters(), scrollArea, APP_MODE::EDITING);
+    updateCommandScrollArea(model, scrollArea, APP_MODE::EDITING);
 }
 
 void app::ModelViewInterface::clearBlock(model::Model&             model,
@@ -292,5 +292,5 @@ void app::ModelViewInterface::clusterDrag(model::Model&             model,
     } else {
         addAction(addCluster(model, scrollArea, point));
     }
-    updateCommandScrollArea(model.clusters(), scrollArea, APP_MODE::EDITING);
+    updateCommandScrollArea(model, scrollArea, APP_MODE::EDITING);
 }

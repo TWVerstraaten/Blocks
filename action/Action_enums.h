@@ -16,7 +16,6 @@ namespace action {
         ADD_LEVEL_BLOCK_ACTION,
         REMOVE_LEVEL_BLOCK_ACTION
     };
-
 }
 
 #endif // BLOCKS_ACTION_ENUMS_H

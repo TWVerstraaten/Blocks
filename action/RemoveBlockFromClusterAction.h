@@ -17,7 +17,7 @@ namespace action {
         /****** VIRTUAL FUNCTIONS  ******/
         void        undoAction(app::Application_Edit& applicationEdit) override;
         void        redoAction(app::Application_Edit& applicationEdit) override;
-        ACTION_TYPE type() const override;
+        [[nodiscard]] ACTION_TYPE type() const override;
     };
 } // namespace action
 #endif // BLOCKS_REMOVEBLOCKFROMCLUSTERACTION_H

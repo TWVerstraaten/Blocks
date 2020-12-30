@@ -6,18 +6,6 @@
 
 #include "../global/fns.h"
 
-const std::map<std::string, model::Command::TYPE> model::Command::s_typeMap = {
-    {"RHT", model::Command::TYPE::MOVE_RIGHT},
-    {"LFT", model::Command::TYPE::MOVE_LEFT},
-    {"FWD", model::Command::TYPE::MOVE_UP},
-    {"BCK", model::Command::TYPE::MOVE_DOWN},
-    {"SKP", model::Command::TYPE::SKIP}};
-
-const std::map<std::string, model::Command::MODIFIER> model::Command::s_modifierMap = {
-    {"+", model::Command::MODIFIER::IGNORE},
-    {"-", model::Command::MODIFIER::INCREMENT},
-    {".", model::Command::MODIFIER::NONE}};
-
 model::Command::MODIFIER model::Command::modifierFromString(const std::string& string) {
     const auto trimmed = fns::trimWhiteSpace(string);
     assert(s_modifierMap.find(trimmed) != s_modifierMap.end());

@@ -30,18 +30,15 @@ namespace model {
         void                         preStep();
         void                         init();
         void                         clear();
-        void                         clearEmptyClusters();
         void                         startPhase();
         void                         finishInteractions();
         void                         update(double dPhase);
         Level&                       level();
         std::list<Cluster>&          clusters();
         std::list<Cluster>::iterator clusterWithIndex(size_t index);
+        std::list<Cluster>::iterator clusterContaining(const GridXY& point);
 
       private:
-        /****** PRIVATE CONST FUNCTIONS  ******/
-        [[nodiscard]] bool containsEmptyClusters() const;
-
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void intersectWithLevel();
         void intersectClusters();

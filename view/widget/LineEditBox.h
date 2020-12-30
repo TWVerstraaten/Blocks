@@ -38,14 +38,12 @@ namespace view {
             void         loseFocus() override;
 
             /****** CONST GETTERS  ******/
-            int                             width() const;
-            const std::string&              title() const;
-            const std::vector<std::string>& strings() const;
+            [[nodiscard]] int                             width() const;
+            [[nodiscard]] const std::vector<std::string>& strings() const;
 
             /****** NON CONST FUNCTIONS  ******/
             void setHighLightedLine(size_t index, bool skipEmpty = true);
             void setActive(bool active);
-            void appendString(const std::string& str);
 
           private:
             /****** PRIVATE CONST FUNCTIONS  ******/
@@ -68,11 +66,11 @@ namespace view {
                                        const SelectionData::Data& last,
                                        SDL_Renderer*              renderer,
                                        HIGHLIGHT_MODE             mode) const;
-            int         widthOfString(const std::string& string) const;
-            std::string selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
-            const SDL_Color& getHighlightColor(HIGHLIGHT_MODE mode) const;
-            std::string      prefixOfString(const SelectionData::Data& data) const;
-            std::string      suffixOfString(const SelectionData::Data& data) const;
+            [[nodiscard]] int         widthOfString(const std::string& string) const;
+            [[nodiscard]] std::string selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
+            [[nodiscard]] const SDL_Color& getHighlightColor(HIGHLIGHT_MODE mode) const;
+            [[nodiscard]] std::string      prefixOfString(const SelectionData::Data& data) const;
+            [[nodiscard]] std::string      suffixOfString(const SelectionData::Data& data) const;
 
             /****** PRIVATE NON CONST FUNCTIONS  ******/
             void moveFirstSelectionOneDown();

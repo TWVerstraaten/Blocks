@@ -59,20 +59,32 @@ namespace model {
         }
     }
 
-    void Level::addLevelBlock(const GridXY& gridXY) {
+    std::unique_ptr<action::Action> Level::addLevelBlock(const GridXY& gridXY) {
+        if (m_levelBlocks.find(gridXY) != m_levelBlocks.end()) {
+            return nullptr;
+        }
         m_levelBlocks.emplace(gridXY);
+        createBoundaries();
+        return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({FLOOR_BLOCK_TYPE::LEVEL}, gridXY));
     }
 
-    void Level::addStartBlock(const GridXY& gridXY) {
+    std::unique_ptr<action::Action> Level::addStartBlock(const GridXY& gridXY) {
+        if (m_startBlocks.find(gridXY) != m_startBlocks.end()) {
+            return nullptr;
+        }
+        if (m_levelBlocks.find(gridXY) == m_levelBlocks.end()) {
+            m_levelBlocks.emplace(gridXY);
+            createBoundaries();
+            m_startBlocks.emplace(gridXY);
+            return std::unique_ptr<action::Action>(
+                new action::AddLevelBlockAction({FLOOR_BLOCK_TYPE::LEVEL, FLOOR_BLOCK_TYPE::START}, gridXY));
+        }
         m_startBlocks.emplace(gridXY);
+        return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({FLOOR_BLOCK_TYPE::START}, gridXY));
     }
 
     const std::set<GridXY>& Level::levelBlocks() const {
         return m_levelBlocks;
-    }
-
-    bool Level::isInLevel(const WorldXY& worldXY) const {
-        return m_levelBlocks.find(GridXY::fromWorldXY(worldXY)) != m_levelBlocks.end();
     }
 
     void Level::clear() {
@@ -108,31 +120,18 @@ namespace model {
     }
 
     void Level::createBoundaries() {
-        m_boundaries = alg::getSidesInGridXY<WorldXY>(m_levelBlocks);
+        m_boundaries = alg::getSidesFromGridXY(m_levelBlocks);
+        for (const auto& cluster : m_stoppedClusters) {
+            m_boundaries.merge(alg::getSidesFromGridXY(cluster.gridXY()));
+        }
     }
 
     std::unique_ptr<action::Action> Level::addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType) {
         switch (blockType) {
             case FLOOR_BLOCK_TYPE::LEVEL:
-                if (m_levelBlocks.find(gridXY) != m_levelBlocks.end()) {
-                    return nullptr;
-                }
-                m_levelBlocks.emplace(gridXY);
-                createBoundaries();
-                return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({FLOOR_BLOCK_TYPE::LEVEL}, gridXY));
+                return addLevelBlock(gridXY);
             case FLOOR_BLOCK_TYPE::START:
-                if (m_levelBlocks.find(gridXY) == m_levelBlocks.end()) {
-                    m_levelBlocks.emplace(gridXY);
-                    createBoundaries();
-                    m_startBlocks.emplace(gridXY);
-                    return std::unique_ptr<action::Action>(
-                        new action::AddLevelBlockAction({FLOOR_BLOCK_TYPE::LEVEL, FLOOR_BLOCK_TYPE::START}, gridXY));
-                }
-                if (m_startBlocks.find(gridXY) != m_startBlocks.end()) {
-                    return nullptr;
-                }
-                m_startBlocks.emplace(gridXY);
-                return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({FLOOR_BLOCK_TYPE::START}, gridXY));
+                return addStartBlock(gridXY);
         }
         return nullptr;
     }
@@ -177,6 +176,14 @@ namespace model {
                 return std::make_unique<action::RemoveLevelBlockAction>(FLOOR_BLOCK_TYPE::START, gridXY);
         }
         return nullptr;
+    }
+
+    std::list<Cluster>& Level::stoppedClusters() {
+        return m_stoppedClusters;
+    }
+
+    const std::list<Cluster>& Level::stoppedClusters() const {
+        return m_stoppedClusters;
     }
 
 } // namespace model
