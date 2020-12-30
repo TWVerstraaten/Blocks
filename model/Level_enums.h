@@ -10,7 +10,7 @@
 namespace model {
     enum class DYNAMIC_BLOCK_TYPE { ROTATE_CW, ROTATE_CCW };
     enum class INSTANT_BLOCK_TYPE { KILL };
-    enum class FLOOR_BLOCK_TYPE { LEVEL, START };
+    enum class FLOOR_BLOCK_TYPE { LEVEL, START, SPLICE };
 
 } // namespace model
 

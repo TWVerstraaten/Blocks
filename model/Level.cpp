@@ -132,6 +132,9 @@ namespace model {
                 return addLevelBlock(gridXY);
             case FLOOR_BLOCK_TYPE::START:
                 return addStartBlock(gridXY);
+            case FLOOR_BLOCK_TYPE::SPLICE:
+                return addSpliceBlock(gridXY);
+                break;
         }
         return nullptr;
     }
@@ -143,6 +146,8 @@ namespace model {
             return removeBlock(gridXY, m_dynamicBLocks[gridXY]);
         } else if (m_startBlocks.find(gridXY) != m_startBlocks.end()) {
             return removeBlock(gridXY, FLOOR_BLOCK_TYPE::START);
+        } else if (m_spliceBlocks.find(gridXY) != m_spliceBlocks.end()) {
+            return removeBlock(gridXY, FLOOR_BLOCK_TYPE::SPLICE);
         } else if (m_levelBlocks.find(gridXY) != m_levelBlocks.end()) {
             return removeBlock(gridXY, FLOOR_BLOCK_TYPE::LEVEL);
         }
@@ -174,6 +179,10 @@ namespace model {
                 assert(m_startBlocks.find(gridXY) != m_startBlocks.end());
                 m_startBlocks.erase(gridXY);
                 return std::make_unique<action::RemoveLevelBlockAction>(FLOOR_BLOCK_TYPE::START, gridXY);
+            case FLOOR_BLOCK_TYPE::SPLICE:
+                assert(m_spliceBlocks.find(gridXY) != m_spliceBlocks.end());
+                m_spliceBlocks.erase(gridXY);
+                return std::make_unique<action::RemoveLevelBlockAction>(FLOOR_BLOCK_TYPE::SPLICE, gridXY);
         }
         return nullptr;
     }
@@ -184,6 +193,25 @@ namespace model {
 
     const std::list<Cluster>& Level::stoppedClusters() const {
         return m_stoppedClusters;
+    }
+
+    Level::Action_u_ptr Level::addSpliceBlock(const GridXY& gridXY) {
+        if (m_spliceBlocks.find(gridXY) != m_spliceBlocks.end()) {
+            return nullptr;
+        }
+        if (m_levelBlocks.find(gridXY) == m_levelBlocks.end()) {
+            m_levelBlocks.emplace(gridXY);
+            createBoundaries();
+            m_spliceBlocks.emplace(gridXY);
+            return std::unique_ptr<action::Action>(
+                new action::AddLevelBlockAction({FLOOR_BLOCK_TYPE::LEVEL, FLOOR_BLOCK_TYPE::SPLICE}, gridXY));
+        }
+        m_spliceBlocks.emplace(gridXY);
+        return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({FLOOR_BLOCK_TYPE::SPLICE}, gridXY));
+    }
+
+    const std::set<GridXY>& Level::spliceBlocks() const {
+        return m_spliceBlocks;
     }
 
 } // namespace model

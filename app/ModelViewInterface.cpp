@@ -252,7 +252,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(model::Model
         return std::make_unique<action::AddBlockToClusterAction>(baseIt->index(), point);
     }
     auto copyOfModel = model;
-    baseIt->gridXY().insert(extensionIt->gridXY().begin(), extensionIt->gridXY().end());
+    baseIt->gridXY().merge(extensionIt->gridXY());
     clusters.erase(extensionIt);
     return std::make_unique<action::GenericModelAction>(copyOfModel, model);
 }

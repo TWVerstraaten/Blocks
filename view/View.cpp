@@ -116,6 +116,9 @@ namespace view {
         for (const auto& block : level.startBlocks()) {
             drawSquare(ScreenXY::fromGridXY(block, m_viewPort) + shrinkInScreenXY, shrunkBlockSize, view::color::BACKGROUND_START);
         }
+        for (const auto& block : level.spliceBlocks()) {
+            drawSquare(ScreenXY::fromGridXY(block, m_viewPort) + shrinkInScreenXY, shrunkBlockSize, view::color::BACKGROUND_SPLICE);
+        }
 
         for (const auto& line : level.boundaries()) {
             setDrawColor(view::color::WHITE);

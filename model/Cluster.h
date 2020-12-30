@@ -76,6 +76,7 @@ namespace model {
         void                       clearCommands();
         void                       collideWithLevel(const Level& level, int shrinkInWorld);
         void                       performPendingOperationOrNextCommand(model::Model& model);
+        void                       stopIfNeeded();
         model::Cluster             grabAllButFirstComponent();
         std::set<GridXY>::iterator removeBLock(const GridXY& gridXY);
         std::list<Cluster>         collectAllButFirstComponent();

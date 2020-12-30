@@ -30,8 +30,9 @@ namespace view::widget {
             std::visit(overloaded{[renderer, this](const model::FLOOR_BLOCK_TYPE type) {
                                       view::View::drawSquare(screenXY(type),
                                                              BLOCK_SIZE_IN_WORLD,
-                                                             type == model::FLOOR_BLOCK_TYPE::LEVEL ? view::color::BACKGROUND_PLAYABLE
-                                                                                                    : view::color::BACKGROUND_START,
+                                                             type == model::FLOOR_BLOCK_TYPE::LEVEL   ? view::color::BACKGROUND_PLAYABLE
+                                                             : type == model::FLOOR_BLOCK_TYPE::START ? view::color::BACKGROUND_START
+                                                                                                      : view::color::BACKGROUND_SPLICE,
                                                              renderer);
                                   },
                                   [renderer, this](const CLUSTER_TYPE type) {

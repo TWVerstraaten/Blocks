@@ -35,6 +35,7 @@ namespace model {
         [[nodiscard]] DYNAMIC_BLOCK_TYPE                          dynamicBlockAt(const GridXY& gridXY) const;
         [[nodiscard]] const std::set<GridXY>&                     levelBlocks() const;
         [[nodiscard]] const std::set<GridXY>&                     startBlocks() const;
+        [[nodiscard]] const std::set<GridXY>&                     spliceBlocks() const;
         [[nodiscard]] const std::set<Line<WorldXY>>&              boundaries() const;
         [[nodiscard]] const std::map<GridXY, DYNAMIC_BLOCK_TYPE>& dynamicBlocks() const;
         [[nodiscard]] const std::map<GridXY, INSTANT_BLOCK_TYPE>& instantBlocks() const;
@@ -44,6 +45,7 @@ namespace model {
         void                clear();
         void                createBoundaries();
         Action_u_ptr        addStartBlock(const GridXY& gridXY);
+        Action_u_ptr        addSpliceBlock(const GridXY& gridXY);
         Action_u_ptr        addLevelBlock(const GridXY& gridXY);
         Action_u_ptr        addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
         Action_u_ptr        addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
@@ -62,6 +64,7 @@ namespace model {
         std::map<GridXY, DYNAMIC_BLOCK_TYPE> m_dynamicBLocks;
         std::map<GridXY, INSTANT_BLOCK_TYPE> m_instantBLocks;
         std::set<GridXY>                     m_levelBlocks;
+        std::set<GridXY>                     m_spliceBlocks;
         std::set<GridXY>                     m_startBlocks;
         std::set<Line<WorldXY>>              m_boundaries;
         std::list<Cluster>                   m_stoppedClusters;

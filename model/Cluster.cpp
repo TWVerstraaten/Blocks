@@ -71,7 +71,8 @@ namespace model {
             case Command::TYPE::SKP:
                 break;
             case Command::TYPE::STP:
-                m_state = CLUSTER_STATE::STOPPED;
+                assert(false);
+                break;
             case Command::TYPE::GRB:
                 auto& stoppedClusters = model.level().stoppedClusters();
                 for (auto& cluster : stoppedClusters) {
@@ -522,6 +523,19 @@ namespace model {
         }
 
         return false;
+    }
+
+    void Cluster::stopIfNeeded() {
+        if (m_commands.empty() || m_state != CLUSTER_STATE::ALIVE) {
+            return;
+        }
+        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == Command::MODIFIER::IGNORE) ||
+            m_pendingOperations.empty()) {
+            resetPhase();
+            if (m_commands.at(m_commandIndex).m_type == Command::TYPE::STP) {
+                m_state = CLUSTER_STATE::STOPPED;
+            }
+        }
     }
 
 } // namespace model

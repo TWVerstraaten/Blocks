@@ -13,11 +13,12 @@ namespace model {
     enum class CLUSTER_TYPE { CLUSTER };
     typedef std::variant<DYNAMIC_BLOCK_TYPE, INSTANT_BLOCK_TYPE, FLOOR_BLOCK_TYPE, CLUSTER_TYPE> BlockType;
 
-    static const std::vector<BlockType> s_allTypes{INSTANT_BLOCK_TYPE::KILL,
+    static const std::vector<BlockType> s_allTypes{CLUSTER_TYPE::CLUSTER,
+                                                   INSTANT_BLOCK_TYPE::KILL,
                                                    DYNAMIC_BLOCK_TYPE::ROTATE_CCW,
                                                    DYNAMIC_BLOCK_TYPE::ROTATE_CW,
                                                    FLOOR_BLOCK_TYPE::LEVEL,
                                                    FLOOR_BLOCK_TYPE::START,
-                                                   CLUSTER_TYPE::CLUSTER};
+                                                   FLOOR_BLOCK_TYPE::SPLICE};
 } // namespace model
 #endif // BLOCKS_BLOCKTYPE_TYPEDEF_H

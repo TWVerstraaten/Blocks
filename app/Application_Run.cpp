@@ -101,14 +101,18 @@ namespace app {
         ModelViewInterface::interactWithInstantBlocks(m_model, m_scrollArea);
         ModelViewInterface::interactWithDynamicBlocks(m_model, m_scrollArea);
         for (auto& cluster : m_model.clusters()) {
-            cluster.performPendingOperationOrNextCommand(m_model);
+            cluster.stopIfNeeded();
         }
 
         auto it = std::partition(m_model.clusters().begin(), m_model.clusters().end(), [](const auto& cluster) {
             return cluster.state() != model::CLUSTER_STATE::STOPPED;
         });
-
         m_model.level().stoppedClusters().splice(m_model.level().stoppedClusters().end(), m_model.clusters(), it, m_model.clusters().end());
+
+        for (auto& cluster : m_model.clusters()) {
+            cluster.performPendingOperationOrNextCommand(m_model);
+        }
+
         m_model.level().createBoundaries();
         m_model.finishInteractions();
         ModelViewInterface::updateCommandScrollArea(m_model, m_scrollArea, APP_MODE::RUNNING);
