@@ -16,16 +16,13 @@
 #include <algorithm>
 #include <cassert>
 
-static std::list<model::Cluster>::iterator findCluster(const view::widget::CommandEditBox& commandEditBox,
-                                                       std::list<model::Cluster>&          clusters) {
-    return std::find_if(
-        clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) { return cluster.index() == commandEditBox.index(); });
+static std::list<model::Cluster>::iterator findCluster(const view::widget::CommandEditBox& commandEditBox, std::list<model::Cluster>& clusters) {
+    return std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) { return cluster.index() == commandEditBox.index(); });
 }
 
 static std::list<model::Cluster>::const_iterator findCluster(const view::widget::CommandEditBox& commandEditBox,
                                                              const std::list<model::Cluster>&    clusters) {
-    return std::find_if(
-        clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) { return cluster.index() == commandEditBox.index(); });
+    return std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) { return cluster.index() == commandEditBox.index(); });
 }
 
 static std::list<view::widget::CommandEditBox>::iterator findCommandEditBox(const model::Cluster&                    cluster,
@@ -33,6 +30,15 @@ static std::list<view::widget::CommandEditBox>::iterator findCommandEditBox(cons
     return std::find_if(commandEditBoxes.begin(), commandEditBoxes.end(), [&](const view::widget::CommandEditBox& commandEditBox) {
         return cluster.index() == commandEditBox.index();
     });
+}
+
+static std::list<view::widget::CommandEditBox>::iterator findCommandEditBox_forceExists(const model::Cluster&                    cluster,
+                                                                                        std::list<view::widget::CommandEditBox>& commandEditBoxes) {
+    auto result = std::find_if(commandEditBoxes.begin(), commandEditBoxes.end(), [&](const view::widget::CommandEditBox& commandEditBox) {
+        return cluster.index() == commandEditBox.index();
+    });
+    assert(result != commandEditBoxes.end());
+    return result;
 }
 
 static void removeActionBoxesOfRemovedClusters(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea) {
@@ -78,12 +84,12 @@ void app::ModelViewInterface::leftClickControl(model::Model&             model,
                                                view::widget::ScrollArea& scrollArea,
                                                const model::GridXY&      point,
                                                const model::BlockType&   selectedBlockType) {
-    std::visit(overloaded{[&](const model::CLUSTER_TYPE type) { clearBlock(model, view, scrollArea, point); },
+    std::visit(overloaded{[&](const model::CLUSTER_TYPE type) { clearBlockFromCluster(model, view, scrollArea, point); },
                           [&](const auto type) {
                               if (model.noClusterOnBlock(point)) {
                                   addAction(model.level().removeBlock(point));
                               } else {
-                                  clearBlock(model, view, scrollArea, point);
+                                  clearBlockFromCluster(model, view, scrollArea, point);
                               }
                           }},
                selectedBlockType);
@@ -137,21 +143,20 @@ void app::ModelViewInterface::redo(app::Application_Edit& applicationEdit) {
     updateCommandScrollArea(*applicationEdit.model(), *applicationEdit.scrollArea(), APP_MODE::EDITING);
 }
 
-std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockStatic(model::Model&             model,
-                                                                          view::widget::ScrollArea& scrollArea,
-                                                                          const model::GridXY&      point) {
+std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockFromCluster_static(model::Model&             model,
+                                                                                      view::widget::ScrollArea& scrollArea,
+                                                                                      const model::GridXY&      point) {
     auto&      clusters = model.clusters();
-    const auto it       = std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.contains(point); });
+    const auto it       = model.clusterContaining(point);
     if (it == clusters.end()) {
         return nullptr;
     }
-    if (it->size() == 1) {
-        auto commandEditBoxIt = findCommandEditBox(*it, scrollArea.children());
-        auto result           = std::make_unique<action::RemoveClusterAction>(*it, *commandEditBoxIt);
-        clusters.erase(it);
-        return result;
+    if (it->size() > 1) {
+        return clearBlockFromCluster(model, scrollArea, point, *it);
     }
-    return clearBlockFromCluster(model, scrollArea, point, it);
+    auto result = std::make_unique<action::RemoveClusterAction>(*it, *findCommandEditBox_forceExists(*it, scrollArea.children()));
+    clusters.erase(it);
+    return result;
 }
 
 void app::ModelViewInterface::handleKeyEvent(const SDL_Event& event, view::widget::ScrollArea& scrollArea, model::Model& model) {
@@ -168,20 +173,20 @@ void app::ModelViewInterface::handleKeyEvent(const SDL_Event& event, view::widge
 }
 
 void app::ModelViewInterface::interactWithInstantBlocks(model::Model& model, view::widget::ScrollArea& scrollArea) {
-    for (const auto& block : model.level().instantBlocks()) {
-        switch (block.second) {
+    for (const auto& [point, type] : model.level().instantBlocks()) {
+        switch (type) {
             case model::INSTANT_BLOCK_TYPE::KILL:
-                clearBlockStatic(model, scrollArea, block.first);
+                clearBlockFromCluster_static(model, scrollArea, point);
                 break;
         }
     }
 }
 
 void app::ModelViewInterface::interactWithDynamicBlocks(model::Model& model, view::widget::ScrollArea& scrollArea) {
-    for (const auto& dynamicBlock : model.level().dynamicBlocks()) {
-        auto clusterIt = model.clusterContaining(dynamicBlock.first);
+    for (const auto& [point, type] : model.level().dynamicBlocks()) {
+        auto clusterIt = model.clusterContaining(point);
         if (clusterIt != model.clusters().end() && clusterIt->isAlive()) {
-            clusterIt->addPendingOperation(dynamicBlock.first, dynamicBlock.second);
+            clusterIt->addPendingOperation(point, type);
         }
     }
     for (auto& cluster : model.clusters()) {
@@ -191,29 +196,38 @@ void app::ModelViewInterface::interactWithDynamicBlocks(model::Model& model, vie
     }
 }
 
-std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockFromCluster(model::Model&                       model,
-                                                                               view::widget::ScrollArea&           scrollArea,
-                                                                               const model::GridXY&                point,
-                                                                               std::list<model::Cluster>::iterator clusterIt) {
-    assert(clusterIt->contains(point));
-
-    model::Model copy = model;
-    clusterIt->removeBLock(point);
-    if (not clusterIt->isConnected()) {
-        auto newClusters   = clusterIt->collectAllButFirstComponent();
-        auto commandEditIt = findCommandEditBox(*clusterIt, scrollArea.children());
-        assert(commandEditIt != scrollArea.children().end());
-        addActionBoxesOfNewClusters(newClusters, scrollArea);
-        for (const auto& cluster : newClusters) {
-            auto newCommandEditIt = findCommandEditBox(cluster, scrollArea.children());
-            assert(newCommandEditIt != scrollArea.children().end());
-            newCommandEditIt->setStrings(commandEditIt->strings());
-        }
-        assert(clusterIt->isConnected());
-        model.clusters().splice(model.clusters().end(), newClusters);
-        return std::make_unique<action::GenericModelAction>(copy, model);
+std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockFromCluster(model::Model&             model,
+                                                                               view::widget::ScrollArea& scrollArea,
+                                                                               const model::GridXY&      point,
+                                                                               model::Cluster&           cluster) {
+    assert(cluster.contains(point));
+    cluster.removeBLock(point);
+    if (cluster.isConnected()) {
+        return std::make_unique<action::RemoveBlockFromClusterAction>(cluster.index(), point);
     }
-    return std::make_unique<action::RemoveBlockFromClusterAction>(clusterIt->index(), point);
+    model::Model copy = model;
+    split(model, scrollArea, cluster);
+    return std::make_unique<action::GenericModelAction>(copy, model);
+}
+
+void app::ModelViewInterface::splitIfDisconnected(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster) {
+    if (not cluster.isConnected()) {
+        split(model, scrollArea, cluster);
+    }
+}
+
+void app::ModelViewInterface::split(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster) {
+    auto newClusters   = cluster.collectAllButFirstComponent();
+    auto commandEditIt = findCommandEditBox(cluster, scrollArea.children());
+    assert(commandEditIt != scrollArea.children().end());
+    addActionBoxesOfNewClusters(newClusters, scrollArea);
+    for (const auto& newCluster : newClusters) {
+        auto newCommandEditIt = findCommandEditBox(newCluster, scrollArea.children());
+        assert(newCommandEditIt != scrollArea.children().end());
+        newCommandEditIt->setStrings(commandEditIt->strings());
+    }
+    assert(cluster.isConnected());
+    model.clusters().splice(model.clusters().end(), newClusters);
 }
 
 std::unique_ptr<action::Action> app::ModelViewInterface::addCluster(model::Model&             model,
@@ -237,8 +251,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(model::Model
                                                                     const model::GridXY&      previousPoint) {
 
     auto&      clusters = model.clusters();
-    const auto baseIt =
-        std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.contains(previousPoint); });
+    const auto baseIt   = std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.contains(previousPoint); });
     if (baseIt == clusters.end() || (not previousPoint.isAdjacent(point))) {
         return addCluster(model, scrollArea, point);
     }
@@ -268,22 +281,19 @@ void app::ModelViewInterface::leftMouseClick(model::Model&             model,
     updateCommandScrollArea(model, scrollArea, APP_MODE::EDITING);
 }
 
-void app::ModelViewInterface::clearBlock(model::Model&             model,
-                                         view::View&               view,
-                                         view::widget::ScrollArea& scrollArea,
-                                         const model::GridXY&      point) {
+void app::ModelViewInterface::clearBlockFromCluster(model::Model&             model,
+                                                    view::View&               view,
+                                                    view::widget::ScrollArea& scrollArea,
+                                                    const model::GridXY&      point) {
     if (model.level().isFreeStartBlock(point)) {
-        addAction(clearBlockStatic(model, scrollArea, point));
+        addAction(clearBlockFromCluster_static(model, scrollArea, point));
+        removeActionBoxesOfRemovedClusters(model.clusters(), scrollArea);
+        scrollArea.setHeightAndPositions();
     }
-    removeActionBoxesOfRemovedClusters(model.clusters(), scrollArea);
-    scrollArea.setHeightAndPositions();
 }
 
-void app::ModelViewInterface::clusterDrag(model::Model&             model,
-                                          view::View&               view,
-                                          view::widget::ScrollArea& scrollArea,
-                                          const model::GridXY&      point,
-                                          const model::GridXY&      previousPoint) {
+void app::ModelViewInterface::clusterDrag(
+    model::Model& model, view::View& view, view::widget::ScrollArea& scrollArea, const model::GridXY& point, const model::GridXY& previousPoint) {
     if (not model.level().isFreeStartBlock(point)) {
         return;
     }

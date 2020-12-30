@@ -43,7 +43,9 @@ namespace app {
         static void         updateCommandScrollArea(model::Model& model, view::widget::ScrollArea& scrollArea, APP_MODE mode);
         static void         interactWithInstantBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
         static void         interactWithDynamicBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
-        static Action_u_ptr clearBlockStatic(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
+        static void         splitIfDisconnected(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster);
+        static void         split(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster);
+        static Action_u_ptr clearBlockFromCluster_static(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
 
         /****** NON CONST FUNCTIONS  ******/
         void handleKeyEvent(const SDL_Event& event, view::widget::ScrollArea& scrollArea, model::Model& model);
@@ -71,7 +73,7 @@ namespace app {
         static Action_u_ptr clearBlockFromCluster(model::Model&                       model,
                                                   view::widget::ScrollArea&           scrollArea,
                                                   const model::GridXY&                point,
-                                                  std::list<model::Cluster>::iterator clusterIt);
+                                                  model::Cluster&           cluster);
         static Action_u_ptr addCluster(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
         static Action_u_ptr linkBlocks(model::Model&             model,
                                        view::widget::ScrollArea& scrollArea,
@@ -81,7 +83,7 @@ namespace app {
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void addAction(Action_u_ptr&& action);
         void leftMouseClick(model::Model& model, view::View& view, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
-        void clearBlock(model::Model& model, view::View& view, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
+        void clearBlockFromCluster(model::Model& model, view::View& view, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
         void clusterDrag(model::Model&             model,
                          view::View&               view,
                          view::widget::ScrollArea& scrollArea,

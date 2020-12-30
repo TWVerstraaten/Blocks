@@ -30,12 +30,8 @@ namespace view {
         //        SDL_GetCurrentDisplayMode(0, &DM);
         //        auto Width = DM.w;
         //        auto Height = DM.h;
-        m_window = SDL_CreateWindow("Blocks",
-                                    SDL_WINDOWPOS_CENTERED,
-                                    SDL_WINDOWPOS_CENTERED,
-                                    cst::INITIAL_SCREEN_WIDTH,
-                                    cst::INITIAL_SCREEN_HEIGHT,
-                                    SDL_WINDOW_RESIZABLE);
+        m_window = SDL_CreateWindow(
+            "Blocks", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, cst::INITIAL_SCREEN_WIDTH, cst::INITIAL_SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
         if (!m_window) {
             std::cout << "Failed to create window, SDL2 Error: " << SDL_GetError() << "\n";
             return;
@@ -156,16 +152,16 @@ namespace view {
         const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(cst::BLOCK_SHRINK_IN_WORLD);
         const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
         const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
-        for (const auto& block : level.dynamicBlocks()) {
-            assert(m_assets->renderTexture(Assets::getTextureEnum(block.second),
-                                           ScreenXY::fromGridXY(block.first, m_viewPort) + shrinkInScreenXY,
+        for (const auto& [point, type] : level.dynamicBlocks()) {
+            assert(m_assets->renderTexture(Assets::getTextureEnum(type),
+                                           ScreenXY::fromGridXY(point, m_viewPort) + shrinkInScreenXY,
                                            shrunkBlockSize,
                                            shrunkBlockSize,
                                            m_renderer));
         }
-        for (const auto& block : level.instantBlocks()) {
-            assert(m_assets->renderTexture(Assets::getTextureEnum(block.second),
-                                           ScreenXY::fromGridXY(block.first, m_viewPort) + shrinkInScreenXY,
+        for (const auto& [point, type] : level.instantBlocks()) {
+            assert(m_assets->renderTexture(Assets::getTextureEnum(type),
+                                           ScreenXY::fromGridXY(point, m_viewPort) + shrinkInScreenXY,
                                            shrunkBlockSize,
                                            shrunkBlockSize,
                                            m_renderer));
@@ -244,10 +240,6 @@ namespace view {
 
     const ViewPort& View::viewPort() const {
         return m_viewPort;
-    }
-
-    void View::clear() {
-        //        m_scrollArea.children().clear();
     }
 
     void View::renderPresent() const {

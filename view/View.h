@@ -76,7 +76,6 @@ namespace view {
         void drawBlockSelectWidget(widget::BlockSelectWidget& widget);
         void zoom(int amount);
         void translate(int dx, int dy);
-        void clear();
 
       private:
         /****** PRIVATE STATIC FUNCTIONS  ******/

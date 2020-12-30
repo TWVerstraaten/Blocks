@@ -12,23 +12,19 @@
 
 #include <algorithm>
 
-view::widget::CommandEditBox::CommandEditBox(
-    int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
-    : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())),
-      m_index(cluster.index()) {
+view::widget::CommandEditBox::CommandEditBox(int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
+    : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())), m_index(cluster.index()) {
     if (cluster.commands().empty()) {
         m_strings.emplace_back("");
     } else {
         for (const auto& command : cluster.commands()) {
-            m_strings.emplace_back(model::Command::stringFromModifier(command.m_modifier) + " " +
-                                   model::Command::stringFromType(command.m_type));
+            m_strings.emplace_back(model::Command_Temp::stringFromModifier(command.m_modifier) + " " + model::Command_Temp::stringFromType(command.m_type));
         }
     }
 }
 
 view::widget::CommandEditBox::CommandEditBox(const view::widget::CommandEditBox& other)
-    : LineEditBox(other.m_rect.x, other.m_rect.y, other.m_rect.w, other.m_rect.h, other.m_assets, other.m_title),
-      m_index(other.m_index) {
+    : LineEditBox(other.m_rect.x, other.m_rect.y, other.m_rect.w, other.m_rect.h, other.m_assets, other.m_title), m_index(other.m_index) {
     m_strings       = other.m_strings;
     m_selectionData = other.m_selectionData;
 }
@@ -36,11 +32,11 @@ view::widget::CommandEditBox::CommandEditBox(const view::widget::CommandEditBox&
 void view::widget::CommandEditBox::updateClusterCommands(model::Cluster& cluster) const {
     cluster.clearCommands();
     for (const auto& str : m_strings) {
-        if (model::Command::canParse(str)) {
+        if (model::Command_Temp::canParse(str)) {
             if (fns::trimWhiteSpace(str).empty()) {
                 continue;
             }
-            cluster.addCommand(model::Command::fromString(str));
+            cluster.addCommand(model::Command_Temp::fromString(str));
         }
     }
     m_clusterShouldBeUpdated = false;
@@ -64,13 +60,13 @@ void view::widget::CommandEditBox::update(SDL_Renderer* renderer) {
 }
 
 bool view::widget::CommandEditBox::canParse() const {
-    return std::all_of(m_strings.begin(), m_strings.end(), &model::Command::canParse);
+    return std::all_of(m_strings.begin(), m_strings.end(), &model::Command_Temp::canParse);
 }
 
 void view::widget::CommandEditBox::loseFocus() {
     for (auto& str : m_strings) {
-        if (model::Command::canParse(str) && (not model::Command::isFormatted(str))) {
-            str           = model::Command::formatCommandString(str);
+        if (model::Command_Temp::canParse(str) && (not model::Command_Temp::isFormatted(str))) {
+            str           = model::Command_Temp::formatCommandString(str);
             m_needsUpdate = true;
         }
     }
@@ -99,8 +95,7 @@ view::widget::CommandEditBox& view::widget::CommandEditBox::operator=(const view
 }
 
 void view::widget::CommandEditBox::createTitleTexture(SDL_Renderer* renderer) {
-    m_titleTexture =
-        Texture::createFromText(m_title, view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font());
+    m_titleTexture = Texture::createFromText(m_title, view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font());
 }
 
 void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) {
@@ -110,12 +105,10 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
     int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
     for (auto& str : m_strings) {
         m_yOffsets.push_back(yOffset);
-        const auto text     = str.length() == 0 ? std::string(" ") : str;
-        bool       canParse = model::Command::canParse(str);
-        m_textures.emplace_back(Texture::createFromText(text,
-                                                        canParse ? view::color::BLACK : view::color::TEXT_ERROR,
-                                                        renderer,
-                                                        m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
+        const auto text     = str.length() == 0 ? " " : str;
+        bool       canParse = model::Command_Temp::canParse(str);
+        m_textures.emplace_back(Texture::createFromText(
+            text, canParse ? view::color::BLACK : view::color::TEXT_ERROR, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
         yOffset += m_textures.back()->height();
     }
     m_yOffsets.push_back(yOffset);

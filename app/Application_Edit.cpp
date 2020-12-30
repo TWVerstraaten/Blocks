@@ -100,7 +100,6 @@ namespace app {
     }
 
     void Application_Edit::init() {
-        m_view->clear();
         ModelViewInterface::updateCommandScrollArea(*m_model, *m_scrollArea, APP_MODE::EDITING);
         m_scrollArea->update(m_view->renderer());
     }

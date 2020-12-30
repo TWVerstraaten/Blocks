@@ -17,36 +17,36 @@
 size_t model::Cluster::s_maxClusterIndex = 0;
 
 namespace model {
-    Cluster::Cluster(std::set<GridXY>&& gridXY, const std::string& name)
-        : m_index(s_maxClusterIndex), m_name(name.empty() ? "CL" + std::to_string(s_maxClusterIndex) : name), m_gridXYVector(gridXY) {
+    Cluster::Cluster(std::set<GridXY>&& gridXY, std::string name) : m_index(s_maxClusterIndex), m_gridXYVector(gridXY), m_name(std::move(name)) {
         ++s_maxClusterIndex;
         m_sides = alg::getSidesFromGridXY(m_gridXYVector);
         assert(gridXUYAreUnique());
     }
 
-    Cluster::Cluster(const std::set<GridXY>& gridXY, const std::string& name) : m_name(std::move(name)) {
+    Cluster::Cluster(std::set<GridXY>&& gridXY, std::vector<Command_Temp> commands, size_t commandIndex, std::string name)
+        : m_index(s_maxClusterIndex), m_gridXYVector(gridXY), m_commands(std::move(commands)), m_commandIndex(commandIndex), m_name(std::move(name)) {
+        ++s_maxClusterIndex;
     }
-
     void Cluster::doCommand(model::Model& model) {
         if (m_commands.empty() || m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
         assert(m_commandIndex < m_commands.size());
         resetPhase();
-        if (m_commands.at(m_commandIndex).m_type == Command::TYPE::SKP) {
+        if (m_commands.at(m_commandIndex).m_type == COMMAND_TYPE::SKP) {
             return;
         }
         m_phase = PHASE::TRANSLATING;
         std::set<GridXY> newGridXYSet;
         switch (m_commands[m_commandIndex].m_type) {
-            case Command::TYPE::FWD:
+            case COMMAND_TYPE::FWD:
                 for (auto& idx : m_gridXYVector) {
                     newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::UP));
                 }
                 std::swap(m_gridXYVector, newGridXYSet);
                 m_worldOffset = {0, cst::BLOCK_SIZE_IN_WORLD};
                 break;
-            case Command::TYPE::BCK:
+            case COMMAND_TYPE::BCK:
                 for (auto& idx : m_gridXYVector) {
 
                     newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::DOWN));
@@ -54,33 +54,29 @@ namespace model {
                 std::swap(m_gridXYVector, newGridXYSet);
                 m_worldOffset = {0, -cst::BLOCK_SIZE_IN_WORLD};
                 break;
-            case Command::TYPE::LFT:
+            case COMMAND_TYPE::LFT:
                 for (auto& idx : m_gridXYVector) {
                     newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::LEFT));
                 }
                 std::swap(m_gridXYVector, newGridXYSet);
                 m_worldOffset = {cst::BLOCK_SIZE_IN_WORLD, 0};
                 break;
-            case Command::TYPE::RHT:
+            case COMMAND_TYPE::RHT:
                 for (auto& idx : m_gridXYVector) {
                     newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::RIGHT));
                 }
                 std::swap(m_gridXYVector, newGridXYSet);
                 m_worldOffset = {-cst::BLOCK_SIZE_IN_WORLD, 0};
                 break;
-            case Command::TYPE::SKP:
+            case COMMAND_TYPE::SKP:
                 break;
-            case Command::TYPE::STP:
+            case COMMAND_TYPE::STP:
                 assert(false);
                 break;
-            case Command::TYPE::GRB:
-                auto& stoppedClusters = model.level().stoppedClusters();
-                for (auto& cluster : stoppedClusters) {
-                    if (isAdjacent(cluster)) {
-                        m_gridXYVector.merge(cluster.m_gridXYVector);
-                    }
-                }
-                stoppedClusters.remove_if([](const Cluster& cluster) { return cluster.empty(); });
+            case COMMAND_TYPE::GRB:
+                grabAdjacentStoppedClusters(model.level());
+                break;
+            case COMMAND_TYPE::SPL:
                 break;
         }
     }
@@ -107,37 +103,37 @@ namespace model {
         }
     }
 
-    Command Cluster::rotateCommandClockWise(Command command) {
+    Command_Temp Cluster::rotateCommandClockWise(Command_Temp command) {
         switch (command.m_type) {
-            case Command::TYPE::FWD:
-                return Command{Command::TYPE::RHT, command.m_modifier};
-            case Command::TYPE::BCK:
-                return Command{Command::TYPE::LFT, command.m_modifier};
-            case Command::TYPE::LFT:
-                return Command{Command::TYPE::FWD, command.m_modifier};
-            case Command::TYPE::RHT:
-                return Command{Command::TYPE::BCK, command.m_modifier};
+            case COMMAND_TYPE::FWD:
+                return Command_Temp{COMMAND_TYPE::RHT, command.m_modifier};
+            case COMMAND_TYPE::BCK:
+                return Command_Temp{COMMAND_TYPE::LFT, command.m_modifier};
+            case COMMAND_TYPE::LFT:
+                return Command_Temp{COMMAND_TYPE::FWD, command.m_modifier};
+            case COMMAND_TYPE::RHT:
+                return Command_Temp{COMMAND_TYPE::BCK, command.m_modifier};
             default:
                 return command;
         }
     }
 
-    Command Cluster::rotateCommandCounterClockWise(Command command) {
+    Command_Temp Cluster::rotateCommandCounterClockWise(Command_Temp command) {
         switch (command.m_type) {
-            case Command::TYPE::FWD:
-                return {Command::TYPE::LFT, command.m_modifier};
-            case Command::TYPE::BCK:
-                return {Command::TYPE::RHT, command.m_modifier};
-            case Command::TYPE::LFT:
-                return {Command::TYPE::BCK, command.m_modifier};
-            case Command::TYPE::RHT:
-                return {Command::TYPE::FWD, command.m_modifier};
+            case COMMAND_TYPE::FWD:
+                return {COMMAND_TYPE::LFT, command.m_modifier};
+            case COMMAND_TYPE::BCK:
+                return {COMMAND_TYPE::RHT, command.m_modifier};
+            case COMMAND_TYPE::LFT:
+                return {COMMAND_TYPE::BCK, command.m_modifier};
+            case COMMAND_TYPE::RHT:
+                return {COMMAND_TYPE::FWD, command.m_modifier};
             default:
                 return command;
         }
     }
 
-    void Cluster::addCommand(Command command) {
+    void Cluster::addCommand(Command_Temp command) {
         m_commands.push_back(command);
     }
 
@@ -165,8 +161,7 @@ namespace model {
         if (m_pendingOperations.size() > 1) {
             kill();
         }
-        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == Command::MODIFIER::IGNORE) ||
-            m_pendingOperations.empty()) {
+        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == COMMAND_MODIFIER::IGNORE) || m_pendingOperations.empty()) {
             m_pendingOperations.clear();
             doCommand(model);
         } else {
@@ -194,7 +189,7 @@ namespace model {
         return m_rotationPivot;
     }
 
-    const std::vector<Command>& Cluster::commands() const {
+    const std::vector<Command_Temp>& Cluster::commands() const {
         return m_commands;
     }
 
@@ -226,8 +221,8 @@ namespace model {
                 corners.emplace_back(1, 1);
             }
             for (const GridXY corner : corners) {
-                result.emplace(f((GridXY(it + corner) + WorldXY{shrinkInWorld - 2 * shrinkInWorld * corner.x(),
-                                                                shrinkInWorld - 2 * shrinkInWorld * corner.y()})));
+                result.emplace(f(
+                    (GridXY(it + corner) + WorldXY{shrinkInWorld - 2 * shrinkInWorld * corner.x(), shrinkInWorld - 2 * shrinkInWorld * corner.y()})));
             }
         }
         return result;
@@ -311,12 +306,8 @@ namespace model {
 
     model::Cluster Cluster::grabAllButFirstComponent() {
         assert(not empty());
+        assert(size() > 1);
         assert(gridXUYAreUnique());
-
-        if (m_gridXYVector.size() == 1) {
-            NOTE_ONCE("Fix naming")
-            return Cluster{m_gridXYVector, "dummy"};
-        }
 
         std::queue<GridXY> queue;
         queue.push(*m_gridXYVector.begin());
@@ -340,12 +331,7 @@ namespace model {
             queue.pop();
         }
         assert(not copy.empty());
-        Cluster result{std::move(copy), name() + "_"};
-        result.resetPhase();
-        result.m_state        = m_state;
-        result.m_commandIndex = m_commandIndex;
-        result.m_commands     = m_commands;
-        result.m_pendingOperations.clear();
+        Cluster result{std::move(copy), m_commands, m_commandIndex, name() + "_"};
         std::swap(m_gridXYVector, result.m_gridXYVector);
         return result;
     }
@@ -373,12 +359,12 @@ namespace model {
                 incrementCommandIndex();
                 break;
             case PHASE::ROTATING:
-                if ((not m_commands.empty()) && m_commands[m_commandIndex].m_modifier == Command::MODIFIER::INCREMENT) {
+                if ((not m_commands.empty()) && m_commands[m_commandIndex].m_modifier == COMMAND_MODIFIER::INCREMENT) {
                     incrementCommandIndex();
                 }
                 break;
         }
-        m_phase = PHASE::NONE;
+        resetPhase();
     }
 
     bool Cluster::contains(const GridXY& gridXY) const {
@@ -418,17 +404,17 @@ namespace model {
         for (const auto& line : m_sides) {
             const int d = contains(GridXY::fromWorldXY(line.start())) ? 1 : -1;
             if (line.start().x() == line.end().x()) {
-                result.insert({f(line.start() + WorldXY{d * shrinkInWorld, shrinkInWorld}),
-                               f(line.end() + WorldXY{d * shrinkInWorld, -shrinkInWorld})});
+                result.insert(
+                    {f(line.start() + WorldXY{d * shrinkInWorld, shrinkInWorld}), f(line.end() + WorldXY{d * shrinkInWorld, -shrinkInWorld})});
             } else {
-                result.insert({f(line.start() + WorldXY{shrinkInWorld, d * shrinkInWorld}),
-                               f(line.end() + WorldXY{-shrinkInWorld, d * shrinkInWorld})});
+                result.insert(
+                    {f(line.start() + WorldXY{shrinkInWorld, d * shrinkInWorld}), f(line.end() + WorldXY{-shrinkInWorld, d * shrinkInWorld})});
             }
         }
         return result;
     }
 
-    std::function<WorldXY(const WorldXY)> Cluster::phaseTransformation() const {
+    std::function<WorldXY(const WorldXY&)> Cluster::phaseTransformation() const {
         switch (m_phase) {
             case PHASE::NONE:
                 return [](const model::WorldXY& b) { return b; };
@@ -458,11 +444,14 @@ namespace model {
         std::list<Cluster> result;
         result.emplace_back(grabAllButFirstComponent());
         while (not result.back().empty()) {
+            if (result.back().size() == 1) {
+                break;
+            }
             result.emplace_back(result.back().grabAllButFirstComponent());
         }
-        assert(result.back().empty());
-        result.pop_back();
-        assert(isConnected());
+        if (result.back().empty()) {
+            result.pop_back();
+        }
         return result;
     }
 
@@ -471,15 +460,13 @@ namespace model {
             return out;
         }
         assert(not cluster.empty());
-        const int minX =
-            std::min_element(cluster.m_gridXYVector.begin(), cluster.m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) {
-                return lhs.x() < rhs.x();
-            })->x();
+        const int minX = std::min_element(cluster.m_gridXYVector.begin(), cluster.m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) {
+                             return lhs.x() < rhs.x();
+                         })->x();
         const int minY = cluster.m_gridXYVector.begin()->y();
-        const int maxX =
-            std::max_element(cluster.m_gridXYVector.begin(), cluster.m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) {
-                return lhs.x() < rhs.x();
-            })->x();
+        const int maxX = std::max_element(cluster.m_gridXYVector.begin(), cluster.m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) {
+                             return lhs.x() < rhs.x();
+                         })->x();
         const int maxY = cluster.m_gridXYVector.rbegin()->y();
         assert(minX <= maxX);
         assert(minY <= maxY);
@@ -529,11 +516,50 @@ namespace model {
         if (m_commands.empty() || m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
-        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == Command::MODIFIER::IGNORE) ||
-            m_pendingOperations.empty()) {
+        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == COMMAND_MODIFIER::IGNORE) || m_pendingOperations.empty()) {
             resetPhase();
-            if (m_commands.at(m_commandIndex).m_type == Command::TYPE::STP) {
+            if (m_commands.at(m_commandIndex).m_type == COMMAND_TYPE::STP) {
                 m_state = CLUSTER_STATE::STOPPED;
+            }
+        }
+    }
+
+    void Cluster::grabAdjacentStoppedClusters(Level& level) {
+        auto& stoppedClusters = level.stoppedClusters();
+        for (auto& cluster : stoppedClusters) {
+            if (isAdjacent(cluster)) {
+                m_gridXYVector.merge(cluster.m_gridXYVector);
+            }
+        }
+        stoppedClusters.remove_if([](const Cluster& cluster) { return cluster.empty(); });
+    }
+
+    void Cluster::spliceCluster(Level& level) {
+        std::set<GridXY> splicedGridXY;
+        const auto&      spliceBlocks = level.spliceBlocks();
+        for (const auto& gridXY : m_gridXYVector) {
+            if (spliceBlocks.find(gridXY) != spliceBlocks.end()) {
+                splicedGridXY.emplace(gridXY);
+            }
+        }
+        if (splicedGridXY.empty()) {
+            return;
+        }
+        for (const auto& gridXY : splicedGridXY) {
+            m_gridXYVector.erase(gridXY);
+        }
+
+        level.stoppedClusters().emplace_back(std::move(splicedGridXY), m_commands, m_commandIndex, name() + "_");
+    }
+
+    void Cluster::spliceIfNeeded(model::Model& model) {
+        if (m_commands.empty() || m_state != CLUSTER_STATE::ALIVE) {
+            return;
+        }
+        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == COMMAND_MODIFIER::IGNORE) || m_pendingOperations.empty()) {
+            resetPhase();
+            if (m_commands.at(m_commandIndex).m_type == COMMAND_TYPE::SPL) {
+                spliceCluster(model.level());
             }
         }
     }

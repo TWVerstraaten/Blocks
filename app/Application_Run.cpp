@@ -100,18 +100,10 @@ namespace app {
         m_model.startPhase();
         ModelViewInterface::interactWithInstantBlocks(m_model, m_scrollArea);
         ModelViewInterface::interactWithDynamicBlocks(m_model, m_scrollArea);
-        for (auto& cluster : m_model.clusters()) {
-            cluster.stopIfNeeded();
-        }
-
-        auto it = std::partition(m_model.clusters().begin(), m_model.clusters().end(), [](const auto& cluster) {
-            return cluster.state() != model::CLUSTER_STATE::STOPPED;
-        });
-        m_model.level().stoppedClusters().splice(m_model.level().stoppedClusters().end(), m_model.clusters(), it, m_model.clusters().end());
-
-        for (auto& cluster : m_model.clusters()) {
-            cluster.performPendingOperationOrNextCommand(m_model);
-        }
+        spliceClustersIfNeeded();
+        stopClustersIfNeeded();
+        addStoppedClustersToLevel();
+        performPendingOperations();
 
         m_model.level().createBoundaries();
         m_model.finishInteractions();
@@ -131,17 +123,13 @@ namespace app {
             performTimeStep();
         }
 
-        const auto dt = SDL_GetTicks() - m_previousTime;
+        const auto dT = SDL_GetTicks() - m_previousTime;
         if (not m_paused) {
-            update(1.9 * dt / m_timeStep);
-            m_timeSinceLastStep += dt;
+            update(1.9 * dT / m_timeStep);
+            m_timeSinceLastStep += dT;
         }
         m_previousTime = SDL_GetTicks();
-        m_view->draw(m_model);
-        m_view->drawScrollArea(&m_scrollArea);
-        m_view->assets()->renderText(std::to_string(1000.0 / dt), view::ScreenXY{10, m_view->windowSize().y() - 40}, m_view->renderer());
-        m_view->renderPresent();
-
+        draw(dT);
         return RUN_MODE::RUNNING;
     }
 
@@ -175,5 +163,38 @@ namespace app {
 
     view::widget::ScrollArea& Application_Run::scrollArea() {
         return m_scrollArea;
+    }
+
+    void Application_Run::addStoppedClustersToLevel() {
+        auto it = std::partition(m_model.clusters().begin(), m_model.clusters().end(), [](const auto& cluster) {
+            return cluster.state() != model::CLUSTER_STATE::STOPPED;
+        });
+        m_model.level().stoppedClusters().splice(m_model.level().stoppedClusters().end(), m_model.clusters(), it, m_model.clusters().end());
+    }
+
+    void Application_Run::stopClustersIfNeeded() {
+        for (auto& cluster : m_model.clusters()) {
+            cluster.stopIfNeeded();
+        }
+    }
+
+    void Application_Run::spliceClustersIfNeeded() {
+        for (auto& cluster : m_model.clusters()) {
+            cluster.spliceIfNeeded(m_model);
+            ModelViewInterface::splitIfDisconnected(m_model, m_scrollArea, cluster);
+        }
+    }
+
+    void Application_Run::performPendingOperations() {
+        for (auto& cluster : m_model.clusters()) {
+            cluster.performPendingOperationOrNextCommand(m_model);
+        }
+    }
+
+    void Application_Run::draw(Uint32 dT) {
+        m_view->draw(m_model);
+        m_view->drawScrollArea(&m_scrollArea);
+        m_view->assets()->renderText(std::to_string(1000.0 / dT), view::ScreenXY{10, m_view->windowSize().y() - 40}, m_view->renderer());
+        m_view->renderPresent();
     }
 } // namespace app
