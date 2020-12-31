@@ -43,6 +43,7 @@ namespace app {
         static void updateCommandScrollArea(model::Model& model, view::widget::ScrollArea& scrollArea, APP_MODE mode);
         static void interactWithInstantBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
         static bool interactWithDynamicBlocks(model::Level& level, model::Cluster& cluster);
+        static void stopSpliceOrKillIfNeeded(model::Level& level, model::Cluster& cluster);
         static void splitIfDisconnected(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster);
         static void split(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster);
 

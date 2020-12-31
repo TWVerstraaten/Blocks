@@ -7,6 +7,7 @@
 #include "../../global/cst.h"
 #include "../../global/fns.h"
 #include "../../model/Cluster.h"
+#include "../../model/command/CommandParser.h"
 #include "../Assets.h"
 #include "../color.h"
 
@@ -14,11 +15,11 @@
 
 view::widget::CommandEditBox::CommandEditBox(int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
     : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())), m_index(cluster.index()) {
-    if (cluster.commands().empty()) {
+    if (cluster.commandVector().empty()) {
         m_strings.emplace_back("");
     } else {
-        for (const auto& command : cluster.commands()) {
-            m_strings.emplace_back(model::Command_Temp::stringFromModifier(command.m_modifier) + " " + model::Command_Temp::stringFromType(command.m_type));
+        for (const auto& command : cluster.commandVector().commands()) {
+            m_strings.emplace_back(model::CommandParser::toString(command));
         }
     }
 }
@@ -31,14 +32,13 @@ view::widget::CommandEditBox::CommandEditBox(const view::widget::CommandEditBox&
 
 void view::widget::CommandEditBox::updateClusterCommands(model::Cluster& cluster) const {
     cluster.clearCommands();
+
     for (const auto& str : m_strings) {
-        if (model::Command_Temp::canParse(str)) {
-            if (fns::trimWhiteSpace(str).empty()) {
-                continue;
-            }
-            cluster.addCommand(model::Command_Temp::fromString(str));
+        if (not model::CommandParser::canParse(str)) {
+            return;
         }
     }
+    cluster.commandVector().set(m_strings);
     m_clusterShouldBeUpdated = false;
 }
 
@@ -60,13 +60,13 @@ void view::widget::CommandEditBox::update(SDL_Renderer* renderer) {
 }
 
 bool view::widget::CommandEditBox::canParse() const {
-    return std::all_of(m_strings.begin(), m_strings.end(), &model::Command_Temp::canParse);
+    return std::all_of(m_strings.begin(), m_strings.end(), &model::CommandParser::canParse);
 }
 
 void view::widget::CommandEditBox::loseFocus() {
     for (auto& str : m_strings) {
-        if (model::Command_Temp::canParse(str) && (not model::Command_Temp::isFormatted(str))) {
-            str           = model::Command_Temp::formatCommandString(str);
+        if (model::CommandParser::canParse(str) && (not model::CommandParser::isFormatted(str))) {
+            str           = model::CommandParser::format(str);
             m_needsUpdate = true;
         }
     }
@@ -106,7 +106,7 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
     for (auto& str : m_strings) {
         m_yOffsets.push_back(yOffset);
         const auto text     = str.length() == 0 ? " " : str;
-        bool       canParse = model::Command_Temp::canParse(str);
+        bool       canParse = model::CommandParser::canParse(str);
         m_textures.emplace_back(Texture::createFromText(
             text, canParse ? view::color::BLACK : view::color::TEXT_ERROR, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
         yOffset += m_textures.back()->height();

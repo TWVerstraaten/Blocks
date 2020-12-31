@@ -23,61 +23,63 @@ namespace model {
         assert(gridXUYAreUnique());
     }
 
-    Cluster::Cluster(std::set<GridXY>&& gridXY, std::vector<Command_Temp> commands, size_t commandIndex, std::string name)
-        : m_index(s_maxClusterIndex), m_gridXYVector(gridXY), m_commands(std::move(commands)), m_commandIndex(commandIndex), m_name(std::move(name)) {
+    Cluster::Cluster(std::set<GridXY>&& gridXY, const CommandVector& commandVector, std::string name)
+        : m_index(s_maxClusterIndex), m_gridXYVector(gridXY), m_commandVector(std::move(commandVector)), m_name(std::move(name)) {
         ++s_maxClusterIndex;
     }
-    void Cluster::doCommand(model::Model& model) {
-        if (m_commands.empty() || m_state != CLUSTER_STATE::ALIVE) {
-            return;
-        }
-        assert(m_commandIndex < m_commands.size());
-        if (m_commands.at(m_commandIndex).m_type == COMMAND_TYPE::SKP) {
-            return;
-        }
-        m_phase = PHASE::TRANSLATING;
-        std::set<GridXY> newGridXYSet;
-        switch (m_commands[m_commandIndex].m_type) {
-            case COMMAND_TYPE::FWD:
-                for (auto& idx : m_gridXYVector) {
-                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::UP));
-                }
-                std::swap(m_gridXYVector, newGridXYSet);
-                m_worldOffset = {0, cst::BLOCK_SIZE_IN_WORLD};
-                break;
-            case COMMAND_TYPE::BCK:
-                for (auto& idx : m_gridXYVector) {
 
-                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::DOWN));
-                }
-                std::swap(m_gridXYVector, newGridXYSet);
-                m_worldOffset = {0, -cst::BLOCK_SIZE_IN_WORLD};
-                break;
-            case COMMAND_TYPE::LFT:
-                for (auto& idx : m_gridXYVector) {
-                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::LEFT));
-                }
-                std::swap(m_gridXYVector, newGridXYSet);
-                m_worldOffset = {cst::BLOCK_SIZE_IN_WORLD, 0};
-                break;
-            case COMMAND_TYPE::RHT:
-                for (auto& idx : m_gridXYVector) {
-                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::RIGHT));
-                }
-                std::swap(m_gridXYVector, newGridXYSet);
-                m_worldOffset = {-cst::BLOCK_SIZE_IN_WORLD, 0};
-                break;
-            case COMMAND_TYPE::SKP:
-                break;
-            case COMMAND_TYPE::STP:
-                assert(false);
-                break;
-            case COMMAND_TYPE::GRB:
-                grabAdjacentStoppedClusters(model.level());
-                break;
-            case COMMAND_TYPE::SPL:
-                break;
+    void Cluster::doCommand(model::Model& model) {
+        if (m_commandVector.empty() || m_state != CLUSTER_STATE::ALIVE) {
+            return;
         }
+
+        std::visit([&](auto c) { doAction(c, *this, model.level()); }, m_commandVector.currentCommand());
+        //        std::set<GridXY> newGridXYSet;
+        //        switch (m_commands[m_commandIndex].m_type) {
+        //            case COMMAND_TYPE::FWD:
+        //                for (auto& idx : m_gridXYVector) {
+        //                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::UP));
+        //                }
+        //                m_phase = PHASE::TRANSLATING;
+        //                std::swap(m_gridXYVector, newGridXYSet);
+        //                m_worldOffset = {0, cst::BLOCK_SIZE_IN_WORLD};
+        //                break;
+        //            case COMMAND_TYPE::BCK:
+        //                for (auto& idx : m_gridXYVector) {
+        //
+        //                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::DOWN));
+        //                }
+        //                m_phase = PHASE::TRANSLATING;
+        //                std::swap(m_gridXYVector, newGridXYSet);
+        //                m_worldOffset = {0, -cst::BLOCK_SIZE_IN_WORLD};
+        //                break;
+        //            case COMMAND_TYPE::LFT:
+        //                for (auto& idx : m_gridXYVector) {
+        //                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::LEFT));
+        //                }
+        //                m_phase = PHASE::TRANSLATING;
+        //                std::swap(m_gridXYVector, newGridXYSet);
+        //                m_worldOffset = {cst::BLOCK_SIZE_IN_WORLD, 0};
+        //                break;
+        //            case COMMAND_TYPE::RHT:
+        //                for (auto& idx : m_gridXYVector) {
+        //                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::RIGHT));
+        //                }
+        //                m_phase = PHASE::TRANSLATING;
+        //                std::swap(m_gridXYVector, newGridXYSet);
+        //                m_worldOffset = {-cst::BLOCK_SIZE_IN_WORLD, 0};
+        //                break;
+        //            case COMMAND_TYPE::SKP:
+        //                break;
+        //            case COMMAND_TYPE::STP:
+        //                assert(false);
+        //                break;
+        //            case COMMAND_TYPE::GRB:
+        //                grabAdjacentStoppedClusters(model.level());
+        //                break;
+        //            case COMMAND_TYPE::SPL:
+        //                break;
+        //        }
     }
 
     void Cluster::rotateClockWiseAbout(const GridXY& pivotGridXY) {
@@ -86,9 +88,10 @@ namespace model {
             newGridXYSet.emplace(GridXY{pivotGridXY.x() + pivotGridXY.y() - gridXY.y(), pivotGridXY.y() - pivotGridXY.x() + gridXY.x()});
         }
         std::swap(m_gridXYVector, newGridXYSet);
-        for (auto& command : m_commands) {
-            command = rotateCommandClockWise(command);
-        }
+        NOTE_ONCE("Do we want to rotate the directions...?")
+        //        for (auto& command : m_commands) {
+        //            command = rotateCommandClockWise(command);
+        //        }
     }
 
     void Cluster::rotateCounterClockWiseAbout(const GridXY& pivotGridXY) {
@@ -97,44 +100,44 @@ namespace model {
             newGridXYSet.emplace(GridXY{pivotGridXY.x() - pivotGridXY.y() + gridXY.y(), pivotGridXY.y() + pivotGridXY.x() - gridXY.x()});
         }
         std::swap(m_gridXYVector, newGridXYSet);
-        for (auto& command : m_commands) {
-            command = rotateCommandCounterClockWise(command);
-        }
+        //        for (auto& command : m_commands) {
+        //            command = rotateCommandCounterClockWise(command);
+        //        }
     }
 
-    Command_Temp Cluster::rotateCommandClockWise(Command_Temp command) {
-        switch (command.m_type) {
-            case COMMAND_TYPE::FWD:
-                return Command_Temp{COMMAND_TYPE::RHT, command.m_modifier};
-            case COMMAND_TYPE::BCK:
-                return Command_Temp{COMMAND_TYPE::LFT, command.m_modifier};
-            case COMMAND_TYPE::LFT:
-                return Command_Temp{COMMAND_TYPE::FWD, command.m_modifier};
-            case COMMAND_TYPE::RHT:
-                return Command_Temp{COMMAND_TYPE::BCK, command.m_modifier};
-            default:
-                return command;
-        }
-    }
+    //    Command Cluster::rotateCommandClockWise(Command command) {
+    //        switch (command.m_type) {
+    //            case COMMAND_TYPE::FWD:
+    //                return Command_Temp{COMMAND_TYPE::RHT, command.m_modifier};
+    //            case COMMAND_TYPE::BCK:
+    //                return Command_Temp{COMMAND_TYPE::LFT, command.m_modifier};
+    //            case COMMAND_TYPE::LFT:
+    //                return Command_Temp{COMMAND_TYPE::FWD, command.m_modifier};
+    //            case COMMAND_TYPE::RHT:
+    //                return Command_Temp{COMMAND_TYPE::BCK, command.m_modifier};
+    //            default:
+    //                return command;
+    //        }
+    //    }
+    //
+    //    Command Cluster::rotateCommandCounterClockWise(Command command) {
+    //        switch (command.m_type) {
+    //            case COMMAND_TYPE::FWD:
+    //                return {COMMAND_TYPE::LFT, command.m_modifier};
+    //            case COMMAND_TYPE::BCK:
+    //                return {COMMAND_TYPE::RHT, command.m_modifier};
+    //            case COMMAND_TYPE::LFT:
+    //                return {COMMAND_TYPE::BCK, command.m_modifier};
+    //            case COMMAND_TYPE::RHT:
+    //                return {COMMAND_TYPE::FWD, command.m_modifier};
+    //            default:
+    //                return command;
+    //        }
+    //    }
 
-    Command_Temp Cluster::rotateCommandCounterClockWise(Command_Temp command) {
-        switch (command.m_type) {
-            case COMMAND_TYPE::FWD:
-                return {COMMAND_TYPE::LFT, command.m_modifier};
-            case COMMAND_TYPE::BCK:
-                return {COMMAND_TYPE::RHT, command.m_modifier};
-            case COMMAND_TYPE::LFT:
-                return {COMMAND_TYPE::BCK, command.m_modifier};
-            case COMMAND_TYPE::RHT:
-                return {COMMAND_TYPE::FWD, command.m_modifier};
-            default:
-                return command;
-        }
-    }
-
-    void Cluster::addCommand(Command_Temp command) {
-        m_commands.push_back(command);
-    }
+    //    void Cluster::addCommand(Command_Temp command) {
+    //        m_commands.push_back(command);
+    //    }
 
     std::set<GridXY>::iterator Cluster::removeBLock(const GridXY& gridXY) {
         const auto it = m_gridXYVector.find(gridXY);
@@ -171,9 +174,9 @@ namespace model {
         return m_rotationPivot;
     }
 
-    const std::vector<Command_Temp>& Cluster::commands() const {
-        return m_commands;
-    }
+    //    const std::vector<Command_Temp>& Cluster::commands() const {
+    //        return m_commands;
+    //    }
 
     WorldXY Cluster::dynamicWorldOffset() const {
         return {static_cast<int>(m_worldOffset.x() * m_phaseFraction), static_cast<int>(m_worldOffset.y() * m_phaseFraction)};
@@ -234,21 +237,11 @@ namespace model {
     }
 
     void Cluster::clearCommands() {
-        m_commands.clear();
-        m_commandIndex = 0;
-    }
-
-    size_t Cluster::commandIndex() const {
-        return m_commandIndex;
+        m_commandVector.clear();
     }
 
     void Cluster::incrementCommandIndex() {
-        if (m_commands.empty()) {
-            return;
-        }
-        ++m_commandIndex;
-        m_commandIndex %= m_commands.size();
-        assert(m_commandIndex < m_commands.size());
+        m_commandVector.increment();
     }
 
     const std::string& Cluster::name() const {
@@ -293,7 +286,7 @@ namespace model {
             queue.pop();
         }
         assert(not copy.empty());
-        Cluster result{std::move(copy), m_commands, m_commandIndex, name() + "_"};
+        Cluster result{std::move(copy), m_commandVector, name() + "_"};
         std::swap(m_gridXYVector, result.m_gridXYVector);
         return result;
     }
@@ -315,17 +308,7 @@ namespace model {
         if (m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
-        switch (m_phase) {
-            case PHASE::NONE:
-            case PHASE::TRANSLATING:
-                incrementCommandIndex();
-                break;
-            case PHASE::ROTATING:
-                if ((not m_commands.empty()) && m_commands[m_commandIndex].m_modifier == COMMAND_MODIFIER::INCREMENT) {
-                    incrementCommandIndex();
-                }
-                break;
-        }
+        incrementCommandIndex();
         resetPhase();
     }
 
@@ -349,7 +332,7 @@ namespace model {
         return m_gridXYVector;
     }
 
-    Cluster::PHASE Cluster::phase() const {
+    PHASE Cluster::phase() const {
         return m_phase;
     }
 
@@ -475,14 +458,12 @@ namespace model {
     }
 
     void Cluster::stopIfNeeded() {
-        if (m_commands.empty() || m_state != CLUSTER_STATE::ALIVE) {
+        if (m_commandVector.empty() || m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
-        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == COMMAND_MODIFIER::IGNORE)) {
+        if (m_commandVector.currentType() == COMMAND_TYPE::STP) {
             resetPhase();
-            if (m_commands.at(m_commandIndex).m_type == COMMAND_TYPE::STP) {
-                m_state = CLUSTER_STATE::STOPPED;
-            }
+            m_state = CLUSTER_STATE::STOPPED;
         }
     }
 
@@ -511,19 +492,11 @@ namespace model {
             m_gridXYVector.erase(gridXY);
         }
 
-        level.stoppedClusters().emplace_back(std::move(splicedGridXY), m_commands, m_commandIndex, name() + "_");
+        level.stoppedClusters().emplace_back(std::move(splicedGridXY), m_commandVector, name() + "_");
     }
 
     void Cluster::spliceIfNeeded(model::Model& model) {
-        if (m_commands.empty() || m_state != CLUSTER_STATE::ALIVE) {
-            return;
-        }
-        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == COMMAND_MODIFIER::IGNORE)) {
-            resetPhase();
-            if (m_commands.at(m_commandIndex).m_type == COMMAND_TYPE::SPL) {
-                spliceCluster(model.level());
-            }
-        }
+        NOTE_ONCE("Implement")
     }
 
     void Cluster::doOperation(const GridXY& point, DYNAMIC_BLOCK_TYPE type) {
@@ -544,11 +517,23 @@ namespace model {
     }
 
     COMMAND_MODIFIER Cluster::currentModifier() const {
-        if (m_commands.empty()) {
-            return COMMAND_MODIFIER::NONE;
-        }
-        assert(m_commandIndex < m_commands.size());
-        return m_commands.at(m_commandIndex).m_modifier;
+        return m_commandVector.currentModifier();
+    }
+
+    size_t Cluster::commandIndex() const {
+        return m_commandVector.commandIndex();
+    }
+
+    const CommandVector& Cluster::commandVector() const {
+        return m_commandVector;
+    }
+
+    CommandVector& Cluster::commandVector() {
+        return m_commandVector;
+    }
+
+    void Cluster::setState(CLUSTER_STATE state) {
+        m_state = state;
     }
 
 } // namespace model

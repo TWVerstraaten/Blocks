@@ -182,6 +182,28 @@ void app::ModelViewInterface::interactWithInstantBlocks(model::Model& model, vie
     }
 }
 
+void app::ModelViewInterface::stopSpliceOrKillIfNeeded(model::Level& level, model::Cluster& cluster) {
+    if (not cluster.isAlive()) {
+        return;
+    }
+    std::vector<std::pair<const model::GridXY, model::DYNAMIC_BLOCK_TYPE>> pendingOperations;
+    for (const auto& [point, type] : level.dynamicBlocks()) {
+        if (cluster.contains(point)) {
+            pendingOperations.emplace_back(point, type);
+        }
+    }
+    if (pendingOperations.size() > 1) {
+        cluster.kill();
+    } else {
+        if (pendingOperations.size() == 1 && cluster.currentModifier() != model::COMMAND_MODIFIER::IGNORE) {
+            return;
+        }
+        if (cluster.commandVector().currentType() == model::COMMAND_TYPE::STP) {
+            cluster.setState(model::CLUSTER_STATE::STOPPED);
+        }
+    }
+}
+
 bool app::ModelViewInterface::interactWithDynamicBlocks(model::Level& level, model::Cluster& cluster) {
     if (not cluster.isAlive() || cluster.currentModifier() == model::COMMAND_MODIFIER::IGNORE) {
         return false;
@@ -197,9 +219,9 @@ bool app::ModelViewInterface::interactWithDynamicBlocks(model::Level& level, mod
     }
     if (pendingOperations.size() == 1) {
         cluster.doOperation(pendingOperations.front().first, pendingOperations.front().second);
-        if (cluster.currentModifier() == model::COMMAND_MODIFIER::INCREMENT) {
-            cluster.incrementCommandIndex();
-        }
+        //        if (cluster.currentModifier() == model::COMMAND_MODIFIER::INCREMENT) {
+        //            cluster.incrementCommandIndex();
+        //        }
         return true;
     } else {
         cluster.kill();

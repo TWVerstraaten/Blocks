@@ -100,14 +100,11 @@ namespace app {
         m_model.startPhase();
         ModelViewInterface::interactWithInstantBlocks(m_model, m_scrollArea);
         for (auto& cluster : m_model.clusters()) {
-            if (not ModelViewInterface::interactWithDynamicBlocks(m_model.level(), cluster)) {
-                cluster.spliceIfNeeded(m_model);
-                cluster.stopIfNeeded();
-            }
+            ModelViewInterface::stopSpliceOrKillIfNeeded(m_model.level(), cluster);
         }
         addStoppedClustersToLevel();
         for (auto& cluster : m_model.clusters()) {
-            if (cluster.phase() == model::Cluster::PHASE::NONE) {
+            if (not ModelViewInterface::interactWithDynamicBlocks(m_model.level(), cluster)) {
                 cluster.doCommand(m_model);
             }
         }
@@ -138,6 +135,7 @@ namespace app {
         if (not m_paused) {
             update(1.9 * dT / m_timeStep);
             m_timeSinceLastStep += dT;
+            ModelViewInterface::updateCommandScrollArea(m_model, m_scrollArea, APP_MODE::RUNNING);
         }
         m_previousTime = SDL_GetTicks();
         draw(dT);

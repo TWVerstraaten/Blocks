@@ -125,4 +125,8 @@ namespace model {
         return it == std::string::npos || string.at(it) == '#';
     }
 
+    bool CommandParser::isFormatted(const std::string& string) {
+        return string == format(string);
+    }
+
 } // namespace model

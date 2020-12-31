@@ -86,13 +86,13 @@ namespace view {
     void View::drawClusters(const std::list<model::Cluster>& clusters) {
         for (const auto& cluster : clusters) {
             switch (cluster.phase()) {
-                case model::Cluster::PHASE::NONE:
+                case model::PHASE::NONE:
                     drawClusterNoPhase(cluster);
                     break;
-                case model::Cluster::PHASE::TRANSLATING:
+                case model::PHASE::TRANSLATING:
                     drawClusterTranslating(cluster);
                     break;
-                case model::Cluster::PHASE::ROTATING:
+                case model::PHASE::ROTATING:
                     drawClusterRotating(cluster);
                     break;
             }
@@ -271,7 +271,7 @@ namespace view {
     }
 
     void View::drawClusterNoPhase(const model::Cluster& cluster) const {
-        assert(cluster.phase() == model::Cluster::PHASE::NONE);
+        assert(cluster.phase() == model::PHASE::NONE);
         const auto shrunkBlockSize = m_viewPort.worldToScreenLength(cst::BLOCK_SIZE_IN_WORLD - 2 * cst::BLOCK_SHRINK_IN_WORLD);
         const auto shrinkWorldXY   = model::WorldXY{cst::BLOCK_SHRINK_IN_WORLD, cst::BLOCK_SHRINK_IN_WORLD};
         for (auto it : cluster.gridXY()) {
@@ -301,7 +301,7 @@ namespace view {
     }
 
     void View::drawClusterTranslating(const model::Cluster& cluster) const {
-        assert(cluster.phase() == model::Cluster::PHASE::TRANSLATING);
+        assert(cluster.phase() == model::PHASE::TRANSLATING);
         const auto shrunkBlockSize = m_viewPort.worldToScreenLength(cst::BLOCK_SIZE_IN_WORLD - 2 * cst::BLOCK_SHRINK_IN_WORLD);
         const auto f               = cluster.phaseTransformation();
         const auto shrinkWorldXY   = model::WorldXY{cst::BLOCK_SHRINK_IN_WORLD, cst::BLOCK_SHRINK_IN_WORLD};
@@ -332,7 +332,7 @@ namespace view {
     }
 
     void View::drawClusterRotating(const model::Cluster& cluster) const {
-        assert(cluster.phase() == model::Cluster::PHASE::ROTATING);
+        assert(cluster.phase() == model::PHASE::ROTATING);
         const model::WorldXY center          = model::WorldXY(cluster.rotationPivot()) + cst::HALF_BLOCK_IN_WORLD;
         const double         theta           = cluster.angle();
         const auto           pivot           = SDL_Point{0, 0};

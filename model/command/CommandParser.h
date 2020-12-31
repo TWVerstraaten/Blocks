@@ -22,12 +22,13 @@ namespace model {
         typedef std::variant<int, COMMAND_MODIFIER, COMMAND_TYPE, COMMAND_LOOP, COMMAND_IF, COMMAND_COMPARE, ERROR_TOKEN> Token;
 
         /****** PUBLIC STATIC FUNCTIONS  ******/
-        static Command     parseString(const std::string& string);
         static bool        canParse(const std::string& string);
+        static bool        isCommentOrEmpty(const std::string& string);
+        static bool        isFormatted(const std::string& string);
+        static Command     parseString(const std::string& string);
         static std::string toString(const Token& token);
         static std::string toString(const Command& command);
         static std::string format(const std::string& string);
-        static bool        isCommentOrEmpty(const std::string& string);
 
       private:
         /****** PRIVATE STATIC FUNCTIONS  ******/

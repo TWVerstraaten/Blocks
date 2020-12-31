@@ -98,9 +98,8 @@ namespace model {
     void Model::startPhase() {
         if (m_needsPreStep) {
             preStep();
-        } else {
-            m_needsPreStep = true;
         }
+        m_needsPreStep  = true;
         m_phaseFraction = 1.0;
     }
 
