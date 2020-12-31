@@ -32,7 +32,6 @@ namespace model {
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] bool                                        isFreeStartBlock(const GridXY& gridXY) const;
-        [[nodiscard]] DYNAMIC_BLOCK_TYPE                          dynamicBlockAt(const GridXY& gridXY) const;
         [[nodiscard]] const std::set<GridXY>&                     levelBlocks() const;
         [[nodiscard]] const std::set<GridXY>&                     startBlocks() const;
         [[nodiscard]] const std::set<GridXY>&                     spliceBlocks() const;

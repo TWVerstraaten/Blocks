@@ -7,10 +7,11 @@
 
 #include "Command_enums.h"
 
+#include <string>
+
 namespace model {
 
     struct Command_Modified {
-
         COMMAND_TYPE     type;
         COMMAND_MODIFIER modifier;
     };

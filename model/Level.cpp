@@ -11,10 +11,6 @@
 
 namespace model {
 
-    DYNAMIC_BLOCK_TYPE Level::dynamicBlockAt(const GridXY& gridXY) const {
-        return m_dynamicBLocks.at(gridXY);
-    }
-
     const std::map<GridXY, DYNAMIC_BLOCK_TYPE>& Level::dynamicBlocks() const {
         return m_dynamicBLocks;
     }

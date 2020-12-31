@@ -32,7 +32,6 @@ namespace model {
             return;
         }
         assert(m_commandIndex < m_commands.size());
-        resetPhase();
         if (m_commands.at(m_commandIndex).m_type == COMMAND_TYPE::SKP) {
             return;
         }
@@ -153,23 +152,6 @@ namespace model {
         return m_gridXYVector;
     }
 
-    void Cluster::addPendingOperation(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
-        m_pendingOperations.emplace(gridXY, blockType);
-    }
-
-    void Cluster::performPendingOperationOrNextCommand(model::Model& model) {
-        if (m_pendingOperations.size() > 1) {
-            kill();
-        }
-        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == COMMAND_MODIFIER::IGNORE) || m_pendingOperations.empty()) {
-            m_pendingOperations.clear();
-            doCommand(model);
-        } else {
-            tryPendingOperation();
-        }
-        m_sides = alg::getSidesFromGridXY(m_gridXYVector);
-    }
-
     void Cluster::update(double phaseFraction) {
         assert(gridXUYAreUnique());
         if (m_state != CLUSTER_STATE::ALIVE) {
@@ -237,6 +219,7 @@ namespace model {
     }
 
     void Cluster::resetPhase() {
+        m_phase         = PHASE::NONE;
         m_worldOffset   = {0, 0};
         m_angle         = 0.0;
         m_rotationPivot = {0, 0};
@@ -266,27 +249,6 @@ namespace model {
         ++m_commandIndex;
         m_commandIndex %= m_commands.size();
         assert(m_commandIndex < m_commands.size());
-    }
-
-    void Cluster::tryPendingOperation() {
-        if (m_pendingOperations.empty()) {
-            return;
-        }
-        if (m_pendingOperations.size() > 1) {
-            kill();
-            return;
-        }
-        switch (m_pendingOperations.begin()->second) {
-            case model::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
-                setRotation(-90.0, m_pendingOperations.begin()->first);
-                rotateClockWiseAbout(m_pendingOperations.begin()->first);
-                break;
-            case model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
-                setRotation(90.0, m_pendingOperations.begin()->first);
-                rotateCounterClockWiseAbout(m_pendingOperations.begin()->first);
-                break;
-        }
-        m_pendingOperations.clear();
     }
 
     const std::string& Cluster::name() const {
@@ -516,7 +478,7 @@ namespace model {
         if (m_commands.empty() || m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
-        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == COMMAND_MODIFIER::IGNORE) || m_pendingOperations.empty()) {
+        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == COMMAND_MODIFIER::IGNORE)) {
             resetPhase();
             if (m_commands.at(m_commandIndex).m_type == COMMAND_TYPE::STP) {
                 m_state = CLUSTER_STATE::STOPPED;
@@ -556,12 +518,37 @@ namespace model {
         if (m_commands.empty() || m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
-        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == COMMAND_MODIFIER::IGNORE) || m_pendingOperations.empty()) {
+        if (((not m_commands.empty()) && m_commands.at(m_commandIndex).m_modifier == COMMAND_MODIFIER::IGNORE)) {
             resetPhase();
             if (m_commands.at(m_commandIndex).m_type == COMMAND_TYPE::SPL) {
                 spliceCluster(model.level());
             }
         }
+    }
+
+    void Cluster::doOperation(const GridXY& point, DYNAMIC_BLOCK_TYPE type) {
+        switch (type) {
+            case model::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
+                setRotation(-90.0, point);
+                rotateClockWiseAbout(point);
+                break;
+            case model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
+                setRotation(90.0, point);
+                rotateCounterClockWiseAbout(point);
+                break;
+        }
+    }
+
+    void Cluster::buildSides() {
+        m_sides = alg::getSidesFromGridXY(m_gridXYVector);
+    }
+
+    COMMAND_MODIFIER Cluster::currentModifier() const {
+        if (m_commands.empty()) {
+            return COMMAND_MODIFIER::NONE;
+        }
+        assert(m_commandIndex < m_commands.size());
+        return m_commands.at(m_commandIndex).m_modifier;
     }
 
 } // namespace model

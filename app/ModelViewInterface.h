@@ -40,11 +40,12 @@ namespace app {
 
       public:
         /****** PUBLIC STATIC FUNCTIONS  ******/
-        static void         updateCommandScrollArea(model::Model& model, view::widget::ScrollArea& scrollArea, APP_MODE mode);
-        static void         interactWithInstantBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
-        static void         interactWithDynamicBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
-        static void         splitIfDisconnected(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster);
-        static void         split(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster);
+        static void updateCommandScrollArea(model::Model& model, view::widget::ScrollArea& scrollArea, APP_MODE mode);
+        static void interactWithInstantBlocks(model::Model& model, view::widget::ScrollArea& scrollArea);
+        static bool interactWithDynamicBlocks(model::Level& level, model::Cluster& cluster);
+        static void splitIfDisconnected(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster);
+        static void split(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster);
+
         static Action_u_ptr clearBlockFromCluster_static(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
 
         /****** NON CONST FUNCTIONS  ******/
@@ -70,9 +71,9 @@ namespace app {
 
       private:
         /****** PRIVATE STATIC FUNCTIONS  ******/
-        static Action_u_ptr clearBlockFromCluster(model::Model&                       model,
-                                                  view::widget::ScrollArea&           scrollArea,
-                                                  const model::GridXY&                point,
+        static Action_u_ptr clearBlockFromCluster(model::Model&             model,
+                                                  view::widget::ScrollArea& scrollArea,
+                                                  const model::GridXY&      point,
                                                   model::Cluster&           cluster);
         static Action_u_ptr addCluster(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
         static Action_u_ptr linkBlocks(model::Model&             model,

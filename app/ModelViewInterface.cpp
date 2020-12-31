@@ -182,17 +182,28 @@ void app::ModelViewInterface::interactWithInstantBlocks(model::Model& model, vie
     }
 }
 
-void app::ModelViewInterface::interactWithDynamicBlocks(model::Model& model, view::widget::ScrollArea& scrollArea) {
-    for (const auto& [point, type] : model.level().dynamicBlocks()) {
-        auto clusterIt = model.clusterContaining(point);
-        if (clusterIt != model.clusters().end() && clusterIt->isAlive()) {
-            clusterIt->addPendingOperation(point, type);
+bool app::ModelViewInterface::interactWithDynamicBlocks(model::Level& level, model::Cluster& cluster) {
+    if (not cluster.isAlive() || cluster.currentModifier() == model::COMMAND_MODIFIER::IGNORE) {
+        return false;
+    }
+    std::vector<std::pair<const model::GridXY, model::DYNAMIC_BLOCK_TYPE>> pendingOperations;
+    for (const auto& [point, type] : level.dynamicBlocks()) {
+        if (cluster.contains(point)) {
+            pendingOperations.emplace_back(point, type);
         }
     }
-    for (auto& cluster : model.clusters()) {
-        if (not cluster.isAlive()) {
-            continue;
+    if (pendingOperations.empty()) {
+        return false;
+    }
+    if (pendingOperations.size() == 1) {
+        cluster.doOperation(pendingOperations.front().first, pendingOperations.front().second);
+        if (cluster.currentModifier() == model::COMMAND_MODIFIER::INCREMENT) {
+            cluster.incrementCommandIndex();
         }
+        return true;
+    } else {
+        cluster.kill();
+        return true;
     }
 }
 

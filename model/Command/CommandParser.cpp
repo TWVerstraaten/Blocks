@@ -14,88 +14,115 @@
 #include <sstream>
 
 namespace model {
+
     template <typename... A>
-    std::variant<CMD, CMD_M, CMD_M_NUM, CMD_Error> f(A... a) {
-        std::cout << "Error\n";
-        return CMD_Error{};
+    Command f(A... a) {
+        return Command_Error{};
     }
 
     template <>
-    std::variant<CMD, CMD_M, CMD_M_NUM, CMD_Error> f<>(COMMAND_TYPE t) {
-        return CMD{t};
+    Command f<>(COMMAND_TYPE t) {
+        return Command_Simple{t};
     }
 
     template <>
-    std::variant<CMD, CMD_M, CMD_M_NUM, CMD_Error> f<>(COMMAND_MODIFIER t, COMMAND_TYPE s) {
-        return CMD_M{s, t};
+    Command f<>(COMMAND_MODIFIER t, COMMAND_TYPE s) {
+        return Command_Modified{s, t};
     }
 
     template <>
-    std::variant<CMD, CMD_M, CMD_M_NUM, CMD_Error> f<>(COMMAND_MODIFIER t, COMMAND_TYPE s, int u) {
-        return CMD_M_NUM{s, t, u};
+    Command f<>(COMMAND_TYPE s, int u) {
+        return u <= 0 ? static_cast<Command>(Command_Error{}) : Command_RepeatWrapper{u, Command_Simple{s}};
     }
 
-    CommandParser::m_Command CommandParser::parseString(const std::string& string) {
-        const auto trimmedString = fns::trimWhiteSpace(string);
+    template <>
+    Command f<>(COMMAND_MODIFIER t, COMMAND_TYPE s, int u) {
+        return u <= 0 ? static_cast<Command>(Command_Error{}) : Command_RepeatWrapper{u, Command_Modified{s, t}};
+    }
 
+    Command CommandParser::parseString(const std::string& string) {
+        const auto tokens = tokenize(string);
+        if (tokens.empty() || tokens.size() > 3) {
+            return Command_Error{};
+        }
+        switch (tokens.size()) {
+            case 1:
+                return std::visit([](auto t) { return f(t); }, tokens.front());
+            case 2:
+                return std::visit([](auto t, auto s) { return f(t, s); }, tokens[0], tokens[1]);
+            case 3:
+                return std::visit([](auto t, auto s, auto u) { return f(t, s, u); }, tokens[0], tokens[1], tokens[2]);
+        }
+        return Command_Error{};
+    }
+
+    CommandParser::Token CommandParser::tokenizeSingle(const std::string& string) {
+        if (s_allTokens.find(string) != s_allTokens.end()) {
+            return s_allTokens.at(string);
+        }
+
+        char* c;
+        strtol(string.c_str(), &c, 10);
+        if (*c != 0) {
+            return model::CommandParser::ERROR_TOKEN::ERROR;
+        }
+        return std::stoi(string);
+    }
+
+    bool CommandParser::canParse(const std::string& string) {
+        if (isCommentOrEmpty(string)) {
+            return true;
+        }
+        return std::visit(overloaded{[](Command_Error e) { return false; }, [](auto e) { return true; }}, parseString(string));
+    }
+
+    std::string CommandParser::toString(const Token& token) {
+        return std::visit(overloaded{[](int i) { return std::to_string(i); },
+                                     [token](auto t) {
+                                         for (const auto& it : s_allTokens) {
+                                             if (it.second == token) {
+                                                 return it.first;
+                                             }
+                                         }
+                                         return std::string("Error");
+                                     }},
+                          token);
+    }
+
+    std::vector<CommandParser::Token> CommandParser::tokenize(const std::string& string) {
+        const auto         trimmedString = fns::trimWhiteSpace(string);
         std::istringstream buffer(trimmedString);
         std::vector<Token> tokens;
         std::transform(
-            std::istream_iterator<std::string>(buffer), std::istream_iterator<std::string>(), back_inserter(tokens), CommandParser::tokenize);
-        if (tokens.empty() || tokens.size() > 3) {
-            return CMD_Error{};
-        }
-        m_Command result;
-        switch (tokens.size()) {
-            case 1:
-                result = std::visit([](auto t) { return f(t); }, tokens.front());
-                break;
-            case 2:
-                result = std::visit([](auto t, auto s) { return f(t, s); }, tokens[0], tokens[1]);
-                break;
-            case 3:
-                result = std::visit([](auto t, auto s, auto u) { return f(t, s, u); }, tokens[0], tokens[1], tokens[2]);
-                break;
-        }
-        return result;
+            std::istream_iterator<std::string>(buffer), std::istream_iterator<std::string>(), back_inserter(tokens), CommandParser::tokenizeSingle);
+        return tokens;
     }
 
-    bool isInt(const std::string& line) {
-        char* p;
-        strtol(line.c_str(), &p, 10);
-        return *p == 0;
-    }
-
-    CommandParser::Token CommandParser::tokenize(const std::string& str) {
-        static const std::map<const std::string, Token> s_allToken{{"+", COMMAND_MODIFIER::IGNORE},
-                                                                   {"-", COMMAND_MODIFIER::INCREMENT},
-                                                                   {"RHT", COMMAND_TYPE::RHT},
-                                                                   {"LFT", COMMAND_TYPE::LFT},
-                                                                   {"FWD", COMMAND_TYPE::FWD},
-                                                                   {"BCK", COMMAND_TYPE::BCK},
-                                                                   {"SKP", COMMAND_TYPE::SKP},
-                                                                   {"STP", COMMAND_TYPE::STP},
-                                                                   {"GRB", COMMAND_TYPE::GRB},
-                                                                   {"SPL", COMMAND_TYPE::SPL},
-                                                                   {">", COMMAND_COMPARE::GREATER},
-                                                                   {">=", COMMAND_COMPARE::GREATER_EQUAL},
-                                                                   {"<", COMMAND_COMPARE::LESS},
-                                                                   {"<=", COMMAND_COMPARE::LESS_EQUAL},
-                                                                   {"=", COMMAND_COMPARE::EQUAL},
-                                                                   {"FORI", COMMAND_LOOP::FORI},
-                                                                   {"IFSIZE", COMMAND_IF::IFSIZE}};
-        if (s_allToken.find(str) != s_allToken.end()) {
-            return s_allToken.at(str);
+    std::string CommandParser::format(const std::string& string) {
+        if (isCommentOrEmpty(string)) {
+            return fns::trimWhiteSpace(string);
+        }
+        const auto  tokens = tokenize(string);
+        std::string result;
+        for (const auto& token : tokens) {
+            result += toString(token);
+            result += " ";
         }
 
-        try {
-            if (isInt(str)) {
-                int n = std::stoi(str);
-                return n;
-            } else {
-                return model::CommandParser::ERROR_TOKEN::ERROR;
-            }
-        } catch (...) { return model::CommandParser::ERROR_TOKEN::ERROR; }
+        return tokens.empty() ? "" : result.substr(0, result.length() - 1);
+    }
+
+    std::string CommandParser::toString(const Command& command) {
+        return std::visit(overloaded{[](const Command_Error& e) { return std::string("Error"); },
+                                     [](const Command_Simple& e) { return toString(e.type); },
+                                     [](const Command_Modified& e) { return toString(e.modifier) + " " + toString(e.type); },
+                                     [](const Command_RepeatWrapper& e) { return toString(toCommand(e)); }},
+                          command);
+    }
+
+    bool CommandParser::isCommentOrEmpty(const std::string& string) {
+        auto it = string.find_first_not_of(' ');
+        return it == std::string::npos || string.at(it) == '#';
     }
 
 } // namespace model

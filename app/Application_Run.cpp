@@ -99,11 +99,22 @@ namespace app {
     void Application_Run::performTimeStep() {
         m_model.startPhase();
         ModelViewInterface::interactWithInstantBlocks(m_model, m_scrollArea);
-        ModelViewInterface::interactWithDynamicBlocks(m_model, m_scrollArea);
-        spliceClustersIfNeeded();
-        stopClustersIfNeeded();
+        for (auto& cluster : m_model.clusters()) {
+            if (not ModelViewInterface::interactWithDynamicBlocks(m_model.level(), cluster)) {
+                cluster.spliceIfNeeded(m_model);
+                cluster.stopIfNeeded();
+            }
+        }
         addStoppedClustersToLevel();
-        performPendingOperations();
+        for (auto& cluster : m_model.clusters()) {
+            if (cluster.phase() == model::Cluster::PHASE::NONE) {
+                cluster.doCommand(m_model);
+            }
+        }
+
+        for (auto& cluster : m_model.clusters()) {
+            cluster.buildSides();
+        }
 
         m_model.level().createBoundaries();
         m_model.finishInteractions();
@@ -182,12 +193,6 @@ namespace app {
         for (auto& cluster : m_model.clusters()) {
             cluster.spliceIfNeeded(m_model);
             ModelViewInterface::splitIfDisconnected(m_model, m_scrollArea, cluster);
-        }
-    }
-
-    void Application_Run::performPendingOperations() {
-        for (auto& cluster : m_model.clusters()) {
-            cluster.performPendingOperationOrNextCommand(m_model);
         }
     }
 

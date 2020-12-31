@@ -38,7 +38,6 @@ namespace app {
         void mouseMoveEvent(const SDL_Event& event);
         void stopClustersIfNeeded();
         void spliceClustersIfNeeded();
-        void performPendingOperations();
         void draw(Uint32 dT);
 
         /****** DATA MEMBERS  ******/

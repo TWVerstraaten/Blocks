@@ -13,7 +13,6 @@
 namespace model {
 
     struct Command_RepeatWrapper {
-
         int                                            repeatCount;
         std::variant<Command_Simple, Command_Modified> command;
     };

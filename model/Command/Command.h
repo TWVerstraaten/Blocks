@@ -5,6 +5,7 @@
 #ifndef BLOCKS_COMMAND_H
 #define BLOCKS_COMMAND_H
 
+#include "Command_Error.h"
 #include "Command_Modified.h"
 #include "Command_RepeatWrapper.h"
 #include "Command_Simple.h"
@@ -13,7 +14,17 @@
 
 namespace model {
 
-    typedef std::variant<Command_Simple, Command_Modified, Command_RepeatWrapper> Command;
+    typedef std::variant<Command_Simple, Command_Modified, Command_RepeatWrapper, Command_Error> Command;
 
-}
+    model::Command toCommand(const Command_RepeatWrapper& e);
+
+    class Cluster;
+    class Level;
+
+    void doAction(const Command_Simple& command, Cluster& cluster, Level & level);
+    void doAction(const Command_Modified& command,Cluster& cluster, Level & level);
+    void doAction(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
+
+} // namespace model
+
 #endif // BLOCKS_COMMAND_H
