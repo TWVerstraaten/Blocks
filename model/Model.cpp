@@ -24,7 +24,7 @@ namespace model {
 
     void Model::intersectWithLevel() {
         for (auto& cluster : m_clusters) {
-            if (not cluster.isAlive()) {
+            if (not cluster.alive()) {
                 continue;
             }
             cluster.collideWithLevel(m_level, cst::BLOCK_SHRINK_IN_WORLD);
@@ -132,7 +132,7 @@ namespace model {
 
         for (auto cluster1 = m_clusters.begin(); cluster1 != m_clusters.end(); ++cluster1) {
             for (auto cluster2 = std::next(cluster1); cluster2 != m_clusters.end(); ++cluster2) {
-                if (not(cluster1->isAlive() || cluster2->isAlive())) {
+                if (not(cluster1->alive() || cluster2->alive())) {
                     continue;
                 }
                 if (cluster1->intersects(*cluster2, cst::BLOCK_SHRINK_IN_WORLD)) {

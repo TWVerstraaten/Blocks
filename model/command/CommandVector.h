@@ -37,8 +37,9 @@ namespace model {
         void set(const std::vector<std::string>& strings);
 
       private:
-        static COMMAND_TYPE     type(const Command& c);
-        static COMMAND_MODIFIER modifier(const Command& c);
+        /****** PRIVATE STATIC FUNCTIONS  ******/
+        static COMMAND_TYPE     getType(const Command& c);
+        static COMMAND_MODIFIER getModifier(const Command& c);
 
         /****** DATA MEMBERS  ******/
         size_t               m_commandIndex = 0;

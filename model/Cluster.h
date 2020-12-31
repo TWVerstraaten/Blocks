@@ -10,9 +10,8 @@
 #include "Level_enums.h"
 #include "Line.h"
 #include "WorldXY.h"
-#include "command/CommandVector.h"
 #include "command/Command.h"
-
+#include "command/CommandVector.h"
 
 #include <functional>
 #include <iostream>
@@ -30,7 +29,6 @@ namespace model {
         static size_t s_maxClusterIndex;
 
       public:
-
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         explicit Cluster(std::set<GridXY>&& gridXY, std::string name);
         Cluster(const Cluster& other) = default;
@@ -59,11 +57,11 @@ namespace model {
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] bool                                   empty() const;
-        [[nodiscard]] bool                                   isAlive() const;
-        [[nodiscard]] bool                                   isConnected() const;
+        [[nodiscard]] bool                                   alive() const;
+        [[nodiscard]] bool                                   connected() const;
         [[nodiscard]] bool                                   contains(const GridXY& gridXY) const;
         [[nodiscard]] bool                                   intersects(const Cluster& other, int shrinkInWorld) const;
-        [[nodiscard]] bool                                   isAdjacent(const Cluster& other) const;
+        [[nodiscard]] bool                                   adjacent(const Cluster& other) const;
         [[nodiscard]] std::function<WorldXY(const WorldXY&)> phaseTransformation() const;
 
         /****** NON CONST FUNCTIONS  ******/

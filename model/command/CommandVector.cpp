@@ -73,23 +73,23 @@ const std::vector<model::Command>& model::CommandVector::commands() const {
 }
 
 model::COMMAND_TYPE model::CommandVector::currentType() const {
-    return type(currentCommand());
+    return getType(currentCommand());
 }
 
 model::COMMAND_MODIFIER model::CommandVector::currentModifier() const {
-    return modifier(currentCommand());
+    return getModifier(currentCommand());
 }
 
-model::COMMAND_TYPE model::CommandVector::type(const model::Command& c) {
-    return std::visit(overloaded{[](const model::Command_RepeatWrapper& e) { return type(toCommand(e)); },
+model::COMMAND_TYPE model::CommandVector::getType(const model::Command& c) {
+    return std::visit(overloaded{[](const model::Command_RepeatWrapper& e) { return getType(toCommand(e)); },
                                  [](const model::Command_Simple e) { return e.type; },
                                  [](const model::Command_Modified e) { return e.type; },
                                  [](const auto& e) { return model::COMMAND_TYPE::NONE; }},
                       c);
 }
 
-model::COMMAND_MODIFIER model::CommandVector::modifier(const model::Command& c) {
-    return std::visit(overloaded{[](const model::Command_RepeatWrapper& e) { return modifier(toCommand(e)); },
+model::COMMAND_MODIFIER model::CommandVector::getModifier(const model::Command& c) {
+    return std::visit(overloaded{[](const model::Command_RepeatWrapper& e) { return getModifier(toCommand(e)); },
                                  [](const model::Command_Modified e) { return e.modifier; },
                                  [](const auto& e) { return model::COMMAND_MODIFIER::NONE; }},
                       c);

@@ -131,7 +131,7 @@ void view::widget::ScrollArea::addCommandEditBox(const model::Cluster& cluster) 
     m_children.emplace_back(
         CommandEditBox(m_rect.x + cst::LINE_EDIT_PADDING, 0, cst::LINE_EDIT_WIDTH, 0, m_assets, cluster));
     m_children.back().setHighLightedLine(cluster.commandIndex());
-    m_children.back().setActive(cluster.isAlive());
+    m_children.back().setActive(cluster.alive());
     m_needsUpdate = true;
 }
 

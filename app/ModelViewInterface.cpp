@@ -49,10 +49,10 @@ static void updateExistingCommandEditBoxes(const std::list<model::Cluster>& clus
     for (auto& commandEditBox : scrollArea.children()) {
         auto it = findCluster(commandEditBox, clusters);
         assert(it != clusters.end());
-        if (it->isAlive()) {
+        if (it->alive()) {
             commandEditBox.update(it->commandVector());
         }
-        commandEditBox.setActive(it->isAlive());
+        commandEditBox.setActive(it->alive());
     }
 }
 
@@ -183,7 +183,7 @@ void app::ModelViewInterface::interactWithInstantBlocks(model::Model& model, vie
 }
 
 void app::ModelViewInterface::stopSpliceOrKillIfNeeded(model::Level& level, model::Cluster& cluster) {
-    if (not cluster.isAlive()) {
+    if (not cluster.alive()) {
         return;
     }
     std::vector<std::pair<const model::GridXY, model::DYNAMIC_BLOCK_TYPE>> pendingOperations;
@@ -205,7 +205,7 @@ void app::ModelViewInterface::stopSpliceOrKillIfNeeded(model::Level& level, mode
 }
 
 bool app::ModelViewInterface::interactWithDynamicBlocks(model::Level& level, model::Cluster& cluster) {
-    if (not cluster.isAlive() || cluster.currentModifier() == model::COMMAND_MODIFIER::IGNORE) {
+    if (not cluster.alive() || cluster.currentModifier() == model::COMMAND_MODIFIER::IGNORE) {
         return false;
     }
     std::vector<std::pair<const model::GridXY, model::DYNAMIC_BLOCK_TYPE>> pendingOperations;
@@ -228,7 +228,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockFromCluster(m
                                                                                model::Cluster&           cluster) {
     assert(cluster.contains(point));
     cluster.removeBLock(point);
-    if (cluster.isConnected()) {
+    if (cluster.connected()) {
         return std::make_unique<action::RemoveBlockFromClusterAction>(cluster.index(), point);
     }
     model::Model copy = model;
@@ -237,7 +237,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockFromCluster(m
 }
 
 void app::ModelViewInterface::splitIfDisconnected(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster) {
-    if (not cluster.isConnected()) {
+    if (not cluster.connected()) {
         split(model, scrollArea, cluster);
     }
 }
@@ -252,7 +252,7 @@ void app::ModelViewInterface::split(model::Model& model, view::widget::ScrollAre
         assert(newCommandEditIt != scrollArea.children().end());
         newCommandEditIt->setStrings(commandEditIt->strings());
     }
-    assert(cluster.isConnected());
+    assert(cluster.connected());
     model.clusters().splice(model.clusters().end(), newClusters);
 }
 
@@ -287,7 +287,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(model::Model
     }
     if (extensionIt == clusters.end()) {
         baseIt->addGridXY(point);
-        assert(baseIt->isConnected());
+        assert(baseIt->connected());
         return std::make_unique<action::AddBlockToClusterAction>(baseIt->index(), point);
     }
     auto copyOfModel = model;

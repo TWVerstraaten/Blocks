@@ -217,7 +217,7 @@ namespace model {
         m_state = CLUSTER_STATE::DEAD;
     }
 
-    bool Cluster::isAlive() const {
+    bool Cluster::alive() const {
         return m_state == CLUSTER_STATE::ALIVE;
     }
 
@@ -248,7 +248,7 @@ namespace model {
         return m_name;
     }
 
-    bool Cluster::isConnected() const {
+    bool Cluster::connected() const {
         NOTE_ONCE("Implement proper variant of this function")
         assert(gridXUYAreUnique());
         assert(not empty());
@@ -445,7 +445,7 @@ namespace model {
         return m_state;
     }
 
-    bool Cluster::isAdjacent(const Cluster& other) const {
+    bool Cluster::adjacent(const Cluster& other) const {
         for (const auto& it1 : m_gridXYVector) {
             for (const auto& it2 : other.m_gridXYVector) {
                 if (it1.isAdjacent(it2)) {
@@ -470,7 +470,7 @@ namespace model {
     void Cluster::grabAdjacentStoppedClusters(Level& level) {
         auto& stoppedClusters = level.stoppedClusters();
         for (auto& cluster : stoppedClusters) {
-            if (isAdjacent(cluster)) {
+            if (adjacent(cluster)) {
                 m_gridXYVector.merge(cluster.m_gridXYVector);
             }
         }
