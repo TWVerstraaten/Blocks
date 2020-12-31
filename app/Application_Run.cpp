@@ -135,7 +135,6 @@ namespace app {
         if (not m_paused) {
             update(1.9 * dT / m_timeStep);
             m_timeSinceLastStep += dT;
-            ModelViewInterface::updateCommandScrollArea(m_model, m_scrollArea, APP_MODE::RUNNING);
         }
         m_previousTime = SDL_GetTicks();
         draw(dT);

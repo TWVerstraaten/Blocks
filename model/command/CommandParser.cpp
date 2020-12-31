@@ -66,7 +66,8 @@ namespace model {
         if (*c != 0) {
             return model::CommandParser::ERROR_TOKEN::ERROR;
         }
-        return std::stoi(string);
+        int result = std::stoi(string);
+        return (result >= 100) ? static_cast<Token>(ERROR_TOKEN::ERROR) : result;
     }
 
     bool CommandParser::canParse(const std::string& string) {
@@ -77,7 +78,7 @@ namespace model {
     }
 
     std::string CommandParser::toString(const Token& token) {
-        return std::visit(overloaded{[](int i) { return std::to_string(i); },
+        return std::visit(overloaded{[](int i) { return i == std::numeric_limits<int>::max() ? "INF" : std::to_string(i); },
                                      [token](auto t) {
                                          for (const auto& it : s_allTokens) {
                                              if (it.second == token) {
@@ -116,7 +117,7 @@ namespace model {
         return std::visit(overloaded{[](const Command_Error& e) { return std::string("Error"); },
                                      [](const Command_Simple& e) { return toString(e.type); },
                                      [](const Command_Modified& e) { return toString(e.modifier) + " " + toString(e.type); },
-                                     [](const Command_RepeatWrapper& e) { return toString(toCommand(e)); }},
+                                     [](const Command_RepeatWrapper& e) { return toString(toCommand(e)) + " " + std::to_string(e.repeatCount); }},
                           command);
     }
 

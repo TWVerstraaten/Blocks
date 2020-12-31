@@ -8,6 +8,7 @@
 #include "Command.h"
 #include "Command_enums.h"
 
+#include <limits>
 #include <map>
 #include <string>
 #include <variant>
@@ -52,7 +53,8 @@ namespace model {
                                                                            {"<=", COMMAND_COMPARE::LESS_EQUAL},
                                                                            {"=", COMMAND_COMPARE::EQUAL},
                                                                            {"FORI", COMMAND_LOOP::FORI},
-                                                                           {"IFSIZE", COMMAND_IF::IFSIZE}};
+                                                                           {"IFSIZE", COMMAND_IF::IFSIZE},
+                                                                           {"INF", std::numeric_limits<int>::max()}};
     };
 
 } // namespace model

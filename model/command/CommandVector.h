@@ -17,13 +17,12 @@ namespace model {
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         CommandVector() = default;
-        //        CommandVector(const CommandVector&) = default;
-        //        CommandVector( CommandVector&&) = default;
         explicit CommandVector(const std::vector<std::string>& strings);
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] size_t                      commandIndex() const;
         [[nodiscard]] const std::vector<Command>& commands() const;
+        [[nodiscard]] size_t                      repeatCount() const;
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] bool             wellFormed() const;

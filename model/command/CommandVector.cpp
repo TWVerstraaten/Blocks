@@ -94,3 +94,7 @@ model::COMMAND_MODIFIER model::CommandVector::modifier(const model::Command& c) 
                                  [](const auto& e) { return model::COMMAND_MODIFIER::NONE; }},
                       c);
 }
+
+size_t model::CommandVector::repeatCount() const {
+    return m_repeatCount;
+}

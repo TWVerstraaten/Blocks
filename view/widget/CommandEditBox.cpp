@@ -8,6 +8,7 @@
 #include "../../global/fns.h"
 #include "../../model/Cluster.h"
 #include "../../model/command/CommandParser.h"
+#include "../../model/command/CommandVector.h"
 #include "../Assets.h"
 #include "../color.h"
 
@@ -112,4 +113,17 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
         yOffset += m_textures.back()->height();
     }
     m_yOffsets.push_back(yOffset);
+}
+
+void view::widget::CommandEditBox::update(const model::CommandVector& commandVector) {
+    setHighLightedLine(commandVector.commandIndex());
+
+    if (commandVector.repeatCount() > 0) {
+        m_strings[m_selectionData.m_first.m_stringIndex] = model::CommandParser::toString(commandVector.commands().at(commandVector.commandIndex())) +
+                                                           " #" + std::to_string(commandVector.repeatCount());
+        m_needsUpdate = true;
+    } else {
+        m_strings[m_selectionData.m_first.m_stringIndex] = model::CommandParser::toString(commandVector.commands().at(commandVector.commandIndex()));
+        m_needsUpdate                                    = true;
+    }
 }

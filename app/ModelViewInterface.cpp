@@ -45,18 +45,18 @@ static void removeActionBoxesOfRemovedClusters(const std::list<model::Cluster>& 
     scrollArea.children().remove_if([&](const view::widget::CommandEditBox& box) { return findCluster(box, clusters) == clusters.end(); });
 }
 
-static void highlightActionBoxLines(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea) {
+static void updateExistingCommandEditBoxes(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea) {
     for (auto& commandEditBox : scrollArea.children()) {
         auto it = findCluster(commandEditBox, clusters);
         assert(it != clusters.end());
         if (it->isAlive()) {
-            commandEditBox.setHighLightedLine(it->commandIndex());
+            commandEditBox.update(it->commandVector());
         }
         commandEditBox.setActive(it->isAlive());
     }
 }
 
-static void addActionBoxesOfNewClusters(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea) {
+static void addCommandEditBoxesOfNewClusters(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea) {
     auto it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
         return findCommandEditBox(cluster, scrollArea.children()) == scrollArea.children().end();
     });
@@ -115,9 +115,9 @@ void app::ModelViewInterface::addAction(Action_u_ptr&& action) {
 void app::ModelViewInterface::updateCommandScrollArea(model::Model& model, view::widget::ScrollArea& scrollArea, app::APP_MODE mode) {
     removeActionBoxesOfRemovedClusters(model.clusters(), scrollArea);
     if (mode == APP_MODE::RUNNING) {
-        highlightActionBoxLines(model.clusters(), scrollArea);
+        updateExistingCommandEditBoxes(model.clusters(), scrollArea);
     }
-    addActionBoxesOfNewClusters(model.clusters(), scrollArea);
+    addCommandEditBoxesOfNewClusters(model.clusters(), scrollArea);
     scrollArea.setHeightAndPositions();
 }
 
@@ -192,7 +192,7 @@ void app::ModelViewInterface::stopSpliceOrKillIfNeeded(model::Level& level, mode
             pendingOperations.emplace_back(point, type);
         }
     }
-    if (pendingOperations.size() > 1) {
+    if (pendingOperations.size() > 1 && cluster.currentModifier() != model::COMMAND_MODIFIER::IGNORE) {
         cluster.kill();
     } else {
         if (pendingOperations.size() == 1 && cluster.currentModifier() != model::COMMAND_MODIFIER::IGNORE) {
@@ -217,16 +217,9 @@ bool app::ModelViewInterface::interactWithDynamicBlocks(model::Level& level, mod
     if (pendingOperations.empty()) {
         return false;
     }
-    if (pendingOperations.size() == 1) {
-        cluster.doOperation(pendingOperations.front().first, pendingOperations.front().second);
-        //        if (cluster.currentModifier() == model::COMMAND_MODIFIER::INCREMENT) {
-        //            cluster.incrementCommandIndex();
-        //        }
-        return true;
-    } else {
-        cluster.kill();
-        return true;
-    }
+    assert(pendingOperations.size() == 1);
+    cluster.doOperation(pendingOperations.front().first, pendingOperations.front().second);
+    return true;
 }
 
 std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockFromCluster(model::Model&             model,
@@ -253,7 +246,7 @@ void app::ModelViewInterface::split(model::Model& model, view::widget::ScrollAre
     auto newClusters   = cluster.collectAllButFirstComponent();
     auto commandEditIt = findCommandEditBox(cluster, scrollArea.children());
     assert(commandEditIt != scrollArea.children().end());
-    addActionBoxesOfNewClusters(newClusters, scrollArea);
+    addCommandEditBoxesOfNewClusters(newClusters, scrollArea);
     for (const auto& newCluster : newClusters) {
         auto newCommandEditIt = findCommandEditBox(newCluster, scrollArea.children());
         assert(newCommandEditIt != scrollArea.children().end());
@@ -270,7 +263,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::addCluster(model::Model
     auto& clusters = model.clusters();
     if (std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.contains(point); }) == clusters.end()) {
         clusters.push_back(model::Cluster({point}, "CL" + std::to_string(clusters.size())));
-        addActionBoxesOfNewClusters(clusters, scrollArea);
+        addCommandEditBoxesOfNewClusters(clusters, scrollArea);
         auto commandEditBoxIt = findCommandEditBox(clusters.back(), scrollArea.children());
         assert(commandEditBoxIt != scrollArea.children().end());
         return std::make_unique<action::AddClusterAction>(clusters.back(), *commandEditBoxIt);

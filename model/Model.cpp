@@ -160,4 +160,8 @@ namespace model {
         return std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(point); });
     }
 
+    double Model::phaseFraction() const {
+        return m_phaseFraction;
+    }
+
 } // namespace model

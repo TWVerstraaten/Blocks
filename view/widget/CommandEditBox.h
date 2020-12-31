@@ -9,6 +9,7 @@
 
 namespace model {
     class Cluster;
+    class CommandVector;
 }
 
 namespace view::widget {
@@ -38,6 +39,7 @@ namespace view::widget {
         void setStrings(const std::vector<std::string>& strings);
         void createTitleTexture(SDL_Renderer* renderer);
         void createStringTextures(SDL_Renderer* renderer);
+        void update(const model::CommandVector& commandVector);
 
       private:
         /****** DATA MEMBERS  ******/
