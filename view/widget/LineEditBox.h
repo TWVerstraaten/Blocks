@@ -47,27 +47,21 @@ namespace view {
 
           private:
             /****** PRIVATE CONST FUNCTIONS  ******/
-            void        renderStrings(SDL_Renderer* renderer) const;
-            void        getSelectionFromMousePoint(SelectionData::Data& data, const view::ScreenXY& mousePoint) const;
-            void        drawDashAt(const SelectionData::Data& data, SDL_Renderer* renderer) const;
-            void        highlightString(size_t stringIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
-            void        highlightStrings(size_t         firstStringIndex,
-                                         size_t         lastStringIndex,
-                                         SDL_Renderer*  renderer,
-                                         HIGHLIGHT_MODE mode) const;
-            void        highlightStringPartial(size_t         stringIndex,
-                                               size_t         firstCharIndex,
-                                               size_t         lastCharIndex,
-                                               SDL_Renderer*  renderer,
-                                               HIGHLIGHT_MODE mode) const;
-            void        renderSelection(SDL_Renderer* renderer) const;
-            void        renderHighlightIfSelected(SDL_Renderer* renderer) const;
-            void        highlightRange(const SelectionData::Data& first,
-                                       const SelectionData::Data& last,
-                                       SDL_Renderer*              renderer,
-                                       HIGHLIGHT_MODE             mode) const;
-            [[nodiscard]] int         widthOfString(const std::string& string) const;
-            [[nodiscard]] std::string selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
+            void renderContents(SDL_Renderer* renderer) const;
+            void renderStrings(SDL_Renderer* renderer) const;
+            void renderComments(SDL_Renderer* renderer) const;
+            void renderLineNumbers(SDL_Renderer* renderer) const;
+            void getSelectionFromMousePoint(SelectionData::Data& data, const view::ScreenXY& mousePoint) const;
+            void drawDashAt(const SelectionData::Data& data, SDL_Renderer* renderer) const;
+            void highlightString(size_t stringIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
+            void highlightStrings(size_t firstStringIndex, size_t lastStringIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
+            void highlightStringPartial(
+                size_t stringIndex, size_t firstCharIndex, size_t lastCharIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
+            void renderSelection(SDL_Renderer* renderer) const;
+            void renderHighlightIfSelected(SDL_Renderer* renderer) const;
+            void highlightRange(const SelectionData::Data& first, const SelectionData::Data& last, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
+            [[nodiscard]] int              widthOfString(const std::string& string) const;
+            [[nodiscard]] std::string      selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
             [[nodiscard]] const SDL_Color& getHighlightColor(HIGHLIGHT_MODE mode) const;
             [[nodiscard]] std::string      prefixOfString(const SelectionData::Data& data) const;
             [[nodiscard]] std::string      suffixOfString(const SelectionData::Data& data) const;
@@ -100,14 +94,15 @@ namespace view {
 
           protected:
             /****** DATA MEMBERS  ******/
-            bool                                  m_needsUpdate = true;
-            const Assets*                         m_assets;
-            std::string                           m_title;
-            SelectionData                         m_selectionData;
-            std::unique_ptr<Texture>              m_titleTexture;
-            std::vector<std::string>              m_strings;
-            std::vector<int>                      m_yOffsets;
-            std::vector<std::unique_ptr<Texture>> m_textures;
+            bool                                        m_needsUpdate = true;
+            const Assets*                               m_assets;
+            std::string                                 m_title;
+            SelectionData                               m_selectionData;
+            std::unique_ptr<Texture>                    m_titleTexture;
+            std::vector<std::string>                    m_strings;
+            std::vector<int>                            m_yOffsets;
+            std::vector<std::unique_ptr<Texture>>       m_textures;
+            std::vector<std::pair<size_t, std::string>> m_comments;
 
           private:
             bool   m_active          = true;

@@ -21,7 +21,6 @@ namespace app {
         /****** NON CONST FUNCTIONS  ******/
         void                      setTimeStep(Uint32 timeStep);
         void                      handleEvent(const SDL_Event& event);
-        void                      setPauseAfterNextStep(bool pauseAfterNextStep);
         RUN_MODE                  performSingleLoop();
         view::widget::ScrollArea& scrollArea();
 
@@ -44,7 +43,6 @@ namespace app {
         bool                     m_paused                  = false;
         bool                     m_rightMouseButtonPressed = false;
         bool                     m_leftMouseButtonPressed  = false;
-        bool                     m_pauseAfterNextStep      = false;
         Uint32                   m_previousTime;
         Uint32                   m_timeSinceLastStep = 0;
         Uint32                   m_timeStep          = cst::TIME_STEP_SLOW;

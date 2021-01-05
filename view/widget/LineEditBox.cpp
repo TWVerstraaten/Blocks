@@ -57,7 +57,7 @@ namespace view::widget {
 
         Assets::renderTexture(m_titleTexture.get(), {m_rect.x, m_rect.y, m_titleTexture->width(), m_titleTexture->height()}, renderer);
         renderHighlightIfSelected(renderer);
-        renderStrings(renderer);
+        renderContents(renderer);
     }
 
     void LineEditBox::renderHighlightIfSelected(SDL_Renderer* renderer) const {
@@ -66,15 +66,40 @@ namespace view::widget {
         }
     }
 
+    void LineEditBox::renderContents(SDL_Renderer* renderer) const {
+        renderStrings(renderer);
+        renderComments(renderer);
+        renderLineNumbers(renderer);
+    }
+
     void LineEditBox::renderStrings(SDL_Renderer* renderer) const {
-        int    yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
-        size_t line    = 1;
+        int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
+        assert(yOffset == m_yOffsets[0]);
         for (const auto& texture : m_textures) {
-            m_assets->renderText(
-                std::to_string(line++), view::ScreenXY{m_rect.x, m_rect.y + yOffset}, renderer, Assets::FONT_ENUM::SMALL, color::DARK_GREY);
             Assets::renderTexture(
                 texture.get(), {cst::LINE_EDIT_X_OFFSET + m_rect.x, m_rect.y + yOffset, texture->width(), texture->height()}, renderer);
             yOffset += texture->height();
+        }
+    }
+
+    void LineEditBox::renderComments(SDL_Renderer* renderer) const {
+        for (const auto& [index, comment] : m_comments) {
+            m_assets->renderText(comment,
+                                 view::ScreenXY{m_rect.x + m_rect.w - widthOfString(comment), m_rect.y + m_yOffsets[index]},
+                                 renderer,
+                                 Assets::FONT_ENUM::MAIN,
+                                 color::DARK_GREY);
+        }
+    }
+
+    void LineEditBox::renderLineNumbers(SDL_Renderer* renderer) const {
+
+        for (size_t line = 0; line != m_strings.size(); ++line) {
+            m_assets->renderText(std::to_string(line + 1),
+                                 view::ScreenXY{m_rect.x, m_rect.y + m_yOffsets[line]},
+                                 renderer,
+                                 Assets::FONT_ENUM::SMALL,
+                                 color::DARK_GREY);
         }
     }
 

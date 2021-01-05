@@ -28,10 +28,6 @@ namespace app {
                 case SDLK_SPACE:
                     togglePause();
                     break;
-                case SDLK_TAB:
-                    m_paused             = false;
-                    m_pauseAfterNextStep = true;
-                    break;
                 case SDLK_1:
                     setTimeStep(cst::TIME_STEP_SLOW);
                     break;
@@ -116,10 +112,6 @@ namespace app {
         m_model.level().createBoundaries();
         m_model.finishInteractions();
         ModelViewInterface::updateCommandScrollArea(m_model, m_scrollArea, APP_MODE::RUNNING);
-        if (m_pauseAfterNextStep) {
-            m_pauseAfterNextStep = false;
-            m_paused             = true;
-        }
         m_timeSinceLastStep %= m_timeStep;
     }
 
@@ -163,10 +155,6 @@ namespace app {
                 mouseWheelEvent(event);
             }
         }
-    }
-
-    void Application_Run::setPauseAfterNextStep(bool pauseAfterNextStep) {
-        m_pauseAfterNextStep = pauseAfterNextStep;
     }
 
     view::widget::ScrollArea& Application_Run::scrollArea() {

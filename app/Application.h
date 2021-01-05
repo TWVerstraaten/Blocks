@@ -30,7 +30,6 @@ namespace app {
 
         /****** DATA MEMBERS  ******/
         APP_MODE                  m_appMode             = APP_MODE::EDITING;
-        bool                      m_pauseAfterFirstStep = false;
         Uint32                    m_timeStep            = cst::TIME_STEP_SLOW;
         view::View                m_view;
         model::Model              m_model;

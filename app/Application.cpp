@@ -11,8 +11,7 @@
 
 namespace app {
     Application::Application()
-        : m_scrollArea(
-              {cst::INITIAL_SCREEN_WIDTH - cst::COMMAND_SCROLL_AREA_WIDTH, 0, cst::COMMAND_SCROLL_AREA_WIDTH, cst::INITIAL_SCREEN_HEIGHT}) {
+        : m_scrollArea({cst::INITIAL_SCREEN_WIDTH - cst::COMMAND_SCROLL_AREA_WIDTH, 0, cst::COMMAND_SCROLL_AREA_WIDTH, cst::INITIAL_SCREEN_HEIGHT}) {
         m_model.init();
         m_scrollArea.init(m_view.assets());
     }
@@ -78,10 +77,6 @@ namespace app {
                                 case SDLK_SPACE:
                                     editApp.finalize();
                                     return EDIT_MODE::DONE_EDITING;
-                                case SDLK_TAB:
-                                    editApp.finalize();
-                                    m_pauseAfterFirstStep = true;
-                                    return EDIT_MODE::DONE_EDITING;
                                 case SDLK_1:
                                     editApp.finalize();
                                     m_timeStep = cst::TIME_STEP_SLOW;
@@ -118,7 +113,6 @@ namespace app {
         Application_Run runApp(m_model, &m_view, m_scrollArea);
         m_runningScrollArea = &runApp.scrollArea();
         runApp.setTimeStep(m_timeStep);
-        runApp.setPauseAfterNextStep(m_pauseAfterFirstStep);
         RUN_MODE currentMode;
         bool     isRunning = true;
         while (isRunning) {

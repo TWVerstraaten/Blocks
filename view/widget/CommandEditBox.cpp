@@ -9,7 +9,6 @@
 #include "../../model/Cluster.h"
 #include "../../model/command/CommandParser.h"
 #include "../Assets.h"
-#include "../color.h"
 
 #include <algorithm>
 
@@ -115,20 +114,19 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
 }
 
 void view::widget::CommandEditBox::update(const model::CommandVector& commandVector) {
-    m_strings    = commandVector.strings();
+    m_strings = commandVector.strings();
+    m_comments.clear();
     size_t index = 0;
     for (size_t i = 0; i != m_strings.size(); ++i) {
-        if (fns::empty(m_strings.at(i))) {
-            continue;
-        }
-        if (index == commandVector.commandIndex()) {
-            m_selectionData.m_first.m_stringIndex = i;
-            if (commandVector.repeatCount() != 0) {
-                m_strings[i] += " #" + std::to_string(commandVector.repeatCount());
+        if (not fns::empty(m_strings.at(i))) {
+            if (index == commandVector.commandIndex()) {
+                m_selectionData.m_first.m_stringIndex = i;
+                if (commandVector.repeatCount() != 0) {
+                    m_comments.emplace_back(std::make_pair(i, " #" + std::to_string(commandVector.repeatCount())));
+                }
             }
-            break;
+            ++index;
         }
-        ++index;
     }
     m_needsUpdate = true;
     m_skipParsing = true;
