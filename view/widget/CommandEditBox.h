@@ -10,7 +10,7 @@
 namespace model {
     class Cluster;
     class CommandVector;
-}
+} // namespace model
 
 namespace view::widget {
     class CommandEditBox : public LineEditBox {
@@ -44,6 +44,7 @@ namespace view::widget {
       private:
         /****** DATA MEMBERS  ******/
         mutable bool m_clusterShouldBeUpdated = true;
+        bool         m_skipParsing            = false;
         size_t       m_index;
     };
 

@@ -16,4 +16,8 @@ namespace fns {
         }
     }
 
+    bool empty(const std::string& string) {
+        return trimWhiteSpace(string).empty();
+    }
+
 } // namespace fns

@@ -20,9 +20,11 @@ namespace model {
         explicit CommandVector(const std::vector<std::string>& strings);
 
         /****** CONST GETTERS  ******/
-        [[nodiscard]] size_t                      commandIndex() const;
-        [[nodiscard]] const std::vector<Command>& commands() const;
-        [[nodiscard]] size_t                      repeatCount() const;
+        [[nodiscard]] size_t                          commandIndex() const;
+        [[nodiscard]] size_t                          size() const;
+        [[nodiscard]] size_t                          repeatCount() const;
+        [[nodiscard]] const std::vector<Command>&     commands() const;
+        [[nodiscard]] const std::vector<std::string>& strings() const;
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] bool             wellFormed() const;
@@ -42,9 +44,10 @@ namespace model {
         static COMMAND_MODIFIER getModifier(const Command& c);
 
         /****** DATA MEMBERS  ******/
-        size_t               m_commandIndex = 0;
-        size_t               m_repeatCount  = 0;
-        std::vector<Command> m_commands;
+        size_t                   m_commandIndex = 0;
+        size_t                   m_repeatCount  = 0;
+        std::vector<Command>     m_commands;
+        std::vector<std::string> m_strings;
     };
 
 } // namespace model

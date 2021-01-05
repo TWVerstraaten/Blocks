@@ -34,6 +34,9 @@ bool model::CommandVector::empty() const {
 }
 
 void model::CommandVector::increment() {
+    if (empty()) {
+        return;
+    }
     if (m_repeatCount == 0) {
         ++m_commandIndex;
         m_commandIndex %= m_commands.size();
@@ -45,6 +48,7 @@ void model::CommandVector::increment() {
 }
 
 void model::CommandVector::set(const std::vector<std::string>& strings) {
+    m_strings = strings;
     m_commands.clear();
     for (const auto& string : strings) {
         if (not CommandParser::isCommentOrEmpty(string)) {
@@ -54,8 +58,12 @@ void model::CommandVector::set(const std::vector<std::string>& strings) {
     if (m_commands.empty()) {
         return;
     }
+    assert(wellFormed());
     m_repeatCount =
         std::visit(overloaded{[](Command_RepeatWrapper c) { return c.repeatCount - 1; }, [](auto c) { return 0; }}, m_commands[m_commandIndex]);
+    for (auto& str : m_strings) {
+        str = CommandParser::format(str);
+    }
 }
 
 void model::CommandVector::clear() {
@@ -97,4 +105,12 @@ model::COMMAND_MODIFIER model::CommandVector::getModifier(const model::Command& 
 
 size_t model::CommandVector::repeatCount() const {
     return m_repeatCount;
+}
+
+size_t model::CommandVector::size() const {
+    return m_commands.size();
+}
+
+const std::vector<std::string>& model::CommandVector::strings() const {
+    return m_strings;
 }

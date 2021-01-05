@@ -8,7 +8,6 @@
 #include "../../global/fns.h"
 #include "../../model/Cluster.h"
 #include "../../model/command/CommandParser.h"
-#include "../../model/command/CommandVector.h"
 #include "../Assets.h"
 #include "../color.h"
 
@@ -16,12 +15,9 @@
 
 view::widget::CommandEditBox::CommandEditBox(int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
     : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())), m_index(cluster.index()) {
-    if (cluster.commandVector().empty()) {
-        m_strings.emplace_back("");
-    } else {
-        for (const auto& command : cluster.commandVector().commands()) {
-            m_strings.emplace_back(model::CommandParser::toString(command));
-        }
+    m_strings = cluster.commandVector().strings();
+    if (m_strings.empty()) {
+        m_strings = {""};
     }
 }
 
@@ -106,24 +102,34 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
     int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
     for (auto& str : m_strings) {
         m_yOffsets.push_back(yOffset);
-        const auto text     = str.length() == 0 ? " " : str;
-        bool       canParse = model::CommandParser::canParse(str);
-        m_textures.emplace_back(Texture::createFromText(
-            text, canParse ? view::color::BLACK : view::color::TEXT_ERROR, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
+        if (str.empty()) {
+            m_textures.emplace_back(Texture::createFromText(" ", view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
+        } else {
+            const auto canParse = model::CommandParser::canParse(str) || m_skipParsing;
+            m_textures.emplace_back(Texture::createFromText(
+                str, canParse ? view::color::BLACK : view::color::TEXT_ERROR, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
+        }
         yOffset += m_textures.back()->height();
     }
     m_yOffsets.push_back(yOffset);
 }
 
 void view::widget::CommandEditBox::update(const model::CommandVector& commandVector) {
-    setHighLightedLine(commandVector.commandIndex());
-
-    if (commandVector.repeatCount() > 0) {
-        m_strings[m_selectionData.m_first.m_stringIndex] = model::CommandParser::toString(commandVector.commands().at(commandVector.commandIndex())) +
-                                                           " #" + std::to_string(commandVector.repeatCount());
-        m_needsUpdate = true;
-    } else {
-        m_strings[m_selectionData.m_first.m_stringIndex] = model::CommandParser::toString(commandVector.commands().at(commandVector.commandIndex()));
-        m_needsUpdate                                    = true;
+    m_strings    = commandVector.strings();
+    size_t index = 0;
+    for (size_t i = 0; i != m_strings.size(); ++i) {
+        if (fns::empty(m_strings.at(i))) {
+            continue;
+        }
+        if (index == commandVector.commandIndex()) {
+            m_selectionData.m_first.m_stringIndex = i;
+            if (commandVector.repeatCount() != 0) {
+                m_strings[i] += " #" + std::to_string(commandVector.repeatCount());
+            }
+            break;
+        }
+        ++index;
     }
+    m_needsUpdate = true;
+    m_skipParsing = true;
 }

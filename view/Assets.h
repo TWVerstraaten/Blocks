@@ -8,6 +8,7 @@
 #include "../model/Level_enums.h"
 #include "Font.h"
 #include "TextureWrapper.h"
+#include "color.h"
 
 #include <map>
 #include <memory>
@@ -19,7 +20,7 @@ namespace view {
     class Assets {
       public:
         /****** PUBLIC ENUMS / TYPEDEFS  ******/
-        enum class FONT_ENUM { MAIN };
+        enum class FONT_ENUM { MAIN, SMALL };
 
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         Assets()                    = default;
@@ -65,7 +66,11 @@ namespace view {
 
         /****** NON CONST FUNCTIONS  ******/
         void init(SDL_Renderer* renderer);
-        void renderText(const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer);
+        void renderText(const std::string& text,
+                        const ScreenXY&    screenXY,
+                        SDL_Renderer*      renderer,
+                        FONT_ENUM          fontEnum = FONT_ENUM::MAIN,
+                        const SDL_Color&   color    = color::BLACK) const;
 
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/

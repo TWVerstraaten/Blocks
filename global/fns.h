@@ -11,6 +11,7 @@
 namespace fns {
 
     std::string trimWhiteSpace(const std::string& string);
+    bool        empty(const std::string& string);
     template <typename Type>
     Type clamp(Type value, Type lower, Type upper) {
         assert(lower <= upper);

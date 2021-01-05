@@ -126,7 +126,7 @@ namespace view {
 
         for (auto cluster : level.stoppedClusters()) {
             for (const auto it : cluster.gridXY()) {
-                drawSquare(ScreenXY::fromWorldXY(model::WorldXY(it) + shrinkWorldXY, m_viewPort), shrunkBlockSize, color::GREY, m_renderer);
+                drawSquare(ScreenXY::fromWorldXY(model::WorldXY(it) + shrinkWorldXY, m_viewPort), shrunkBlockSize, color::DARK_GREY, m_renderer);
                 if (m_viewPort.blockSeparationInScreenXY() == 0) {
                     continue;
                 }
@@ -134,14 +134,14 @@ namespace view {
                     drawRectangle(ScreenXY::fromWorldXY(model::WorldXY(it) + shrinkWorldXY, m_viewPort),
                                   -m_viewPort.blockSeparationInScreenXY(),
                                   shrunkBlockSize,
-                                  color::GREY,
+                                  color::DARK_GREY,
                                   m_renderer);
                 }
                 if (cluster.contains(it.neighbor(model::GridXY::DIRECTION::UP))) {
                     drawRectangle(ScreenXY::fromWorldXY(model::WorldXY(it) + shrinkWorldXY, m_viewPort),
                                   shrunkBlockSize,
                                   -m_viewPort.blockSeparationInScreenXY(),
-                                  color::GREY,
+                                  color::DARK_GREY,
                                   m_renderer);
                 }
             }

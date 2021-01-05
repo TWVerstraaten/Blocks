@@ -19,8 +19,9 @@ namespace view {
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::KILL, renderer);
         loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ERROR, renderer);
 
-        m_fonts[FONT_ENUM::MAIN] = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", cst::EDIT_BOX_FONT_SIZE);
-        m_initialized            = true;
+        m_fonts[FONT_ENUM::MAIN]  = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", cst::MAIN_FONT_SIZE);
+        m_fonts[FONT_ENUM::SMALL] = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", cst::SMALL_FONT_SIZE);
+        m_initialized             = true;
     }
 
     bool Assets::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
@@ -39,12 +40,8 @@ namespace view {
         }
     }
 
-    bool Assets::renderTexture(Texture*         texture,
-                               const SDL_Rect&  destination,
-                               SDL_Renderer*    renderer,
-                               double           angle,
-                               const SDL_Point* center,
-                               SDL_RendererFlip flip) {
+    bool Assets::renderTexture(
+        Texture* texture, const SDL_Rect& destination, SDL_Renderer* renderer, double angle, const SDL_Point* center, SDL_RendererFlip flip) {
         if (texture->loadedCorrectly()) {
             texture->render(destination, renderer, angle, center, flip);
             return true;
@@ -109,8 +106,10 @@ namespace view {
         m_textures.insert({textureEnum, TextureWrapper(textureEnum, renderer)});
     }
 
-    void Assets::renderText(const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer) {
-        const auto texture = view::Texture::createFromText(text, view::color::BLACK, renderer, m_fonts[FONT_ENUM::MAIN].get()->font());
+    void Assets::renderText(
+        const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer, FONT_ENUM fontEnum, const SDL_Color& color) const {
+        assert(m_fonts.find(fontEnum) != m_fonts.end());
+        const auto texture = view::Texture::createFromText(text, color, renderer, m_fonts.at(fontEnum).get()->font());
         renderTexture(texture.get(), screenXY, texture->width(), texture->height(), renderer);
     }
 

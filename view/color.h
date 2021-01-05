@@ -9,7 +9,7 @@
 
 namespace view::color {
     static const SDL_Color WHITE               = {255, 255, 255, 255};
-    static const SDL_Color GREY                = {120, 120, 120, 255};
+    static const SDL_Color DARK_GREY           = {60, 60, 60, 255};
     static const SDL_Color RED                 = {255, 0, 0, 255};
     static const SDL_Color BLACK               = {0, 0, 0, 255};
     static const SDL_Color TEXT_ERROR          = {200, 50, 50, 255};

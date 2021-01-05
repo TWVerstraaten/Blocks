@@ -1,0 +1,11 @@
+Set max character count on CommandEditBox
+
+Implement the following commands:
+    set var_name value_type
+    var_name += value_type
+    var_name -= value_type
+    var_name *= value_type
+    var_name /= value_type
+here value_type should be one of Integer | { SIZE } | declared var_name
+
+Some sort of winning condition

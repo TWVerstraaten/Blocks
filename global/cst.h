@@ -10,10 +10,10 @@
 #include <SDL.h>
 
 #define NOTE(x) fprintf(stderr, x ": %s:%d\n", __FILE__, __LINE__);
-#define NOTE_ONCE(x)                                                                                                                       \
-    static bool noteSeen = false;                                                                                                          \
-    if (not noteSeen)                                                                                                                      \
-        NOTE(x)                                                                                                                            \
+#define NOTE_ONCE(x)                                                                                                                                 \
+    static bool noteSeen = false;                                                                                                                    \
+    if (not noteSeen)                                                                                                                                \
+        NOTE(x)                                                                                                                                      \
     noteSeen = true;
 
 namespace cst {
@@ -33,8 +33,10 @@ namespace cst {
     static const Uint32         LINE_EDIT_WIDTH           = 150;
     static const size_t         LINE_EDIT_PADDING         = 4;
     static const size_t         LINE_EDIT_TITLE_HEIGHT    = 44;
-    static const Uint32         EDIT_BOX_FONT_SIZE        = 25;
+    static const Uint32         MAIN_FONT_SIZE            = 15;
+    static const Uint32         SMALL_FONT_SIZE           = 12;
     static const int            COMMAND_SCROLL_AREA_WIDTH = 200;
+    static const int            LINE_EDIT_X_OFFSET        = 25;
 
     static const double MAX_D_PHASE = 0.1;
 

@@ -16,8 +16,8 @@ namespace action {
 
       public:
         /****** VIRTUAL FUNCTIONS  ******/
-        virtual void        undoAction(app::Application_Edit& applicationEdit) = 0;
-        virtual void        redoAction(app::Application_Edit& applicationEdit) = 0;
+        virtual void                      undoAction(app::Application_Edit& applicationEdit) = 0;
+        virtual void                      redoAction(app::Application_Edit& applicationEdit) = 0;
         [[nodiscard]] virtual ACTION_TYPE type() const                                       = 0;
     };
 } // namespace action
