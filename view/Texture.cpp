@@ -9,6 +9,9 @@
 #include <iostream>
 
 namespace view {
+    Texture::Texture(SDL_Texture* texture, int width, int height) : m_loadedCorrectly(true), m_texture(texture), m_width(width), m_height(height) {
+    }
+
     Texture::~Texture() {
         free();
     }
@@ -35,10 +38,7 @@ namespace view {
         return result;
     }
 
-    std::unique_ptr<Texture> Texture::createFromText(const std::string& textureText,
-                                                     SDL_Color          textColor,
-                                                     SDL_Renderer*      renderer,
-                                                     TTF_Font*          font) {
+    std::unique_ptr<Texture> Texture::createFromText(const std::string& textureText, SDL_Color textColor, SDL_Renderer* renderer, TTF_Font* font) {
         std::unique_ptr<Texture> result{new Texture()};
 
         SDL_Surface* textSurface = TTF_RenderText_Blended(font, textureText.c_str(), textColor);
@@ -83,8 +83,7 @@ namespace view {
         SDL_SetTextureAlphaMod(m_texture, alpha);
     }
 
-    void Texture::render(
-        const SDL_Rect& destination, SDL_Renderer* renderer, double angle, const SDL_Point* center, SDL_RendererFlip flip) {
+    void Texture::render(const SDL_Rect& destination, SDL_Renderer* renderer, double angle, const SDL_Point* center, SDL_RendererFlip flip) {
         assert(m_loadedCorrectly);
         assert(m_texture != nullptr);
 

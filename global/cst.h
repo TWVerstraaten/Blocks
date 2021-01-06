@@ -23,7 +23,7 @@ namespace cst {
 
     static const int            INITIAL_SCREEN_WIDTH      = 1000;
     static const int            INITIAL_SCREEN_HEIGHT     = 800;
-    static const int            BLOCK_SHRINK_IN_WORLD     = 2;
+    static const int            BLOCK_SHRINK_IN_WORLD     = 3;
     static const int            BLOCK_SIZE_IN_WORLD       = 40;
     static const int            HALF_BLOCK_SIZE_IN_WORLD  = BLOCK_SIZE_IN_WORLD / 2;
     static const model::WorldXY HALF_BLOCK_IN_WORLD       = {HALF_BLOCK_SIZE_IN_WORLD, HALF_BLOCK_SIZE_IN_WORLD};

@@ -23,6 +23,8 @@ namespace view::color {
     static const SDL_Color EDIT_BOX_HIGHLIGHT_HARD      = {255, 200, 250, 255};
     static const SDL_Color EDIT_BOX_HIGHLIGHT_SOFT      = {220, 200, 250, 255};
     static const SDL_Color SCROLL_AREA_BACKGROUND       = {140, 140, 180, 255};
+    static const SDL_Color CLUSTER                      = {250, 235, 65};
+    static const SDL_Color CLUSTER_DEAD                 = {130, 23, 65};
 } // namespace view::color
 
 #endif // BLOCKS_COLOR_H

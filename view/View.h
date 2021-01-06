@@ -9,6 +9,7 @@
 #include "ViewPort.h"
 #include "widget/CommandEditBox.h"
 
+#include <functional>
 #include <iostream>
 #include <list>
 #include <set>
@@ -75,24 +76,18 @@ namespace view {
         void drawLevel(const model::Level& level) const;
         void drawBlocks(const model::Level& level) const;
         void setDrawColor(const SDL_Color& color) const;
-        void drawClusterNoPhase(const model::Cluster& cluster) const;
-        void drawClusterTranslating(const model::Cluster& cluster) const;
-        void drawClusterRotating(const model::Cluster& cluster) const;
-        void drawOnGrid(const std::set<model::GridXY>& blocks, TEXTURE_ENUM textureEnum, const SDL_Color& color) const;
-
+        void drawDisconnected(const std::set<model::GridXY>& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum = TEXTURE_ENUM::WHITE) const;
+        void drawConnected(const std::set<model::GridXY>& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum = TEXTURE_ENUM::WHITE) const;
+        void drawConnected(const std::set<model::GridXY>&                              blocks,
+                           const std::function<model::WorldXY(const model::WorldXY&)>& fun,
+                           double                                                      angle,
+                           const SDL_Color&                                            color,
+                           TEXTURE_ENUM                                                textureEnum = TEXTURE_ENUM::WHITE) const;
         template <typename ENUM>
-        void draw(const std::map<model::GridXY, ENUM>& blocks) const {
-            const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(cst::BLOCK_SHRINK_IN_WORLD);
-            const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
-            const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
-            for (const auto& [point, type] : blocks) {
-                m_assets->renderTexture(Assets::getTextureEnum(type),
-                                        ScreenXY::fromGridXY(point, m_viewPort) + shrinkInScreenXY,
-                                        shrunkBlockSize,
-                                        shrunkBlockSize,
-                                        m_renderer);
-            }
-        }
+        void                                   draw(const std::map<model::GridXY, ENUM>& blocks) const;
+        [[nodiscard]] std::unique_ptr<Texture> getTextureInWorld(const std::set<model::GridXY>& blocks,
+                                                                 TEXTURE_ENUM                   textureEnum,
+                                                                 const SDL_Color&               color) const;
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void drawClusters(const std::list<model::Cluster>& clusters);
@@ -105,6 +100,21 @@ namespace view {
         std::unique_ptr<Assets>                    m_assets{new Assets()};
         std::map<size_t, std::unique_ptr<Texture>> m_nameTextures;
     };
+
+    template <typename ENUM>
+    void View::draw(const std::map<model::GridXY, ENUM>& blocks) const {
+        const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(cst::BLOCK_SHRINK_IN_WORLD);
+        const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
+        const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
+        for (const auto& [point, type] : blocks) {
+            m_assets->renderTexture(Assets::getTextureEnum(type),
+                                    ScreenXY::fromGridXY(point, m_viewPort) + shrinkInScreenXY,
+                                    shrunkBlockSize,
+                                    shrunkBlockSize,
+                                    m_renderer);
+        }
+    }
+
 } // namespace view
 
 #endif // BLOCKS_VIEW_H

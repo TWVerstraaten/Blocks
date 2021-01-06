@@ -62,6 +62,10 @@ namespace model {
         [[nodiscard]] bool                                   contains(const GridXY& gridXY) const;
         [[nodiscard]] bool                                   intersects(const Cluster& other, int shrinkInWorld) const;
         [[nodiscard]] bool                                   adjacent(const Cluster& other) const;
+        [[nodiscard]] int                                    minX() const;
+        [[nodiscard]] int                                    minY() const;
+        [[nodiscard]] int                                    maxX() const;
+        [[nodiscard]] int                                    maxY() const;
         [[nodiscard]] std::function<WorldXY(const WorldXY&)> phaseTransformation() const;
 
         /****** NON CONST FUNCTIONS  ******/

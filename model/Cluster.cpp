@@ -536,4 +536,26 @@ namespace model {
         m_state = state;
     }
 
+    int Cluster::minX() const {
+        assert(not m_gridXYVector.empty());
+        return std::min_element(m_gridXYVector.begin(), m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) { return lhs.x() < rhs.x(); })
+            ->x();
+    }
+
+    int Cluster::minY() const {
+        assert(not m_gridXYVector.empty());
+        return m_gridXYVector.begin()->y();
+    }
+
+    int Cluster::maxX() const {
+        assert(not m_gridXYVector.empty());
+        return std::max_element(m_gridXYVector.begin(), m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) { return lhs.x() < rhs.x(); })
+            ->x();
+    }
+
+    int Cluster::maxY() const {
+        assert(not m_gridXYVector.empty());
+        return m_gridXYVector.rbegin()->y();
+    }
+
 } // namespace model

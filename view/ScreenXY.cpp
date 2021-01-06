@@ -37,6 +37,7 @@ view::ScreenXY view::ScreenXY::fromGridXY(const model::GridXY& gridXY, const vie
 
 view::ScreenXY::ScreenXY(const SDL_Point& point) : m_x(point.x), m_y(point.y) {
 }
+
 view::ScreenXY::operator SDL_Point() const {
     return {m_x, m_y};
 }

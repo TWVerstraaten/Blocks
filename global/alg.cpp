@@ -7,6 +7,7 @@
 #include "geom.h"
 
 #include <algorithm>
+#include <cassert>
 #include <vector>
 
 bool alg::intersect(const std::set<model::Line<model::WorldXY>>& lines1, const std::set<model::Line<model::WorldXY>>& lines2) {
@@ -52,4 +53,28 @@ std::set<model::Line<model::WorldXY>> alg::getSidesFromGridXY(std::set<model::Gr
         cornerPoints.erase(cornerPoints.end() - 2, cornerPoints.end());
     }
     return result;
+}
+
+int alg::minX(const std::set<model::GridXY>& blocks) {
+    assert(not blocks.empty());
+    return std::min_element(blocks.begin(), blocks.end(), [](const model::GridXY& lhs, const model::GridXY& rhs) { return lhs.x() < rhs.x(); })->x();
+}
+
+int alg::minY(const std::set<model::GridXY>& blocks) {
+    assert(not blocks.empty());
+    return blocks.begin()->y();
+}
+
+int alg::maxX(const std::set<model::GridXY>& blocks) {
+    assert(not blocks.empty());
+    return std::max_element(blocks.begin(), blocks.end(), [](const model::GridXY& lhs, const model::GridXY& rhs) { return lhs.x() < rhs.x(); })->x();
+}
+
+int alg::maxY(const std::set<model::GridXY>& blocks) {
+    assert(not blocks.empty());
+    return blocks.rbegin()->y();
+}
+
+model::GridXY alg::topLeft(const std::set<model::GridXY>& blocks) {
+    return {minX(blocks), minY(blocks)};
 }

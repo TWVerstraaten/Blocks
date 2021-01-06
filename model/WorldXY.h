@@ -5,6 +5,7 @@
 #ifndef BLOCKS_WORLDXY_H
 #define BLOCKS_WORLDXY_H
 
+#include <SDL.h>
 #include <cstddef>
 
 namespace view {
@@ -32,6 +33,7 @@ namespace model {
         /****** OPERATORS  ******/
         WorldXY& operator+=(const WorldXY& other);
         WorldXY& operator/=(int divisor);
+                 operator SDL_Point() const;
 
         /****** FRIENDS  ******/
         friend bool    operator<(const WorldXY& lhs, const WorldXY& rhs);

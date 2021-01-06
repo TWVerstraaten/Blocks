@@ -65,6 +65,10 @@ namespace model {
         return {lhs.m_x + rhs.m_x, lhs.m_y + rhs.m_y};
     }
 
+    GridXY operator-(const GridXY& lhs, const GridXY& rhs) {
+        return {lhs.m_x - rhs.m_x, lhs.m_y - rhs.m_y};
+    }
+
     GridXY::operator WorldXY() const {
         return WorldXY::fromGridXY(*this);
     }
@@ -74,9 +78,8 @@ namespace model {
     }
 
     GridXY GridXY::fromScreenXY(const view::ScreenXY& screenXY, const view::ViewPort& viewPort) {
-        return GridXY(
-            std::floor((screenXY.x() - viewPort.xOffset()) / static_cast<double>(viewPort.blockSizeInScreen())),
-            std::floor((screenXY.y() - viewPort.yOffset()) / static_cast<double>(viewPort.blockSizeInScreen())));
+        return GridXY(std::floor((screenXY.x() - viewPort.xOffset()) / static_cast<double>(viewPort.blockSizeInScreen())),
+                      std::floor((screenXY.y() - viewPort.yOffset()) / static_cast<double>(viewPort.blockSizeInScreen())));
     }
 
     bool operator!=(const GridXY& lhs, const GridXY& rhs) {

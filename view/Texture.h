@@ -17,6 +17,7 @@ namespace view {
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         Texture() = default;
+        Texture(SDL_Texture* texture, int width, int height);
         ~Texture();
 
         /****** PUBLIC STATIC FUNCTIONS  ******/

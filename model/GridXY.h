@@ -48,6 +48,7 @@ namespace model {
 
         /****** FRIENDS  ******/
         friend GridXY operator+(const GridXY& lhs, const GridXY& rhs);
+        friend GridXY operator-(const GridXY& lhs, const GridXY& rhs);
         friend bool   operator<(const GridXY& lhs, const GridXY& rhs);
         friend bool   operator==(const GridXY& lhs, const GridXY& rhs);
         friend bool   operator!=(const GridXY& lhs, const GridXY& rhs);
