@@ -13,23 +13,24 @@
 
 namespace view {
     void Assets::init(SDL_Renderer* renderer) {
-        loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ARROW_CW, renderer);
-        loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ARROW_CCW, renderer);
-        loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::CLUSTER, renderer);
-        loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::KILL, renderer);
-        loadTextureWrapper(TextureWrapper::TEXTURE_ENUM::ERROR, renderer);
+        loadTextureWrapper(TEXTURE_ENUM::ARROW_CW, renderer);
+        loadTextureWrapper(TEXTURE_ENUM::ARROW_CCW, renderer);
+        loadTextureWrapper(TEXTURE_ENUM::CLUSTER, renderer);
+        loadTextureWrapper(TEXTURE_ENUM::KILL, renderer);
+        loadTextureWrapper(TEXTURE_ENUM::ERROR, renderer);
+        loadTextureWrapper(TEXTURE_ENUM::WHITE, renderer);
 
         m_fonts[FONT_ENUM::MAIN]  = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", cst::MAIN_FONT_SIZE);
         m_fonts[FONT_ENUM::SMALL] = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", cst::SMALL_FONT_SIZE);
         m_initialized             = true;
     }
 
-    bool Assets::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
-                               const SDL_Rect&              destination,
-                               SDL_Renderer*                renderer,
-                               double                       angle,
-                               const SDL_Point*             center,
-                               SDL_RendererFlip             flip) const {
+    bool Assets::renderTexture(TEXTURE_ENUM     textureEnum,
+                               const SDL_Rect&  destination,
+                               SDL_Renderer*    renderer,
+                               double           angle,
+                               const SDL_Point* center,
+                               SDL_RendererFlip flip) const {
         assert(m_textures.find(textureEnum) != m_textures.end());
         auto* texture = m_textures.at(textureEnum).texture(destination.w, destination.h);
         if (texture->loadedCorrectly()) {
@@ -50,14 +51,14 @@ namespace view {
         }
     }
 
-    bool Assets::renderTexture(TextureWrapper::TEXTURE_ENUM textureEnum,
-                               const ScreenXY&              screenXY,
-                               int                          width,
-                               int                          height,
-                               SDL_Renderer*                renderer,
-                               double                       angle,
-                               const SDL_Point*             center,
-                               SDL_RendererFlip             flip) const {
+    bool Assets::renderTexture(TEXTURE_ENUM     textureEnum,
+                               const ScreenXY&  screenXY,
+                               int              width,
+                               int              height,
+                               SDL_Renderer*    renderer,
+                               double           angle,
+                               const SDL_Point* center,
+                               SDL_RendererFlip flip) const {
         if (width < 0) {
             return renderTexture(textureEnum, {screenXY.x() + width, screenXY.y()}, -width, height, renderer, angle, center, flip);
         } else if (height < 0) {
@@ -78,31 +79,31 @@ namespace view {
         return renderTexture(texture, {(screenXY.x()), (screenXY.y()), width, height}, renderer, angle, center, flip);
     }
 
-    TextureWrapper::TEXTURE_ENUM Assets::getTextureEnum(model::DYNAMIC_BLOCK_TYPE type) {
+    TEXTURE_ENUM Assets::getTextureEnum(model::DYNAMIC_BLOCK_TYPE type) {
         switch (type) {
             case model::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
-                return TextureWrapper::TEXTURE_ENUM::ARROW_CW;
+                return TEXTURE_ENUM::ARROW_CW;
             case model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
-                return TextureWrapper::TEXTURE_ENUM::ARROW_CCW;
+                return TEXTURE_ENUM::ARROW_CCW;
         }
-        return TextureWrapper::TEXTURE_ENUM::ERROR;
+        return TEXTURE_ENUM::ERROR;
     }
 
-    TextureWrapper::TEXTURE_ENUM Assets::getTextureEnum(model::INSTANT_BLOCK_TYPE type) {
+    TEXTURE_ENUM Assets::getTextureEnum(model::INSTANT_BLOCK_TYPE type) {
         switch (type) {
             case model::INSTANT_BLOCK_TYPE::KILL:
-                return TextureWrapper::TEXTURE_ENUM::KILL;
+                return TEXTURE_ENUM::KILL;
         }
-        return TextureWrapper::TEXTURE_ENUM::ERROR;
+        return TEXTURE_ENUM::ERROR;
     }
 
-    const Font* Assets::font(Assets::FONT_ENUM fontEnum) const {
+    const Font* Assets::font(FONT_ENUM fontEnum) const {
         assert(m_fonts.find(fontEnum) != m_fonts.end());
         assert(m_fonts.at(fontEnum)->loadedCorrectly());
         return m_fonts.at(fontEnum).get();
     }
 
-    void Assets::loadTextureWrapper(TextureWrapper::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
+    void Assets::loadTextureWrapper(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
         m_textures.insert({textureEnum, TextureWrapper(textureEnum, renderer)});
     }
 
@@ -115,6 +116,10 @@ namespace view {
 
     bool Assets::initialized() const {
         return m_initialized;
+    }
+
+    Texture* Assets::getTexture(TEXTURE_ENUM textureEnum, int width, int height) {
+        return m_textures.at(textureEnum).texture(width, height);
     }
 
 } // namespace view

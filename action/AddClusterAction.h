@@ -15,7 +15,7 @@ namespace action {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        AddClusterAction(model::Cluster cluster, view::widget::CommandEditBox commandEditBox);
+        AddClusterAction(model::Cluster cluster);
 
         /****** VIRTUAL FUNCTIONS  ******/
         void        undoAction(app::Application_Edit& applicationEdit) override;
@@ -25,7 +25,6 @@ namespace action {
       private:
         /****** DATA MEMBERS  ******/
         const model::Cluster               m_cluster;
-        const view::widget::CommandEditBox m_commandEditBox;
     };
 
 } // namespace action

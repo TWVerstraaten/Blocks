@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <list>
+#include <set>
 
 namespace model {
     class Model;
@@ -35,11 +36,9 @@ namespace view {
         ~View();
 
         /****** PUBLIC STATIC FUNCTIONS  ******/
-        static void drawRectangle(
-            const ScreenXY& point, int width, int height, const SDL_Color& color, SDL_Renderer* renderer);
+        static void drawRectangle(const ScreenXY& point, int width, int height, const SDL_Color& color, SDL_Renderer* renderer);
         static void drawSquare(const ScreenXY& point, int length, const SDL_Color& color, SDL_Renderer* renderer);
-        static void drawSquareOutline(
-            const ScreenXY& point, int length, int lineThickness, const SDL_Color& color, SDL_Renderer* renderer);
+        static void drawSquareOutline(const ScreenXY& point, int length, int lineThickness, const SDL_Color& color, SDL_Renderer* renderer);
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] ScreenXY        windowSize() const;
@@ -53,22 +52,13 @@ namespace view {
         void renderPresent() const;
         void drawRectangle(const ScreenXY& point, int width, int height, const SDL_Color& color) const;
         void drawSquare(const ScreenXY& point, int length, const SDL_Color& color) const;
-        void drawRectangle(const model::WorldXY& point,
-                           int                   widthInWorld,
-                           int                   heightInWorld,
-                           const SDL_Color&      color) const;
+        void drawRectangle(const model::WorldXY& point, int widthInWorld, int heightInWorld, const SDL_Color& color) const;
         void drawPoint(const ScreenXY& point, const SDL_Color& color, int pointSize) const;
         void drawPoint(const model::WorldXY& point, const SDL_Color& color, int pointSize) const;
         void drawHorizontalLine(const ScreenXY& point, int length, const SDL_Color& color, size_t lineThickness) const;
-        void drawHorizontalLine(const model::WorldXY& point,
-                                int                   lengthInWorld,
-                                const SDL_Color&      color,
-                                size_t                lineThickness) const;
+        void drawHorizontalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, size_t lineThickness) const;
         void drawVerticalLine(const ScreenXY& point, int length, const SDL_Color& color, size_t lineThickness) const;
-        void drawVerticalLine(const model::WorldXY& point,
-                              int                   lengthInWorld,
-                              const SDL_Color&      color,
-                              Uint32                lineThickness) const;
+        void drawVerticalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, Uint32 lineThickness) const;
 
         /****** NON CONST FUNCTIONS  ******/
         void draw(const model::Model& model);
@@ -88,6 +78,21 @@ namespace view {
         void drawClusterNoPhase(const model::Cluster& cluster) const;
         void drawClusterTranslating(const model::Cluster& cluster) const;
         void drawClusterRotating(const model::Cluster& cluster) const;
+        void drawOnGrid(const std::set<model::GridXY>& blocks, TEXTURE_ENUM textureEnum, const SDL_Color& color) const;
+
+        template <typename ENUM>
+        void draw(const std::map<model::GridXY, ENUM>& blocks) const {
+            const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(cst::BLOCK_SHRINK_IN_WORLD);
+            const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
+            const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
+            for (const auto& [point, type] : blocks) {
+                m_assets->renderTexture(Assets::getTextureEnum(type),
+                                        ScreenXY::fromGridXY(point, m_viewPort) + shrinkInScreenXY,
+                                        shrunkBlockSize,
+                                        shrunkBlockSize,
+                                        m_renderer);
+            }
+        }
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void drawClusters(const std::list<model::Cluster>& clusters);

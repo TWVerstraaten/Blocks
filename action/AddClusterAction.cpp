@@ -8,8 +8,7 @@
 
 #include <cassert>
 
-action::AddClusterAction::AddClusterAction(model::Cluster cluster, view::widget::CommandEditBox commandEditBox)
-    : m_cluster(std::move(cluster)), m_commandEditBox(std::move(commandEditBox)) {
+action::AddClusterAction::AddClusterAction(model::Cluster cluster) : m_cluster(std::move(cluster)) {
 }
 
 void action::AddClusterAction::undoAction(app::Application_Edit& applicationEdit) {

@@ -19,6 +19,8 @@ namespace model {
     class CommandParser {
 
       public:
+        /****** PUBLIC ENUMS / TYPEDEFS  ******/
+        enum class STRING_TYPE { EMPTY, COMMENT, ACTION, ERROR };
         enum class ERROR_TOKEN { ERROR };
         typedef std::variant<int, COMMAND_MODIFIER, COMMAND_TYPE, COMMAND_LOOP, COMMAND_IF, COMMAND_COMPARE, ERROR_TOKEN> Token;
 
@@ -26,6 +28,7 @@ namespace model {
         static bool        canParse(const std::string& string);
         static bool        isCommentOrEmpty(const std::string& string);
         static bool        isFormatted(const std::string& string);
+        static STRING_TYPE stringType(const std::string& string);
         static Command     parseString(const std::string& string);
         static std::string toString(const Token& token);
         static std::string toString(const Command& command);

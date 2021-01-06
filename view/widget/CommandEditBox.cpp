@@ -91,7 +91,7 @@ view::widget::CommandEditBox& view::widget::CommandEditBox::operator=(const view
 }
 
 void view::widget::CommandEditBox::createTitleTexture(SDL_Renderer* renderer) {
-    m_titleTexture = Texture::createFromText(m_title, view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font());
+    m_titleTexture = Texture::createFromText(m_title, view::color::BLACK, renderer, m_assets->font(FONT_ENUM::MAIN)->font());
 }
 
 void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) {
@@ -101,13 +101,22 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
     int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
     for (auto& str : m_strings) {
         m_yOffsets.push_back(yOffset);
-        if (str.empty()) {
-            m_textures.emplace_back(Texture::createFromText(" ", view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
-        } else {
-            const auto canParse = model::CommandParser::canParse(str) || m_skipParsing;
-            m_textures.emplace_back(Texture::createFromText(
-                str, canParse ? view::color::BLACK : view::color::TEXT_ERROR, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
+        switch (model::CommandParser::stringType(str)) {
+
+            case model::CommandParser::STRING_TYPE::EMPTY:
+                m_textures.emplace_back(Texture::createFromText(" ", view::color::DARK_GREY, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
+                break;
+            case model::CommandParser::STRING_TYPE::COMMENT:
+                m_textures.emplace_back(Texture::createFromText(str, view::color::DARK_GREY, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
+                break;
+            case model::CommandParser::STRING_TYPE::ACTION:
+                m_textures.emplace_back(Texture::createFromText(str, view::color::BLACK, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
+                break;
+            case model::CommandParser::STRING_TYPE::ERROR:
+                m_textures.emplace_back(Texture::createFromText(str, view::color::RED, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
+                break;
         }
+
         yOffset += m_textures.back()->height();
     }
     m_yOffsets.push_back(yOffset);
@@ -118,7 +127,7 @@ void view::widget::CommandEditBox::update(const model::CommandVector& commandVec
     m_comments.clear();
     size_t index = 0;
     for (size_t i = 0; i != m_strings.size(); ++i) {
-        if (not fns::empty(m_strings.at(i))) {
+        if (not model::CommandParser::isCommentOrEmpty(m_strings.at(i))) {
             if (index == commandVector.commandIndex()) {
                 m_selectionData.m_first.m_stringIndex = i;
                 if (commandVector.repeatCount() != 0) {

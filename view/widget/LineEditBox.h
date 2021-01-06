@@ -5,7 +5,6 @@
 #ifndef BLOCKS_LINEEDITBOX_H
 #define BLOCKS_LINEEDITBOX_H
 
-#include "../ScreenXY.h"
 #include "../Texture.h"
 #include "RectWidget.h"
 #include "SelectionData.h"
@@ -17,6 +16,8 @@
 
 namespace view {
     class Assets;
+    class ScreenXY;
+
     namespace widget {
 
         class LineEditBox : public RectWidget {
@@ -41,8 +42,6 @@ namespace view {
             [[nodiscard]] int                             width() const;
             [[nodiscard]] const std::vector<std::string>& strings() const;
 
-            /****** NON CONST FUNCTIONS  ******/
-            void setHighLightedLine(size_t index, bool skipEmpty = true);
             void setActive(bool active);
 
           private:
@@ -60,11 +59,11 @@ namespace view {
             void renderSelection(SDL_Renderer* renderer) const;
             void renderHighlightIfSelected(SDL_Renderer* renderer) const;
             void highlightRange(const SelectionData::Data& first, const SelectionData::Data& last, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
-            [[nodiscard]] int              widthOfString(const std::string& string) const;
-            [[nodiscard]] std::string      selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
-            [[nodiscard]] const SDL_Color& getHighlightColor(HIGHLIGHT_MODE mode) const;
-            [[nodiscard]] std::string      prefixOfString(const SelectionData::Data& data) const;
-            [[nodiscard]] std::string      suffixOfString(const SelectionData::Data& data) const;
+            [[nodiscard]] int               widthOfString(const std::string& string) const;
+            [[nodiscard]] const SDL_Color&  getHighlightColor(HIGHLIGHT_MODE mode) const;
+            [[nodiscard]] const std::string selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
+            [[nodiscard]] const std::string prefixOfString(const SelectionData::Data& data) const;
+            [[nodiscard]] const std::string suffixOfString(const SelectionData::Data& data) const;
 
             /****** PRIVATE NON CONST FUNCTIONS  ******/
             void moveFirstSelectionOneDown();

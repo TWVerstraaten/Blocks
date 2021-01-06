@@ -36,11 +36,8 @@ namespace view::widget {
                                                              renderer);
                                   },
                                   [renderer, this](const CLUSTER_TYPE type) {
-                                      m_assets->renderTexture(TextureWrapper::TEXTURE_ENUM::CLUSTER,
-                                                              screenXY(type),
-                                                              BLOCK_SIZE_IN_WORLD,
-                                                              BLOCK_SIZE_IN_WORLD,
-                                                              renderer);
+                                      m_assets->renderTexture(
+                                          TEXTURE_ENUM::CLUSTER, screenXY(type), BLOCK_SIZE_IN_WORLD, BLOCK_SIZE_IN_WORLD, renderer);
                                   },
                                   [renderer, this](const auto type) {
                                       m_assets->renderTexture(
@@ -63,8 +60,8 @@ namespace view::widget {
     }
 
     ScreenXY BlockSelectWidget::screenXY(const model::BlockType& type) {
-        const auto it = std::find_if(
-            model::s_allTypes.begin(), model::s_allTypes.end(), [&](const model::BlockType& blockType) { return blockType == type; });
+        const auto it =
+            std::find_if(model::s_allTypes.begin(), model::s_allTypes.end(), [&](const model::BlockType& blockType) { return blockType == type; });
         assert(it != model::s_allTypes.end());
         return indexToScreenXY(std::distance(model::s_allTypes.begin(), it));
     }
@@ -74,8 +71,7 @@ namespace view::widget {
         const auto       y            = screenXY.y() - m_rect.y;
         static const int margin       = 10;
         const int        blocksPerRow = (m_rect.w - margin) / (cst::BLOCK_SIZE_IN_WORLD + margin);
-        int              index =
-            ((x - margin) / (cst::BLOCK_SIZE_IN_WORLD + margin)) + blocksPerRow * ((y - margin) / (cst::BLOCK_SIZE_IN_WORLD + margin));
+        int index = ((x - margin) / (cst::BLOCK_SIZE_IN_WORLD + margin)) + blocksPerRow * ((y - margin) / (cst::BLOCK_SIZE_IN_WORLD + margin));
         if (index >= 0 && static_cast<size_t>(index) < model::s_allTypes.size()) {
             m_selected = index;
         }

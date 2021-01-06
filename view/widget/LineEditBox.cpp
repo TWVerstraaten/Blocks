@@ -7,11 +7,10 @@
 #include "../../global/cst.h"
 #include "../../global/fns.h"
 #include "../../global/geom.h"
-#include "../../model/command/CommandParser.h"
 #include "../Assets.h"
+#include "../Font.h"
 #include "../Mouse.h"
 #include "../Rectangle.h"
-#include "../color.h"
 
 #include <algorithm>
 #include <sstream>
@@ -32,14 +31,14 @@ namespace view::widget {
             return;
         }
         if (not m_titleTexture) {
-            m_titleTexture = Texture::createFromText(m_title, view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font());
+            m_titleTexture = Texture::createFromText(m_title, view::color::BLACK, renderer, m_assets->font(FONT_ENUM::MAIN)->font());
         }
         m_textures.clear();
         m_yOffsets.clear();
         int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
         for (auto& str : m_strings) {
             m_yOffsets.push_back(yOffset);
-            m_textures.emplace_back(Texture::createFromText(str, view::color::BLACK, renderer, m_assets->font(Assets::FONT_ENUM::MAIN)->font()));
+            m_textures.emplace_back(Texture::createFromText(str, view::color::BLACK, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
             yOffset += m_textures.back()->height();
         }
         m_yOffsets.push_back(yOffset);
@@ -87,7 +86,7 @@ namespace view::widget {
             m_assets->renderText(comment,
                                  view::ScreenXY{m_rect.x + m_rect.w - widthOfString(comment), m_rect.y + m_yOffsets[index]},
                                  renderer,
-                                 Assets::FONT_ENUM::MAIN,
+                                 FONT_ENUM::MAIN,
                                  color::DARK_GREY);
         }
     }
@@ -95,11 +94,8 @@ namespace view::widget {
     void LineEditBox::renderLineNumbers(SDL_Renderer* renderer) const {
 
         for (size_t line = 0; line != m_strings.size(); ++line) {
-            m_assets->renderText(std::to_string(line + 1),
-                                 view::ScreenXY{m_rect.x, m_rect.y + m_yOffsets[line]},
-                                 renderer,
-                                 Assets::FONT_ENUM::SMALL,
-                                 color::DARK_GREY);
+            m_assets->renderText(
+                std::to_string(line + 1), view::ScreenXY{m_rect.x, m_rect.y + m_yOffsets[line]}, renderer, FONT_ENUM::SMALL, color::DARK_GREY);
         }
     }
 
@@ -315,7 +311,7 @@ namespace view::widget {
     }
 
     int LineEditBox::widthOfString(const std::string& string) const {
-        return m_assets->font(Assets::FONT_ENUM::MAIN)->widthOfString(string);
+        return m_assets->font(FONT_ENUM::MAIN)->widthOfString(string);
     }
 
     void LineEditBox::doBackSpace() {
@@ -440,7 +436,7 @@ namespace view::widget {
         }
     }
 
-    std::string LineEditBox::selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const {
+    const std::string LineEditBox::selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const {
         assert(m_selectionData.m_mode != SelectionData::MODE::SINGLE);
         if (SelectionData::isReversed(first, last)) {
             return selectionToString(last, first);
@@ -507,35 +503,6 @@ namespace view::widget {
     void LineEditBox::potentiallyDecrementFirstCharIndex() {
         m_selectionData.m_first.m_charIndex =
             std::min(m_selectionData.m_first.m_charIndex, m_strings.at(m_selectionData.m_first.m_stringIndex).length());
-    }
-
-    void LineEditBox::setHighLightedLine(size_t index, bool skipEmpty) {
-        if (not skipEmpty) {
-            assert(index == 0 || index < m_strings.size());
-            m_selectionData.m_first.m_stringIndex = index;
-        } else {
-            NOTE_ONCE("Remove")
-            for (const auto& it : m_strings) {
-                if (fns::trimWhiteSpace(it).empty()) {
-                    assert(it.empty());
-                }
-            }
-
-            auto it = std::find_if(
-                m_strings.begin(), m_strings.end(), [](const std::string& str) { return not model::CommandParser::isCommentOrEmpty(str); });
-            if (it == m_strings.end()) {
-                assert(index == 0);
-                setFirstSelection(0, 0);
-            } else {
-                while (index != 0) {
-                    it =
-                        std::find_if(std::next(it), m_strings.end(), [](const auto& str) { return not model::CommandParser::isCommentOrEmpty(str); });
-                    --index;
-                }
-                setFirstSelection(std::distance(m_strings.begin(), it), 0);
-            }
-        }
-        m_selectionData.m_mode = SelectionData::MODE::SINGLE;
     }
 
     void LineEditBox::moveFirstSelectionOneDown() {
@@ -610,13 +577,13 @@ namespace view::widget {
         m_selectionData.m_first = {stringIndex, charIndex};
     }
 
-    std::string LineEditBox::prefixOfString(const SelectionData::Data& data) const {
+    const std::string LineEditBox::prefixOfString(const SelectionData::Data& data) const {
         assert(data.m_stringIndex < m_strings.size());
         assert(data.m_charIndex <= m_strings.at(data.m_stringIndex).length());
         return m_strings.at(data.m_stringIndex).substr(0, data.m_charIndex);
     }
 
-    std::string LineEditBox::suffixOfString(const SelectionData::Data& data) const {
+    const std::string LineEditBox::suffixOfString(const SelectionData::Data& data) const {
         assert(data.m_stringIndex < m_strings.size());
         assert(data.m_charIndex <= m_strings.at(data.m_stringIndex).length());
         return m_strings.at(data.m_stringIndex).substr(data.m_charIndex);

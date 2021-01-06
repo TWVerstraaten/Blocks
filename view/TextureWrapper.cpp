@@ -20,13 +20,12 @@ static double score(const view::Texture* texture, int width, int height) {
            flipIfSmallerThanOne(height / static_cast<double>(texture->height()));
 }
 
-view::TextureWrapper::TextureWrapper(TextureWrapper::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
+view::TextureWrapper::TextureWrapper(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
     init(textureEnum, renderer);
 }
 
 view::Texture* view::TextureWrapper::texture(int width, int height) const {
     assert(!m_textures.empty());
-
     Texture* result = m_textures.back().get();
     for (const auto& texture : m_textures) {
         if (score(result, width, height) > score(texture.get(), width, height)) {
@@ -36,7 +35,7 @@ view::Texture* view::TextureWrapper::texture(int width, int height) const {
     return result;
 }
 
-void view::TextureWrapper::init(view::TextureWrapper::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
+void view::TextureWrapper::init(view::TEXTURE_ENUM textureEnum, SDL_Renderer* renderer) {
     m_textures.clear();
     switch (textureEnum) {
         case TEXTURE_ENUM::ERROR:
@@ -57,6 +56,9 @@ void view::TextureWrapper::init(view::TextureWrapper::TEXTURE_ENUM textureEnum, 
             break;
         case TEXTURE_ENUM::KILL:
             m_textures.emplace_back(Texture::createFromImagePath("assets/kill.png", renderer));
+            break;
+        case TEXTURE_ENUM::WHITE:
+            m_textures.emplace_back(Texture::createFromImagePath("assets/white.png", renderer));
             break;
     }
 }

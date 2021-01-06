@@ -4,8 +4,6 @@
 
 #include "RectWidget.h"
 
-#include <cassert>
-
 namespace view::widget {
     RectWidget::RectWidget(SDL_Rect rect) : m_rect(rect) {
     }

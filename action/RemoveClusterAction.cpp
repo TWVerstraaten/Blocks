@@ -6,9 +6,7 @@
 
 #include "../app/Application_Edit.h"
 
-action::RemoveClusterAction::RemoveClusterAction(const model::Cluster&               cluster,
-                                                 const view::widget::CommandEditBox& commandEditBox)
-    : AddClusterAction(cluster, commandEditBox) {
+action::RemoveClusterAction::RemoveClusterAction(const model::Cluster& cluster) : AddClusterAction(cluster) {
 }
 
 void action::RemoveClusterAction::undoAction(app::Application_Edit& applicationEdit) {

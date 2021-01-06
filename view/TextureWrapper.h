@@ -9,13 +9,12 @@
 
 #include <memory>
 #include <vector>
+#include "Texture_enums.h"
 
 namespace view {
     class TextureWrapper {
 
       public:
-        /****** PUBLIC ENUMS / TYPEDEFS  ******/
-        enum class TEXTURE_ENUM { ERROR, ARROW_CW, ARROW_CCW, CLUSTER, KILL };
 
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         TextureWrapper(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);

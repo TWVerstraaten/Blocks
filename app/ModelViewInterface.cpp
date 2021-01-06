@@ -32,15 +32,6 @@ static std::list<view::widget::CommandEditBox>::iterator findCommandEditBox(cons
     });
 }
 
-static std::list<view::widget::CommandEditBox>::iterator findCommandEditBox_forceExists(const model::Cluster&                    cluster,
-                                                                                        std::list<view::widget::CommandEditBox>& commandEditBoxes) {
-    auto result = std::find_if(commandEditBoxes.begin(), commandEditBoxes.end(), [&](const view::widget::CommandEditBox& commandEditBox) {
-        return cluster.index() == commandEditBox.index();
-    });
-    assert(result != commandEditBoxes.end());
-    return result;
-}
-
 static void removeActionBoxesOfRemovedClusters(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea) {
     scrollArea.children().remove_if([&](const view::widget::CommandEditBox& box) { return findCluster(box, clusters) == clusters.end(); });
 }
@@ -154,7 +145,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockFromCluster_s
     if (it->size() > 1) {
         return clearBlockFromCluster(model, scrollArea, point, *it);
     }
-    auto result = std::make_unique<action::RemoveClusterAction>(*it, *findCommandEditBox_forceExists(*it, scrollArea.children()));
+    auto result = std::make_unique<action::RemoveClusterAction>(*it);
     clusters.erase(it);
     return result;
 }
@@ -256,19 +247,17 @@ void app::ModelViewInterface::split(model::Model& model, view::widget::ScrollAre
     model.clusters().splice(model.clusters().end(), newClusters);
 }
 
-std::unique_ptr<action::Action> app::ModelViewInterface::addCluster(model::Model&             model,
-                                                                    view::widget::ScrollArea& scrollArea,
-                                                                    const model::GridXY&      point) {
+std::unique_ptr<action::Action> app::ModelViewInterface::addSingleBlockCluster(model::Model&             model,
+                                                                               view::widget::ScrollArea& scrollArea,
+                                                                               const model::GridXY&      point) {
     assert(model.level().isFreeStartBlock(point));
     auto& clusters = model.clusters();
-    if (std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.contains(point); }) == clusters.end()) {
-        clusters.push_back(model::Cluster({point}, "CL" + std::to_string(clusters.size())));
-        addCommandEditBoxesOfNewClusters(clusters, scrollArea);
-        auto commandEditBoxIt = findCommandEditBox(clusters.back(), scrollArea.children());
-        assert(commandEditBoxIt != scrollArea.children().end());
-        return std::make_unique<action::AddClusterAction>(clusters.back(), *commandEditBoxIt);
+    if (model.clusterContaining(point) != clusters.end()) {
+        return nullptr;
     }
-    return nullptr;
+    clusters.push_back(model::Cluster({point}, "CL" + std::to_string(clusters.size())));
+    addCommandEditBoxesOfNewClusters(clusters, scrollArea);
+    return std::make_unique<action::AddClusterAction>(clusters.back());
 }
 
 std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(model::Model&             model,
@@ -279,7 +268,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(model::Model
     auto&      clusters = model.clusters();
     const auto baseIt   = std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.contains(previousPoint); });
     if (baseIt == clusters.end() || (not previousPoint.isAdjacent(point))) {
-        return addCluster(model, scrollArea, point);
+        return addSingleBlockCluster(model, scrollArea, point);
     }
     auto extensionIt = std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.contains(point); });
     if (baseIt == extensionIt) {
@@ -303,7 +292,7 @@ void app::ModelViewInterface::leftMouseClick(model::Model&             model,
     if (not model.level().isFreeStartBlock(point)) {
         return;
     }
-    addAction(addCluster(model, scrollArea, point));
+    addAction(addSingleBlockCluster(model, scrollArea, point));
     updateCommandScrollArea(model, scrollArea, APP_MODE::EDITING);
 }
 
@@ -326,7 +315,7 @@ void app::ModelViewInterface::clusterDrag(
     if (model.level().isFreeStartBlock(previousPoint)) {
         addAction(linkBlocks(model, scrollArea, point, previousPoint));
     } else {
-        addAction(addCluster(model, scrollArea, point));
+        addAction(addSingleBlockCluster(model, scrollArea, point));
     }
     updateCommandScrollArea(model, scrollArea, APP_MODE::EDITING);
 }

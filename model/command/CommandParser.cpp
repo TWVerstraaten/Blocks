@@ -71,10 +71,7 @@ namespace model {
     }
 
     bool CommandParser::canParse(const std::string& string) {
-        if (isCommentOrEmpty(string)) {
-            return true;
-        }
-        return std::visit(overloaded{[](Command_Error e) { return false; }, [](auto e) { return true; }}, parseString(string));
+        return stringType(string) != STRING_TYPE::ERROR;
     }
 
     std::string CommandParser::toString(const Token& token) {
@@ -128,6 +125,18 @@ namespace model {
 
     bool CommandParser::isFormatted(const std::string& string) {
         return string == format(string);
+    }
+
+    CommandParser::STRING_TYPE CommandParser::stringType(const std::string& string) {
+        const auto trimmedString = fns::trimWhiteSpace(string);
+        if (trimmedString.empty()) {
+            return STRING_TYPE::EMPTY;
+        }
+        if (trimmedString[0] == '#') {
+            return STRING_TYPE::COMMENT;
+        }
+        return std::visit(overloaded{[](Command_Error e) { return STRING_TYPE::ERROR; }, [](auto e) { return STRING_TYPE::ACTION; }},
+                          parseString(string));
     }
 
 } // namespace model
