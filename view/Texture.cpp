@@ -71,8 +71,8 @@ namespace view {
         }
     }
 
-    void Texture::setColor(Uint8 red, Uint8 green, Uint8 blue) {
-        SDL_SetTextureColorMod(m_texture, red, green, blue);
+    void Texture::setColor(const SDL_Color& color) {
+        SDL_SetTextureColorMod(m_texture, color.r, color.g, color.b);
     }
 
     void Texture::setBlendMode(SDL_BlendMode blending) {

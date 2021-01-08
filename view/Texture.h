@@ -34,7 +34,7 @@ namespace view {
 
         /****** NON CONST FUNCTIONS  ******/
         void free();
-        void setColor(Uint8 red, Uint8 green, Uint8 blue);
+        void setColor(const SDL_Color& color);
         void setBlendMode(SDL_BlendMode blending);
         void setAlpha(Uint8 alpha);
         void render(const SDL_Rect&  destination,

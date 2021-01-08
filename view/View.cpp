@@ -14,6 +14,7 @@
 #include <cassert>
 
 namespace view {
+    using namespace model;
 
     View::View() {
         if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
@@ -65,7 +66,7 @@ namespace view {
         SDL_Quit();
     }
 
-    void View::draw(const model::Model& model) {
+    void View::draw(const Model& model) {
         setDrawColor(view::color::BACKGROUND);
         SDL_RenderClear(m_renderer);
 
@@ -81,7 +82,7 @@ namespace view {
         //        }
     }
 
-    void View::drawClusters(const std::list<model::Cluster>& clusters) {
+    void View::drawClusters(const std::list<Cluster>& clusters) {
         for (const auto& cluster : clusters) {
             drawConnected(cluster.gridXY(), cluster.phaseTransformation(), cluster.angle(), cluster.isAlive() ? color::CLUSTER : color::CLUSTER_DEAD);
         }
@@ -90,7 +91,7 @@ namespace view {
         }
     }
 
-    void View::drawLevel(const model::Level& level) const {
+    void View::drawLevel(const Level& level) const {
         drawDisconnected(level.levelBlocks(), view::color::BACKGROUND_PLAYABLE);
         drawDisconnected(level.startBlocks(), view::color::BACKGROUND_START);
         drawDisconnected(level.spliceBlocks(), view::color::BACKGROUND_SPLICE);
@@ -107,7 +108,7 @@ namespace view {
         }
     }
 
-    void View::drawBlocks(const model::Level& level) const {
+    void View::drawBlocks(const Level& level) const {
         draw(level.dynamicBlocks());
         draw(level.instantBlocks());
     }
@@ -136,7 +137,7 @@ namespace view {
         drawRectangle(point, length, length, color);
     }
 
-    void View::drawRectangle(const model::WorldXY& point, int widthInWorld, int heightInWorld, const SDL_Color& color) const {
+    void View::drawRectangle(const WorldXY& point, int widthInWorld, int heightInWorld, const SDL_Color& color) const {
         drawRectangle(ScreenXY::fromWorldXY(point, m_viewPort),
                       m_viewPort.worldToScreenLength(widthInWorld),
                       m_viewPort.worldToScreenLength(heightInWorld),
@@ -147,8 +148,8 @@ namespace view {
         drawRectangle(ScreenXY{point.x() - pointSize / 2, point.y() - pointSize / 2}, pointSize, pointSize, color);
     }
 
-    void View::drawPoint(const model::WorldXY& point, const SDL_Color& color, int pointSize) const {
-        drawRectangle(model::WorldXY{point.x() - pointSize / 2, point.y() - pointSize / 2}, pointSize, pointSize, color);
+    void View::drawPoint(const WorldXY& point, const SDL_Color& color, int pointSize) const {
+        drawRectangle(WorldXY{point.x() - pointSize / 2, point.y() - pointSize / 2}, pointSize, pointSize, color);
     }
 
     void View::drawHorizontalLine(const ScreenXY& point, int length, const SDL_Color& color, size_t lineThickness) const {
@@ -160,7 +161,7 @@ namespace view {
         }
     }
 
-    void View::drawHorizontalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, size_t lineThickness) const {
+    void View::drawHorizontalLine(const WorldXY& point, int lengthInWorld, const SDL_Color& color, size_t lineThickness) const {
         drawHorizontalLine(ScreenXY::fromWorldXY(point, m_viewPort), lengthInWorld, color, lineThickness);
     }
 
@@ -173,8 +174,8 @@ namespace view {
         }
     }
 
-    void View::drawVerticalLine(const model::WorldXY& point, int lengthInWorld, const SDL_Color& color, Uint32 lineThickness) const {
-        drawRectangle(model::WorldXY{point.x(), static_cast<int>(point.y() - lineThickness / 2)}, lineThickness, lengthInWorld, color);
+    void View::drawVerticalLine(const WorldXY& point, int lengthInWorld, const SDL_Color& color, Uint32 lineThickness) const {
+        drawRectangle(WorldXY{point.x(), static_cast<int>(point.y() - lineThickness / 2)}, lineThickness, lengthInWorld, color);
     }
 
     void View::setDrawColor(const SDL_Color& color) const {
@@ -197,7 +198,7 @@ namespace view {
         return m_assets.get();
     }
 
-    void View::renderClusterName(const model::Cluster& cluster) {
+    void View::renderClusterName(const Cluster& cluster) {
         const auto worldPosition  = cluster.approximateCenter();
         const auto screenPosition = ScreenXY::fromWorldXY(worldPosition, m_viewPort);
 
@@ -249,35 +250,27 @@ namespace view {
         drawRectangle(point + ScreenXY{length, -lineThickness}, lineThickness, length + 2 * lineThickness, color, renderer);
     }
 
-    void View::drawDisconnected(const model::GridXYSet& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum) const {
+    void View::drawDisconnected(const GridXYSet& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum) const {
         const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
         const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
         const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
 
         auto texture = m_assets->getTexture(textureEnum, shrunkBlockSize, shrunkBlockSize);
-        texture->setColor(color.r, color.g, color.b);
+        texture->setColor(color);
         for (const auto block : blocks) {
             const auto position = ScreenXY::fromGridXY(block, m_viewPort) + shrinkInScreenXY;
             texture->render({position.x(), position.y(), shrunkBlockSize, shrunkBlockSize}, m_renderer);
         }
     }
 
-    //
-    //    const model::GridXYSet&                              blocks,
-    //    const std::function<model::WorldXY(const model::WorldXY&)>& fun,
-    //    double                                                      angle,
-    //    const SDL_Color&                                            color,
-    //        TEXTURE_ENUM                                                textureEnum = TEXTURE_ENUM::WHITE
-    //
-
-    void View::drawConnected(const model::GridXYSet&                                     blocks,
-                             const std::function<model::WorldXY(const model::WorldXY&)>& fun,
-                             double                                                      angle,
-                             const SDL_Color&                                            color,
-                             TEXTURE_ENUM                                                textureEnum) const {
+    void View::drawConnected(const GridXYSet&                              blocks,
+                             const std::function<WorldXY(const WorldXY&)>& fun,
+                             double                                        angle,
+                             const SDL_Color&                              color,
+                             TEXTURE_ENUM                                  textureEnum) const {
         static const SDL_Point origin{0, 0};
         const auto             texture = getTextureInWorld(blocks, textureEnum, color);
-        const auto topLeft = ScreenXY::fromWorldXY(fun(model::WorldXY(model::GridXY{geom::minX(blocks), geom::minY(blocks)})), m_viewPort);
+        const auto             topLeft = ScreenXY::fromWorldXY(fun(WorldXY(GridXY{geom::minX(blocks), geom::minY(blocks)})), m_viewPort);
         texture->render(
             {topLeft.x(), topLeft.y(), m_viewPort.worldToScreenLength(texture->width()), m_viewPort.worldToScreenLength(texture->height())},
             m_renderer,
@@ -285,25 +278,26 @@ namespace view {
             &origin);
     }
 
-    void View::drawConnected(const model::GridXYSet& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum) const {
+    void View::drawConnected(const GridXYSet& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum) const {
         if (blocks.empty()) {
             return;
         }
         const auto texture = getTextureInWorld(blocks, textureEnum, color);
-        const auto topLeft = ScreenXY::fromWorldXY((model::WorldXY(model::GridXY{geom::minX(blocks), geom::minY(blocks)})), m_viewPort);
+        const auto topLeft = ScreenXY::fromWorldXY((WorldXY(GridXY{geom::minX(blocks), geom::minY(blocks)})), m_viewPort);
         texture->render(
             {topLeft.x(), topLeft.y(), m_viewPort.worldToScreenLength(texture->width()), m_viewPort.worldToScreenLength(texture->height())},
             m_renderer);
     }
 
-    std::unique_ptr<Texture> View::getTextureInWorld(const model::GridXYSet& blocks, const TEXTURE_ENUM textureEnum, const SDL_Color& color) const {
-        const auto shrunkBlockSizeInWorld = app::BLOCK_SIZE_IN_WORLD - 2 * app::BLOCK_SHRINK_IN_WORLD;
-        const auto minX                   = geom::minX(blocks);
-        const auto minY                   = geom::minY(blocks);
-        const auto maxX                   = geom::maxX(blocks);
-        const auto maxY                   = geom::maxY(blocks);
-        const auto width                  = (maxX - minX + 1) * app::BLOCK_SIZE_IN_WORLD;
-        const auto height                 = (maxY - minY + 1) * app::BLOCK_SIZE_IN_WORLD;
+    std::unique_ptr<Texture> View::getTextureInWorld(const GridXYSet& blocks, const TEXTURE_ENUM textureEnum, const SDL_Color& color) const {
+        const auto shrunkSize  = app::BLOCK_SIZE_IN_WORLD - 2 * app::BLOCK_SHRINK_IN_WORLD;
+        const auto minX        = geom::minX(blocks);
+        const auto minY        = geom::minY(blocks);
+        const auto maxX        = geom::maxX(blocks);
+        const auto maxY        = geom::maxY(blocks);
+        const auto width       = (maxX - minX + 1) * app::BLOCK_SIZE_IN_WORLD;
+        const auto height      = (maxY - minY + 1) * app::BLOCK_SIZE_IN_WORLD;
+        const auto twiceShrink = 2 * app::BLOCK_SHRINK_IN_WORLD;
 
         assert(width > 0);
         assert(height > 0);
@@ -314,33 +308,25 @@ namespace view {
         SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
         SDL_RenderClear(m_renderer);
 
-        auto texture = m_assets->getTexture(textureEnum, shrunkBlockSizeInWorld, shrunkBlockSizeInWorld);
-        texture->setColor(color.r, color.g, color.b);
+        auto texture = m_assets->getTexture(textureEnum, shrunkSize, shrunkSize);
+        texture->setColor(color);
 
         for (const auto block : blocks) {
-            const auto position = block - model::GridXY{minX, minY} + model::WorldXY{app::BLOCK_SHRINK_IN_WORLD, app::BLOCK_SHRINK_IN_WORLD};
-            texture->render({position.x(), position.y(), shrunkBlockSizeInWorld, shrunkBlockSizeInWorld}, m_renderer);
-            const bool l = blocks.find(block.neighbor(model::GridXY::DIRECTION::LEFT)) != blocks.end();
-            const bool u = blocks.find(block.neighbor(model::GridXY::DIRECTION::UP)) != blocks.end();
+            const auto position = block - GridXY{minX, minY} + WorldXY{app::BLOCK_SHRINK_IN_WORLD, app::BLOCK_SHRINK_IN_WORLD};
+            texture->render({position.x(), position.y(), shrunkSize, shrunkSize}, m_renderer);
+            const bool l = blocks.find(block.neighbor(GridXY::DIRECTION::LEFT)) != blocks.end();
+            const bool u = blocks.find(block.neighbor(GridXY::DIRECTION::UP)) != blocks.end();
             if (u && l) {
-                const bool ul = blocks.find(block.neighbor(model::GridXY::DIRECTION::UP).neighbor(model::GridXY::DIRECTION::LEFT)) != blocks.end();
+                const bool ul = blocks.find(block.neighbor(GridXY::DIRECTION::UP).neighbor(GridXY::DIRECTION::LEFT)) != blocks.end();
                 if (ul) {
-                    texture->render({position.x() - 2 * app::BLOCK_SHRINK_IN_WORLD - 1,
-                                     position.y() - 2 * app::BLOCK_SHRINK_IN_WORLD - 1,
-                                     2 * app::BLOCK_SHRINK_IN_WORLD + 1,
-                                     2 * app::BLOCK_SHRINK_IN_WORLD + 1},
-                                    m_renderer);
+                    texture->render({position.x() - twiceShrink - 1, position.y() - twiceShrink - 1, twiceShrink + 1, twiceShrink + 1}, m_renderer);
                 }
             }
             if (u) {
-                texture->render(
-                    {position.x(), position.y() - 2 * app::BLOCK_SHRINK_IN_WORLD - 1, shrunkBlockSizeInWorld, 2 * app::BLOCK_SHRINK_IN_WORLD + 1},
-                    m_renderer);
+                texture->render({position.x(), position.y() - twiceShrink - 1, shrunkSize, twiceShrink + 1}, m_renderer);
             }
             if (l) {
-                texture->render(
-                    {position.x() - 2 * app::BLOCK_SHRINK_IN_WORLD - 1, position.y(), 2 * app::BLOCK_SHRINK_IN_WORLD + 1, shrunkBlockSizeInWorld},
-                    m_renderer);
+                texture->render({position.x() - twiceShrink - 1, position.y(), twiceShrink + 1, shrunkSize}, m_renderer);
             }
         }
         SDL_SetRenderTarget(m_renderer, nullptr);
