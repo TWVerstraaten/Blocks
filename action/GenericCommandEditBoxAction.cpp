@@ -8,10 +8,9 @@
 #include "../view/widget/ScrollArea.h"
 
 #include <cassert>
-#include <utility>
 
 action::GenericCommandEditBoxAction::GenericCommandEditBoxAction(const view::widget::CommandEditBox& oldCommandEditBox,
-                                                                 view::widget::CommandEditBox  newCommandEditBox)
+                                                                 view::widget::CommandEditBox        newCommandEditBox)
     : m_index(oldCommandEditBox.index()), m_old(oldCommandEditBox), m_new(std::move(newCommandEditBox)) {
     assert(m_old.index() == m_new.index());
 }

@@ -7,6 +7,7 @@
 
 #include "../model/GridXY.h"
 #include "Action.h"
+
 namespace action {
     class AddBlockToClusterAction : public Action {
 
@@ -15,8 +16,8 @@ namespace action {
         AddBlockToClusterAction(size_t clusterIndex, const model::GridXY& gridXy);
 
         /****** VIRTUAL FUNCTIONS  ******/
-        void undoAction(app::Application_Edit& applicationEdit) override;
-        void redoAction(app::Application_Edit& applicationEdit) override;
+        void                      undoAction(app::Application_Edit& applicationEdit) override;
+        void                      redoAction(app::Application_Edit& applicationEdit) override;
         [[nodiscard]] ACTION_TYPE type() const override;
 
       private:

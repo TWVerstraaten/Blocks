@@ -6,7 +6,6 @@
 
 #include "../app/Application_Edit.h"
 #include "../global/defines.h"
-#include "../global/overloaded.h"
 
 action::AddLevelBlockAction::AddLevelBlockAction(
     std::set<std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE, model::FLOOR_BLOCK_TYPE>> blockTypes, const model::GridXY& point)

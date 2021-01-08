@@ -15,16 +15,16 @@ namespace action {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        AddClusterAction(model::Cluster cluster);
+        explicit AddClusterAction(model::Cluster cluster);
 
         /****** VIRTUAL FUNCTIONS  ******/
-        void        undoAction(app::Application_Edit& applicationEdit) override;
-        void        redoAction(app::Application_Edit& applicationEdit) override;
-        ACTION_TYPE type() const override;
+        void                      undoAction(app::Application_Edit& applicationEdit) override;
+        void                      redoAction(app::Application_Edit& applicationEdit) override;
+        [[nodiscard]] ACTION_TYPE type() const override;
 
       private:
         /****** DATA MEMBERS  ******/
-        const model::Cluster               m_cluster;
+        const model::Cluster m_cluster;
     };
 
 } // namespace action

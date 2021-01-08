@@ -17,12 +17,11 @@ namespace action {
 
     class AddLevelBlockAction : public Action {
       public:
-        AddLevelBlockAction(
-            std::set<std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE, model::FLOOR_BLOCK_TYPE>> blockTypes,
-            const model::GridXY&                                                                                  point);
+        AddLevelBlockAction(std::set<std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE, model::FLOOR_BLOCK_TYPE>> blockTypes,
+                            const model::GridXY&                                                                                  point);
 
-        void        undoAction(app::Application_Edit& applicationEdit) override;
-        void        redoAction(app::Application_Edit& applicationEdit) override;
+        void                      undoAction(app::Application_Edit& applicationEdit) override;
+        void                      redoAction(app::Application_Edit& applicationEdit) override;
         [[nodiscard]] ACTION_TYPE type() const override;
 
       private:
