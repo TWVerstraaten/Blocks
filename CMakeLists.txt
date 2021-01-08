@@ -4,12 +4,12 @@ project(Blocks)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${Blocks_SOURCE_DIR}/bin)
 
 if (WIN32)
-    set(SDL2_INCLUDE_DIRS "C:/build/SDL2-2.0.14/include")
-    set(SDL2_TTF_INCLUDE_DIRS "C:/build/SDL2_ttf-2.0.15")
-    set(SDL2_IMAGE_INCLUDE_DIRS "C:/build/SDL2_image-2.0.5")
+    set(SDL2_INCLUDE_DIRS "C:\\Projects\\ext\\SDL2-2.0.14\\include")
+    set(SDL2_TTF_INCLUDE_DIRS "C:\\Projects\\ext\\SDL2_ttf-2.0.15")
+    set(SDL2_IMAGE_INCLUDE_DIRS "C:\\Projects\\ext\\SDL2_image-2.0.5")
 
     include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
-    link_directories(C:/build/dll)
+    link_directories(C:\\Projects\\ext\\dlls)
 endif (WIN32)
 
 if (UNIX)
