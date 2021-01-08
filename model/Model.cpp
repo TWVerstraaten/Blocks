@@ -80,9 +80,6 @@ namespace model {
 
     void Model::preStep() {
         m_phaseFraction = 0.0;
-        for (auto& cluster : m_clusters) {
-            cluster.preStep();
-        }
         m_needsPreStep = false;
     }
 
@@ -93,9 +90,7 @@ namespace model {
     }
 
     void Model::startPhase() {
-        if (m_needsPreStep) {
             preStep();
-        }
         m_needsPreStep  = true;
         m_phaseFraction = 1.0;
     }
@@ -117,9 +112,6 @@ namespace model {
         }
         intersectWithLevel();
         intersectClusters();
-    }
-
-    void Model::finishInteractions() {
     }
 
     void Model::intersectClusters() {

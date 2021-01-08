@@ -93,9 +93,18 @@ namespace app {
         m_paused = !m_paused;
     }
 
-    void Application_Run::performTimeStep() {
-        m_model.startPhase();
+    void Application_Run::initializeInteractStep() {
+        for (auto& cluster : m_model.clusters()) {
+            cluster.resetPhase();
+            cluster.incrementCommandIndex();
+        }
         ModelViewInterface::interactWithInstantBlocks(m_model, m_scrollArea);
+        ModelViewInterface::updateCommandScrollArea(m_model, m_scrollArea, APP_MODE::RUNNING);
+        m_currentStep = CURRENT_STEP::INTERACT;
+    }
+
+    void Application_Run::initializeMovingStep() {
+        m_model.startPhase();
         for (auto& cluster : m_model.clusters()) {
             ModelViewInterface::stopSpliceOrKillIfNeeded(m_model.level(), cluster);
         }
@@ -105,32 +114,40 @@ namespace app {
                 cluster.doCommand(m_model);
             }
         }
-
         for (auto& cluster : m_model.clusters()) {
             cluster.buildSides();
         }
-
         m_model.level().createBoundaries();
-        m_model.finishInteractions();
         ModelViewInterface::updateCommandScrollArea(m_model, m_scrollArea, APP_MODE::RUNNING);
-        m_timeSinceLastStep %= m_timeStep;
+        m_currentStep = CURRENT_STEP::MOVING;
     }
 
     RUN_MODE Application_Run::performSingleLoop() {
         if (m_runningMode != RUN_MODE::RUNNING) {
             return m_runningMode;
         }
-        if (m_timeSinceLastStep > m_timeStep) {
-            performTimeStep();
+        const auto currentTime = SDL_GetTicks();
+        const auto dt          = currentTime - m_previousTime;
+        switch (m_currentStep) {
+            case CURRENT_STEP::MOVING:
+                if (m_timeSinceLastStep >= m_timeStep) {
+                    initializeInteractStep();
+                    m_timeSinceLastStep %= m_timeStep;
+                } else {
+                    update(dt / static_cast<double>(m_timeStep));
+                }
+                break;
+            case CURRENT_STEP::INTERACT:
+                if (m_timeSinceLastStep >= m_timeStep) {
+                    initializeMovingStep();
+                    m_timeSinceLastStep %= m_timeStep;
+                    update(dt / static_cast<double>(m_timeStep));
+                }
+                break;
         }
-
-        const auto dT = SDL_GetTicks() - m_previousTime;
-        if (not m_paused) {
-            update(1.9 * dT / m_timeStep);
-            m_timeSinceLastStep += dT;
-        }
-        m_previousTime = SDL_GetTicks();
-        draw(dT);
+        draw();
+        m_timeSinceLastStep += SDL_GetTicks() - currentTime;
+        m_previousTime = currentTime;
         return RUN_MODE::RUNNING;
     }
 
@@ -180,10 +197,9 @@ namespace app {
         }
     }
 
-    void Application_Run::draw(Uint32 dT) {
+    void Application_Run::draw() {
         m_view->draw(m_model);
         m_view->drawScrollArea(&m_scrollArea);
-        m_view->assets()->renderText(std::to_string(1000.0 / dT), view::ScreenXY{10, m_view->windowSize().y() - 40}, m_view->renderer());
         m_view->renderPresent();
     }
 } // namespace app

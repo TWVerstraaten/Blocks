@@ -80,6 +80,7 @@ namespace model {
         void                       setState(CLUSTER_STATE state);
         void                       setWorldOffset(const WorldXY& worldOffset);
         void                       setPhase(PHASE phase);
+        void                       resetPhase();
         CommandVector&             commandVector();
         model::Cluster             grabAllButFirstComponent();
         std::set<GridXY>::iterator removeBLock(const GridXY& gridXY);
@@ -99,7 +100,6 @@ namespace model {
         void setRotation(double angle, const GridXY& pivot);
         void grabAdjacentStoppedClusters(Level& level);
         void spliceCluster(Level& level);
-        void resetPhase();
 
         /****** PRIVATE STATIC FUNCTIONS  ******/
         //        static Command rotateCommandClockWise(Command command);

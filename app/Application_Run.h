@@ -25,9 +25,12 @@ namespace app {
         view::widget::ScrollArea& scrollArea();
 
       private:
+        enum class CURRENT_STEP { MOVING, INTERACT };
+
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void togglePause();
-        void performTimeStep();
+        void initializeMovingStep();
+        void initializeInteractStep();
         void addStoppedClustersToLevel();
         void update(double fractionOfPhase);
         void mouseWheelEvent(const SDL_Event& event);
@@ -37,14 +40,15 @@ namespace app {
         void mouseMoveEvent(const SDL_Event& event);
         void stopClustersIfNeeded();
         void spliceClustersIfNeeded();
-        void draw(Uint32 dT);
+        void draw();
 
         /****** DATA MEMBERS  ******/
         bool                     m_paused                  = false;
         bool                     m_rightMouseButtonPressed = false;
         bool                     m_leftMouseButtonPressed  = false;
+        CURRENT_STEP             m_currentStep             = CURRENT_STEP::INTERACT;
         Uint32                   m_previousTime;
-        Uint32                   m_timeSinceLastStep = 0;
+        int                      m_timeSinceLastStep = 0;
         Uint32                   m_timeStep          = cst::TIME_STEP_SLOW;
         RUN_MODE                 m_runningMode       = RUN_MODE::RUNNING;
         view::ScreenXY           m_previousMousePosition;

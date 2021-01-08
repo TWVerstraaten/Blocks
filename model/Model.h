@@ -32,7 +32,6 @@ namespace model {
         void                         init();
         void                         clear();
         void                         startPhase();
-        void                         finishInteractions();
         void                         update(double dPhase);
         Level&                       level();
         std::list<Cluster>&          clusters();
