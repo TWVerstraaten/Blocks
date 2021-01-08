@@ -4,6 +4,7 @@
 
 #include "CommandVector.h"
 
+#include "../../global/defines.h"
 #include "../../global/fns.h"
 #include "../../global/overloaded.h"
 #include "CommandParser.h"
@@ -15,7 +16,7 @@ model::CommandVector::CommandVector(const std::vector<std::string>& strings) {
 }
 
 bool model::CommandVector::wellFormed() const {
-    return std::all_of(m_commands.begin(), m_commands.end(), [](const Command& command) {
+    return std::all_of(_CIT_(m_commands), [](const Command& command) {
         return std::visit(overloaded{[](Command_Error e) { return false; }, [](auto e) { return true; }}, command);
     });
 }
@@ -60,7 +61,7 @@ void model::CommandVector::set(const std::vector<std::string>& strings) {
     }
     m_repeatCount =
         std::visit(overloaded{[](Command_RepeatWrapper c) { return c.repeatCount - 1; }, [](auto c) { return 0; }}, m_commands[m_commandIndex]);
-    std::transform(strings.begin(), strings.end(), std::back_inserter(m_strings), [](const std::string& str) { return CommandParser::format(str); });
+    std::transform(_CIT_(strings), std::back_inserter(m_strings), [](const std::string& str) { return CommandParser::format(str); });
 }
 
 void model::CommandVector::clear() {

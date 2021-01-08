@@ -4,6 +4,7 @@
 
 #include "Application_Run.h"
 
+#include "../global/defines.h"
 #include "../view/Mouse.h"
 #include "ModelViewInterface.h"
 
@@ -162,9 +163,7 @@ namespace app {
     }
 
     void Application_Run::addStoppedClustersToLevel() {
-        auto it = std::partition(m_model.clusters().begin(), m_model.clusters().end(), [](const auto& cluster) {
-            return cluster.state() != model::CLUSTER_STATE::STOPPED;
-        });
+        auto it = std::partition(_IT_(m_model.clusters()), _FUNC_(cluster, cluster.state() != model::CLUSTER_STATE::STOPPED));
         m_model.level().stoppedClusters().splice(m_model.level().stoppedClusters().end(), m_model.clusters(), it, m_model.clusters().end());
     }
 

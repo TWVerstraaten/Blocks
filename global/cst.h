@@ -9,13 +9,6 @@
 
 #include <SDL.h>
 
-#define NOTE(x) fprintf(stderr, x ": %s:%d\n", __FILE__, __LINE__);
-#define NOTE_ONCE(x)                                                                                                                                 \
-    static bool noteSeen = false;                                                                                                                    \
-    if (not noteSeen)                                                                                                                                \
-        NOTE(x)                                                                                                                                      \
-    noteSeen = true;
-
 namespace cst {
 
     static const Uint32 BLOCK_SELECT_WIDGET_HEIGHT = 150;

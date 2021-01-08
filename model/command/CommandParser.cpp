@@ -4,6 +4,7 @@
 
 #include "CommandParser.h"
 
+#include "../../global/defines.h"
 #include "../../global/fns.h"
 #include "../../global/overloaded.h"
 
@@ -86,9 +87,10 @@ namespace model {
 
     std::vector<CommandParser::Token> CommandParser::tokenize(const std::string& string) {
         std::vector<std::string> parts;
-        boost::split(parts, boost::trim_copy(string), boost::is_any_of(" "), boost::token_compress_on);
+        const auto               trimmed = boost::trim_copy(string);
+        boost::split(parts, trimmed, boost::is_any_of(" "), boost::token_compress_on);
         std::vector<Token> tokens;
-        std::transform(parts.cbegin(), parts.cend(), back_inserter(tokens), CommandParser::tokenizeSingle);
+        std::transform(_CIT_(parts), back_inserter(tokens), CommandParser::tokenizeSingle);
         return tokens;
     }
 
@@ -107,7 +109,7 @@ namespace model {
     }
 
     std::string CommandParser::toString(const Command& command) {
-        return std::visit(overloaded{[](const Command_Error& e) { return std::string("Error"); },
+        return std::visit(overloaded{_FUNC_(, std::string("Error")),
                                      [](const Command_Simple& e) { return toString(e.type); },
                                      [](const Command_Modified& e) { return toString(e.modifier) + " " + toString(e.type); },
                                      [](const Command_RepeatWrapper& e) { return toString(toCommand(e)) + " " + std::to_string(e.repeatCount); }},

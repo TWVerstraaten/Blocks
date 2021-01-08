@@ -4,6 +4,7 @@
 
 #include "Application_Edit.h"
 
+#include "../global/defines.h"
 #include "../view/Mouse.h"
 #include "Application.h"
 
@@ -100,8 +101,7 @@ namespace app {
     }
 
     bool Application_Edit::canStart() const {
-        return std::all_of(
-            m_scrollArea->children().begin(), m_scrollArea->children().end(), [](const view::widget::CommandEditBox& box) { return box.canParse(); });
+        return std::all_of(_CIT_(m_scrollArea->children()), _FUNC_(box, box.canParse()));
     }
 
     void Application_Edit::getActionsFromEditBoxes() {

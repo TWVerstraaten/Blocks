@@ -5,7 +5,9 @@
 #include "Model.h"
 
 #include "../action/RemoveClusterAction.h"
+#include "../global/alg.h"
 #include "../global/cst.h"
+#include "../global/defines.h"
 #include "../global/fns.h"
 
 #include <algorithm>
@@ -136,7 +138,7 @@ namespace model {
     }
 
     std::list<Cluster>::iterator Model::clusterWithIndex(size_t index) {
-        return std::find_if(m_clusters.begin(), m_clusters.end(), [&](const Cluster& cluster) { return cluster.index() == index; });
+        return std::find_if(_IT_(m_clusters), _FUNC_(cluster, cluster.index() == index));
     }
 
     Level& Model::level() {
@@ -144,12 +146,11 @@ namespace model {
     }
 
     bool Model::noClusterOnBlock(const GridXY& gridXY) const {
-        return std::find_if(m_clusters.begin(), m_clusters.end(), [&](const Cluster& cluster) { return cluster.contains(gridXY); }) ==
-               m_clusters.end();
+        return std::find_if(_IT_(m_clusters), _FUNC_(cluster, cluster.contains(gridXY))) == m_clusters.end();
     }
 
     std::list<Cluster>::iterator Model::clusterContaining(const GridXY& point) {
-        return std::find_if(m_clusters.begin(), m_clusters.end(), [&](const auto& cluster) { return cluster.contains(point); });
+        return std::find_if(_IT_(m_clusters), _FUNC_(cluster, cluster.contains(point)));
     }
 
     double Model::phaseFraction() const {

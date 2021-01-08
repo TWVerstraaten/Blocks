@@ -8,32 +8,30 @@
 #include "../action/GenericModelAction.h"
 #include "../action/RemoveBlockFromClusterAction.h"
 #include "../action/RemoveClusterAction.h"
+#include "../global/defines.h"
 #include "../global/overloaded.h"
 #include "../view/View.h"
 #include "../view/widget/ScrollArea.h"
 #include "Application_Edit.h"
 
-#include <algorithm>
 #include <cassert>
 
 static std::list<model::Cluster>::iterator findCluster(const view::widget::CommandEditBox& commandEditBox, std::list<model::Cluster>& clusters) {
-    return std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) { return cluster.index() == commandEditBox.index(); });
+    return std::find_if(_IT_(clusters), _FUNC_(cluster, cluster.index() == commandEditBox.index()));
 }
 
 static std::list<model::Cluster>::const_iterator findCluster(const view::widget::CommandEditBox& commandEditBox,
                                                              const std::list<model::Cluster>&    clusters) {
-    return std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) { return cluster.index() == commandEditBox.index(); });
+    return std::find_if(_CIT_(clusters), _FUNC_(cluster, cluster.index() == commandEditBox.index()));
 }
 
 static std::list<view::widget::CommandEditBox>::iterator findCommandEditBox(const model::Cluster&                    cluster,
                                                                             std::list<view::widget::CommandEditBox>& commandEditBoxes) {
-    return std::find_if(commandEditBoxes.begin(), commandEditBoxes.end(), [&](const view::widget::CommandEditBox& commandEditBox) {
-        return cluster.index() == commandEditBox.index();
-    });
+    return std::find_if(_IT_(commandEditBoxes), _FUNC_(box, cluster.index() == box.index()));
 }
 
 static void removeActionBoxesOfRemovedClusters(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea) {
-    scrollArea.children().remove_if([&](const view::widget::CommandEditBox& box) { return findCluster(box, clusters) == clusters.end(); });
+    scrollArea.children().remove_if(_FUNC_(box, findCluster(box, clusters) == clusters.end()));
 }
 
 static void updateExistingCommandEditBoxes(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea) {
@@ -48,14 +46,10 @@ static void updateExistingCommandEditBoxes(const std::list<model::Cluster>& clus
 }
 
 static void addCommandEditBoxesOfNewClusters(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea) {
-    auto it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
-        return findCommandEditBox(cluster, scrollArea.children()) == scrollArea.children().end();
-    });
+    auto it = std::find_if(_IT_(clusters), _FUNC_(cluster, findCommandEditBox(cluster, scrollArea.children()) == scrollArea.children().end()));
     while (it != clusters.end()) {
         scrollArea.addCommandEditBox(*it);
-        it = std::find_if(clusters.begin(), clusters.end(), [&](const model::Cluster& cluster) {
-            return findCommandEditBox(cluster, scrollArea.children()) == scrollArea.children().end();
-        });
+        it = std::find_if(_IT_(clusters), _FUNC_(cluster, findCommandEditBox(cluster, scrollArea.children()) == scrollArea.children().end()));
     }
 }
 
@@ -266,11 +260,11 @@ std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(model::Model
                                                                     const model::GridXY&      previousPoint) {
 
     auto&      clusters = model.clusters();
-    const auto baseIt   = std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.contains(previousPoint); });
+    const auto baseIt   = std::find_if(_IT_(clusters), _FUNC_(cluster, cluster.contains(previousPoint)));
     if (baseIt == clusters.end() || (not previousPoint.isAdjacent(point))) {
         return addSingleBlockCluster(model, scrollArea, point);
     }
-    auto extensionIt = std::find_if(clusters.begin(), clusters.end(), [&](const auto& cluster) { return cluster.contains(point); });
+    auto extensionIt = std::find_if(_IT_(clusters), _FUNC_(cluster, cluster.contains(point)));
     if (baseIt == extensionIt) {
         return nullptr;
     }

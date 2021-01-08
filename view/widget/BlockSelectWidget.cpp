@@ -5,6 +5,7 @@
 #include "BlockSelectWidget.h"
 
 #include "../../global/cst.h"
+#include "../../global/defines.h"
 #include "../../global/geom.h"
 #include "../../global/overloaded.h"
 #include "../Assets.h"
@@ -59,8 +60,7 @@ namespace view::widget {
     }
 
     ScreenXY BlockSelectWidget::screenXY(const model::BlockType& type) {
-        const auto it =
-            std::find_if(model::s_allTypes.begin(), model::s_allTypes.end(), [&](const model::BlockType& blockType) { return blockType == type; });
+        const auto it = std::find_if(_CIT_(model::s_allTypes), _FUNC_(blockType, blockType == type));
         assert(it != model::s_allTypes.end());
         return indexToScreenXY(std::distance(model::s_allTypes.begin(), it));
     }

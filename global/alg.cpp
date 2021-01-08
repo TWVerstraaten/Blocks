@@ -4,6 +4,7 @@
 
 #include "alg.h"
 
+#include "defines.h"
 #include "geom.h"
 
 #include <algorithm>
@@ -45,9 +46,7 @@ std::set<model::Line<model::WorldXY>> alg::getSidesFromGridXY(std::set<model::Gr
         }
         ++yOffset;
     }
-    std::sort(cornerPoints.begin(), cornerPoints.end(), [](const model::GridXY& lhs, const model::GridXY& rhs) {
-        return lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x();
-    });
+    std::sort(_IT_(cornerPoints), _FUNC_2_(lhs, rhs, lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x()));
     while (not cornerPoints.empty()) {
         result.emplace(model::Line<model::WorldXY>{*(cornerPoints.rbegin() + 1), *cornerPoints.rbegin()});
         cornerPoints.erase(cornerPoints.end() - 2, cornerPoints.end());
@@ -57,7 +56,7 @@ std::set<model::Line<model::WorldXY>> alg::getSidesFromGridXY(std::set<model::Gr
 
 int alg::minX(const std::set<model::GridXY>& blocks) {
     assert(not blocks.empty());
-    return std::min_element(blocks.begin(), blocks.end(), [](const model::GridXY& lhs, const model::GridXY& rhs) { return lhs.x() < rhs.x(); })->x();
+    return std::min_element(_CIT_(blocks), _FUNC_2_(lhs, rhs, lhs.x() < rhs.x()))->x();
 }
 
 int alg::minY(const std::set<model::GridXY>& blocks) {
@@ -67,7 +66,7 @@ int alg::minY(const std::set<model::GridXY>& blocks) {
 
 int alg::maxX(const std::set<model::GridXY>& blocks) {
     assert(not blocks.empty());
-    return std::max_element(blocks.begin(), blocks.end(), [](const model::GridXY& lhs, const model::GridXY& rhs) { return lhs.x() < rhs.x(); })->x();
+    return std::max_element(_CIT_(blocks), _FUNC_2_(lhs, rhs, lhs.x() < rhs.x()))->x();
 }
 
 int alg::maxY(const std::set<model::GridXY>& blocks) {

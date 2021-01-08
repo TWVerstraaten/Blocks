@@ -6,6 +6,7 @@
 
 #include "../global/alg.h"
 #include "../global/cst.h"
+#include "../global/defines.h"
 #include "../global/fns.h"
 #include "../global/geom.h"
 #include "Level.h"
@@ -33,7 +34,7 @@ namespace model {
             return;
         }
 
-        std::visit([&](auto c) { doAction(c, *this, model.level()); }, m_commandVector.currentCommand());
+        std::visit(_FUNC_(c, doAction(c, *this, model.level())), m_commandVector.currentCommand());
     }
 
     void Cluster::rotateClockWiseAbout(const GridXY& pivotGridXY) {
@@ -42,7 +43,7 @@ namespace model {
             newGridXYSet.emplace(GridXY{pivotGridXY.x() + pivotGridXY.y() - gridXY.y(), pivotGridXY.y() - pivotGridXY.x() + gridXY.x()});
         }
         std::swap(m_gridXYVector, newGridXYSet);
-        NOTE_ONCE("Do we want to rotate the directions...?")
+        _NOTE_ONCE_("Do we want to rotate the directions...?")
     }
 
     void Cluster::rotateCounterClockWiseAbout(const GridXY& pivotGridXY) {
@@ -159,7 +160,7 @@ namespace model {
     }
 
     bool Cluster::connected() const {
-        NOTE_ONCE("Implement proper variant of this function")
+        _NOTE_ONCE_("Implement proper variant of this function")
         assert(gridXUYAreUnique());
         assert(not empty());
         if (m_gridXYVector.size() == 1) {
@@ -234,7 +235,7 @@ namespace model {
 
     bool Cluster::gridXUYAreUnique() const {
         assert(!m_gridXYVector.empty());
-        std::set<GridXY> s(m_gridXYVector.begin(), m_gridXYVector.end());
+        std::set<GridXY> s(_CIT_(m_gridXYVector));
         return s.size() == m_gridXYVector.size();
     }
 
@@ -315,14 +316,11 @@ namespace model {
             return out;
         }
         assert(not cluster.empty());
-        const int minX = std::min_element(cluster.m_gridXYVector.begin(), cluster.m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) {
-                             return lhs.x() < rhs.x();
-                         })->x();
-        const int minY = cluster.m_gridXYVector.begin()->y();
-        const int maxX = std::max_element(cluster.m_gridXYVector.begin(), cluster.m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) {
-                             return lhs.x() < rhs.x();
-                         })->x();
-        const int maxY = cluster.m_gridXYVector.rbegin()->y();
+
+        const int minX = alg::minX(cluster.gridXY());
+        const int minY = alg::minY(cluster.gridXY());
+        const int maxX = alg::maxX(cluster.gridXY());
+        const int maxY = alg::maxY(cluster.gridXY());
         assert(minX <= maxX);
         assert(minY <= maxY);
 
@@ -357,10 +355,8 @@ namespace model {
 
     bool Cluster::adjacent(const Cluster& other) const {
         const auto otherGridXY = other.m_gridXYVector;
-        return std::any_of(m_gridXYVector.begin(), m_gridXYVector.end(), [&](const GridXY& point1) {
-            return std::find_if(otherGridXY.begin(), otherGridXY.end(), [&](const GridXY& point2) { return point2.isAdjacent(point1); }) !=
-                   otherGridXY.end();
-        });
+        return std::any_of(_CIT_(m_gridXYVector),
+                           _FUNC_(point1, std::find_if(_CIT_(otherGridXY), _FUNC_(point2, point2.isAdjacent(point1))) != otherGridXY.end()));
     }
 
     void Cluster::stopIfNeeded() {
@@ -382,7 +378,7 @@ namespace model {
             }
         }
         m_gridXYVector.merge(newGridXy);
-        stoppedClusters.remove_if([](const Cluster& cluster) { return cluster.empty(); });
+        stoppedClusters.remove_if(_FUNC_(cluster, cluster.empty()));
     }
 
     void Cluster::spliceCluster(Level& level) {
@@ -404,7 +400,7 @@ namespace model {
     }
 
     void Cluster::spliceIfNeeded(model::Model& model) {
-        NOTE_ONCE("Implement")
+        _NOTE_ONCE_("Implement")
     }
 
     void Cluster::doOperation(const GridXY& point, DYNAMIC_BLOCK_TYPE type) {

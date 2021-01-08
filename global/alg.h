@@ -8,6 +8,7 @@
 #include "../model/GridXY.h"
 #include "../model/Line.h"
 
+#include <algorithm>
 #include <set>
 
 namespace alg {

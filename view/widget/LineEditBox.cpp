@@ -5,6 +5,7 @@
 #include "LineEditBox.h"
 
 #include "../../global/cst.h"
+#include "../../global/defines.h"
 #include "../../global/fns.h"
 #include "../../global/geom.h"
 #include "../Assets.h"
@@ -16,7 +17,7 @@
 
 static std::string toUpper(const std::string& text) {
     std::string upperCaseString;
-    std::transform(text.cbegin(), text.cend(), std::back_inserter(upperCaseString), ::toupper);
+    std::transform(_CIT_(text), std::back_inserter(upperCaseString), ::toupper);
     return upperCaseString;
 }
 

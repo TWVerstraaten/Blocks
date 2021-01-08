@@ -5,6 +5,7 @@
 #include "CommandEditBox.h"
 
 #include "../../global/cst.h"
+#include "../../global/defines.h"
 #include "../../model/Cluster.h"
 #include "../../model/command/CommandParser.h"
 #include "../Assets.h"
@@ -55,7 +56,7 @@ void view::widget::CommandEditBox::update(SDL_Renderer* renderer) {
 }
 
 bool view::widget::CommandEditBox::canParse() const {
-    return std::all_of(m_strings.begin(), m_strings.end(), &model::CommandParser::canParse);
+    return std::all_of(_CIT_(m_strings), &model::CommandParser::canParse);
 }
 
 void view::widget::CommandEditBox::loseFocus() {

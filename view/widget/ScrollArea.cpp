@@ -5,6 +5,7 @@
 #include "ScrollArea.h"
 
 #include "../../global/cst.h"
+#include "../../global/defines.h"
 #include "../../global/fns.h"
 #include "../../global/geom.h"
 #include "../../model/Cluster.h"
@@ -127,9 +128,8 @@ void view::widget::ScrollArea::update(SDL_Renderer* renderer) {
 }
 
 void view::widget::ScrollArea::addCommandEditBox(const model::Cluster& cluster) {
-    m_children.emplace_back(
-        CommandEditBox(m_rect.x + cst::LINE_EDIT_PADDING, 0, cst::LINE_EDIT_WIDTH, 0, m_assets, cluster));
-//    m_children.back().setHighLightedLine(cluster.commandIndex());
+    m_children.emplace_back(CommandEditBox(m_rect.x + cst::LINE_EDIT_PADDING, 0, cst::LINE_EDIT_WIDTH, 0, m_assets, cluster));
+    //    m_children.back().setHighLightedLine(cluster.commandIndex());
     m_children.back().setActive(cluster.alive());
     m_needsUpdate = true;
 }
@@ -147,14 +147,11 @@ void view::widget::ScrollArea::renderScrollBar(SDL_Renderer* renderer) {
     } else {
         const int barHeight = m_rect.h * (m_rect.h / static_cast<double>(m_height));
         Rectangle::render(
-            {m_rect.x + m_rect.w - 10, static_cast<int>(m_scrollFraction * (m_rect.h - barHeight)), 5, barHeight},
-            view::color::BLACK,
-            renderer);
+            {m_rect.x + m_rect.w - 10, static_cast<int>(m_scrollFraction * (m_rect.h - barHeight)), 5, barHeight}, view::color::BLACK, renderer);
     }
 }
 
-view::widget::ScrollArea::ScrollArea(const view::widget::ScrollArea& other)
-    : RectWidget(other.m_rect), m_children(other.m_children) {
+view::widget::ScrollArea::ScrollArea(const view::widget::ScrollArea& other) : RectWidget(other.m_rect), m_children(other.m_children) {
     m_rect           = other.m_rect;
     m_needsUpdate    = other.m_needsUpdate;
     m_firstRender    = other.m_firstRender;
@@ -175,7 +172,5 @@ void view::widget::ScrollArea::setX(int x) {
 }
 
 std::list<view::widget::CommandEditBox>::iterator view::widget::ScrollArea::findCommandEditBox(size_t index) {
-    return std::find_if(m_children.begin(), m_children.end(), [index](const auto& commandEditBox) {
-        return commandEditBox.index() == index;
-    });
+    return std::find_if(_IT_(m_children), [index](const auto& commandEditBox) { return commandEditBox.index() == index; });
 }

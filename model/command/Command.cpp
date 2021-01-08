@@ -5,7 +5,7 @@
 #include "Command.h"
 
 #include "../../global/cst.h"
-#include "../../global/overloaded.h"
+#include "../../global/defines.h"
 #include "../Cluster.h"
 #include "../Level.h"
 
@@ -33,7 +33,7 @@ static void setTranslating(model::GridXY::DIRECTION direction, model::Cluster& c
 }
 
 model::Command model::toCommand(const model::Command_RepeatWrapper& e) {
-    return std::visit(overloaded{[](const auto& c) { return static_cast<Command>(c); }}, e.command);
+    return std::visit(_FUNC_(c, static_cast<Command>(c)), e.command);
 }
 
 void model::doAction(const model::Command_Error& command, Cluster& cluster, Level& level) {
@@ -72,5 +72,5 @@ void model::doAction(const model::Command_Modified& command, Cluster& cluster, L
 }
 
 void model::doAction(const model::Command_RepeatWrapper& command, Cluster& cluster, Level& level) {
-    std::visit(overloaded{[&](const auto& c) { doAction(c, cluster, level); }}, command.command);
+    std::visit(_FUNC_(c, doAction(c, cluster, level)), command.command);
 }
