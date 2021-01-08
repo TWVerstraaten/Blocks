@@ -34,52 +34,6 @@ namespace model {
         }
 
         std::visit([&](auto c) { doAction(c, *this, model.level()); }, m_commandVector.currentCommand());
-        //        std::set<GridXY> newGridXYSet;
-        //        switch (m_commands[m_commandIndex].m_type) {
-        //            case COMMAND_TYPE::FWD:
-        //                for (auto& idx : m_gridXYVector) {
-        //                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::UP));
-        //                }
-        //                m_phase = PHASE::TRANSLATING;
-        //                std::swap(m_gridXYVector, newGridXYSet);
-        //                m_worldOffset = {0, cst::BLOCK_SIZE_IN_WORLD};
-        //                break;
-        //            case COMMAND_TYPE::BCK:
-        //                for (auto& idx : m_gridXYVector) {
-        //
-        //                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::DOWN));
-        //                }
-        //                m_phase = PHASE::TRANSLATING;
-        //                std::swap(m_gridXYVector, newGridXYSet);
-        //                m_worldOffset = {0, -cst::BLOCK_SIZE_IN_WORLD};
-        //                break;
-        //            case COMMAND_TYPE::LFT:
-        //                for (auto& idx : m_gridXYVector) {
-        //                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::LEFT));
-        //                }
-        //                m_phase = PHASE::TRANSLATING;
-        //                std::swap(m_gridXYVector, newGridXYSet);
-        //                m_worldOffset = {cst::BLOCK_SIZE_IN_WORLD, 0};
-        //                break;
-        //            case COMMAND_TYPE::RHT:
-        //                for (auto& idx : m_gridXYVector) {
-        //                    newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::RIGHT));
-        //                }
-        //                m_phase = PHASE::TRANSLATING;
-        //                std::swap(m_gridXYVector, newGridXYSet);
-        //                m_worldOffset = {-cst::BLOCK_SIZE_IN_WORLD, 0};
-        //                break;
-        //            case COMMAND_TYPE::SKP:
-        //                break;
-        //            case COMMAND_TYPE::STP:
-        //                assert(false);
-        //                break;
-        //            case COMMAND_TYPE::GRB:
-        //                grabAdjacentStoppedClusters(model.level());
-        //                break;
-        //            case COMMAND_TYPE::SPL:
-        //                break;
-        //        }
     }
 
     void Cluster::rotateClockWiseAbout(const GridXY& pivotGridXY) {
@@ -89,9 +43,6 @@ namespace model {
         }
         std::swap(m_gridXYVector, newGridXYSet);
         NOTE_ONCE("Do we want to rotate the directions...?")
-        //        for (auto& command : m_commands) {
-        //            command = rotateCommandClockWise(command);
-        //        }
     }
 
     void Cluster::rotateCounterClockWiseAbout(const GridXY& pivotGridXY) {
@@ -100,44 +51,7 @@ namespace model {
             newGridXYSet.emplace(GridXY{pivotGridXY.x() - pivotGridXY.y() + gridXY.y(), pivotGridXY.y() + pivotGridXY.x() - gridXY.x()});
         }
         std::swap(m_gridXYVector, newGridXYSet);
-        //        for (auto& command : m_commands) {
-        //            command = rotateCommandCounterClockWise(command);
-        //        }
     }
-
-    //    Command Cluster::rotateCommandClockWise(Command command) {
-    //        switch (command.m_type) {
-    //            case COMMAND_TYPE::FWD:
-    //                return Command_Temp{COMMAND_TYPE::RHT, command.m_modifier};
-    //            case COMMAND_TYPE::BCK:
-    //                return Command_Temp{COMMAND_TYPE::LFT, command.m_modifier};
-    //            case COMMAND_TYPE::LFT:
-    //                return Command_Temp{COMMAND_TYPE::FWD, command.m_modifier};
-    //            case COMMAND_TYPE::RHT:
-    //                return Command_Temp{COMMAND_TYPE::BCK, command.m_modifier};
-    //            default:
-    //                return command;
-    //        }
-    //    }
-    //
-    //    Command Cluster::rotateCommandCounterClockWise(Command command) {
-    //        switch (command.m_type) {
-    //            case COMMAND_TYPE::FWD:
-    //                return {COMMAND_TYPE::LFT, command.m_modifier};
-    //            case COMMAND_TYPE::BCK:
-    //                return {COMMAND_TYPE::RHT, command.m_modifier};
-    //            case COMMAND_TYPE::LFT:
-    //                return {COMMAND_TYPE::BCK, command.m_modifier};
-    //            case COMMAND_TYPE::RHT:
-    //                return {COMMAND_TYPE::FWD, command.m_modifier};
-    //            default:
-    //                return command;
-    //        }
-    //    }
-
-    //    void Cluster::addCommand(Command_Temp command) {
-    //        m_commands.push_back(command);
-    //    }
 
     std::set<GridXY>::iterator Cluster::removeBLock(const GridXY& gridXY) {
         const auto it = m_gridXYVector.find(gridXY);
@@ -173,10 +87,6 @@ namespace model {
     const GridXY& Cluster::rotationPivot() const {
         return m_rotationPivot;
     }
-
-    //    const std::vector<Command_Temp>& Cluster::commands() const {
-    //        return m_commands;
-    //    }
 
     WorldXY Cluster::dynamicWorldOffset() const {
         return {static_cast<int>(m_worldOffset.x() * m_phaseFraction), static_cast<int>(m_worldOffset.y() * m_phaseFraction)};
@@ -446,15 +356,11 @@ namespace model {
     }
 
     bool Cluster::adjacent(const Cluster& other) const {
-        for (const auto& it1 : m_gridXYVector) {
-            for (const auto& it2 : other.m_gridXYVector) {
-                if (it1.isAdjacent(it2)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        const auto otherGridXY = other.m_gridXYVector;
+        return std::any_of(m_gridXYVector.begin(), m_gridXYVector.end(), [&](const GridXY& point1) {
+            return std::find_if(otherGridXY.begin(), otherGridXY.end(), [&](const GridXY& point2) { return point2.isAdjacent(point1); }) !=
+                   otherGridXY.end();
+        });
     }
 
     void Cluster::stopIfNeeded() {
@@ -468,12 +374,14 @@ namespace model {
     }
 
     void Cluster::grabAdjacentStoppedClusters(Level& level) {
-        auto& stoppedClusters = level.stoppedClusters();
+        auto&            stoppedClusters = level.stoppedClusters();
+        std::set<GridXY> newGridXy;
         for (auto& cluster : stoppedClusters) {
             if (adjacent(cluster)) {
-                m_gridXYVector.merge(cluster.m_gridXYVector);
+                newGridXy.merge(cluster.m_gridXYVector);
             }
         }
+        m_gridXYVector.merge(newGridXy);
         stoppedClusters.remove_if([](const Cluster& cluster) { return cluster.empty(); });
     }
 
@@ -536,26 +444,12 @@ namespace model {
         m_state = state;
     }
 
-    int Cluster::minX() const {
-        assert(not m_gridXYVector.empty());
-        return std::min_element(m_gridXYVector.begin(), m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) { return lhs.x() < rhs.x(); })
-            ->x();
+    void Cluster::setWorldOffset(const WorldXY& worldOffset) {
+        m_worldOffset = worldOffset;
     }
 
-    int Cluster::minY() const {
-        assert(not m_gridXYVector.empty());
-        return m_gridXYVector.begin()->y();
-    }
-
-    int Cluster::maxX() const {
-        assert(not m_gridXYVector.empty());
-        return std::max_element(m_gridXYVector.begin(), m_gridXYVector.end(), [](const GridXY& lhs, const GridXY& rhs) { return lhs.x() < rhs.x(); })
-            ->x();
-    }
-
-    int Cluster::maxY() const {
-        assert(not m_gridXYVector.empty());
-        return m_gridXYVector.rbegin()->y();
+    void Cluster::setPhase(PHASE phase) {
+        m_phase = phase;
     }
 
 } // namespace model

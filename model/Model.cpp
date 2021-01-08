@@ -24,10 +24,9 @@ namespace model {
 
     void Model::intersectWithLevel() {
         for (auto& cluster : m_clusters) {
-            if (not cluster.alive()) {
-                continue;
+            if (cluster.alive()) {
+                cluster.collideWithLevel(m_level, cst::BLOCK_SHRINK_IN_WORLD);
             }
-            cluster.collideWithLevel(m_level, cst::BLOCK_SHRINK_IN_WORLD);
         }
     }
 
@@ -37,10 +36,7 @@ namespace model {
 
     void Model::update(double dPhase) {
         assert(dPhase >= 0);
-        if (dPhase >= 1.0) {
-            dPhase = 1.0;
-        }
-        assert(dPhase <= 1);
+        dPhase = fns::clamp(dPhase, 0.0, 1.0);
         while (dPhase > cst::MAX_D_PHASE) {
             updateInternal(cst::MAX_D_PHASE);
             dPhase -= cst::MAX_D_PHASE;
@@ -129,12 +125,8 @@ namespace model {
         if (m_clusters.size() == 1) {
             return;
         }
-
         for (auto cluster1 = m_clusters.begin(); cluster1 != m_clusters.end(); ++cluster1) {
             for (auto cluster2 = std::next(cluster1); cluster2 != m_clusters.end(); ++cluster2) {
-                if (not(cluster1->alive() || cluster2->alive())) {
-                    continue;
-                }
                 if (cluster1->intersects(*cluster2, cst::BLOCK_SHRINK_IN_WORLD)) {
                     cluster1->kill();
                     cluster2->kill();

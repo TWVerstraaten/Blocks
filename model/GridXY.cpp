@@ -31,7 +31,6 @@ namespace model {
     }
 
     GridXY GridXY::neighbor(model::GridXY::DIRECTION direction) const {
-        assert(direction != model::GridXY::DIRECTION::NONE);
         switch (direction) {
             case model::GridXY::DIRECTION::UP:
                 return {x(), y() - 1};

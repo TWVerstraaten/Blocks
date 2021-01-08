@@ -17,7 +17,6 @@
 namespace view {
 
     View::View() {
-        std::cout << "View constructor\n";
         if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
             std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
             exit(255);

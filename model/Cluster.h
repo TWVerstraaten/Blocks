@@ -61,11 +61,7 @@ namespace model {
         [[nodiscard]] bool                                   connected() const;
         [[nodiscard]] bool                                   contains(const GridXY& gridXY) const;
         [[nodiscard]] bool                                   intersects(const Cluster& other, int shrinkInWorld) const;
-        [[nodiscard]] bool                                   adjacent(const Cluster& other) const;
-        [[nodiscard]] int                                    minX() const;
-        [[nodiscard]] int                                    minY() const;
-        [[nodiscard]] int                                    maxX() const;
-        [[nodiscard]] int                                    maxY() const;
+        [[nodiscard]] bool                                   adjacent(const Cluster& point2) const;
         [[nodiscard]] std::function<WorldXY(const WorldXY&)> phaseTransformation() const;
 
         /****** NON CONST FUNCTIONS  ******/
@@ -82,6 +78,8 @@ namespace model {
         void                       spliceIfNeeded(model::Model& model);
         void                       doOperation(const GridXY& point, DYNAMIC_BLOCK_TYPE type);
         void                       setState(CLUSTER_STATE state);
+        void                       setWorldOffset(const WorldXY& worldOffset);
+        void                       setPhase(PHASE phase);
         CommandVector&             commandVector();
         model::Cluster             grabAllButFirstComponent();
         std::set<GridXY>::iterator removeBLock(const GridXY& gridXY);

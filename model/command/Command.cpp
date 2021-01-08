@@ -9,6 +9,29 @@
 #include "../Cluster.h"
 #include "../Level.h"
 
+static void setTranslating(model::GridXY::DIRECTION direction, model::Cluster& cluster) {
+    std::set<model::GridXY> newGridXYSet;
+    cluster.setPhase(model::PHASE::TRANSLATING);
+    for (auto& idx : cluster.gridXY()) {
+        newGridXYSet.emplace(idx.neighbor(direction));
+    }
+    std::swap(cluster.gridXY(), newGridXYSet);
+    switch (direction) {
+        case model::GridXY::DIRECTION::UP:
+            cluster.setWorldOffset({0, cst::BLOCK_SIZE_IN_WORLD});
+            break;
+        case model::GridXY::DIRECTION::DOWN:
+            cluster.setWorldOffset({0, -cst::BLOCK_SIZE_IN_WORLD});
+            break;
+        case model::GridXY::DIRECTION::LEFT:
+            cluster.setWorldOffset({cst::BLOCK_SIZE_IN_WORLD, 0});
+            break;
+        case model::GridXY::DIRECTION::RIGHT:
+            cluster.setWorldOffset({-cst::BLOCK_SIZE_IN_WORLD, 0});
+            break;
+    }
+}
+
 model::Command model::toCommand(const model::Command_RepeatWrapper& e) {
     return std::visit(overloaded{[](const auto& c) { return static_cast<Command>(c); }}, e.command);
 }
@@ -17,39 +40,18 @@ void model::doAction(const model::Command_Error& command, Cluster& cluster, Leve
 }
 
 void model::doAction(const model::Command_Simple& command, Cluster& cluster, Level& level) {
-    std::set<GridXY> newGridXYSet;
     switch (command.type) {
         case COMMAND_TYPE::FWD:
-            cluster.m_phase = PHASE::TRANSLATING;
-            for (auto& idx : cluster.m_gridXYVector) {
-                newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::UP));
-            }
-            std::swap(cluster.m_gridXYVector, newGridXYSet);
-            cluster.m_worldOffset = {0, cst::BLOCK_SIZE_IN_WORLD};
+            setTranslating(GridXY::DIRECTION::UP, cluster);
             break;
         case COMMAND_TYPE::BCK:
-            cluster.m_phase = PHASE::TRANSLATING;
-            for (auto& idx : cluster.m_gridXYVector) {
-                newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::DOWN));
-            }
-            std::swap(cluster.m_gridXYVector, newGridXYSet);
-            cluster.m_worldOffset = {0, -cst::BLOCK_SIZE_IN_WORLD};
+            setTranslating(GridXY::DIRECTION::DOWN, cluster);
             break;
         case COMMAND_TYPE::LFT:
-            cluster.m_phase = PHASE::TRANSLATING;
-            for (auto& idx : cluster.m_gridXYVector) {
-                newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::LEFT));
-            }
-            std::swap(cluster.m_gridXYVector, newGridXYSet);
-            cluster.m_worldOffset = {cst::BLOCK_SIZE_IN_WORLD, 0};
+            setTranslating(GridXY::DIRECTION::LEFT, cluster);
             break;
         case COMMAND_TYPE::RHT:
-            cluster.m_phase = PHASE::TRANSLATING;
-            for (auto& idx : cluster.m_gridXYVector) {
-                newGridXYSet.emplace(idx.neighbor(model::GridXY::DIRECTION::RIGHT));
-            }
-            std::swap(cluster.m_gridXYVector, newGridXYSet);
-            cluster.m_worldOffset = {-cst::BLOCK_SIZE_IN_WORLD, 0};
+            setTranslating(GridXY::DIRECTION::RIGHT, cluster);
             break;
         case COMMAND_TYPE::SKP:
             break;
@@ -72,4 +74,3 @@ void model::doAction(const model::Command_Modified& command, Cluster& cluster, L
 void model::doAction(const model::Command_RepeatWrapper& command, Cluster& cluster, Level& level) {
     std::visit(overloaded{[&](const auto& c) { doAction(c, cluster, level); }}, command.command);
 }
-

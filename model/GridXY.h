@@ -20,7 +20,7 @@ namespace model {
 
       public:
         /****** PUBLIC ENUMS / TYPEDEFS  ******/
-        enum class DIRECTION { UP, DOWN, LEFT, RIGHT, NONE };
+        enum class DIRECTION { UP, DOWN, LEFT, RIGHT };
 
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         GridXY(const GridXY& other) = default;

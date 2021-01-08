@@ -25,8 +25,7 @@ model::Command model::CommandVector::currentCommand() const {
         return Command_Error{};
     }
     assert(m_commandIndex < m_commands.size());
-    return std::visit(overloaded{[](Command_RepeatWrapper c) { return toCommand(c); }, [](auto c) { return static_cast<Command>(c); }},
-                      m_commands[m_commandIndex]);
+    return m_commands[m_commandIndex];
 }
 
 bool model::CommandVector::empty() const {
@@ -48,22 +47,20 @@ void model::CommandVector::increment() {
 }
 
 void model::CommandVector::set(const std::vector<std::string>& strings) {
-    m_strings = strings;
+    m_strings.clear();
     m_commands.clear();
     for (const auto& string : strings) {
         if (not CommandParser::isCommentOrEmpty(string)) {
             m_commands.emplace_back(CommandParser::parseString(string));
         }
     }
+    assert(wellFormed());
     if (m_commands.empty()) {
         return;
     }
-    assert(wellFormed());
     m_repeatCount =
         std::visit(overloaded{[](Command_RepeatWrapper c) { return c.repeatCount - 1; }, [](auto c) { return 0; }}, m_commands[m_commandIndex]);
-    for (auto& str : m_strings) {
-        str = CommandParser::format(str);
-    }
+    std::transform(strings.begin(), strings.end(), std::back_inserter(m_strings), [](const std::string& str) { return CommandParser::format(str); });
 }
 
 void model::CommandVector::clear() {
