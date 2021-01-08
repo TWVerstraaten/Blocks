@@ -8,7 +8,9 @@
 #include "../view/ViewPort.h"
 
 #include <cassert>
+#ifdef _WIN32
 #include <cmath>
+#endif
 
 namespace model {
     GridXY::GridXY(int x, int y) : m_x(x), m_y(y) {
