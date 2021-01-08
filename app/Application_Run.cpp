@@ -127,26 +127,28 @@ namespace app {
             return m_runningMode;
         }
         const auto currentTime = SDL_GetTicks();
-        const auto dt          = currentTime - m_previousTime;
-        switch (m_currentStep) {
-            case CURRENT_STEP::MOVING:
-                if (m_timeSinceLastStep >= m_timeStep) {
-                    initializeInteractStep();
-                    m_timeSinceLastStep %= m_timeStep;
-                } else {
-                    update(dt / static_cast<double>(m_timeStep));
-                }
-                break;
-            case CURRENT_STEP::INTERACT:
-                if (m_timeSinceLastStep >= m_timeStep) {
-                    initializeMovingStep();
-                    m_timeSinceLastStep %= m_timeStep;
-                    update(dt / static_cast<double>(m_timeStep));
-                }
-                break;
+        if (not m_paused) {
+            m_timeSinceLastStep += SDL_GetTicks() - m_previousTime;
+            const auto dt = currentTime - m_previousTime;
+            switch (m_currentStep) {
+                case CURRENT_STEP::MOVING:
+                    if (m_timeSinceLastStep >= m_timeStep) {
+                        initializeInteractStep();
+                        m_timeSinceLastStep %= m_timeStep;
+                    } else {
+                        update(dt / static_cast<double>(m_timeStep));
+                    }
+                    break;
+                case CURRENT_STEP::INTERACT:
+                    if (m_timeSinceLastStep >= m_timeStep) {
+                        initializeMovingStep();
+                        m_timeSinceLastStep %= m_timeStep;
+                        update(dt / static_cast<double>(m_timeStep));
+                    }
+                    break;
+            }
         }
         draw();
-        m_timeSinceLastStep += SDL_GetTicks() - currentTime;
         m_previousTime = currentTime;
         return RUN_MODE::RUNNING;
     }
