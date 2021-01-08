@@ -62,8 +62,8 @@ namespace view {
             [[nodiscard]] int               widthOfString(const std::string& string) const;
             [[nodiscard]] const SDL_Color&  getHighlightColor(HIGHLIGHT_MODE mode) const;
             [[nodiscard]] const std::string selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
-            [[nodiscard]] const std::string prefixOfString(const SelectionData::Data& data) const;
-            [[nodiscard]] const std::string suffixOfString(const SelectionData::Data& data) const;
+            [[nodiscard]] std::string prefixOfString(const SelectionData::Data& data) const;
+            [[nodiscard]] std::string suffixOfString(const SelectionData::Data& data) const;
 
             /****** PRIVATE NON CONST FUNCTIONS  ******/
             void moveFirstSelectionOneDown();

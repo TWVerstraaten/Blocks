@@ -577,13 +577,13 @@ namespace view::widget {
         m_selectionData.m_first = {stringIndex, charIndex};
     }
 
-    const std::string LineEditBox::prefixOfString(const SelectionData::Data& data) const {
+    std::string LineEditBox::prefixOfString(const SelectionData::Data& data) const {
         assert(data.m_stringIndex < m_strings.size());
         assert(data.m_charIndex <= m_strings.at(data.m_stringIndex).length());
         return m_strings.at(data.m_stringIndex).substr(0, data.m_charIndex);
     }
 
-    const std::string LineEditBox::suffixOfString(const SelectionData::Data& data) const {
+    std::string LineEditBox::suffixOfString(const SelectionData::Data& data) const {
         assert(data.m_stringIndex < m_strings.size());
         assert(data.m_charIndex <= m_strings.at(data.m_stringIndex).length());
         return m_strings.at(data.m_stringIndex).substr(data.m_charIndex);

@@ -153,6 +153,8 @@ void app::ModelViewInterface::interactWithInstantBlocks(Model& model, ScrollArea
             case INSTANT_BLOCK_TYPE::KILL:
                 clearBlockFromCluster_static(model, scrollArea, point);
                 break;
+            default:
+                assert(false);
         }
     }
 }
