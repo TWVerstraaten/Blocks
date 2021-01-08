@@ -8,10 +8,7 @@
 #include "../../global/overloaded.h"
 
 #include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <map>
-#include <sstream>
+#include <boost/algorithm/string.hpp>
 
 namespace model {
 
@@ -77,9 +74,9 @@ namespace model {
     std::string CommandParser::toString(const Token& token) {
         return std::visit(overloaded{[](int i) { return i == std::numeric_limits<int>::max() ? "INF" : std::to_string(i); },
                                      [token](auto t) {
-                                         for (const auto& it : s_allTokens) {
-                                             if (it.second == token) {
-                                                 return it.first;
+                                         for (const auto& [str, t] : s_allTokens) {
+                                             if (t == token) {
+                                                 return str;
                                              }
                                          }
                                          return std::string("Error");
@@ -88,17 +85,16 @@ namespace model {
     }
 
     std::vector<CommandParser::Token> CommandParser::tokenize(const std::string& string) {
-        const auto         trimmedString = fns::trimWhiteSpace(string);
-        std::istringstream buffer(trimmedString);
+        std::vector<std::string> parts;
+        boost::split(parts, boost::trim_copy(string), boost::is_any_of(" "), boost::token_compress_on);
         std::vector<Token> tokens;
-        std::transform(
-            std::istream_iterator<std::string>(buffer), std::istream_iterator<std::string>(), back_inserter(tokens), CommandParser::tokenizeSingle);
+        std::transform(parts.cbegin(), parts.cend(), back_inserter(tokens), CommandParser::tokenizeSingle);
         return tokens;
     }
 
     std::string CommandParser::format(const std::string& string) {
         if (isCommentOrEmpty(string)) {
-            return fns::trimWhiteSpace(string);
+            return boost::trim_copy(string);
         }
         const auto  tokens = tokenize(string);
         std::string result;
@@ -128,11 +124,11 @@ namespace model {
     }
 
     CommandParser::STRING_TYPE CommandParser::stringType(const std::string& string) {
-        const auto trimmedString = fns::trimWhiteSpace(string);
-        if (trimmedString.empty()) {
+        const auto index = string.find_first_not_of(' ');
+        if (index == std::string::npos) {
             return STRING_TYPE::EMPTY;
         }
-        if (trimmedString[0] == '#') {
+        if (string.at(index) == '#') {
             return STRING_TYPE::COMMENT;
         }
         return std::visit(overloaded{[](Command_Error e) { return STRING_TYPE::ERROR; }, [](auto e) { return STRING_TYPE::ACTION; }},

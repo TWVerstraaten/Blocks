@@ -4,7 +4,9 @@
 
 #include "geom.h"
 
+#ifdef _WIN32
 #include <cmath>
+#endif
 
 namespace geom {
     SDL_Rect pad(const SDL_Rect& rect, int padding) {
@@ -47,8 +49,7 @@ namespace geom {
             return false;
         }
 
-        if (containedInClosedInterval(cross(qMinusP, s), 0, rCrossS) &&
-            containedInClosedInterval(cross(qMinusP, r), 0, rCrossS)) {
+        if (containedInClosedInterval(cross(qMinusP, s), 0, rCrossS) && containedInClosedInterval(cross(qMinusP, r), 0, rCrossS)) {
             return true;
         } else {
             return false;

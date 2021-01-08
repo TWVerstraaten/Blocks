@@ -6,7 +6,9 @@
 
 #include "../global/fns.h"
 
+#ifdef _WIN32
 #include <cmath>
+#endif
 
 namespace view {
 

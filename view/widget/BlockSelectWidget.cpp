@@ -11,7 +11,6 @@
 #include "../Mouse.h"
 #include "../Rectangle.h"
 #include "../View.h"
-#include "../color.h"
 
 #include <algorithm>
 #include <cassert>

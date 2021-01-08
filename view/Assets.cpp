@@ -7,7 +7,6 @@
 #include "../global/cst.h"
 #include "../global/geom.h"
 #include "ScreenXY.h"
-#include "color.h"
 
 #include <cassert>
 

@@ -5,7 +5,6 @@
 #include "CommandEditBox.h"
 
 #include "../../global/cst.h"
-#include "../../global/fns.h"
 #include "../../model/Cluster.h"
 #include "../../model/command/CommandParser.h"
 #include "../Assets.h"

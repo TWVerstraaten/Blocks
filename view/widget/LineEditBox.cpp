@@ -8,7 +8,6 @@
 #include "../../global/fns.h"
 #include "../../global/geom.h"
 #include "../Assets.h"
-#include "../Font.h"
 #include "../Mouse.h"
 #include "../Rectangle.h"
 
