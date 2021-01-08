@@ -4,14 +4,14 @@
 
 #include "Cluster.h"
 
+#include "../app/Application_constants.h"
 #include "../global/alg.h"
-#include "../global/cst.h"
 #include "../global/defines.h"
-#include "../global/fns.h"
 #include "../global/geom.h"
 #include "Level.h"
 #include "Model.h"
 
+#include <cassert>
 #include <queue>
 #include <utility>
 
@@ -20,7 +20,7 @@ size_t model::Cluster::s_maxClusterIndex = 0;
 namespace model {
     Cluster::Cluster(std::set<GridXY>&& gridXY, std::string name) : m_index(s_maxClusterIndex), m_gridXYVector(gridXY), m_name(std::move(name)) {
         ++s_maxClusterIndex;
-        m_sides = alg::getSidesFromGridXY(m_gridXYVector);
+        m_sides = geom::getSidesFromGridXY(m_gridXYVector);
         assert(gridXUYAreUnique());
     }
 
@@ -249,7 +249,7 @@ namespace model {
 
     void Cluster::collideWithLevel(const Level& level, int shrinkInWorld) {
         assert(gridXUYAreUnique());
-        if (alg::intersect(sides(shrinkInWorld), level.boundaries())) {
+        if (geom::intersect(sides(shrinkInWorld), level.boundaries())) {
             kill();
         }
     }
@@ -279,7 +279,7 @@ namespace model {
                 return [offset](const model::WorldXY& b) { return b + offset; };
             }
             case PHASE::ROTATING: {
-                const WorldXY center = WorldXY(m_rotationPivot) + cst::HALF_BLOCK_IN_WORLD;
+                const WorldXY center = WorldXY(m_rotationPivot) + app::HALF_BLOCK_IN_WORLD;
                 const double  theta  = -angle();
                 return [center, theta](const model::WorldXY& b) { return geom::rotateAboutPivot(b, center, theta); };
             }
@@ -293,7 +293,7 @@ namespace model {
     }
 
     bool Cluster::intersects(const Cluster& other, int shrinkInWorld) const {
-        return alg::intersect(sides(shrinkInWorld), other.sides(shrinkInWorld));
+        return geom::intersect(sides(shrinkInWorld), other.sides(shrinkInWorld));
     }
 
     std::list<Cluster> Cluster::collectAllButFirstComponent() {
@@ -417,7 +417,7 @@ namespace model {
     }
 
     void Cluster::buildSides() {
-        m_sides = alg::getSidesFromGridXY(m_gridXYVector);
+        m_sides = geom::getSidesFromGridXY(m_gridXYVector);
     }
 
     COMMAND_MODIFIER Cluster::currentModifier() const {

@@ -30,13 +30,13 @@ namespace app {
                     togglePause();
                     break;
                 case SDLK_1:
-                    setTimeStep(cst::TIME_STEP_SLOW);
+                    setTimeStep(TIME_STEP_SLOW);
                     break;
                 case SDLK_2:
-                    setTimeStep(cst::TIME_STEP_MEDIUM);
+                    setTimeStep(TIME_STEP_MEDIUM);
                     break;
                 case SDLK_3:
-                    setTimeStep(cst::TIME_STEP_FAST);
+                    setTimeStep(TIME_STEP_FAST);
                     break;
                 default:
                     break;
@@ -80,10 +80,6 @@ namespace app {
         }
     }
 
-    void Application_Run::update(double fractionOfPhase) {
-        m_model.update(fractionOfPhase);
-    }
-
     void Application_Run::setTimeStep(Uint32 timeStep) {
         m_paused   = false;
         m_timeStep = timeStep;
@@ -123,9 +119,9 @@ namespace app {
     }
 
     RUN_MODE Application_Run::performSingleLoop() {
-        if (m_runningMode != RUN_MODE::RUNNING) {
-            return m_runningMode;
-        }
+        //        if (m_runningMode != RUN_MODE::RUNNING) {
+        //            return m_runningMode;
+        //        }
         const auto currentTime = SDL_GetTicks();
         if (not m_paused) {
             m_timeSinceLastStep += SDL_GetTicks() - m_previousTime;
@@ -136,21 +132,21 @@ namespace app {
                         initializeInteractStep();
                         m_timeSinceLastStep %= m_timeStep;
                     } else {
-                        update(dt / static_cast<double>(m_timeStep));
+                        m_model.update(dt / static_cast<double>(m_timeStep));
                     }
                     break;
                 case CURRENT_STEP::INTERACT:
                     if (m_timeSinceLastStep >= m_timeStep) {
                         initializeMovingStep();
                         m_timeSinceLastStep %= m_timeStep;
-                        update(dt / static_cast<double>(m_timeStep));
+                        m_model.update(dt / static_cast<double>(m_timeStep));
                     }
                     break;
             }
         }
         draw();
         m_previousTime = currentTime;
-        return RUN_MODE::RUNNING;
+        return m_runningMode;
     }
 
     void Application_Run::handleEvent(const SDL_Event& event) {

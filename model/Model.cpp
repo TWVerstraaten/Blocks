@@ -5,11 +5,14 @@
 #include "Model.h"
 
 #include "../action/RemoveClusterAction.h"
-#include "../global/cst.h"
+#include "../app/Application_constants.h"
+#include "../global/alg.h"
 #include "../global/defines.h"
-#include "../global/fns.h"
 
-#include <algorithm>
+#ifdef _WIN32
+#include <cassert>
+#include <cmath>
+#endif
 
 namespace model {
 
@@ -26,7 +29,7 @@ namespace model {
     void Model::intersectWithLevel() {
         for (auto& cluster : m_clusters) {
             if (cluster.alive()) {
-                cluster.collideWithLevel(m_level, cst::BLOCK_SHRINK_IN_WORLD);
+                cluster.collideWithLevel(m_level, app::BLOCK_SHRINK_IN_WORLD);
             }
         }
     }
@@ -37,10 +40,10 @@ namespace model {
 
     void Model::update(double dPhase) {
         assert(dPhase >= 0);
-        dPhase = fns::clamp(dPhase, 0.0, 1.0);
-        while (dPhase > cst::MAX_D_PHASE) {
-            updateInternal(cst::MAX_D_PHASE);
-            dPhase -= cst::MAX_D_PHASE;
+        dPhase = alg::clamp(dPhase, 0.0, 1.0);
+        while (dPhase > app::MAX_D_PHASE) {
+            updateInternal(app::MAX_D_PHASE);
+            dPhase -= app::MAX_D_PHASE;
         }
         updateInternal(dPhase);
     }
@@ -78,11 +81,6 @@ namespace model {
         m_level.clear();
     }
 
-    void Model::preStep() {
-        m_phaseFraction = 0.0;
-        m_needsPreStep = false;
-    }
-
     Model& Model::operator=(const Model& other) {
         m_level    = other.m_level;
         m_clusters = other.m_clusters;
@@ -90,28 +88,26 @@ namespace model {
     }
 
     void Model::startPhase() {
-            preStep();
-        m_needsPreStep  = true;
         m_phaseFraction = 1.0;
     }
 
     void Model::updateInternal(double dPhase) {
-        assert(dPhase <= cst::MAX_D_PHASE);
+        assert(dPhase <= app::MAX_D_PHASE);
         assert(dPhase >= 0);
         if (m_phaseFraction == 0.0) {
             return;
         }
         m_phaseFraction -= dPhase;
-        if (m_phaseFraction <= 0.0 && m_needsPreStep) {
+        if (m_phaseFraction <= 0.0) {
             m_phaseFraction = 0.0;
-            preStep();
-            m_needsPreStep = false;
+        } else {
+            for (auto& cluster : m_clusters) {
+                // SmoothStep(x) = 3x^2 - 2x^2 : [0,1] -> [0,1]
+                cluster.update(m_phaseFraction * m_phaseFraction * (3 - 2 * m_phaseFraction));
+            }
+            intersectWithLevel();
+            intersectClusters();
         }
-        for (auto& cluster : m_clusters) {
-            cluster.update(m_phaseFraction);
-        }
-        intersectWithLevel();
-        intersectClusters();
     }
 
     void Model::intersectClusters() {
@@ -120,7 +116,7 @@ namespace model {
         }
         for (auto cluster1 = m_clusters.begin(); cluster1 != m_clusters.end(); ++cluster1) {
             for (auto cluster2 = std::next(cluster1); cluster2 != m_clusters.end(); ++cluster2) {
-                if (cluster1->intersects(*cluster2, cst::BLOCK_SHRINK_IN_WORLD)) {
+                if (cluster1->intersects(*cluster2, app::BLOCK_SHRINK_IN_WORLD)) {
                     cluster1->kill();
                     cluster2->kill();
                 }

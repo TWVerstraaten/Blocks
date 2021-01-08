@@ -89,6 +89,10 @@ namespace model {
 
         /****** FRIENDS  ******/
         friend std::ostream& operator<<(std::ostream& out, const Cluster& other);
+        friend void          doAction(const Command_Error& command, Cluster& cluster, Level& level);
+        friend void          doAction(const Command_Simple& command, Cluster& cluster, Level& level);
+        friend void          doAction(const Command_Modified& command, Cluster& cluster, Level& level);
+        friend void          doAction(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
 
       private:
         /****** PRIVATE  CONST FUNCTIONS  ******/
@@ -100,15 +104,6 @@ namespace model {
         void setRotation(double angle, const GridXY& pivot);
         void grabAdjacentStoppedClusters(Level& level);
         void spliceCluster(Level& level);
-
-        /****** PRIVATE STATIC FUNCTIONS  ******/
-        //        static Command rotateCommandClockWise(Command command);
-        //        static Command rotateCommandCounterClockWise(Command command);
-
-        friend void doAction(const Command_Error& command, Cluster& cluster, Level& level);
-        friend void doAction(const Command_Simple& command, Cluster& cluster, Level& level);
-        friend void doAction(const Command_Modified& command, Cluster& cluster, Level& level);
-        friend void doAction(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
 
         /****** DATA MEMBERS  ******/
         CLUSTER_STATE           m_state         = CLUSTER_STATE::ALIVE;

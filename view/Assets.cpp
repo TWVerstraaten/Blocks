@@ -4,8 +4,8 @@
 
 #include "Assets.h"
 
-#include "../global/cst.h"
 #include "../global/geom.h"
+#include "Font_constants.h"
 #include "ScreenXY.h"
 
 #include <cassert>
@@ -19,8 +19,8 @@ namespace view {
         loadTextureWrapper(TEXTURE_ENUM::ERROR, renderer);
         loadTextureWrapper(TEXTURE_ENUM::WHITE, renderer);
 
-        m_fonts[FONT_ENUM::MAIN]  = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", cst::MAIN_FONT_SIZE);
-        m_fonts[FONT_ENUM::SMALL] = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", cst::SMALL_FONT_SIZE);
+        m_fonts[FONT_ENUM::MAIN]  = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", MAIN_FONT_SIZE);
+        m_fonts[FONT_ENUM::SMALL] = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", SMALL_FONT_SIZE);
         m_initialized             = true;
     }
 

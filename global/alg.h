@@ -6,21 +6,21 @@
 #define BLOCKS_ALG_H
 
 #include "../model/GridXY.h"
-#include "../model/Line.h"
 
-#include <algorithm>
+#include <cassert>
 #include <set>
 
 namespace alg {
-
-    bool intersect(const std::set<model::Line<model::WorldXY>>& lines1, const std::set<model::Line<model::WorldXY>>& lines2);
-    std::set<model::Line<model::WorldXY>> getSidesFromGridXY(std::set<model::GridXY> blocks);
-    int                                   minX(const std::set<model::GridXY>& blocks);
-    int                                   minY(const std::set<model::GridXY>& blocks);
-    int                                   maxX(const std::set<model::GridXY>& blocks);
-    int                                   maxY(const std::set<model::GridXY>& blocks);
-    model::GridXY                         topLeft(const std::set<model::GridXY>& blocks);
-
+    int           minX(const std::set<model::GridXY>& blocks);
+    int           minY(const std::set<model::GridXY>& blocks);
+    int           maxX(const std::set<model::GridXY>& blocks);
+    int           maxY(const std::set<model::GridXY>& blocks);
+    model::GridXY topLeft(const std::set<model::GridXY>& blocks);
+    template <typename Type>
+    Type clamp(Type value, Type lower, Type upper) {
+        assert(lower <= upper);
+        return value < lower ? lower : (value > upper ? upper : value);
+    }
 } // namespace alg
 
 #endif // BLOCKS_ALG_H

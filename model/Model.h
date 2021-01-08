@@ -28,7 +28,6 @@ namespace model {
         [[nodiscard]] bool noClusterOnBlock(const GridXY& gridXY) const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void                         preStep();
         void                         init();
         void                         clear();
         void                         startPhase();
@@ -45,7 +44,6 @@ namespace model {
         void updateInternal(double dPhase);
 
         /****** DATA MEMBERS  ******/
-        bool               m_needsPreStep  = false;
         double             m_phaseFraction = 0.0;
         Level              m_level;
         std::list<Cluster> m_clusters;

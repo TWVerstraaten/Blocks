@@ -5,11 +5,11 @@
 #include "CommandVector.h"
 
 #include "../../global/defines.h"
-#include "../../global/fns.h"
 #include "../../global/overloaded.h"
 #include "CommandParser.h"
 
 #include <algorithm>
+#include <cassert>
 
 model::CommandVector::CommandVector(const std::vector<std::string>& strings) {
     set(strings);

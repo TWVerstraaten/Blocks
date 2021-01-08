@@ -233,7 +233,7 @@ void app::ModelViewInterface::split(Model& model, ScrollArea& scrollArea, Cluste
     model.clusters().splice(model.clusters().end(), newClusters);
 }
 
-std::unique_ptr<action::Action> app::ModelViewInterface::addSingleBlockCluster(Model& model, ScrollArea& scrollArea, const GridXY& point) {
+std::unique_ptr<action::Action> app::ModelViewInterface::addSingleBlockToCluster(Model& model, ScrollArea& scrollArea, const GridXY& point) {
     assert(model.level().isFreeStartBlock(point));
     auto& clusters = model.clusters();
     if (model.clusterContaining(point) != clusters.end()) {
@@ -251,7 +251,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(Model&      
     auto&      clusters = model.clusters();
     const auto baseIt   = std::find_if(_IT_(clusters), _FUNC_(cluster, cluster.contains(previousPoint)));
     if (baseIt == clusters.end() || (not previousPoint.isAdjacent(point))) {
-        return addSingleBlockCluster(model, scrollArea, point);
+        return addSingleBlockToCluster(model, scrollArea, point);
     }
     auto extensionIt = std::find_if(_IT_(clusters), _FUNC_(cluster, cluster.contains(point)));
     if (baseIt == extensionIt) {
@@ -272,7 +272,7 @@ void app::ModelViewInterface::leftMouseClick(Model& model, View& view, ScrollAre
     if (not model.level().isFreeStartBlock(point)) {
         return;
     }
-    addAction(addSingleBlockCluster(model, scrollArea, point));
+    addAction(addSingleBlockToCluster(model, scrollArea, point));
     updateCommandScrollArea(model, scrollArea, APP_MODE::EDITING);
 }
 
@@ -291,7 +291,7 @@ void app::ModelViewInterface::clusterDrag(Model& model, View& view, ScrollArea& 
     if (model.level().isFreeStartBlock(previousPoint)) {
         addAction(linkBlocks(model, scrollArea, point, previousPoint));
     } else {
-        addAction(addSingleBlockCluster(model, scrollArea, point));
+        addAction(addSingleBlockToCluster(model, scrollArea, point));
     }
     updateCommandScrollArea(model, scrollArea, APP_MODE::EDITING);
 }

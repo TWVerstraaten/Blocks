@@ -4,7 +4,7 @@
 
 #include "Command.h"
 
-#include "../../global/cst.h"
+#include "../../app/Application_constants.h"
 #include "../../global/defines.h"
 #include "../Cluster.h"
 #include "../Level.h"
@@ -18,16 +18,16 @@ static void setTranslating(model::GridXY::DIRECTION direction, model::Cluster& c
     std::swap(cluster.gridXY(), newGridXYSet);
     switch (direction) {
         case model::GridXY::DIRECTION::UP:
-            cluster.setWorldOffset({0, cst::BLOCK_SIZE_IN_WORLD});
+            cluster.setWorldOffset({0, app::BLOCK_SIZE_IN_WORLD});
             break;
         case model::GridXY::DIRECTION::DOWN:
-            cluster.setWorldOffset({0, -cst::BLOCK_SIZE_IN_WORLD});
+            cluster.setWorldOffset({0, -app::BLOCK_SIZE_IN_WORLD});
             break;
         case model::GridXY::DIRECTION::LEFT:
-            cluster.setWorldOffset({cst::BLOCK_SIZE_IN_WORLD, 0});
+            cluster.setWorldOffset({app::BLOCK_SIZE_IN_WORLD, 0});
             break;
         case model::GridXY::DIRECTION::RIGHT:
-            cluster.setWorldOffset({-cst::BLOCK_SIZE_IN_WORLD, 0});
+            cluster.setWorldOffset({-app::BLOCK_SIZE_IN_WORLD, 0});
             break;
     }
 }

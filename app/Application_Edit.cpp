@@ -6,9 +6,9 @@
 
 #include "../global/defines.h"
 #include "../view/Mouse.h"
+#include "../view/widget/BlockSelectWidget_constants.h"
 #include "Application.h"
 
-#include <algorithm>
 #include <cassert>
 
 namespace app {
@@ -16,9 +16,9 @@ namespace app {
     Application_Edit::Application_Edit(model::Model* model, view::View* view, view::widget::ScrollArea* scrollArea)
         : m_view(view), m_model(model), m_scrollArea(scrollArea),
           m_blockSelectWidget({0,
-                               static_cast<int>(m_view->windowHeight() - cst::BLOCK_SELECT_WIDGET_HEIGHT),
-                               cst::BLOCK_SELECT_WIDGET_WIDTH,
-                               cst::BLOCK_SELECT_WIDGET_HEIGHT}) {
+                               static_cast<int>(m_view->windowHeight() - view::widget::BLOCK_SELECT_WIDGET_HEIGHT),
+                               view::widget::BLOCK_SELECT_WIDGET_WIDTH,
+                               view::widget::BLOCK_SELECT_WIDGET_HEIGHT}) {
         init();
         m_blockSelectWidget.init(m_view->assets());
     }

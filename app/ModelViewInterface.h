@@ -76,7 +76,7 @@ namespace app {
                                                   view::widget::ScrollArea& scrollArea,
                                                   const model::GridXY&      point,
                                                   model::Cluster&           cluster);
-        static Action_u_ptr addSingleBlockCluster(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
+        static Action_u_ptr addSingleBlockToCluster(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
         static Action_u_ptr linkBlocks(model::Model&             model,
                                        view::widget::ScrollArea& scrollArea,
                                        const model::GridXY&      point,

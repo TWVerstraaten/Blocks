@@ -7,10 +7,9 @@
 #include "../action/AddLevelBlockAction.h"
 #include "../action/RemoveLevelBlockAction.h"
 #include "../global/alg.h"
-#include "../global/fns.h"
+#include "../global/geom.h"
 
 namespace model {
-
     const std::map<GridXY, DYNAMIC_BLOCK_TYPE>& Level::dynamicBlocks() const {
         return m_dynamicBLocks;
     }
@@ -114,9 +113,9 @@ namespace model {
     }
 
     void Level::createBoundaries() {
-        m_boundaries = alg::getSidesFromGridXY(m_levelBlocks);
+        m_boundaries = geom::getSidesFromGridXY(m_levelBlocks);
         for (const auto& cluster : m_stoppedClusters) {
-            m_boundaries.merge(alg::getSidesFromGridXY(cluster.gridXY()));
+            m_boundaries.merge(geom::getSidesFromGridXY(cluster.gridXY()));
         }
     }
 

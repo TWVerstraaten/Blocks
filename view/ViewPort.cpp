@@ -4,7 +4,7 @@
 
 #include "ViewPort.h"
 
-#include "../global/fns.h"
+#include "../global/alg.h"
 
 #ifdef _WIN32
 #include <cmath>
@@ -13,13 +13,13 @@
 namespace view {
 
     int ViewPort::blockSizeInScreen() const {
-        return static_cast<int>(cst::BLOCK_SIZE_IN_WORLD * m_scale);
+        return static_cast<int>(app::BLOCK_SIZE_IN_WORLD * m_scale);
     }
 
     void ViewPort::zoom(int dZoom) {
-        m_zoom                            = fns::clamp(m_zoom + dZoom, -10, 20);
+        m_zoom                            = alg::clamp(m_zoom + dZoom, -10, 20);
         m_scale                           = std::exp(m_zoom / 10.0);
-        m_distanceBetweenBlocksInScreenXY = worldToScreenLength(2 * cst::BLOCK_SHRINK_IN_WORLD);
+        m_distanceBetweenBlocksInScreenXY = worldToScreenLength(2 * app::BLOCK_SHRINK_IN_WORLD);
     }
 
     void ViewPort::translate(int dx, int dy) {

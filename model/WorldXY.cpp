@@ -4,7 +4,7 @@
 
 #include "WorldXY.h"
 
-#include "../global/cst.h"
+#include "../app/Application_constants.h"
 #include "GridXY.h"
 
 namespace model {
@@ -21,7 +21,7 @@ namespace model {
     }
 
     WorldXY WorldXY::fromGridXY(const model::GridXY& gridXY) {
-        return {cst::BLOCK_SIZE_IN_WORLD * gridXY.x(), cst::BLOCK_SIZE_IN_WORLD * gridXY.y()};
+        return {app::BLOCK_SIZE_IN_WORLD * gridXY.x(), app::BLOCK_SIZE_IN_WORLD * gridXY.y()};
     }
 
     bool operator<(const WorldXY& lhs, const WorldXY& rhs) {

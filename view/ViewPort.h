@@ -5,7 +5,7 @@
 #ifndef BLOCKS_VIEWPORT_H
 #define BLOCKS_VIEWPORT_H
 
-#include "../global/cst.h"
+#include "../app/Application_constants.h"
 
 namespace view {
 
@@ -33,7 +33,7 @@ namespace view {
         int    m_zoom                            = 0;
         int    m_xOffset                         = 0;
         int    m_yOffset                         = 0;
-        int    m_distanceBetweenBlocksInScreenXY = 2 * cst::BLOCK_SHRINK_IN_WORLD;
+        int    m_distanceBetweenBlocksInScreenXY = 2 * app::BLOCK_SHRINK_IN_WORLD;
     };
 } // namespace view
 #endif // BLOCKS_VIEWPORT_H

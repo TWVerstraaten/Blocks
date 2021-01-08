@@ -4,6 +4,8 @@
 
 #include "Application.h"
 
+#include "../view/View_constants.h"
+#include "../view/widget/ScrollArea_constants.h"
 #include "Application_Edit.h"
 #include "Application_Run.h"
 
@@ -11,7 +13,10 @@
 
 namespace app {
     Application::Application()
-        : m_scrollArea({cst::INITIAL_SCREEN_WIDTH - cst::COMMAND_SCROLL_AREA_WIDTH, 0, cst::COMMAND_SCROLL_AREA_WIDTH, cst::INITIAL_SCREEN_HEIGHT}) {
+        : m_scrollArea({view::INITIAL_SCREEN_WIDTH - view::widget::COMMAND_SCROLL_AREA_WIDTH,
+                        0,
+                        view::widget::COMMAND_SCROLL_AREA_WIDTH,
+                        view::INITIAL_SCREEN_HEIGHT}) {
         m_model.init();
         m_scrollArea.init(m_view.assets());
     }
@@ -79,15 +84,15 @@ namespace app {
                                     return EDIT_MODE::DONE_EDITING;
                                 case SDLK_1:
                                     editApp.finalize();
-                                    m_timeStep = cst::TIME_STEP_SLOW;
+                                    m_timeStep = TIME_STEP_SLOW;
                                     return EDIT_MODE::DONE_EDITING;
                                 case SDLK_2:
                                     editApp.finalize();
-                                    m_timeStep = cst::TIME_STEP_MEDIUM;
+                                    m_timeStep = TIME_STEP_MEDIUM;
                                     return EDIT_MODE::DONE_EDITING;
                                 case SDLK_3:
                                     editApp.finalize();
-                                    m_timeStep = cst::TIME_STEP_FAST;
+                                    m_timeStep = TIME_STEP_FAST;
                                     return EDIT_MODE::DONE_EDITING;
                             }
                         }
@@ -141,11 +146,11 @@ namespace app {
 
     void Application::handleWindowEvent() {
         const auto windowSize = m_view.windowSize();
-        m_scrollArea.setX(windowSize.x() - cst::COMMAND_SCROLL_AREA_WIDTH);
+        m_scrollArea.setX(windowSize.x() - view::widget::COMMAND_SCROLL_AREA_WIDTH);
         m_scrollArea.setHeight(windowSize.y());
         if (m_appMode == APP_MODE::RUNNING) {
             assert(m_runningScrollArea != nullptr);
-            m_runningScrollArea->setX(windowSize.x() - cst::COMMAND_SCROLL_AREA_WIDTH);
+            m_runningScrollArea->setX(windowSize.x() - view::widget::COMMAND_SCROLL_AREA_WIDTH);
             m_runningScrollArea->setHeight(windowSize.y());
         }
     }

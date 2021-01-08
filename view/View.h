@@ -103,7 +103,7 @@ namespace view {
 
     template <typename ENUM>
     void View::draw(const std::map<model::GridXY, ENUM>& blocks) const {
-        const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(cst::BLOCK_SHRINK_IN_WORLD);
+        const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
         const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
         const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
         for (const auto& [point, type] : blocks) {

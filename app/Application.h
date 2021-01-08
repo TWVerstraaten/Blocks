@@ -8,6 +8,7 @@
 #include "../model/Model.h"
 #include "../view/View.h"
 #include "../view/widget/ScrollArea.h"
+#include "Application_constants.h"
 #include "Application_enums.h"
 
 namespace app {
@@ -29,8 +30,8 @@ namespace app {
         void      handleWindowEvent();
 
         /****** DATA MEMBERS  ******/
-        APP_MODE                  m_appMode             = APP_MODE::EDITING;
-        Uint32                    m_timeStep            = cst::TIME_STEP_SLOW;
+        APP_MODE                  m_appMode  = APP_MODE::EDITING;
+        Uint32                    m_timeStep = TIME_STEP_SLOW;
         view::View                m_view;
         model::Model              m_model;
         view::widget::ScrollArea  m_scrollArea;

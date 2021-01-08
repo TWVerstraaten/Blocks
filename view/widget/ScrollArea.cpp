@@ -4,15 +4,16 @@
 
 #include "ScrollArea.h"
 
-#include "../../global/cst.h"
+#include "../../global/alg.h"
 #include "../../global/defines.h"
-#include "../../global/fns.h"
 #include "../../global/geom.h"
 #include "../../model/Cluster.h"
 #include "../Mouse.h"
 #include "../Rectangle.h"
+#include "LineEditBox_constants.h"
+#include "RectWidget_constants.h"
 
-#include <algorithm>
+#include <cassert>
 
 view::widget::ScrollArea::ScrollArea(const SDL_Rect& rect) : RectWidget(rect) {
 }
@@ -55,7 +56,7 @@ void view::widget::ScrollArea::mouseDragEvent(const SDL_Event& event) {
 void view::widget::ScrollArea::render(SDL_Renderer* renderer) {
     update(renderer);
 
-    Rectangle::render(geom::pad(m_rect, cst::LINE_EDIT_PADDING), view::color::SCROLL_AREA_BACKGROUND, renderer);
+    Rectangle::render(geom::pad(m_rect, RECT_WIDGET_PADDING), view::color::SCROLL_AREA_BACKGROUND, renderer);
 
     for (auto& w : m_children) {
         w.render(renderer);
@@ -73,12 +74,12 @@ void view::widget::ScrollArea::init(const view::Assets* assets) {
 }
 
 void view::widget::ScrollArea::setHeightAndPositions() {
-    int yOffset = 2 * cst::LINE_EDIT_PADDING;
+    int yOffset = 2 * RECT_WIDGET_PADDING;
     for (const auto& w : m_children) {
-        yOffset += w.height() + 3 * cst::LINE_EDIT_PADDING;
+        yOffset += w.height() + 3 * RECT_WIDGET_PADDING;
     }
     m_height = yOffset;
-    yOffset  = 2 * cst::LINE_EDIT_PADDING;
+    yOffset  = 2 * RECT_WIDGET_PADDING;
     if (static_cast<int>(m_height) > m_rect.h) {
         const auto heightDifference = m_height - m_rect.h;
         yOffset -= heightDifference * m_scrollFraction;
@@ -87,14 +88,14 @@ void view::widget::ScrollArea::setHeightAndPositions() {
     }
     for (auto& w : m_children) {
         w.setY(yOffset);
-        yOffset += w.height() + 3 * cst::LINE_EDIT_PADDING;
+        yOffset += w.height() + 3 * RECT_WIDGET_PADDING;
     }
 }
 
 void view::widget::ScrollArea::mouseWheelEvent(const SDL_Event& event) {
     assert(event.type == SDL_MOUSEWHEEL);
     m_scrollFraction -= 0.1 * event.wheel.y;
-    m_scrollFraction = fns::clamp(m_scrollFraction, 0.0, 1.0);
+    m_scrollFraction = alg::clamp(m_scrollFraction, 0.0, 1.0);
     setHeightAndPositions();
 }
 
@@ -128,7 +129,7 @@ void view::widget::ScrollArea::update(SDL_Renderer* renderer) {
 }
 
 void view::widget::ScrollArea::addCommandEditBox(const model::Cluster& cluster) {
-    m_children.emplace_back(CommandEditBox(m_rect.x + cst::LINE_EDIT_PADDING, 0, cst::LINE_EDIT_WIDTH, 0, m_assets, cluster));
+    m_children.emplace_back(CommandEditBox(m_rect.x + RECT_WIDGET_PADDING, 0, LINE_EDIT_WIDTH, 0, m_assets, cluster));
     //    m_children.back().setHighLightedLine(cluster.commandIndex());
     m_children.back().setActive(cluster.alive());
     m_needsUpdate = true;
@@ -167,7 +168,7 @@ void view::widget::ScrollArea::setHeight(int height) {
 void view::widget::ScrollArea::setX(int x) {
     RectWidget::setX(x);
     for (auto& w : m_children) {
-        w.setX(m_rect.x + cst::LINE_EDIT_PADDING);
+        w.setX(m_rect.x + RECT_WIDGET_PADDING);
     }
 }
 

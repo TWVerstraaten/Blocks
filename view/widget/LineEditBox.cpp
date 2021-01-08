@@ -4,15 +4,17 @@
 
 #include "LineEditBox.h"
 
-#include "../../global/cst.h"
+#include "../../global/alg.h"
 #include "../../global/defines.h"
-#include "../../global/fns.h"
 #include "../../global/geom.h"
 #include "../Assets.h"
 #include "../Mouse.h"
 #include "../Rectangle.h"
+#include "LineEditBox_constants.h"
+#include "RectWidget_constants.h"
 
 #include <algorithm>
+#include <cassert>
 #include <sstream>
 
 static std::string toUpper(const std::string& text) {
@@ -27,6 +29,7 @@ namespace view::widget {
     }
 
     void LineEditBox::update(SDL_Renderer* renderer) {
+        assert(false);
         if (!m_needsUpdate) {
             return;
         }
@@ -35,7 +38,7 @@ namespace view::widget {
         }
         m_textures.clear();
         m_yOffsets.clear();
-        int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
+        int yOffset = LINE_EDIT_TITLE_HEIGHT;
         for (auto& str : m_strings) {
             m_yOffsets.push_back(yOffset);
             m_textures.emplace_back(Texture::createFromText(str, view::color::BLACK, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
@@ -50,7 +53,7 @@ namespace view::widget {
         if (m_needsUpdate) {
             update(renderer);
         }
-        Rectangle::render(geom::pad(m_rect, cst::LINE_EDIT_PADDING),
+        Rectangle::render(geom::pad(m_rect, RECT_WIDGET_PADDING),
                           m_active ? view::color::EDIT_BOX_BACKGROUND : view::color::EDIT_BOX_BACKGROUND_INACTIVE,
                           renderer);
 
@@ -72,11 +75,11 @@ namespace view::widget {
     }
 
     void LineEditBox::renderStrings(SDL_Renderer* renderer) const {
-        int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
+        int yOffset = LINE_EDIT_TITLE_HEIGHT;
         assert(yOffset == m_yOffsets[0]);
         for (const auto& texture : m_textures) {
             Assets::renderTexture(
-                texture.get(), {cst::LINE_EDIT_X_OFFSET + m_rect.x, m_rect.y + yOffset, texture->width(), texture->height()}, renderer);
+                texture.get(), {static_cast<int>(LINE_EDIT_X_OFFSET) + m_rect.x, m_rect.y + yOffset, texture->width(), texture->height()}, renderer);
             yOffset += texture->height();
         }
     }
@@ -208,7 +211,7 @@ namespace view::widget {
         const auto& selected = m_strings.at(data.m_stringIndex);
         data.m_charIndex     = selected.length();
 
-        const auto cutOff = mousePoint.x() - m_rect.x - cst::LINE_EDIT_X_OFFSET;
+        const auto cutOff = mousePoint.x() - m_rect.x - LINE_EDIT_X_OFFSET;
         while (widthOfString(prefixOfString(data)) > cutOff && data.m_charIndex > 0) {
             --data.m_charIndex;
         }
@@ -218,7 +221,7 @@ namespace view::widget {
         const auto mousePoint = Mouse::mouseXY();
         getSelectionFromMousePoint(
             m_selectionData.m_last,
-            SDL_Point{fns::clamp(mousePoint.x(), m_rect.x, m_rect.x + m_rect.w), fns::clamp(mousePoint.y(), m_rect.y, m_rect.y + m_rect.h)});
+            SDL_Point{alg::clamp(mousePoint.x(), m_rect.x, m_rect.x + m_rect.w), alg::clamp(mousePoint.y(), m_rect.y, m_rect.y + m_rect.h)});
         m_selectionData.m_mode = SelectionData::MODE::DOUBLE;
         m_selectionData.potentiallyMakeSingle();
         m_blinkTimeOffset = SDL_GetTicks();
@@ -226,7 +229,7 @@ namespace view::widget {
 
     void LineEditBox::drawDashAt(const SelectionData::Data& data, SDL_Renderer* renderer) const {
         if (not(((SDL_GetTicks() - m_blinkTimeOffset) / 400) % 2)) {
-            Rectangle::render(m_rect.x + cst::LINE_EDIT_X_OFFSET + widthOfString(prefixOfString(data)),
+            Rectangle::render(m_rect.x + LINE_EDIT_X_OFFSET + widthOfString(prefixOfString(data)),
                               m_rect.y + m_yOffsets.at(data.m_stringIndex),
                               3,
                               m_yOffsets.at(data.m_stringIndex + 1) - m_yOffsets.at(data.m_stringIndex),
@@ -251,9 +254,9 @@ namespace view::widget {
 
     void LineEditBox::highlightString(size_t stringIndex, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const {
         assert(stringIndex < m_strings.size());
-        Rectangle::render(m_rect.x + cst::LINE_EDIT_X_OFFSET,
+        Rectangle::render(m_rect.x + LINE_EDIT_X_OFFSET,
                           m_rect.y + m_yOffsets.at(stringIndex),
-                          m_rect.w - cst::LINE_EDIT_X_OFFSET,
+                          m_rect.w - LINE_EDIT_X_OFFSET,
                           m_yOffsets.at(stringIndex + 1) - m_yOffsets.at(stringIndex),
                           getHighlightColor(mode),
                           renderer);
@@ -267,9 +270,9 @@ namespace view::widget {
             return;
         }
         const auto leftOffset  = widthOfString(prefixOfString({stringIndex, firstCharIndex}));
-        const auto rightOffset = lastCharIndex == std::string ::npos ? -m_rect.w + m_textures.at(stringIndex)->width() + cst::LINE_EDIT_X_OFFSET
+        const auto rightOffset = lastCharIndex == std::string ::npos ? -m_rect.w + m_textures.at(stringIndex)->width() + LINE_EDIT_X_OFFSET
                                                                      : widthOfString(suffixOfString({stringIndex, lastCharIndex}));
-        Rectangle::render(m_rect.x + cst::LINE_EDIT_X_OFFSET + leftOffset,
+        Rectangle::render(m_rect.x + LINE_EDIT_X_OFFSET + leftOffset,
                           m_rect.y + m_yOffsets.at(stringIndex),
                           m_textures.at(stringIndex)->width() - (leftOffset + rightOffset),
                           m_yOffsets.at(stringIndex + 1) - m_yOffsets.at(stringIndex),
@@ -302,9 +305,9 @@ namespace view::widget {
         assert(firstStringIndex < m_strings.size());
         assert(lastStringIndex < m_strings.size());
         assert(firstStringIndex < lastStringIndex);
-        Rectangle::render(m_rect.x + cst::LINE_EDIT_X_OFFSET,
+        Rectangle::render(m_rect.x + LINE_EDIT_X_OFFSET,
                           m_rect.y + m_yOffsets.at(firstStringIndex),
-                          m_rect.w - cst::LINE_EDIT_X_OFFSET,
+                          m_rect.w - LINE_EDIT_X_OFFSET,
                           m_yOffsets.at(lastStringIndex) - m_yOffsets.at(firstStringIndex),
                           getHighlightColor(mode),
                           renderer);

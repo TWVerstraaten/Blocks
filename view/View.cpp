@@ -5,10 +5,8 @@
 #include "View.h"
 
 #include "../global/alg.h"
-#include "../global/fns.h"
-#include "../global/geom.h"
 #include "../model/Model.h"
-#include "color.h"
+#include "View_constants.h"
 #include "widget/BlockSelectWidget.h"
 #include "widget/ScrollArea.h"
 
@@ -30,7 +28,7 @@ namespace view {
         //        auto Width = DM.w;
         //        auto Height = DM.h;
         m_window = SDL_CreateWindow(
-            "Blocks", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, cst::INITIAL_SCREEN_WIDTH, cst::INITIAL_SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
+            "Blocks", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, INITIAL_SCREEN_WIDTH, INITIAL_SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
         if (!m_window) {
             std::cout << "Failed to create window, SDL2 Error: " << SDL_GetError() << "\n";
             return;
@@ -75,7 +73,7 @@ namespace view {
         drawBlocks(model.level());
 
         for (auto& cluster : model.clusters()) {
-            const auto points = cluster.cornerPoints(cst::BLOCK_SHRINK_IN_WORLD);
+            const auto points = cluster.cornerPoints(app::BLOCK_SHRINK_IN_WORLD);
             for (const auto& it : points) {
                 drawPoint(it, view::color::RED, 2);
             }
@@ -251,7 +249,7 @@ namespace view {
     }
 
     void View::drawDisconnected(const std::set<model::GridXY>& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum) const {
-        const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(cst::BLOCK_SHRINK_IN_WORLD);
+        const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
         const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
         const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
 
@@ -300,13 +298,13 @@ namespace view {
     std::unique_ptr<Texture> View::getTextureInWorld(const std::set<model::GridXY>& blocks,
                                                      const TEXTURE_ENUM             textureEnum,
                                                      const SDL_Color&               color) const {
-        const auto shrunkBlockSizeInWorld = cst::BLOCK_SIZE_IN_WORLD - 2 * cst::BLOCK_SHRINK_IN_WORLD;
+        const auto shrunkBlockSizeInWorld = app::BLOCK_SIZE_IN_WORLD - 2 * app::BLOCK_SHRINK_IN_WORLD;
         const auto minX                   = alg::minX(blocks);
         const auto minY                   = alg::minY(blocks);
         const auto maxX                   = alg::maxX(blocks);
         const auto maxY                   = alg::maxY(blocks);
-        const auto width                  = (maxX - minX + 1) * cst::BLOCK_SIZE_IN_WORLD;
-        const auto height                 = (maxY - minY + 1) * cst::BLOCK_SIZE_IN_WORLD;
+        const auto width                  = (maxX - minX + 1) * app::BLOCK_SIZE_IN_WORLD;
+        const auto height                 = (maxY - minY + 1) * app::BLOCK_SIZE_IN_WORLD;
 
         assert(width > 0);
         assert(height > 0);
@@ -321,28 +319,28 @@ namespace view {
         texture->setColor(color.r, color.g, color.b);
 
         for (const auto block : blocks) {
-            const auto position = block - model::GridXY{minX, minY} + model::WorldXY{cst::BLOCK_SHRINK_IN_WORLD, cst::BLOCK_SHRINK_IN_WORLD};
+            const auto position = block - model::GridXY{minX, minY} + model::WorldXY{app::BLOCK_SHRINK_IN_WORLD, app::BLOCK_SHRINK_IN_WORLD};
             texture->render({position.x(), position.y(), shrunkBlockSizeInWorld, shrunkBlockSizeInWorld}, m_renderer);
             const bool l = blocks.find(block.neighbor(model::GridXY::DIRECTION::LEFT)) != blocks.end();
             const bool u = blocks.find(block.neighbor(model::GridXY::DIRECTION::UP)) != blocks.end();
             if (u && l) {
                 const bool ul = blocks.find(block.neighbor(model::GridXY::DIRECTION::UP).neighbor(model::GridXY::DIRECTION::LEFT)) != blocks.end();
                 if (ul) {
-                    texture->render({position.x() - 2 * cst::BLOCK_SHRINK_IN_WORLD - 1,
-                                     position.y() - 2 * cst::BLOCK_SHRINK_IN_WORLD - 1,
-                                     2 * cst::BLOCK_SHRINK_IN_WORLD + 1,
-                                     2 * cst::BLOCK_SHRINK_IN_WORLD + 1},
+                    texture->render({position.x() - 2 * app::BLOCK_SHRINK_IN_WORLD - 1,
+                                     position.y() - 2 * app::BLOCK_SHRINK_IN_WORLD - 1,
+                                     2 * app::BLOCK_SHRINK_IN_WORLD + 1,
+                                     2 * app::BLOCK_SHRINK_IN_WORLD + 1},
                                     m_renderer);
                 }
             }
             if (u) {
                 texture->render(
-                    {position.x(), position.y() - 2 * cst::BLOCK_SHRINK_IN_WORLD - 1, shrunkBlockSizeInWorld, 2 * cst::BLOCK_SHRINK_IN_WORLD + 1},
+                    {position.x(), position.y() - 2 * app::BLOCK_SHRINK_IN_WORLD - 1, shrunkBlockSizeInWorld, 2 * app::BLOCK_SHRINK_IN_WORLD + 1},
                     m_renderer);
             }
             if (l) {
                 texture->render(
-                    {position.x() - 2 * cst::BLOCK_SHRINK_IN_WORLD - 1, position.y(), 2 * cst::BLOCK_SHRINK_IN_WORLD + 1, shrunkBlockSizeInWorld},
+                    {position.x() - 2 * app::BLOCK_SHRINK_IN_WORLD - 1, position.y(), 2 * app::BLOCK_SHRINK_IN_WORLD + 1, shrunkBlockSizeInWorld},
                     m_renderer);
             }
         }

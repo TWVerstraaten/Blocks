@@ -4,11 +4,12 @@
 
 #include "CommandEditBox.h"
 
-#include "../../global/cst.h"
 #include "../../global/defines.h"
 #include "../../model/Cluster.h"
 #include "../../model/command/CommandParser.h"
 #include "../Assets.h"
+#include "LineEditBox_constants.h"
+#include "RectWidget_constants.h"
 
 #include <algorithm>
 
@@ -98,11 +99,10 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
     m_textures.clear();
     m_yOffsets.clear();
 
-    int yOffset = cst::LINE_EDIT_TITLE_HEIGHT;
+    int yOffset = LINE_EDIT_TITLE_HEIGHT;
     for (auto& str : m_strings) {
         m_yOffsets.push_back(yOffset);
         switch (model::CommandParser::stringType(str)) {
-
             case model::CommandParser::STRING_TYPE::EMPTY:
                 m_textures.emplace_back(Texture::createFromText(" ", view::color::DARK_GREY, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
                 break;
@@ -116,7 +116,6 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
                 m_textures.emplace_back(Texture::createFromText(str, view::color::RED, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
                 break;
         }
-
         yOffset += m_textures.back()->height();
     }
     m_yOffsets.push_back(yOffset);
