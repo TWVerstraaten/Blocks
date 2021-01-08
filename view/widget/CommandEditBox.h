@@ -42,9 +42,13 @@ namespace view::widget {
         void setStrings(const std::vector<std::string>& strings);
         void createTitleTexture(SDL_Renderer* renderer);
         void createStringTextures(SDL_Renderer* renderer);
-        void update(const model::CommandVector& commandVector);
+        void updateComments(const model::CommandVector& commandVector);
+        void updateSelected(const model::CommandVector& commandVector);
 
       private:
+        /****** PRIVATE CONST FUNCTIONS  ******/
+        size_t findNthNonTransparent(size_t n)const;
+
         /****** DATA MEMBERS  ******/
         mutable bool m_clusterShouldBeUpdated = true;
         size_t       m_index;

@@ -32,6 +32,7 @@ namespace model {
         [[nodiscard]] Command          currentCommand() const;
         [[nodiscard]] COMMAND_TYPE     currentType() const;
         [[nodiscard]] COMMAND_MODIFIER currentModifier() const;
+        [[nodiscard]] bool             currentIsRepeat() const;
 
         /****** NON CONST FUNCTIONS  ******/
         void clear();

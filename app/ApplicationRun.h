@@ -16,6 +16,8 @@ namespace app {
     class ApplicationRun {
 
       public:
+        enum class CURRENT_STEP { MOVING, INTERACT };
+
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         ApplicationRun(const model::Model& model, view::View* view, const view::widget::ScrollArea& scrollArea);
 
@@ -26,8 +28,6 @@ namespace app {
         view::widget::ScrollArea& scrollArea();
 
       private:
-        enum class CURRENT_STEP { MOVING, INTERACT };
-
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void togglePause();
         void initializeMovingStep();
@@ -38,8 +38,6 @@ namespace app {
         void mouseClickEvent(const SDL_Event& event);
         void mouseReleaseEvent(const SDL_Event& event);
         void mouseMoveEvent(const SDL_Event& event);
-        void stopClustersIfNeeded();
-        void spliceClustersIfNeeded();
         void draw();
 
         /****** DATA MEMBERS  ******/

@@ -112,3 +112,7 @@ size_t model::CommandVector::size() const {
 const std::vector<std::string>& model::CommandVector::strings() const {
     return m_strings;
 }
+
+bool model::CommandVector::currentIsRepeat() const {
+    return std::visit(overloaded{[](const Command_RepeatWrapper) { return true; }, __FUNC(a, false)}, m_commands.at(m_commandIndex));
+}

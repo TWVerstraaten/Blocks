@@ -97,7 +97,7 @@ namespace app {
             }
         }
         ModelViewInterface::interactWithInstantBlocks(m_model, m_scrollArea);
-        ModelViewInterface::updateCommandScrollArea(m_model, m_scrollArea, APP_MODE::RUNNING);
+        ModelViewInterface::updateSelection(m_model.clusters(), m_scrollArea);
         m_currentStep = CURRENT_STEP::INTERACT;
     }
 
@@ -179,19 +179,6 @@ namespace app {
     void ApplicationRun::addStoppedClustersToLevel() {
         auto it = std::partition(__IT(m_model.clusters()), __FUNC(cluster, cluster.state() != model::CLUSTER_STATE::STOPPED));
         m_model.level().stoppedClusters().splice(m_model.level().stoppedClusters().end(), m_model.clusters(), it, m_model.clusters().end());
-    }
-
-    void ApplicationRun::stopClustersIfNeeded() {
-        for (auto& cluster : m_model.clusters()) {
-            cluster.stopIfNeeded();
-        }
-    }
-
-    void ApplicationRun::spliceClustersIfNeeded() {
-        for (auto& cluster : m_model.clusters()) {
-            cluster.spliceIfNeeded(m_model);
-            ModelViewInterface::splitIfDisconnected(m_model, m_scrollArea, cluster);
-        }
     }
 
     void ApplicationRun::draw() {

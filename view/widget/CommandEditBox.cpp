@@ -9,7 +9,8 @@
 #include "../../model/command/CommandParser.h"
 #include "../Assets.h"
 #include "LineEditBox_constants.h"
-#include "ScrollArea.h"
+
+#include <cassert>
 
 view::widget::CommandEditBox::CommandEditBox(int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
     : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())), m_index(cluster.index()) {
@@ -119,20 +120,32 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
     m_yOffsets.push_back(yOffset);
 }
 
-void view::widget::CommandEditBox::update(const model::CommandVector& commandVector) {
-    m_strings = commandVector.strings();
+void view::widget::CommandEditBox::updateComments(const model::CommandVector& commandVector) {
+    if (commandVector.empty()) {
+        return;
+    }
     m_comments.clear();
-    size_t index = 0;
+    if (commandVector.currentIsRepeat() && commandVector.repeatCount() != 0) {
+        m_comments.emplace_back(
+            std::make_pair(findNthNonTransparent(commandVector.commandIndex()), " #" + std::to_string(commandVector.repeatCount())));
+    }
+}
+
+void view::widget::CommandEditBox::updateSelected(const model::CommandVector& commandVector) {
+    if (not commandVector.empty()) {
+        m_selectionData.m_first.m_stringIndex = findNthNonTransparent(commandVector.commandIndex());
+    }
+}
+
+size_t view::widget::CommandEditBox::findNthNonTransparent(size_t n) const {
     for (size_t i = 0; i != m_strings.size(); ++i) {
         if (not model::CommandParser::isCommentOrEmpty(m_strings.at(i))) {
-            if (index == commandVector.commandIndex()) {
-                m_selectionData.m_first.m_stringIndex = i;
-                if (commandVector.repeatCount() != 0) {
-                    m_comments.emplace_back(std::make_pair(i, " #" + std::to_string(commandVector.repeatCount())));
-                }
+            if (n == 0) {
+                return i;
             }
-            ++index;
+            --n;
         }
     }
-    m_needsUpdate = true;
+    assert(false);
+    return std::numeric_limits<size_t>::max();
 }

@@ -36,12 +36,13 @@ static void removeActionBoxesOfRemovedClusters(const std::list<Cluster>& cluster
     scrollArea.children().remove_if(__FUNC(box, findCluster(box, clusters) == clusters.end()));
 }
 
-static void updateExistingCommandEditBoxes(const std::list<Cluster>& clusters, ScrollArea& scrollArea) {
+static void updateCommandEditBoxes(const std::list<Cluster>& clusters, ScrollArea& scrollArea) {
     for (auto& commandEditBox : scrollArea.children()) {
         auto it = findCluster(commandEditBox, clusters);
         assert(it != clusters.end());
         if (it->isAlive()) {
-            commandEditBox.update(it->commandVector());
+            commandEditBox.updateComments(it->commandVector());
+            commandEditBox.updateSelected(it->commandVector());
         }
         commandEditBox.setActive(it->isAlive());
     }
@@ -92,7 +93,7 @@ void app::ModelViewInterface::addAction(Action_u_ptr&& action) {
 void app::ModelViewInterface::updateCommandScrollArea(Model& model, ScrollArea& scrollArea, app::APP_MODE mode) {
     removeActionBoxesOfRemovedClusters(model.clusters(), scrollArea);
     if (mode == APP_MODE::RUNNING) {
-        updateExistingCommandEditBoxes(model.clusters(), scrollArea);
+        updateCommandEditBoxes(model.clusters(), scrollArea);
     }
     addCommandEditBoxesOfNewClusters(model.clusters(), scrollArea);
     scrollArea.setHeightAndPositions();
@@ -297,4 +298,15 @@ void app::ModelViewInterface::clusterDrag(Model& model, View& view, ScrollArea& 
         addAction(addSingleBlockToCluster(model, scrollArea, point));
     }
     updateCommandScrollArea(model, scrollArea, APP_MODE::EDITING);
+}
+
+void app::ModelViewInterface::updateSelection(const std::list<model::Cluster>& clusters, ScrollArea& scrollArea) {
+    for (auto& commandEditBox : scrollArea.children()) {
+        auto it = findCluster(commandEditBox, clusters);
+        assert(it != clusters.end());
+        if (it->isAlive()) {
+            commandEditBox.updateSelected(it->commandVector());
+        }
+        commandEditBox.setActive(it->isAlive());
+    }
 }
