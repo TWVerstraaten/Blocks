@@ -10,7 +10,6 @@
 
 namespace fns {
 
-    bool empty(const std::string& string);
     template <typename Type>
     Type clamp(Type value, Type lower, Type upper) {
         assert(lower <= upper);

@@ -4,11 +4,4 @@
 
 #include "fns.h"
 
-namespace fns {
-
-
-    bool empty(const std::string& string) {
-        return string.find_first_not_of(' ') == std::string::npos;
-    }
-
-} // namespace fns
+namespace fns {} // namespace fns

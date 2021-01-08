@@ -258,7 +258,6 @@ std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(model::Model
                                                                     view::widget::ScrollArea& scrollArea,
                                                                     const model::GridXY&      point,
                                                                     const model::GridXY&      previousPoint) {
-
     auto&      clusters = model.clusters();
     const auto baseIt   = std::find_if(_IT_(clusters), _FUNC_(cluster, cluster.contains(previousPoint)));
     if (baseIt == clusters.end() || (not previousPoint.isAdjacent(point))) {

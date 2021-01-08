@@ -5,7 +5,6 @@
 #include "Model.h"
 
 #include "../action/RemoveClusterAction.h"
-#include "../global/alg.h"
 #include "../global/cst.h"
 #include "../global/defines.h"
 #include "../global/fns.h"
