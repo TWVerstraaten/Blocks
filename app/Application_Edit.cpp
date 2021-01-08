@@ -81,11 +81,6 @@ namespace app {
     }
 
     void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
-        if (m_leftMouseButtonPressed) {
-            if (m_scrollArea->pointIsOverWidget(view::Mouse::mouseXY())) {
-                m_scrollArea->getFocus();
-            }
-        }
         if (m_scrollArea->hasFocus()) {
             if (m_leftMouseButtonPressed) {
                 m_scrollArea->mouseDragEvent(event);
@@ -105,9 +100,8 @@ namespace app {
     }
 
     bool Application_Edit::canStart() const {
-        return std::all_of(m_scrollArea->children().begin(), m_scrollArea->children().end(), [](const view::widget::CommandEditBox& box) {
-            return box.canParse();
-        });
+        return std::all_of(
+            m_scrollArea->children().begin(), m_scrollArea->children().end(), [](const view::widget::CommandEditBox& box) { return box.canParse(); });
     }
 
     void Application_Edit::getActionsFromEditBoxes() {
@@ -117,10 +111,6 @@ namespace app {
             commandEdit->updateClusterCommands(cluster);
             ++commandEdit;
         }
-    }
-
-    Uint32 Application_Edit::timeStep() const {
-        return m_timeStep;
     }
 
     void Application_Edit::finalize() {
@@ -133,9 +123,6 @@ namespace app {
             case SDL_TEXTINPUT:
             case SDL_KEYDOWN:
                 keyEvent(event);
-                break;
-            case SDL_WINDOWEVENT:
-                if (event.window.event == SDL_WINDOWEVENT_RESIZED) {}
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 mouseClickEvent(event);
@@ -175,15 +162,10 @@ namespace app {
         const auto currentGridPosition = model::GridXY::fromScreenXY(view::Mouse::mouseXY(), m_view->viewPort());
         if (currentGridPosition != m_previousGridClickPosition) {
             if (SDL_GetModState() & KMOD_CTRL) {
-                m_modelViewInterface.leftClickControl(
-                    *m_model, *m_view, *m_scrollArea, currentGridPosition, m_blockSelectWidget.selectedBlockType());
+                m_modelViewInterface.leftClickControl(*m_model, *m_view, *m_scrollArea, currentGridPosition, m_blockSelectWidget.selectedBlockType());
             } else {
-                m_modelViewInterface.leftMouseDrag(*m_model,
-                                                   *m_view,
-                                                   *m_scrollArea,
-                                                   currentGridPosition,
-                                                   m_previousGridClickPosition,
-                                                   m_blockSelectWidget.selectedBlockType());
+                m_modelViewInterface.leftMouseDrag(
+                    *m_model, *m_view, *m_scrollArea, currentGridPosition, m_previousGridClickPosition, m_blockSelectWidget.selectedBlockType());
             }
             m_previousGridClickPosition = currentGridPosition;
         }

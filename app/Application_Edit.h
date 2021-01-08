@@ -20,8 +20,6 @@ namespace app {
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         Application_Edit(model::Model* model, view::View* view, view::widget::ScrollArea* scrollArea);
 
-        /****** CONST GETTERS  ******/
-        [[nodiscard]] Uint32                    timeStep() const;
         [[nodiscard]] model::Model*             model() const;
         [[nodiscard]] view::widget::ScrollArea* scrollArea() const;
 
@@ -53,7 +51,6 @@ namespace app {
         /****** DATA MEMBERS  ******/
         bool                            m_rightMouseButtonPressed = false;
         bool                            m_leftMouseButtonPressed  = false;
-        Uint32                          m_timeStep                = cst::TIME_STEP_SLOW;
         EDIT_MODE                       m_editMode                = EDIT_MODE::EDITING;
         model::GridXY                   m_previousGridClickPosition{0, 0};
         view::View*                     m_view;

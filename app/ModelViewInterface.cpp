@@ -158,8 +158,8 @@ void app::ModelViewInterface::handleKeyEvent(const SDL_Event& event, view::widge
         if (w->clusterShouldBeUpdated()) {
             auto clusterIt = findCluster(*w, model.clusters());
             w->updateClusterCommands(*clusterIt);
-            addAction(std::make_unique<action::GenericCommandEditBoxAction>(copy, *w));
         }
+        addAction(std::make_unique<action::GenericCommandEditBoxAction>(copy, *w));
     }
 }
 

@@ -100,7 +100,6 @@ namespace app {
                 case EDIT_MODE::EDITING:
                     break;
                 default:
-                    m_timeStep = editApp.timeStep();
                     return currentMode;
             }
         }
