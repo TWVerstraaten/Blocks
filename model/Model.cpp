@@ -6,13 +6,9 @@
 
 #include "../action/RemoveClusterAction.h"
 #include "../app/Application_constants.h"
-#include "../global/alg.h"
 #include "../global/defines.h"
 
-#ifdef _WIN32
 #include <cassert>
-#include <cmath>
-#endif
 
 namespace model {
 
@@ -28,7 +24,7 @@ namespace model {
 
     void Model::intersectWithLevel() {
         for (auto& cluster : m_clusters) {
-            if (cluster.alive()) {
+            if (cluster.isAlive()) {
                 cluster.collideWithLevel(m_level, app::BLOCK_SHRINK_IN_WORLD);
             }
         }
@@ -40,7 +36,7 @@ namespace model {
 
     void Model::update(double dPhase) {
         assert(dPhase >= 0);
-        dPhase = alg::clamp(dPhase, 0.0, 1.0);
+        dPhase = std::clamp(dPhase, 0.0, 1.0);
         while (dPhase > app::MAX_D_PHASE) {
             updateInternal(app::MAX_D_PHASE);
             dPhase -= app::MAX_D_PHASE;
@@ -125,7 +121,7 @@ namespace model {
     }
 
     std::list<Cluster>::iterator Model::clusterWithIndex(size_t index) {
-        return std::find_if(_IT_(m_clusters), _FUNC_(cluster, cluster.index() == index));
+        return std::find_if(__IT(m_clusters), __FUNC(cluster, cluster.index() == index));
     }
 
     Level& Model::level() {
@@ -133,15 +129,10 @@ namespace model {
     }
 
     bool Model::noClusterOnBlock(const GridXY& gridXY) const {
-        return std::find_if(_IT_(m_clusters), _FUNC_(cluster, cluster.contains(gridXY))) == m_clusters.end();
+        return std::find_if(__IT(m_clusters), __FUNC(cluster, cluster.contains(gridXY))) == m_clusters.end();
     }
 
     std::list<Cluster>::iterator Model::clusterContaining(const GridXY& point) {
-        return std::find_if(_IT_(m_clusters), _FUNC_(cluster, cluster.contains(point)));
+        return std::find_if(__IT(m_clusters), __FUNC(cluster, cluster.contains(point)));
     }
-
-    double Model::phaseFraction() const {
-        return m_phaseFraction;
-    }
-
 } // namespace model

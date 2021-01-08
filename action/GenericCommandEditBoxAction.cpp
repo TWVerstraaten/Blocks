@@ -4,7 +4,7 @@
 
 #include "GenericCommandEditBoxAction.h"
 
-#include "../app/Application_Edit.h"
+#include "../app/ApplicationEdit.h"
 #include "../view/widget/ScrollArea.h"
 
 #include <cassert>
@@ -15,13 +15,13 @@ action::GenericCommandEditBoxAction::GenericCommandEditBoxAction(const view::wid
     assert(m_old.index() == m_new.index());
 }
 
-void action::GenericCommandEditBoxAction::undoAction(app::Application_Edit& applicationEdit) {
+void action::GenericCommandEditBoxAction::undoAction(app::ApplicationEdit& applicationEdit) {
     auto it = applicationEdit.scrollArea()->findCommandEditBox(m_index);
     assert(it != applicationEdit.scrollArea()->children().end());
     *it = m_old;
 }
 
-void action::GenericCommandEditBoxAction::redoAction(app::Application_Edit& applicationEdit) {
+void action::GenericCommandEditBoxAction::redoAction(app::ApplicationEdit& applicationEdit) {
     auto it = applicationEdit.scrollArea()->findCommandEditBox(m_index);
     assert(it != applicationEdit.scrollArea()->children().end());
     *it = m_new;

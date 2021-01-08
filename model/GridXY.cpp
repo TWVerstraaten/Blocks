@@ -7,7 +7,6 @@
 #include "../view/ScreenXY.h"
 #include "../view/ViewPort.h"
 
-#include <cassert>
 #ifdef _WIN32
 #include <cmath>
 #endif

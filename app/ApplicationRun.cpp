@@ -2,25 +2,25 @@
 // Created by pc on 22-12-20.
 //
 
-#include "Application_Run.h"
+#include "ApplicationRun.h"
 
 #include "../global/defines.h"
 #include "../view/Mouse.h"
 #include "ModelViewInterface.h"
 
 namespace app {
-    Application_Run::Application_Run(const model::Model& model, view::View* view, const view::widget::ScrollArea& scrollArea)
+    ApplicationRun::ApplicationRun(const model::Model& model, view::View* view, const view::widget::ScrollArea& scrollArea)
         : m_view(view), m_scrollArea(scrollArea) {
         m_model             = model;
         m_timeSinceLastStep = 0;
         m_previousTime      = SDL_GetTicks();
     }
 
-    void Application_Run::mouseWheelEvent(const SDL_Event& event) {
+    void ApplicationRun::mouseWheelEvent(const SDL_Event& event) {
         m_view->zoom(event.wheel.y);
     }
 
-    void Application_Run::keyEvent(const SDL_Event& event) {
+    void ApplicationRun::keyEvent(const SDL_Event& event) {
         if (event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
                 case SDLK_ESCAPE:
@@ -44,7 +44,7 @@ namespace app {
         }
     }
 
-    void Application_Run::mouseClickEvent(const SDL_Event& event) {
+    void ApplicationRun::mouseClickEvent(const SDL_Event& event) {
         switch (event.button.button) {
             case SDL_BUTTON_RIGHT:
                 m_rightMouseButtonPressed = true;
@@ -59,7 +59,7 @@ namespace app {
         }
     }
 
-    void Application_Run::mouseReleaseEvent(const SDL_Event& event) {
+    void ApplicationRun::mouseReleaseEvent(const SDL_Event& event) {
         switch (event.button.button) {
             case SDL_BUTTON_RIGHT:
                 m_rightMouseButtonPressed = false;
@@ -72,7 +72,7 @@ namespace app {
         }
     }
 
-    void Application_Run::mouseMoveEvent(const SDL_Event& event) {
+    void ApplicationRun::mouseMoveEvent(const SDL_Event& event) {
         if (m_rightMouseButtonPressed) {
             const auto mouseXY = view::Mouse::mouseXY();
             m_view->translate((mouseXY.x() - m_previousMousePosition.x()), mouseXY.y() - m_previousMousePosition.y());
@@ -80,26 +80,28 @@ namespace app {
         }
     }
 
-    void Application_Run::setTimeStep(Uint32 timeStep) {
+    void ApplicationRun::setTimeStep(Uint32 timeStep) {
         m_paused   = false;
         m_timeStep = timeStep;
     }
 
-    void Application_Run::togglePause() {
+    void ApplicationRun::togglePause() {
         m_paused = !m_paused;
     }
 
-    void Application_Run::initializeInteractStep() {
+    void ApplicationRun::initializeInteractStep() {
         for (auto& cluster : m_model.clusters()) {
-            cluster.resetPhase();
-            cluster.incrementCommandIndex();
+            if (cluster.isAlive()) {
+                cluster.resetPhase();
+                cluster.incrementCommandIndex();
+            }
         }
         ModelViewInterface::interactWithInstantBlocks(m_model, m_scrollArea);
         ModelViewInterface::updateCommandScrollArea(m_model, m_scrollArea, APP_MODE::RUNNING);
         m_currentStep = CURRENT_STEP::INTERACT;
     }
 
-    void Application_Run::initializeMovingStep() {
+    void ApplicationRun::initializeMovingStep() {
         m_model.startPhase();
         for (auto& cluster : m_model.clusters()) {
             ModelViewInterface::stopSpliceOrKillIfNeeded(m_model.level(), cluster);
@@ -118,10 +120,7 @@ namespace app {
         m_currentStep = CURRENT_STEP::MOVING;
     }
 
-    RUN_MODE Application_Run::performSingleLoop() {
-        //        if (m_runningMode != RUN_MODE::RUNNING) {
-        //            return m_runningMode;
-        //        }
+    RUN_MODE ApplicationRun::performSingleLoop() {
         const auto currentTime = SDL_GetTicks();
         if (not m_paused) {
             m_timeSinceLastStep += SDL_GetTicks() - m_previousTime;
@@ -149,7 +148,7 @@ namespace app {
         return m_runningMode;
     }
 
-    void Application_Run::handleEvent(const SDL_Event& event) {
+    void ApplicationRun::handleEvent(const SDL_Event& event) {
         switch (event.type) {
             case SDL_KEYDOWN:
             case SDL_KEYUP:
@@ -173,29 +172,29 @@ namespace app {
         }
     }
 
-    view::widget::ScrollArea& Application_Run::scrollArea() {
+    view::widget::ScrollArea& ApplicationRun::scrollArea() {
         return m_scrollArea;
     }
 
-    void Application_Run::addStoppedClustersToLevel() {
-        auto it = std::partition(_IT_(m_model.clusters()), _FUNC_(cluster, cluster.state() != model::CLUSTER_STATE::STOPPED));
+    void ApplicationRun::addStoppedClustersToLevel() {
+        auto it = std::partition(__IT(m_model.clusters()), __FUNC(cluster, cluster.state() != model::CLUSTER_STATE::STOPPED));
         m_model.level().stoppedClusters().splice(m_model.level().stoppedClusters().end(), m_model.clusters(), it, m_model.clusters().end());
     }
 
-    void Application_Run::stopClustersIfNeeded() {
+    void ApplicationRun::stopClustersIfNeeded() {
         for (auto& cluster : m_model.clusters()) {
             cluster.stopIfNeeded();
         }
     }
 
-    void Application_Run::spliceClustersIfNeeded() {
+    void ApplicationRun::spliceClustersIfNeeded() {
         for (auto& cluster : m_model.clusters()) {
             cluster.spliceIfNeeded(m_model);
             ModelViewInterface::splitIfDisconnected(m_model, m_scrollArea, cluster);
         }
     }
 
-    void Application_Run::draw() {
+    void ApplicationRun::draw() {
         m_view->draw(m_model);
         m_view->drawScrollArea(&m_scrollArea);
         m_view->renderPresent();

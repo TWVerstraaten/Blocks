@@ -4,13 +4,14 @@
 
 #include "View.h"
 
-#include "../global/alg.h"
+#include "../global/geom.h"
 #include "../model/Model.h"
 #include "View_constants.h"
 #include "widget/BlockSelectWidget.h"
 #include "widget/ScrollArea.h"
 
 #include <SDL_image.h>
+#include <cassert>
 
 namespace view {
 
@@ -72,17 +73,17 @@ namespace view {
         drawClusters(model.clusters());
         drawBlocks(model.level());
 
-        for (auto& cluster : model.clusters()) {
-            const auto points = cluster.cornerPoints(app::BLOCK_SHRINK_IN_WORLD);
-            for (const auto& it : points) {
-                drawPoint(it, view::color::RED, 2);
-            }
-        }
+        //        for (auto& cluster : model.clusters()) {
+        //            const auto points = cluster.cornerPoints(app::BLOCK_SHRINK_IN_WORLD);
+        //            for (const auto& it : points) {
+        //                drawPoint(it, view::color::RED, 2);
+        //            }
+        //        }
     }
 
     void View::drawClusters(const std::list<model::Cluster>& clusters) {
         for (const auto& cluster : clusters) {
-            drawConnected(cluster.gridXY(), cluster.phaseTransformation(), cluster.angle(), cluster.alive() ? color::CLUSTER : color::CLUSTER_DEAD);
+            drawConnected(cluster.gridXY(), cluster.phaseTransformation(), cluster.angle(), cluster.isAlive() ? color::CLUSTER : color::CLUSTER_DEAD);
         }
         for (const auto& cluster : clusters) {
             renderClusterName(cluster);
@@ -248,7 +249,7 @@ namespace view {
         drawRectangle(point + ScreenXY{length, -lineThickness}, lineThickness, length + 2 * lineThickness, color, renderer);
     }
 
-    void View::drawDisconnected(const std::set<model::GridXY>& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum) const {
+    void View::drawDisconnected(const model::GridXYSet& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum) const {
         const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
         const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
         const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
@@ -262,21 +263,21 @@ namespace view {
     }
 
     //
-    //    const std::set<model::GridXY>&                              blocks,
+    //    const model::GridXYSet&                              blocks,
     //    const std::function<model::WorldXY(const model::WorldXY&)>& fun,
     //    double                                                      angle,
     //    const SDL_Color&                                            color,
     //        TEXTURE_ENUM                                                textureEnum = TEXTURE_ENUM::WHITE
     //
 
-    void View::drawConnected(const std::set<model::GridXY>&                              blocks,
+    void View::drawConnected(const model::GridXYSet&                                     blocks,
                              const std::function<model::WorldXY(const model::WorldXY&)>& fun,
                              double                                                      angle,
                              const SDL_Color&                                            color,
                              TEXTURE_ENUM                                                textureEnum) const {
         static const SDL_Point origin{0, 0};
         const auto             texture = getTextureInWorld(blocks, textureEnum, color);
-        const auto             topLeft = ScreenXY::fromWorldXY(fun(model::WorldXY(model::GridXY{alg::minX(blocks), alg::minY(blocks)})), m_viewPort);
+        const auto topLeft = ScreenXY::fromWorldXY(fun(model::WorldXY(model::GridXY{geom::minX(blocks), geom::minY(blocks)})), m_viewPort);
         texture->render(
             {topLeft.x(), topLeft.y(), m_viewPort.worldToScreenLength(texture->width()), m_viewPort.worldToScreenLength(texture->height())},
             m_renderer,
@@ -284,25 +285,23 @@ namespace view {
             &origin);
     }
 
-    void View::drawConnected(const std::set<model::GridXY>& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum) const {
+    void View::drawConnected(const model::GridXYSet& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum) const {
         if (blocks.empty()) {
             return;
         }
         const auto texture = getTextureInWorld(blocks, textureEnum, color);
-        const auto topLeft = ScreenXY::fromWorldXY((model::WorldXY(model::GridXY{alg::minX(blocks), alg::minY(blocks)})), m_viewPort);
+        const auto topLeft = ScreenXY::fromWorldXY((model::WorldXY(model::GridXY{geom::minX(blocks), geom::minY(blocks)})), m_viewPort);
         texture->render(
             {topLeft.x(), topLeft.y(), m_viewPort.worldToScreenLength(texture->width()), m_viewPort.worldToScreenLength(texture->height())},
             m_renderer);
     }
 
-    std::unique_ptr<Texture> View::getTextureInWorld(const std::set<model::GridXY>& blocks,
-                                                     const TEXTURE_ENUM             textureEnum,
-                                                     const SDL_Color&               color) const {
+    std::unique_ptr<Texture> View::getTextureInWorld(const model::GridXYSet& blocks, const TEXTURE_ENUM textureEnum, const SDL_Color& color) const {
         const auto shrunkBlockSizeInWorld = app::BLOCK_SIZE_IN_WORLD - 2 * app::BLOCK_SHRINK_IN_WORLD;
-        const auto minX                   = alg::minX(blocks);
-        const auto minY                   = alg::minY(blocks);
-        const auto maxX                   = alg::maxX(blocks);
-        const auto maxY                   = alg::maxY(blocks);
+        const auto minX                   = geom::minX(blocks);
+        const auto minY                   = geom::minY(blocks);
+        const auto maxX                   = geom::maxX(blocks);
+        const auto maxY                   = geom::maxY(blocks);
         const auto width                  = (maxX - minX + 1) * app::BLOCK_SIZE_IN_WORLD;
         const auto height                 = (maxY - minY + 1) * app::BLOCK_SIZE_IN_WORLD;
 

@@ -2,8 +2,8 @@
 // Created by pc on 22-12-20.
 //
 
-#ifndef BLOCKS_APPLICATION_EDIT_H
-#define BLOCKS_APPLICATION_EDIT_H
+#ifndef BLOCKS_APPLICATIONEDIT_H
+#define BLOCKS_APPLICATIONEDIT_H
 
 #include "../model/Model.h"
 #include "../view/View.h"
@@ -14,11 +14,11 @@
 #include <SDL.h>
 
 namespace app {
-    class Application_Edit {
+    class ApplicationEdit {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        Application_Edit(model::Model* model, view::View* view, view::widget::ScrollArea* scrollArea);
+        ApplicationEdit(model::Model* model, view::View* view, view::widget::ScrollArea* scrollArea);
 
         [[nodiscard]] model::Model*             model() const;
         [[nodiscard]] view::widget::ScrollArea* scrollArea() const;
@@ -61,4 +61,4 @@ namespace app {
         ModelViewInterface              m_modelViewInterface;
     };
 } // namespace app
-#endif // BLOCKS_APPLICATION_EDIT_H
+#endif // BLOCKS_APPLICATIONEDIT_H

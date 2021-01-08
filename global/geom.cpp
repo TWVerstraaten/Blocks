@@ -11,14 +11,15 @@
 
 #ifdef _WIN32
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #endif
 
 namespace geom {
 
-    bool intersect(const std::set<model::Line<model::WorldXY>>& lines1, const std::set<model::Line<model::WorldXY>>& lines2) {
+    bool intersect(const model::WorldLineSet& lines1, const model::WorldLineSet& lines2) {
         for (const auto& line1 : lines1) {
-            for (auto line2 : lines2) {
+            for (const auto& line2 : lines2) {
                 if (geom::intersect(line1, line2)) {
                     return true;
                 }
@@ -27,10 +28,10 @@ namespace geom {
         return false;
     }
 
-    std::set<model::Line<model::WorldXY>> getSidesFromGridXY(std::set<model::GridXY> blocks) {
-        std::set<model::Line<model::WorldXY>> result;
-        std::vector<model::GridXY>            cornerPoints;
-        int                                   yOffset = 0;
+    model::WorldLineSet getSidesFromGridXY(const model::GridXYSet& blocks) {
+        model::WorldLineSet        result;
+        std::vector<model::GridXY> cornerPoints;
+        int                        yOffset = 0;
         for (const auto& dir : {model::GridXY::DIRECTION::UP, model::GridXY::DIRECTION::DOWN}) {
             auto it = blocks.begin();
             while (it != blocks.end()) {
@@ -51,9 +52,9 @@ namespace geom {
             }
             ++yOffset;
         }
-        std::sort(_IT_(cornerPoints), _FUNC_2_(lhs, rhs, lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x()));
+        std::sort(__IT(cornerPoints), __FUNC_2(lhs, rhs, lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x()));
         while (not cornerPoints.empty()) {
-            result.emplace(model::Line<model::WorldXY>{*(cornerPoints.rbegin() + 1), *cornerPoints.rbegin()});
+            result.emplace(model::WorldLine{*(cornerPoints.rbegin() + 1), *cornerPoints.rbegin()});
             cornerPoints.erase(cornerPoints.end() - 2, cornerPoints.end());
         }
         return result;
@@ -90,7 +91,7 @@ namespace geom {
         return value <= upper && value >= lower;
     }
 
-    bool intersect(const model::Line<model::WorldXY>& lhs, const model::Line<model::WorldXY>& rhs) {
+    bool intersect(const model::WorldLine& lhs, const model::WorldLine& rhs) {
         const auto qMinusP = lhs.start() - rhs.start();
         const auto s       = lhs.displacementVector();
         const auto r       = rhs.displacementVector();
@@ -105,4 +106,25 @@ namespace geom {
             return false;
         }
     }
+
+    int minX(const model::GridXYSet& blocks) {
+        assert(not blocks.empty());
+        return std::min_element(__CIT(blocks), __FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
+    }
+
+    int minY(const model::GridXYSet& blocks) {
+        assert(not blocks.empty());
+        return blocks.begin()->y();
+    }
+
+    int maxX(const model::GridXYSet& blocks) {
+        assert(not blocks.empty());
+        return std::max_element(__CIT(blocks), __FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
+    }
+
+    int maxY(const model::GridXYSet& blocks) {
+        assert(not blocks.empty());
+        return blocks.rbegin()->y();
+    }
+
 } // namespace geom

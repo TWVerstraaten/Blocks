@@ -4,20 +4,19 @@
 
 #include "ViewPort.h"
 
-#include "../global/alg.h"
+#include <algorithm>
 
 #ifdef _WIN32
 #include <cmath>
 #endif
 
 namespace view {
-
     int ViewPort::blockSizeInScreen() const {
         return static_cast<int>(app::BLOCK_SIZE_IN_WORLD * m_scale);
     }
 
     void ViewPort::zoom(int dZoom) {
-        m_zoom                            = alg::clamp(m_zoom + dZoom, -10, 20);
+        m_zoom                            = std::clamp(m_zoom + dZoom, -10, 20);
         m_scale                           = std::exp(m_zoom / 10.0);
         m_distanceBetweenBlocksInScreenXY = worldToScreenLength(2 * app::BLOCK_SHRINK_IN_WORLD);
     }

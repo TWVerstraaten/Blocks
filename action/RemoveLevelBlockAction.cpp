@@ -4,7 +4,7 @@
 
 #include "RemoveLevelBlockAction.h"
 
-#include "../app/Application_Edit.h"
+#include "../app/ApplicationEdit.h"
 #include "../global/defines.h"
 
 action::RemoveLevelBlockAction::RemoveLevelBlockAction(
@@ -12,12 +12,12 @@ action::RemoveLevelBlockAction::RemoveLevelBlockAction(
     : m_blockType(blockType), m_point(point) {
 }
 
-void action::RemoveLevelBlockAction::undoAction(app::Application_Edit& applicationEdit) {
-    std::visit(_FUNC_(type, applicationEdit.model()->level().addBlock(m_point, type)), m_blockType);
+void action::RemoveLevelBlockAction::undoAction(app::ApplicationEdit& applicationEdit) {
+    std::visit(__FUNC(type, applicationEdit.model()->level().addBlock(m_point, type)), m_blockType);
 }
 
-void action::RemoveLevelBlockAction::redoAction(app::Application_Edit& applicationEdit) {
-    std::visit(_FUNC_(type, applicationEdit.model()->level().removeBlock(m_point)), m_blockType);
+void action::RemoveLevelBlockAction::redoAction(app::ApplicationEdit& applicationEdit) {
+    std::visit(__FUNC(type, applicationEdit.model()->level().removeBlock(m_point)), m_blockType);
 }
 
 action::ACTION_TYPE action::RemoveLevelBlockAction::type() const {

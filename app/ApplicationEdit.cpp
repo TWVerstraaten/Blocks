@@ -2,7 +2,7 @@
 // Created by pc on 22-12-20.
 //
 
-#include "Application_Edit.h"
+#include "ApplicationEdit.h"
 
 #include "../global/defines.h"
 #include "../view/Mouse.h"
@@ -13,7 +13,7 @@
 
 namespace app {
 
-    Application_Edit::Application_Edit(model::Model* model, view::View* view, view::widget::ScrollArea* scrollArea)
+    ApplicationEdit::ApplicationEdit(model::Model* model, view::View* view, view::widget::ScrollArea* scrollArea)
         : m_view(view), m_model(model), m_scrollArea(scrollArea),
           m_blockSelectWidget({0,
                                static_cast<int>(m_view->windowHeight() - view::widget::BLOCK_SELECT_WIDGET_HEIGHT),
@@ -23,7 +23,7 @@ namespace app {
         m_blockSelectWidget.init(m_view->assets());
     }
 
-    void Application_Edit::mouseWheelEvent(const SDL_Event& event) {
+    void ApplicationEdit::mouseWheelEvent(const SDL_Event& event) {
         if (m_scrollArea->pointIsOverWidget(view::Mouse::mouseXY())) {
             m_scrollArea->mouseWheelEvent(event);
         } else if (m_blockSelectWidget.pointIsOverWidget(view::Mouse::mouseXY())) {
@@ -32,7 +32,7 @@ namespace app {
         }
     }
 
-    void Application_Edit::keyEvent(const SDL_Event& event) {
+    void ApplicationEdit::keyEvent(const SDL_Event& event) {
         if (event.type == SDL_KEYDOWN && SDL_GetModState() & KMOD_CTRL) {
             if (event.key.keysym.sym == SDLK_z) {
                 undo();
@@ -47,7 +47,7 @@ namespace app {
         }
     }
 
-    void Application_Edit::mouseClickEvent(const SDL_Event& event) {
+    void ApplicationEdit::mouseClickEvent(const SDL_Event& event) {
         setButtonBooleans(event);
         determineFocus(view::Mouse::mouseXY());
         if (m_scrollArea->hasFocus()) {
@@ -68,7 +68,7 @@ namespace app {
         }
     }
 
-    void Application_Edit::mouseReleaseEvent(const SDL_Event& event) {
+    void ApplicationEdit::mouseReleaseEvent(const SDL_Event& event) {
         switch (event.button.button) {
             case SDL_BUTTON_RIGHT:
                 m_rightMouseButtonPressed = false;
@@ -81,7 +81,7 @@ namespace app {
         }
     }
 
-    void Application_Edit::mouseMoveEvent(const SDL_Event& event) {
+    void ApplicationEdit::mouseMoveEvent(const SDL_Event& event) {
         if (m_scrollArea->hasFocus()) {
             if (m_leftMouseButtonPressed) {
                 m_scrollArea->mouseDragEvent(event);
@@ -95,16 +95,16 @@ namespace app {
         }
     }
 
-    void Application_Edit::init() {
+    void ApplicationEdit::init() {
         ModelViewInterface::updateCommandScrollArea(*m_model, *m_scrollArea, APP_MODE::EDITING);
         m_scrollArea->update(m_view->renderer());
     }
 
-    bool Application_Edit::canStart() const {
-        return std::all_of(_CIT_(m_scrollArea->children()), _FUNC_(box, box.canParse()));
+    bool ApplicationEdit::canStart() const {
+        return std::all_of(__CIT(m_scrollArea->children()), __FUNC(box, box.canParse()));
     }
 
-    void Application_Edit::getActionsFromEditBoxes() {
+    void ApplicationEdit::getActionsFromEditBoxes() {
         assert(m_model->clusters().size() == m_scrollArea->children().size());
         auto commandEdit = m_scrollArea->children().begin();
         for (auto& cluster : m_model->clusters()) {
@@ -113,12 +113,12 @@ namespace app {
         }
     }
 
-    void Application_Edit::finalize() {
+    void ApplicationEdit::finalize() {
         getActionsFromEditBoxes();
         m_scrollArea->loseFocus();
     }
 
-    void Application_Edit::handleEvent(const SDL_Event& event) {
+    void ApplicationEdit::handleEvent(const SDL_Event& event) {
         switch (event.type) {
             case SDL_TEXTINPUT:
             case SDL_KEYDOWN:
@@ -141,7 +141,7 @@ namespace app {
         }
     }
 
-    EDIT_MODE Application_Edit::performSingleLoop() {
+    EDIT_MODE ApplicationEdit::performSingleLoop() {
         if (m_editMode != EDIT_MODE::EDITING) {
             finalize();
         }
@@ -152,11 +152,11 @@ namespace app {
         return m_editMode;
     }
 
-    bool Application_Edit::hasFocus() const {
-        return not m_scrollArea->hasFocus();
+    bool ApplicationEdit::hasFocus() const {
+        return (not m_scrollArea->hasFocus()) || (not m_scrollArea->hasChildWithFocus());
     }
 
-    void Application_Edit::handleLeftMouseMove() {
+    void ApplicationEdit::handleLeftMouseMove() {
         assert(m_leftMouseButtonPressed);
         assert(not m_rightMouseButtonPressed);
         const auto currentGridPosition = model::GridXY::fromScreenXY(view::Mouse::mouseXY(), m_view->viewPort());
@@ -171,7 +171,7 @@ namespace app {
         }
     }
 
-    void Application_Edit::handleRightMouseMove() {
+    void ApplicationEdit::handleRightMouseMove() {
         assert(m_rightMouseButtonPressed);
         assert(not m_leftMouseButtonPressed);
         const auto mouseXY = view::Mouse::mouseXY();
@@ -179,7 +179,7 @@ namespace app {
         m_previousMousePosition = mouseXY;
     }
 
-    void Application_Edit::setButtonBooleans(const SDL_Event& event) {
+    void ApplicationEdit::setButtonBooleans(const SDL_Event& event) {
         assert(event.type == SDL_MOUSEBUTTONDOWN);
         switch (event.button.button) {
             case SDL_BUTTON_RIGHT:
@@ -195,23 +195,23 @@ namespace app {
         }
     }
 
-    model::Model* Application_Edit::model() const {
+    model::Model* ApplicationEdit::model() const {
         return m_model;
     }
 
-    void Application_Edit::undo() {
+    void ApplicationEdit::undo() {
         m_modelViewInterface.undo(*this);
     }
 
-    void Application_Edit::redo() {
+    void ApplicationEdit::redo() {
         m_modelViewInterface.redo(*this);
     }
 
-    view::widget::ScrollArea* Application_Edit::scrollArea() const {
+    view::widget::ScrollArea* ApplicationEdit::scrollArea() const {
         return m_scrollArea;
     }
 
-    void Application_Edit::determineFocus(view::ScreenXY screenXY) {
+    void ApplicationEdit::determineFocus(view::ScreenXY screenXY) {
         m_scrollArea->loseFocus();
         m_blockSelectWidget.loseFocus();
         if (m_scrollArea->pointIsOverWidget(screenXY)) {

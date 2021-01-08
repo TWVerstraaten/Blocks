@@ -4,16 +4,16 @@
 
 #include "RemoveClusterAction.h"
 
-#include "../app/Application_Edit.h"
+#include "../app/ApplicationEdit.h"
 
 action::RemoveClusterAction::RemoveClusterAction(const model::Cluster& cluster) : AddClusterAction(cluster) {
 }
 
-void action::RemoveClusterAction::undoAction(app::Application_Edit& applicationEdit) {
+void action::RemoveClusterAction::undoAction(app::ApplicationEdit& applicationEdit) {
     AddClusterAction::redoAction(applicationEdit);
 }
 
-void action::RemoveClusterAction::redoAction(app::Application_Edit& applicationEdit) {
+void action::RemoveClusterAction::redoAction(app::ApplicationEdit& applicationEdit) {
     AddClusterAction::undoAction(applicationEdit);
 }
 action::ACTION_TYPE action::RemoveClusterAction::type() const {

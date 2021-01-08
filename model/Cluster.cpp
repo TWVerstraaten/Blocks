@@ -5,7 +5,6 @@
 #include "Cluster.h"
 
 #include "../app/Application_constants.h"
-#include "../global/alg.h"
 #include "../global/defines.h"
 #include "../global/geom.h"
 #include "Level.h"
@@ -13,19 +12,18 @@
 
 #include <cassert>
 #include <queue>
-#include <utility>
 
 size_t model::Cluster::s_maxClusterIndex = 0;
 
 namespace model {
-    Cluster::Cluster(std::set<GridXY>&& gridXY, std::string name) : m_index(s_maxClusterIndex), m_gridXYVector(gridXY), m_name(std::move(name)) {
+    Cluster::Cluster(GridXYSet&& gridXY, std::string name) : m_index(s_maxClusterIndex), m_gridXYSet(gridXY), m_name(std::move(name)) {
         ++s_maxClusterIndex;
-        m_sides = geom::getSidesFromGridXY(m_gridXYVector);
+        m_sides = geom::getSidesFromGridXY(m_gridXYSet);
         assert(gridXUYAreUnique());
     }
 
-    Cluster::Cluster(std::set<GridXY>&& gridXY, const CommandVector& commandVector, std::string name)
-        : m_index(s_maxClusterIndex), m_gridXYVector(gridXY), m_commandVector(std::move(commandVector)), m_name(std::move(name)) {
+    Cluster::Cluster(GridXYSet&& gridXY, const CommandVector& commandVector, std::string name)
+        : m_index(s_maxClusterIndex), m_gridXYSet(gridXY), m_commandVector(std::move(commandVector)), m_name(std::move(name)) {
         ++s_maxClusterIndex;
     }
 
@@ -34,40 +32,40 @@ namespace model {
             return;
         }
 
-        std::visit(_FUNC_(c, doAction(c, *this, model.level())), m_commandVector.currentCommand());
+        std::visit(__FUNC(c, doAction(c, *this, model.level())), m_commandVector.currentCommand());
     }
 
     void Cluster::rotateClockWiseAbout(const GridXY& pivotGridXY) {
-        std::set<GridXY> newGridXYSet;
-        for (auto& gridXY : m_gridXYVector) {
+        GridXYSet newGridXYSet;
+        for (auto& gridXY : m_gridXYSet) {
             newGridXYSet.emplace(GridXY{pivotGridXY.x() + pivotGridXY.y() - gridXY.y(), pivotGridXY.y() - pivotGridXY.x() + gridXY.x()});
         }
-        std::swap(m_gridXYVector, newGridXYSet);
-        _NOTE_ONCE_("Do we want to rotate the directions...?")
+        std::swap(m_gridXYSet, newGridXYSet);
+        __NOTE_ONCE("Do we want to rotate the directions...?")
     }
 
     void Cluster::rotateCounterClockWiseAbout(const GridXY& pivotGridXY) {
-        std::set<GridXY> newGridXYSet;
-        for (auto& gridXY : m_gridXYVector) {
+        GridXYSet newGridXYSet;
+        for (auto& gridXY : m_gridXYSet) {
             newGridXYSet.emplace(GridXY{pivotGridXY.x() - pivotGridXY.y() + gridXY.y(), pivotGridXY.y() + pivotGridXY.x() - gridXY.x()});
         }
-        std::swap(m_gridXYVector, newGridXYSet);
+        std::swap(m_gridXYSet, newGridXYSet);
     }
 
-    std::set<GridXY>::iterator Cluster::removeBLock(const GridXY& gridXY) {
-        const auto it = m_gridXYVector.find(gridXY);
-        assert(it != m_gridXYVector.end());
+    GridXYSet::iterator Cluster::removeBLock(const GridXY& gridXY) {
+        const auto it = m_gridXYSet.find(gridXY);
+        assert(it != m_gridXYSet.end());
         assert(gridXUYAreUnique());
-        return m_gridXYVector.erase(it);
+        return m_gridXYSet.erase(it);
     }
 
-    bool Cluster::empty() const {
-        return m_gridXYVector.empty();
+    bool Cluster::isEmpty() const {
+        return m_gridXYSet.empty();
     }
 
-    const std::set<GridXY>& Cluster::gridXY() const {
-        assert(empty() || gridXUYAreUnique());
-        return m_gridXYVector;
+    const GridXYSet& Cluster::gridXY() const {
+        assert(isEmpty() || gridXUYAreUnique());
+        return m_gridXYSet;
     }
 
     void Cluster::update(double phaseFraction) {
@@ -98,7 +96,7 @@ namespace model {
         std::set<WorldXY> result;
         const auto        f = phaseTransformation();
 
-        for (const auto& it : m_gridXYVector) {
+        for (const auto& it : m_gridXYSet) {
             const bool          u = contains(it.neighbor(model::GridXY::DIRECTION::UP));
             const bool          l = contains(it.neighbor(model::GridXY::DIRECTION::LEFT));
             const bool          d = contains(it.neighbor(model::GridXY::DIRECTION::DOWN));
@@ -128,7 +126,7 @@ namespace model {
         m_state = CLUSTER_STATE::DEAD;
     }
 
-    bool Cluster::alive() const {
+    bool Cluster::isAlive() const {
         return m_state == CLUSTER_STATE::ALIVE;
     }
 
@@ -159,34 +157,34 @@ namespace model {
         return m_name;
     }
 
-    bool Cluster::connected() const {
-        _NOTE_ONCE_("Implement proper variant of this function")
+    bool Cluster::isConnected() const {
+        __NOTE_ONCE("Implement proper variant of this function")
         assert(gridXUYAreUnique());
-        assert(not empty());
-        if (m_gridXYVector.size() == 1) {
+        assert(not isEmpty());
+        if (m_gridXYSet.size() == 1) {
             return true;
         }
         auto copy = *this;
-        return copy.grabAllButFirstComponent().empty();
+        return copy.grabAllButFirstComponent().isEmpty();
     }
 
     model::Cluster Cluster::grabAllButFirstComponent() {
-        assert(not empty());
+        assert(not isEmpty());
         assert(size() > 1);
         assert(gridXUYAreUnique());
 
         std::queue<GridXY> queue;
-        queue.push(*m_gridXYVector.begin());
-        std::set<GridXY> copy;
-        copy.emplace(*m_gridXYVector.begin());
-        m_gridXYVector.erase(m_gridXYVector.begin());
-        while (not queue.empty() && not m_gridXYVector.empty()) {
+        queue.push(*m_gridXYSet.begin());
+        GridXYSet copy;
+        copy.emplace(*m_gridXYSet.begin());
+        m_gridXYSet.erase(m_gridXYSet.begin());
+        while (not queue.empty() && not m_gridXYSet.empty()) {
             using dir = model::GridXY::DIRECTION;
             for (const auto direction : {dir::RIGHT, dir::DOWN, dir::UP, dir::LEFT}) {
-                const auto it = m_gridXYVector.find(queue.front().neighbor(direction));
-                if (it != m_gridXYVector.end()) {
+                const auto it = m_gridXYSet.find(queue.front().neighbor(direction));
+                if (it != m_gridXYSet.end()) {
                     queue.push(*it);
-                    m_gridXYVector.erase(it);
+                    m_gridXYSet.erase(it);
                 }
             }
             copy.emplace(queue.front());
@@ -198,7 +196,7 @@ namespace model {
         }
         assert(not copy.empty());
         Cluster result{std::move(copy), m_commandVector, name() + "_"};
-        std::swap(m_gridXYVector, result.m_gridXYVector);
+        std::swap(m_gridXYSet, result.m_gridXYSet);
         return result;
     }
 
@@ -208,43 +206,31 @@ namespace model {
 
     std::string Cluster::string() const {
         std::string str;
-        for (const auto& block : m_gridXYVector) {
+        for (const auto& block : m_gridXYSet) {
             str += "(" + std::to_string(block.x()) + " " + std::to_string(block.y()) + ") " + ' ';
         }
         str += '\n';
         return str;
     }
 
-    void Cluster::preStep() {
-        if (m_state != CLUSTER_STATE::ALIVE) {
-            return;
-        }
-        incrementCommandIndex();
-        resetPhase();
-    }
-
     bool Cluster::contains(const GridXY& gridXY) const {
-        return m_gridXYVector.find(gridXY) != m_gridXYVector.end();
+        return m_gridXYSet.find(gridXY) != m_gridXYSet.end();
     }
 
     void Cluster::addGridXY(const GridXY& gridXY) {
         if (not contains(gridXY)) {
-            m_gridXYVector.emplace(gridXY);
+            m_gridXYSet.emplace(gridXY);
         }
     }
 
     bool Cluster::gridXUYAreUnique() const {
-        assert(!m_gridXYVector.empty());
-        std::set<GridXY> s(_CIT_(m_gridXYVector));
-        return s.size() == m_gridXYVector.size();
+        assert(!m_gridXYSet.empty());
+        GridXYSet s(__CIT(m_gridXYSet));
+        return s.size() == m_gridXYSet.size();
     }
 
-    std::set<GridXY>& Cluster::gridXY() {
-        return m_gridXYVector;
-    }
-
-    PHASE Cluster::phase() const {
-        return m_phase;
+    GridXYSet& Cluster::gridXY() {
+        return m_gridXYSet;
     }
 
     void Cluster::collideWithLevel(const Level& level, int shrinkInWorld) {
@@ -254,9 +240,9 @@ namespace model {
         }
     }
 
-    std::set<Line<WorldXY>> Cluster::sides(int shrinkInWorld) const {
-        const auto              f = phaseTransformation();
-        std::set<Line<WorldXY>> result;
+    WorldLineSet Cluster::sides(int shrinkInWorld) const {
+        const auto   f = phaseTransformation();
+        WorldLineSet result;
         for (const auto& line : m_sides) {
             const int d = contains(GridXY::fromWorldXY(line.start())) ? 1 : -1;
             if (line.start().x() == line.end().x()) {
@@ -289,7 +275,7 @@ namespace model {
     }
 
     size_t Cluster::size() const {
-        return m_gridXYVector.size();
+        return m_gridXYSet.size();
     }
 
     bool Cluster::intersects(const Cluster& other, int shrinkInWorld) const {
@@ -299,28 +285,28 @@ namespace model {
     std::list<Cluster> Cluster::collectAllButFirstComponent() {
         std::list<Cluster> result;
         result.emplace_back(grabAllButFirstComponent());
-        while (not result.back().empty()) {
+        while (not result.back().isEmpty()) {
             if (result.back().size() == 1) {
                 break;
             }
             result.emplace_back(result.back().grabAllButFirstComponent());
         }
-        if (result.back().empty()) {
+        if (result.back().isEmpty()) {
             result.pop_back();
         }
         return result;
     }
 
     std::ostream& operator<<(std::ostream& out, const Cluster& cluster) {
-        if (cluster.empty()) {
+        if (cluster.isEmpty()) {
             return out;
         }
-        assert(not cluster.empty());
+        assert(not cluster.isEmpty());
 
-        const int minX = alg::minX(cluster.gridXY());
-        const int minY = alg::minY(cluster.gridXY());
-        const int maxX = alg::maxX(cluster.gridXY());
-        const int maxY = alg::maxY(cluster.gridXY());
+        const int minX = geom::minX(cluster.gridXY());
+        const int minY = geom::minY(cluster.gridXY());
+        const int maxX = geom::maxX(cluster.gridXY());
+        const int maxY = geom::maxY(cluster.gridXY());
         assert(minX <= maxX);
         assert(minY <= maxY);
 
@@ -342,10 +328,10 @@ namespace model {
     WorldXY Cluster::approximateCenter() const {
         const auto f = phaseTransformation();
         WorldXY    result{0, 0};
-        for (const auto& g : m_gridXYVector) {
+        for (const auto& g : m_gridXYSet) {
             result += f(g);
         }
-        result /= m_gridXYVector.size();
+        result /= m_gridXYSet.size();
         return result;
     }
 
@@ -353,10 +339,10 @@ namespace model {
         return m_state;
     }
 
-    bool Cluster::adjacent(const Cluster& other) const {
-        const auto otherGridXY = other.m_gridXYVector;
-        return std::any_of(_CIT_(m_gridXYVector),
-                           _FUNC_(point1, std::find_if(_CIT_(otherGridXY), _FUNC_(point2, point2.isAdjacent(point1))) != otherGridXY.end()));
+    bool Cluster::isAdjacent(const Cluster& point2) const {
+        const auto otherGridXY = point2.m_gridXYSet;
+        return std::any_of(__CIT(m_gridXYSet),
+                           __FUNC(point1, std::find_if(__CIT(otherGridXY), __FUNC(point2, point2.isAdjacent(point1))) != otherGridXY.end()));
     }
 
     void Cluster::stopIfNeeded() {
@@ -370,21 +356,21 @@ namespace model {
     }
 
     void Cluster::grabAdjacentStoppedClusters(Level& level) {
-        auto&            stoppedClusters = level.stoppedClusters();
-        std::set<GridXY> newGridXy;
+        auto&     stoppedClusters = level.stoppedClusters();
+        GridXYSet newGridXy;
         for (auto& cluster : stoppedClusters) {
-            if (adjacent(cluster)) {
-                newGridXy.merge(cluster.m_gridXYVector);
+            if (isAdjacent(cluster)) {
+                newGridXy.merge(cluster.m_gridXYSet);
             }
         }
-        m_gridXYVector.merge(newGridXy);
-        stoppedClusters.remove_if(_FUNC_(cluster, cluster.empty()));
+        m_gridXYSet.merge(newGridXy);
+        stoppedClusters.remove_if(__FUNC(cluster, cluster.isEmpty()));
     }
 
     void Cluster::spliceCluster(Level& level) {
-        std::set<GridXY> splicedGridXY;
-        const auto&      spliceBlocks = level.spliceBlocks();
-        for (const auto& gridXY : m_gridXYVector) {
+        GridXYSet   splicedGridXY;
+        const auto& spliceBlocks = level.spliceBlocks();
+        for (const auto& gridXY : m_gridXYSet) {
             if (spliceBlocks.find(gridXY) != spliceBlocks.end()) {
                 splicedGridXY.emplace(gridXY);
             }
@@ -393,14 +379,14 @@ namespace model {
             return;
         }
         for (const auto& gridXY : splicedGridXY) {
-            m_gridXYVector.erase(gridXY);
+            m_gridXYSet.erase(gridXY);
         }
 
         level.stoppedClusters().emplace_back(std::move(splicedGridXY), m_commandVector, name() + "_");
     }
 
     void Cluster::spliceIfNeeded(model::Model& model) {
-        _NOTE_ONCE_("Implement")
+        __NOTE_ONCE("Implement")
     }
 
     void Cluster::doOperation(const GridXY& point, DYNAMIC_BLOCK_TYPE type) {
@@ -417,15 +403,11 @@ namespace model {
     }
 
     void Cluster::buildSides() {
-        m_sides = geom::getSidesFromGridXY(m_gridXYVector);
+        m_sides = geom::getSidesFromGridXY(m_gridXYSet);
     }
 
     COMMAND_MODIFIER Cluster::currentModifier() const {
         return m_commandVector.currentModifier();
-    }
-
-    size_t Cluster::commandIndex() const {
-        return m_commandVector.commandIndex();
     }
 
     const CommandVector& Cluster::commandVector() const {

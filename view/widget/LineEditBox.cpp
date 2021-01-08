@@ -4,7 +4,6 @@
 
 #include "LineEditBox.h"
 
-#include "../../global/alg.h"
 #include "../../global/defines.h"
 #include "../../global/geom.h"
 #include "../Assets.h"
@@ -19,7 +18,7 @@
 
 static std::string toUpper(const std::string& text) {
     std::string upperCaseString;
-    std::transform(_CIT_(text), std::back_inserter(upperCaseString), ::toupper);
+    std::transform(__CIT(text), std::back_inserter(upperCaseString), ::toupper);
     return upperCaseString;
 }
 
@@ -95,7 +94,6 @@ namespace view::widget {
     }
 
     void LineEditBox::renderLineNumbers(SDL_Renderer* renderer) const {
-
         for (size_t line = 0; line != m_strings.size(); ++line) {
             m_assets->renderText(
                 std::to_string(line + 1), view::ScreenXY{m_rect.x, m_rect.y + m_yOffsets[line]}, renderer, FONT_ENUM::SMALL, color::DARK_GREY);
@@ -221,7 +219,7 @@ namespace view::widget {
         const auto mousePoint = Mouse::mouseXY();
         getSelectionFromMousePoint(
             m_selectionData.m_last,
-            SDL_Point{alg::clamp(mousePoint.x(), m_rect.x, m_rect.x + m_rect.w), alg::clamp(mousePoint.y(), m_rect.y, m_rect.y + m_rect.h)});
+            SDL_Point{std::clamp(mousePoint.x(), m_rect.x, m_rect.x + m_rect.w), std::clamp(mousePoint.y(), m_rect.y, m_rect.y + m_rect.h)});
         m_selectionData.m_mode = SelectionData::MODE::DOUBLE;
         m_selectionData.potentiallyMakeSingle();
         m_blinkTimeOffset = SDL_GetTicks();

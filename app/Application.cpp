@@ -6,8 +6,8 @@
 
 #include "../view/View_constants.h"
 #include "../view/widget/ScrollArea_constants.h"
-#include "Application_Edit.h"
-#include "Application_Run.h"
+#include "ApplicationEdit.h"
+#include "ApplicationRun.h"
 
 #include <cassert>
 
@@ -24,7 +24,7 @@ namespace app {
     void Application::run() {
         bool isRunning = true;
 
-        Application_Edit editApp(&m_model, &m_view, &m_scrollArea);
+        ApplicationEdit editApp(&m_model, &m_view, &m_scrollArea);
         while (isRunning) {
             SDL_StartTextInput();
             switch (editLevel(editApp)) {
@@ -59,7 +59,7 @@ namespace app {
         }
     }
 
-    EDIT_MODE Application::editLevel(Application_Edit& editApp) {
+    EDIT_MODE Application::editLevel(ApplicationEdit& editApp) {
         m_runningScrollArea = nullptr;
         m_appMode           = APP_MODE::EDITING;
         SDL_Event event;
@@ -114,7 +114,7 @@ namespace app {
     RUN_MODE Application::runLevel() {
         m_appMode = APP_MODE::RUNNING;
         SDL_Event       event;
-        Application_Run runApp(m_model, &m_view, m_scrollArea);
+        ApplicationRun  runApp(m_model, &m_view, m_scrollArea);
         m_runningScrollArea = &runApp.scrollArea();
         runApp.setTimeStep(m_timeStep);
         RUN_MODE currentMode;

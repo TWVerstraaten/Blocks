@@ -17,8 +17,8 @@ namespace action {
         GenericCommandEditBoxAction(const view::widget::CommandEditBox& oldCommandEditBox, view::widget::CommandEditBox newCommandEditBox);
 
         /****** PUBLIC VIRTUAL FUNCTIONS  ******/
-        void        undoAction(app::Application_Edit& applicationEdit) override;
-        void        redoAction(app::Application_Edit& applicationEdit) override;
+        void        undoAction(app::ApplicationEdit& applicationEdit) override;
+        void        redoAction(app::ApplicationEdit& applicationEdit) override;
         ACTION_TYPE type() const override;
 
       private:

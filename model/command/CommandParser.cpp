@@ -49,6 +49,8 @@ namespace model {
                 return std::visit([](auto t, auto s) { return f(t, s); }, tokens[0], tokens[1]);
             case 3:
                 return std::visit([](auto t, auto s, auto u) { return f(t, s, u); }, tokens[0], tokens[1], tokens[2]);
+            default:
+                return Command_Error{};
         }
         return Command_Error{};
     }
@@ -89,7 +91,7 @@ namespace model {
         const auto               trimmed = boost::trim_copy(string);
         boost::split(parts, trimmed, boost::is_any_of(" "), boost::token_compress_on);
         std::vector<Token> tokens;
-        std::transform(_CIT_(parts), back_inserter(tokens), CommandParser::tokenizeSingle);
+        std::transform(__CIT(parts), back_inserter(tokens), CommandParser::tokenizeSingle);
         return tokens;
     }
 
@@ -108,7 +110,7 @@ namespace model {
     }
 
     std::string CommandParser::toString(const Command& command) {
-        return std::visit(overloaded{_FUNC_(, std::string("Error")),
+        return std::visit(overloaded{__FUNC(, std::string("Error")),
                                      [](const Command_Simple& e) { return toString(e.type); },
                                      [](const Command_Modified& e) { return toString(e.modifier) + " " + toString(e.type); },
                                      [](const Command_RepeatWrapper& e) { return toString(toCommand(e)) + " " + std::to_string(e.repeatCount); }},

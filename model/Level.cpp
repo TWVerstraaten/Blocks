@@ -6,8 +6,9 @@
 
 #include "../action/AddLevelBlockAction.h"
 #include "../action/RemoveLevelBlockAction.h"
-#include "../global/alg.h"
 #include "../global/geom.h"
+
+#include <cassert>
 
 namespace model {
     const std::map<GridXY, DYNAMIC_BLOCK_TYPE>& Level::dynamicBlocks() const {
@@ -75,7 +76,7 @@ namespace model {
         return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({FLOOR_BLOCK_TYPE::START}, gridXY));
     }
 
-    const std::set<GridXY>& Level::levelBlocks() const {
+    const GridXYSet& Level::levelBlocks() const {
         return m_levelBlocks;
     }
 
@@ -87,7 +88,7 @@ namespace model {
         m_dynamicBLocks.clear();
     }
 
-    const std::set<GridXY>& Level::startBlocks() const {
+    const GridXYSet& Level::startBlocks() const {
         return m_startBlocks;
     }
 
@@ -104,7 +105,7 @@ namespace model {
         return true;
     }
 
-    const std::set<Line<WorldXY>>& Level::boundaries() const {
+    const WorldLineSet& Level::boundaries() const {
         return m_boundaries;
     }
 
@@ -202,7 +203,7 @@ namespace model {
         return std::unique_ptr<action::Action>(new action::AddLevelBlockAction({FLOOR_BLOCK_TYPE::SPLICE}, gridXY));
     }
 
-    const std::set<GridXY>& Level::spliceBlocks() const {
+    const GridXYSet& Level::spliceBlocks() const {
         return m_spliceBlocks;
     }
 

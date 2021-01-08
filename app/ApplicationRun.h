@@ -2,8 +2,8 @@
 // Created by pc on 22-12-20.
 //
 
-#ifndef BLOCKS_APPLICATION_RUN_H
-#define BLOCKS_APPLICATION_RUN_H
+#ifndef BLOCKS_APPLICATIONRUN_H
+#define BLOCKS_APPLICATIONRUN_H
 
 #include "../model/Model.h"
 #include "../view/View.h"
@@ -13,11 +13,11 @@
 
 namespace app {
 
-    class Application_Run {
+    class ApplicationRun {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        Application_Run(const model::Model& model, view::View* view, const view::widget::ScrollArea& scrollArea);
+        ApplicationRun(const model::Model& model, view::View* view, const view::widget::ScrollArea& scrollArea);
 
         /****** NON CONST FUNCTIONS  ******/
         void                      setTimeStep(Uint32 timeStep);
@@ -57,4 +57,4 @@ namespace app {
         view::widget::ScrollArea m_scrollArea;
     };
 } // namespace app
-#endif // BLOCKS_APPLICATION_RUN_H
+#endif // BLOCKS_APPLICATIONRUN_H

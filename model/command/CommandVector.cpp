@@ -16,8 +16,8 @@ model::CommandVector::CommandVector(const std::vector<std::string>& strings) {
 }
 
 bool model::CommandVector::wellFormed() const {
-    return std::all_of(_CIT_(m_commands), [](const Command& command) {
-        return std::visit(overloaded{[](Command_Error e) { return false; }, [](auto e) { return true; }}, command);
+    return std::all_of(__CIT(m_commands), [](const Command& command) {
+        return std::visit(overloaded{[](Command_Error e) { return false; }, [](auto) { return true; }}, command);
     });
 }
 
@@ -40,8 +40,8 @@ void model::CommandVector::increment() {
     if (m_repeatCount == 0) {
         ++m_commandIndex;
         m_commandIndex %= m_commands.size();
-        m_repeatCount =
-            std::visit(overloaded{[](Command_RepeatWrapper c) { return c.repeatCount - 1; }, [](auto c) { return 0; }}, m_commands[m_commandIndex]);
+        m_repeatCount = std::visit(overloaded{[](const Command_RepeatWrapper& c) { return c.repeatCount - 1; }, [](auto) { return 0; }},
+                                   m_commands.at(m_commandIndex));
     } else {
         --m_repeatCount;
     }
@@ -61,7 +61,7 @@ void model::CommandVector::set(const std::vector<std::string>& strings) {
     }
     m_repeatCount =
         std::visit(overloaded{[](Command_RepeatWrapper c) { return c.repeatCount - 1; }, [](auto c) { return 0; }}, m_commands[m_commandIndex]);
-    std::transform(_CIT_(strings), std::back_inserter(m_strings), [](const std::string& str) { return CommandParser::format(str); });
+    std::transform(__CIT(strings), std::back_inserter(m_strings), [](const std::string& str) { return CommandParser::format(str); });
 }
 
 void model::CommandVector::clear() {

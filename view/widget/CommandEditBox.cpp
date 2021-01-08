@@ -9,9 +9,7 @@
 #include "../../model/command/CommandParser.h"
 #include "../Assets.h"
 #include "LineEditBox_constants.h"
-#include "RectWidget_constants.h"
-
-#include <algorithm>
+#include "ScrollArea.h"
 
 view::widget::CommandEditBox::CommandEditBox(int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
     : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())), m_index(cluster.index()) {
@@ -57,7 +55,7 @@ void view::widget::CommandEditBox::update(SDL_Renderer* renderer) {
 }
 
 bool view::widget::CommandEditBox::canParse() const {
-    return std::all_of(_CIT_(m_strings), &model::CommandParser::canParse);
+    return std::all_of(__CIT(m_strings), &model::CommandParser::canParse);
 }
 
 void view::widget::CommandEditBox::loseFocus() {
@@ -137,5 +135,4 @@ void view::widget::CommandEditBox::update(const model::CommandVector& commandVec
         }
     }
     m_needsUpdate = true;
-    m_skipParsing = true;
 }

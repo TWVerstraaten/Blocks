@@ -13,6 +13,9 @@ namespace model {
 } // namespace model
 
 namespace view::widget {
+
+    class ScrollArea;
+
     class CommandEditBox : public LineEditBox {
 
       public:
@@ -44,7 +47,6 @@ namespace view::widget {
       private:
         /****** DATA MEMBERS  ******/
         mutable bool m_clusterShouldBeUpdated = true;
-        bool         m_skipParsing            = false;
         size_t       m_index;
     };
 

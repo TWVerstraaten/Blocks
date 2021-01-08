@@ -5,6 +5,7 @@
 #ifndef BLOCKS_VIEW_H
 #define BLOCKS_VIEW_H
 
+#include "../model/Model_typedefs.h"
 #include "Assets.h"
 #include "ViewPort.h"
 #include "widget/CommandEditBox.h"
@@ -76,18 +77,18 @@ namespace view {
         void drawLevel(const model::Level& level) const;
         void drawBlocks(const model::Level& level) const;
         void setDrawColor(const SDL_Color& color) const;
-        void drawDisconnected(const std::set<model::GridXY>& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum = TEXTURE_ENUM::WHITE) const;
-        void drawConnected(const std::set<model::GridXY>& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum = TEXTURE_ENUM::WHITE) const;
-        void drawConnected(const std::set<model::GridXY>&                              blocks,
+        void drawDisconnected(const model::GridXYSet& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum = TEXTURE_ENUM::WHITE) const;
+        void drawConnected(const model::GridXYSet& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum = TEXTURE_ENUM::WHITE) const;
+        void drawConnected(const model::GridXYSet&                                     blocks,
                            const std::function<model::WorldXY(const model::WorldXY&)>& fun,
                            double                                                      angle,
                            const SDL_Color&                                            color,
                            TEXTURE_ENUM                                                textureEnum = TEXTURE_ENUM::WHITE) const;
         template <typename ENUM>
         void                                   draw(const std::map<model::GridXY, ENUM>& blocks) const;
-        [[nodiscard]] std::unique_ptr<Texture> getTextureInWorld(const std::set<model::GridXY>& blocks,
-                                                                 TEXTURE_ENUM                   textureEnum,
-                                                                 const SDL_Color&               color) const;
+        [[nodiscard]] std::unique_ptr<Texture> getTextureInWorld(const model::GridXYSet& blocks,
+                                                                 TEXTURE_ENUM            textureEnum,
+                                                                 const SDL_Color&        color) const;
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void drawClusters(const std::list<model::Cluster>& clusters);

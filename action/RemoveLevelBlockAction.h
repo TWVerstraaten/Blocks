@@ -18,8 +18,8 @@ namespace action {
         RemoveLevelBlockAction(const std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE, model::FLOOR_BLOCK_TYPE>& blockType,
                                const model::GridXY&                                                                               point);
 
-        void        undoAction(app::Application_Edit& applicationEdit) override;
-        void        redoAction(app::Application_Edit& applicationEdit) override;
+        void        undoAction(app::ApplicationEdit& applicationEdit) override;
+        void        redoAction(app::ApplicationEdit& applicationEdit) override;
         [[nodiscard]] ACTION_TYPE type() const override;
 
       private:

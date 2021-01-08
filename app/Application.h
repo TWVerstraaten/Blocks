@@ -12,7 +12,7 @@
 #include "Application_enums.h"
 
 namespace app {
-    class Application_Edit;
+    class ApplicationEdit;
 
     class Application {
 
@@ -26,7 +26,7 @@ namespace app {
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         RUN_MODE  runLevel();
-        EDIT_MODE editLevel(Application_Edit& editApp);
+        EDIT_MODE editLevel(ApplicationEdit& editApp);
         void      handleWindowEvent();
 
         /****** DATA MEMBERS  ******/

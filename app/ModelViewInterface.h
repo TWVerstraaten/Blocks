@@ -31,7 +31,7 @@ namespace action {
 union SDL_Event;
 
 namespace app {
-    class Application_Edit;
+    class ApplicationEdit;
 
     class ModelViewInterface {
 
@@ -67,8 +67,8 @@ namespace app {
                             view::widget::ScrollArea& scrollArea,
                             const model::GridXY&      point,
                             const model::BlockType&   selectedBlockType);
-        void undo(Application_Edit& applicationEdit);
-        void redo(Application_Edit& applicationEdit);
+        void undo(ApplicationEdit& applicationEdit);
+        void redo(ApplicationEdit& applicationEdit);
 
       private:
         /****** PRIVATE STATIC FUNCTIONS  ******/

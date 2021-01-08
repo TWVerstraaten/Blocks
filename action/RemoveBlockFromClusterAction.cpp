@@ -8,11 +8,11 @@ action::RemoveBlockFromClusterAction::RemoveBlockFromClusterAction(size_t cluste
     : AddBlockToClusterAction(clusterIndex, gridXy) {
 }
 
-void action::RemoveBlockFromClusterAction::undoAction(app::Application_Edit& applicationEdit) {
+void action::RemoveBlockFromClusterAction::undoAction(app::ApplicationEdit& applicationEdit) {
     AddBlockToClusterAction::redoAction(applicationEdit);
 }
 
-void action::RemoveBlockFromClusterAction::redoAction(app::Application_Edit& applicationEdit) {
+void action::RemoveBlockFromClusterAction::redoAction(app::ApplicationEdit& applicationEdit) {
     AddBlockToClusterAction::undoAction(applicationEdit);
 }
 

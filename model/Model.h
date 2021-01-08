@@ -22,7 +22,6 @@ namespace model {
         /****** CONST GETTERS  ******/
         [[nodiscard]] const Level&              level() const;
         [[nodiscard]] const std::list<Cluster>& clusters() const;
-        [[nodiscard]] double                    phaseFraction() const;
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] bool noClusterOnBlock(const GridXY& gridXY) const;

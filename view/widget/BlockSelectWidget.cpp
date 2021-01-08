@@ -11,10 +11,8 @@
 #include "../Mouse.h"
 #include "../Rectangle.h"
 #include "../View.h"
-#include "LineEditBox_constants.h"
 #include "RectWidget_constants.h"
 
-#include <algorithm>
 #include <cassert>
 
 namespace view::widget {
@@ -60,7 +58,7 @@ namespace view::widget {
     }
 
     ScreenXY BlockSelectWidget::screenXY(const model::BlockType& type) {
-        const auto it = std::find_if(_CIT_(model::s_allTypes), _FUNC_(blockType, blockType == type));
+        const auto it = std::find_if(__CIT(model::s_allTypes), __FUNC(blockType, blockType == type));
         assert(it != model::s_allTypes.end());
         return indexToScreenXY(std::distance(model::s_allTypes.begin(), it));
     }

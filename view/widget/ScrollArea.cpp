@@ -4,7 +4,6 @@
 
 #include "ScrollArea.h"
 
-#include "../../global/alg.h"
 #include "../../global/defines.h"
 #include "../../global/geom.h"
 #include "../../model/Cluster.h"
@@ -95,7 +94,7 @@ void view::widget::ScrollArea::setHeightAndPositions() {
 void view::widget::ScrollArea::mouseWheelEvent(const SDL_Event& event) {
     assert(event.type == SDL_MOUSEWHEEL);
     m_scrollFraction -= 0.1 * event.wheel.y;
-    m_scrollFraction = alg::clamp(m_scrollFraction, 0.0, 1.0);
+    m_scrollFraction = std::clamp(m_scrollFraction, 0.0, 1.0);
     setHeightAndPositions();
 }
 
@@ -131,7 +130,7 @@ void view::widget::ScrollArea::update(SDL_Renderer* renderer) {
 void view::widget::ScrollArea::addCommandEditBox(const model::Cluster& cluster) {
     m_children.emplace_back(CommandEditBox(m_rect.x + RECT_WIDGET_PADDING, 0, LINE_EDIT_WIDTH, 0, m_assets, cluster));
     //    m_children.back().setHighLightedLine(cluster.commandIndex());
-    m_children.back().setActive(cluster.alive());
+    m_children.back().setActive(cluster.isAlive());
     m_needsUpdate = true;
 }
 
@@ -173,5 +172,9 @@ void view::widget::ScrollArea::setX(int x) {
 }
 
 std::list<view::widget::CommandEditBox>::iterator view::widget::ScrollArea::findCommandEditBox(size_t index) {
-    return std::find_if(_IT_(m_children), [index](const auto& commandEditBox) { return commandEditBox.index() == index; });
+    return std::find_if(__IT(m_children), [index](const auto& commandEditBox) { return commandEditBox.index() == index; });
+}
+
+bool view::widget::ScrollArea::hasChildWithFocus() const {
+    return std::any_of(__CIT(m_children), __FUNC(box, box.hasFocus()));
 }

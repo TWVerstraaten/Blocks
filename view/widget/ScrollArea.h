@@ -29,6 +29,9 @@ namespace view::widget {
         void setHeight(int height) override;
         void setX(int x) override;
 
+        /****** CONST FUNCTIONS  ******/
+        [[nodiscard]] bool hasChildWithFocus() const;
+
         /****** NON CONST FUNCTIONS  ******/
         void                                              init(const view::Assets* assets);
         void                                              addCommandEditBox(const model::Cluster& cluster);
