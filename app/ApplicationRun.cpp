@@ -97,6 +97,7 @@ namespace app {
             }
         }
         ModelViewInterface::interactWithInstantBlocks(m_model, m_scrollArea);
+        ModelViewInterface::removeActionBoxesOfRemovedClusters(m_model.clusters(), m_scrollArea);
         ModelViewInterface::updateSelection(m_model.clusters(), m_scrollArea);
         m_currentStep = CURRENT_STEP::INTERACT;
     }

@@ -22,7 +22,17 @@ namespace model {
         /****** PUBLIC ENUMS / TYPEDEFS  ******/
         enum class STRING_TYPE { EMPTY, COMMENT, ACTION, ERROR };
         enum class ERROR_TOKEN { ERROR };
-        typedef std::variant<int, COMMAND_MODIFIER, COMMAND_TYPE, COMMAND_LOOP, COMMAND_IF, COMMAND_COMPARE, ERROR_TOKEN> Token;
+        typedef std::variant<int,
+                             std::string,
+                             COMMAND_MODIFIER,
+                             COMMAND_LABEL,
+                             COMMAND_JUMP,
+                             COMMAND_TYPE,
+                             COMMAND_LOOP,
+                             COMMAND_IF,
+                             COMMAND_COMPARE,
+                             ERROR_TOKEN>
+            Token;
 
         /****** PUBLIC STATIC FUNCTIONS  ******/
         static bool        canParse(const std::string& string);
@@ -40,24 +50,16 @@ namespace model {
         static std::vector<Token> tokenize(const std::string& string);
 
         /****** DATA MEMBERS  ******/
-        inline static const std::map<const std::string, Token> s_allTokens{{"+", COMMAND_MODIFIER::IGNORE},
-                                                                           {"-", COMMAND_MODIFIER::INCREMENT},
-                                                                           {"RHT", COMMAND_TYPE::RHT},
-                                                                           {"LFT", COMMAND_TYPE::LFT},
-                                                                           {"FWD", COMMAND_TYPE::FWD},
-                                                                           {"BCK", COMMAND_TYPE::BCK},
-                                                                           {"SKP", COMMAND_TYPE::SKP},
-                                                                           {"STP", COMMAND_TYPE::STP},
-                                                                           {"GRB", COMMAND_TYPE::GRB},
-                                                                           {"SPL", COMMAND_TYPE::SPL},
-                                                                           {">", COMMAND_COMPARE::GREATER},
-                                                                           {">=", COMMAND_COMPARE::GREATER_EQUAL},
-                                                                           {"<", COMMAND_COMPARE::LESS},
-                                                                           {"<=", COMMAND_COMPARE::LESS_EQUAL},
-                                                                           {"=", COMMAND_COMPARE::EQUAL},
-                                                                           {"FORI", COMMAND_LOOP::FORI},
-                                                                           {"IFSIZE", COMMAND_IF::IFSIZE},
-                                                                           {"INF", std::numeric_limits<int>::max()}};
+        inline static const std::map<const std::string, Token> s_allTokens{{"+", COMMAND_MODIFIER::IGNORE}, {"-", COMMAND_MODIFIER::INCREMENT},
+                                                                           {"RHT", COMMAND_TYPE::RHT},      {"LFT", COMMAND_TYPE::LFT},
+                                                                           {"FWD", COMMAND_TYPE::FWD},      {"BCK", COMMAND_TYPE::BCK},
+                                                                           {"SKP", COMMAND_TYPE::SKP},      {"STP", COMMAND_TYPE::STP},
+                                                                           {"GRB", COMMAND_TYPE::GRB},      {"SPL", COMMAND_TYPE::SPL},
+                                                                           {">", COMMAND_COMPARE::GREATER}, {">=", COMMAND_COMPARE::GREATER_EQUAL},
+                                                                           {"<", COMMAND_COMPARE::LESS},    {"<=", COMMAND_COMPARE::LESS_EQUAL},
+                                                                           {"=", COMMAND_COMPARE::EQUAL},   {"FORI", COMMAND_LOOP::FORI},
+                                                                           {"IFSIZE", COMMAND_IF::IFSIZE},  {"LBL", COMMAND_LABEL::LABEL},
+                                                                           {"JMP", COMMAND_JUMP::JUMP},     {"INF", std::numeric_limits<int>::max()}};
     };
 
 } // namespace model

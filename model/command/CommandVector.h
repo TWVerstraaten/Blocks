@@ -28,21 +28,30 @@ namespace model {
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] bool             wellFormed() const;
-        [[nodiscard]] bool             empty() const;
+        [[nodiscard]] bool             isEmpty() const;
+        [[nodiscard]] bool             currentIsRepeat() const;
         [[nodiscard]] Command          currentCommand() const;
         [[nodiscard]] COMMAND_TYPE     currentType() const;
         [[nodiscard]] COMMAND_MODIFIER currentModifier() const;
-        [[nodiscard]] bool             currentIsRepeat() const;
+        [[nodiscard]] std::string      toString() const;
 
         /****** NON CONST FUNCTIONS  ******/
         void clear();
         void increment();
+        void skipOverLabels();
         void set(const std::vector<std::string>& strings);
 
       private:
         /****** PRIVATE STATIC FUNCTIONS  ******/
         static COMMAND_TYPE     getType(const Command& c);
         static COMMAND_MODIFIER getModifier(const Command& c);
+
+        /****** PRIVATE NON CONST FUNCTIONS  ******/
+        void increment(const Command_Jump& j);
+        void increment(const Command_Simple& j);
+        void increment(const Command_RepeatWrapper& j);
+
+        size_t getCurrentRepeatCount() const;
 
         /****** DATA MEMBERS  ******/
         size_t                   m_commandIndex = 0;

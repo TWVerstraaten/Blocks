@@ -28,7 +28,7 @@ namespace model {
     }
 
     void Cluster::doCommand(model::Model& model) {
-        if (m_commandVector.empty() || m_state != CLUSTER_STATE::ALIVE) {
+        if (m_commandVector.isEmpty() || m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
 
@@ -346,7 +346,7 @@ namespace model {
     }
 
     void Cluster::stopIfNeeded() {
-        if (m_commandVector.empty() || m_state != CLUSTER_STATE::ALIVE) {
+        if (m_commandVector.isEmpty() || m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
         if (m_commandVector.currentType() == COMMAND_TYPE::STP) {

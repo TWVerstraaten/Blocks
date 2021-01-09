@@ -39,6 +39,12 @@ model::Command model::toCommand(const model::Command_RepeatWrapper& e) {
 void model::doAction(const model::Command_Error& command, Cluster& cluster, Level& level) {
 }
 
+void model::doAction(const model::Command_Label& command, Cluster& cluster, Level& level) {
+}
+
+void model::doAction(const model::Command_Jump& command, Cluster& cluster, Level& level) {
+}
+
 void model::doAction(const model::Command_Simple& command, Cluster& cluster, Level& level) {
     switch (command.type) {
         case COMMAND_TYPE::FWD:

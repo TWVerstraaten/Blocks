@@ -32,10 +32,6 @@ static std::list<CommandEditBox>::iterator findCommandEditBox(const Cluster& clu
     return std::find_if(__IT(commandEditBoxes), __FUNC(box, cluster.index() == box.index()));
 }
 
-static void removeActionBoxesOfRemovedClusters(const std::list<Cluster>& clusters, ScrollArea& scrollArea) {
-    scrollArea.children().remove_if(__FUNC(box, findCluster(box, clusters) == clusters.end()));
-}
-
 static void updateCommandEditBoxes(const std::list<Cluster>& clusters, ScrollArea& scrollArea) {
     for (auto& commandEditBox : scrollArea.children()) {
         auto it = findCluster(commandEditBox, clusters);
@@ -309,4 +305,8 @@ void app::ModelViewInterface::updateSelection(const std::list<model::Cluster>& c
         }
         commandEditBox.setActive(it->isAlive());
     }
+}
+
+void app::ModelViewInterface::removeActionBoxesOfRemovedClusters(const std::list<model::Cluster>& clusters, ScrollArea& scrollArea) {
+    scrollArea.children().remove_if(__FUNC(box, findCluster(box, clusters) == clusters.end()));
 }

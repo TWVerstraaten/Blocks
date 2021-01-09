@@ -6,6 +6,7 @@
 
 #include "../../global/defines.h"
 #include "../../global/overloaded.h"
+#include "Command_Jump.h"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
@@ -37,6 +38,16 @@ namespace model {
         return u <= 0 ? static_cast<Command>(Command_Error{}) : Command_RepeatWrapper{u, Command_Modified{s, t}};
     }
 
+    template <>
+    Command f<>(COMMAND_LABEL t, std::string s) {
+        return Command_Label{s};
+    }
+
+    template <>
+    Command f<>(COMMAND_JUMP t, std::string s) {
+        return Command_Jump{s};
+    }
+
     Command CommandParser::parseString(const std::string& string) {
         const auto tokens = tokenize(string);
         if (tokens.empty() || tokens.size() > 3) {
@@ -63,6 +74,9 @@ namespace model {
         char* c;
         strtol(string.c_str(), &c, 10);
         if (*c != 0) {
+            if (std::all_of(__CIT(string), __FUNC(c, std::isalnum(c)))) {
+                return string;
+            }
             return model::CommandParser::ERROR_TOKEN::ERROR;
         }
         int result = std::stoi(string);
@@ -75,7 +89,8 @@ namespace model {
 
     std::string CommandParser::toString(const Token& token) {
         return std::visit(overloaded{[](int i) { return i == std::numeric_limits<int>::max() ? "INF" : std::to_string(i); },
-                                     [token](auto t) {
+                                     [](const std::string& str) { return std::all_of(__CIT(str), __FUNC(c, std::isalnum(c))) ? str : "Error"; },
+                                     [token](const auto& t) {
                                          for (const auto& [str, t] : s_allTokens) {
                                              if (t == token) {
                                                  return str;
@@ -111,6 +126,8 @@ namespace model {
 
     std::string CommandParser::toString(const Command& command) {
         return std::visit(overloaded{__FUNC(, std::string("Error")),
+                                     [](const Command_Label& e) { return "LBL " + e.label; },
+                                     [](const Command_Jump& e) { return "JMP " + e.label; },
                                      [](const Command_Simple& e) { return toString(e.type); },
                                      [](const Command_Modified& e) { return toString(e.modifier) + " " + toString(e.type); },
                                      [](const Command_RepeatWrapper& e) { return toString(toCommand(e)) + " " + std::to_string(e.repeatCount); }},

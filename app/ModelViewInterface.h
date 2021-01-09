@@ -47,6 +47,7 @@ namespace app {
         static void splitIfDisconnected(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster);
         static void split(model::Model& model, view::widget::ScrollArea& scrollArea, model::Cluster& cluster);
         static void updateSelection(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea);
+        static void removeActionBoxesOfRemovedClusters(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea);
 
         static Action_u_ptr clearBlockFromCluster_static(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
 

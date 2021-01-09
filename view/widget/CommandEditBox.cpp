@@ -121,7 +121,7 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
 }
 
 void view::widget::CommandEditBox::updateComments(const model::CommandVector& commandVector) {
-    if (commandVector.empty()) {
+    if (commandVector.isEmpty()) {
         return;
     }
     m_comments.clear();
@@ -132,12 +132,13 @@ void view::widget::CommandEditBox::updateComments(const model::CommandVector& co
 }
 
 void view::widget::CommandEditBox::updateSelected(const model::CommandVector& commandVector) {
-    if (not commandVector.empty()) {
+    if (not commandVector.isEmpty()) {
         m_selectionData.m_first.m_stringIndex = findNthNonTransparent(commandVector.commandIndex());
     }
 }
 
 size_t view::widget::CommandEditBox::findNthNonTransparent(size_t n) const {
+    assert(std::count_if(__CIT(m_strings), __FUNC(str, not model::CommandParser::isCommentOrEmpty(str))) > n);
     for (size_t i = 0; i != m_strings.size(); ++i) {
         if (not model::CommandParser::isCommentOrEmpty(m_strings.at(i))) {
             if (n == 0) {
