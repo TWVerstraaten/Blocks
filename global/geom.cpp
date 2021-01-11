@@ -4,14 +4,13 @@
 
 #include "geom.h"
 
-#include "../model/GridXY.h"
 #include "defines.h"
 
+#include <algorithm>
+#include <cassert>
 #include <vector>
 
 #ifdef _WIN32
-#include <algorithm>
-#include <cassert>
 #include <cmath>
 #endif
 
