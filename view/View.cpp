@@ -74,12 +74,14 @@ namespace view {
         drawClusters(model.clusters());
         drawBlocks(model.level());
 
-        //        for (auto& cluster : model.clusters()) {
-        //            const auto points = cluster.cornerPoints(app::BLOCK_SHRINK_IN_WORLD);
-        //            for (const auto& it : points) {
-        //                drawPoint(it, view::color::RED, 2);
-        //            }
-        //        }
+#ifdef DEBUG
+        for (auto& cluster : model.clusters()) {
+            const auto points = cluster.cornerPoints(app::BLOCK_SHRINK_IN_WORLD);
+            for (const auto& it : points) {
+                drawPoint(it, view::color::RED, 8);
+            }
+        }
+#endif
     }
 
     void View::drawClusters(const std::list<Cluster>& clusters) {
@@ -96,16 +98,17 @@ namespace view {
         drawDisconnected(level.startBlocks(), view::color::BACKGROUND_START);
         drawDisconnected(level.spliceBlocks(), view::color::BACKGROUND_SPLICE);
 
+        for (auto stoppedCluster : level.stoppedClusters()) {
+            drawConnected(stoppedCluster.gridXY(), view::color::DARK_GREY);
+        }
+#ifdef DEBUG
         for (const auto& line : level.boundaries()) {
             setDrawColor(view::color::WHITE);
             const auto p1 = ScreenXY::fromWorldXY(line.start(), m_viewPort);
             const auto p2 = ScreenXY::fromWorldXY(line.end(), m_viewPort);
             SDL_RenderDrawLine(m_renderer, p1.x(), p1.y(), p2.x(), p2.y());
         }
-
-        for (auto stoppedCluster : level.stoppedClusters()) {
-            drawConnected(stoppedCluster.gridXY(), view::color::DARK_GREY);
-        }
+#endif
     }
 
     void View::drawBlocks(const Level& level) const {

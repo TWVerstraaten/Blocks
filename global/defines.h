@@ -5,12 +5,17 @@
 #ifndef BLOCKS_DEFINES_H
 #define BLOCKS_DEFINES_H
 
+#ifdef DEBUG
 #define __NOTE(x) fprintf(stderr, x ": %s:%d\n", __FILE__, __LINE__);
 #define __NOTE_ONCE(x)                                                                                                                               \
     static bool noteSeen = false;                                                                                                                    \
     if (not noteSeen)                                                                                                                                \
         __NOTE(x)                                                                                                                                    \
     noteSeen = true;
+#else
+#define __NOTE(x)
+#define __NOTE_ONCE(x)
+#endif
 
 #define __IT(x) x.begin(), x.end()
 #define __CIT(x) x.cbegin(), x.cend()

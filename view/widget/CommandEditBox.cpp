@@ -112,7 +112,7 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
                 m_textures.emplace_back(Texture::createFromText(str, view::color::BLACK, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
                 break;
             case model::CommandParser::STRING_TYPE::ERROR:
-                m_textures.emplace_back(Texture::createFromText(str, view::color::RED, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
+                m_textures.emplace_back(Texture::createFromText(str, view::color::TEXT_ERROR, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
                 break;
         }
         yOffset += m_textures.back()->height();

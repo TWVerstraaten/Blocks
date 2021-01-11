@@ -23,31 +23,27 @@ namespace geom {
     model::WorldLineSet getSidesFromGridXY(const model::GridXYSet& blocks) {
         model::WorldLineSet        result;
         std::vector<model::GridXY> cornerPoints;
-        int                        yOffset = 0;
         for (const auto& dir : {model::GridXY::DIRECTION::UP, model::GridXY::DIRECTION::DOWN}) {
-            auto it = blocks.begin();
-            while (it != blocks.end()) {
-                if (blocks.find(it->neighbor(dir)) != blocks.end()) {
-                    ++it;
-                } else {
-                    const model::GridXY start = *it;
-                    int                 idx   = it->x();
-                    do {
+            for (auto it = blocks.begin(); it != blocks.end(); ++it) {
+                if (blocks.find(it->neighbor(dir)) == blocks.end()) {
+                    const auto start = *it;
+                    auto       next  = std::next(it);
+                    while (next != blocks.end() && *next - *it == model::GridXY{1, 0} && (blocks.find(next->neighbor(dir)) == blocks.end())) {
                         ++it;
-                        ++idx;
-                    } while (it != blocks.end() && it->x() == idx && it->y() == start.y() && (blocks.find(it->neighbor(dir)) == blocks.end()));
-                    result.emplace(model::WorldXY(start) + model::GridXY{0, yOffset},
-                                   model::WorldXY(model::GridXY{idx, start.y()} + model::GridXY{0, yOffset}));
-                    cornerPoints.emplace_back(start + model::GridXY{0, yOffset});
-                    cornerPoints.emplace_back(model::GridXY{idx, start.y()} + model::GridXY{0, yOffset});
+                        ++next;
+                    }
+                    const model::GridXY point1 = start + model::GridXY{0, dir == model::GridXY::DIRECTION::UP ? 0 : 1};
+                    const model::GridXY point2 = model::GridXY{it->x() + 1, start.y() + (dir == model::GridXY::DIRECTION::UP ? 0 : 1)};
+                    result.emplace(model::WorldXY(point1), model::WorldXY(point2));
+                    cornerPoints.emplace_back(point1);
+                    cornerPoints.emplace_back(point2);
                 }
             }
-            ++yOffset;
         }
+        assert(cornerPoints.size() % 2 == 0);
         std::sort(__IT(cornerPoints), __FUNC_2(lhs, rhs, lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x()));
-        while (not cornerPoints.empty()) {
-            result.emplace(model::WorldLine{*(cornerPoints.rbegin() + 1), *cornerPoints.rbegin()});
-            cornerPoints.erase(cornerPoints.end() - 2, cornerPoints.end());
+        for (auto it = cornerPoints.begin(); it != cornerPoints.end(); it += 2) {
+            result.emplace(model::WorldLine{*it, *std::next(it)});
         }
         return result;
     }
@@ -82,19 +78,14 @@ namespace geom {
     }
 
     bool intersect(const model::WorldLine& lhs, const model::WorldLine& rhs) {
-        const auto qMinusP = lhs.start() - rhs.start();
         const auto s       = lhs.displacementVector();
         const auto r       = rhs.displacementVector();
         const auto rCrossS = cross(r, s);
         if (rCrossS == 0) {
             return false;
         }
-
-        if (containedInClosedInterval(cross(qMinusP, s), 0, rCrossS) && containedInClosedInterval(cross(qMinusP, r), 0, rCrossS)) {
-            return true;
-        } else {
-            return false;
-        }
+        const auto qMinusP = lhs.start() - rhs.start();
+        return (containedInClosedInterval(cross(qMinusP, s), 0, rCrossS) && containedInClosedInterval(cross(qMinusP, r), 0, rCrossS));
     }
 
     int minX(const model::GridXYSet& blocks) {
