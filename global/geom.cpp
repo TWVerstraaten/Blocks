@@ -4,28 +4,20 @@
 
 #include "geom.h"
 
-#include "../model/GridXY.h"
 #include "defines.h"
 
+#include <algorithm>
+#include <cassert>
 #include <vector>
 
 #ifdef _WIN32
-#include <algorithm>
-#include <cassert>
 #include <cmath>
 #endif
 
 namespace geom {
 
     bool intersect(const model::WorldLineSet& lines1, const model::WorldLineSet& lines2) {
-        for (const auto& line1 : lines1) {
-            for (const auto& line2 : lines2) {
-                if (geom::intersect(line1, line2)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return std::any_of(__CIT(lines1), __FUNC(line1, std::any_of(__CIT(lines2), __FUNC(line2, intersect(line1, line2)))));
     }
 
     model::WorldLineSet getSidesFromGridXY(const model::GridXYSet& blocks) {
@@ -68,10 +60,8 @@ namespace geom {
         if (angleInDegrees == 0.0) {
             return point;
         }
-
         const double ca = std::cos(-angleInDegrees * 2.0 * M_PI / 360.0);
         const double sa = std::sin(-angleInDegrees * 2.0 * M_PI / 360.0);
-
         return {static_cast<int>(ca * point.x() - sa * point.y()), static_cast<int>(sa * point.x() + ca * point.y())};
     }
 
@@ -126,5 +116,4 @@ namespace geom {
         assert(not blocks.empty());
         return blocks.rbegin()->y();
     }
-
 } // namespace geom

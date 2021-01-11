@@ -72,9 +72,7 @@ namespace model {
         void                incrementCommandIndex();
         void                clearCommands();
         void                collideWithLevel(const Level& level, int shrinkInWorld);
-        void                stopIfNeeded();
-        void                spliceIfNeeded(Model& model);
-        void                doOperation(const GridXY& point, DYNAMIC_BLOCK_TYPE type);
+        void                handleDynamicBlock(const GridXY& point, DYNAMIC_BLOCK_TYPE type);
         void                setState(CLUSTER_STATE state);
         void                setWorldOffset(const WorldXY& worldOffset);
         void                setPhase(PHASE phase);

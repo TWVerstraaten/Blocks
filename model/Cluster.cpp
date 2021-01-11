@@ -345,16 +345,6 @@ namespace model {
                            __FUNC(point1, std::find_if(__CIT(otherGridXY), __FUNC(point2, point2.isAdjacent(point1))) != otherGridXY.end()));
     }
 
-    void Cluster::stopIfNeeded() {
-        if (m_commandVector.isEmpty() || m_state != CLUSTER_STATE::ALIVE) {
-            return;
-        }
-        if (m_commandVector.currentType() == COMMAND_TYPE::STP) {
-            resetPhase();
-            m_state = CLUSTER_STATE::STOPPED;
-        }
-    }
-
     void Cluster::grabAdjacentStoppedClusters(Level& level) {
         auto&     stoppedClusters = level.stoppedClusters();
         GridXYSet newGridXy;
@@ -385,11 +375,7 @@ namespace model {
         level.stoppedClusters().emplace_back(std::move(splicedGridXY), m_commandVector, name() + "_");
     }
 
-    void Cluster::spliceIfNeeded(model::Model& model) {
-        __NOTE_ONCE("Implement")
-    }
-
-    void Cluster::doOperation(const GridXY& point, DYNAMIC_BLOCK_TYPE type) {
+    void Cluster::handleDynamicBlock(const GridXY& point, DYNAMIC_BLOCK_TYPE type) {
         switch (type) {
             case model::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
                 setRotation(-90.0, point);

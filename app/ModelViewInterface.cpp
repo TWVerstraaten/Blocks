@@ -195,7 +195,7 @@ bool app::ModelViewInterface::interactWithDynamicBlocks(Level& level, Cluster& c
         return false;
     }
     assert(pendingOperations.size() == 1);
-    cluster.doOperation(pendingOperations.front().first, pendingOperations.front().second);
+    cluster.handleDynamicBlock(pendingOperations.front().first, pendingOperations.front().second);
     return true;
 }
 

@@ -96,15 +96,15 @@ namespace view {
         drawDisconnected(level.startBlocks(), view::color::BACKGROUND_START);
         drawDisconnected(level.spliceBlocks(), view::color::BACKGROUND_SPLICE);
 
-        //        for (const auto& line : level.boundaries()) {
-        //            setDrawColor(view::color::WHITE);
-        //            const auto p1 = ScreenXY::fromWorldXY(line.start(), m_viewPort);
-        //            const auto p2 = ScreenXY::fromWorldXY(line.end(), m_viewPort);
-        //            SDL_RenderDrawLine(m_renderer, p1.x(), p1.y(), p2.x(), p2.y());
-        //        }
+        for (const auto& line : level.boundaries()) {
+            setDrawColor(view::color::WHITE);
+            const auto p1 = ScreenXY::fromWorldXY(line.start(), m_viewPort);
+            const auto p2 = ScreenXY::fromWorldXY(line.end(), m_viewPort);
+            SDL_RenderDrawLine(m_renderer, p1.x(), p1.y(), p2.x(), p2.y());
+        }
 
-        for (auto cluster : level.stoppedClusters()) {
-            drawConnected(cluster.gridXY(), view::color::DARK_GREY);
+        for (auto stoppedCluster : level.stoppedClusters()) {
+            drawConnected(stoppedCluster.gridXY(), view::color::DARK_GREY);
         }
     }
 
