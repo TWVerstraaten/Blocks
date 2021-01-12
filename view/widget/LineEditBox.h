@@ -15,7 +15,6 @@
 #include <vector>
 
 namespace view {
-    class Assets;
     class ScreenXY;
 
     namespace widget {

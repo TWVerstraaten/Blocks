@@ -12,8 +12,6 @@
 #include <vector>
 
 namespace view {
-    class Assets;
-
     namespace widget {
         class BlockSelectWidget : public RectWidget {
 

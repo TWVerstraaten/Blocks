@@ -11,13 +11,11 @@
 #include <cassert>
 
 namespace view {
-
     std::unique_ptr<Assets> build() {
         return std::unique_ptr<Assets>(new Assets());
     }
 
-    std::unique_ptr<Assets>                    Assets::s_assets      = build();
-    bool                                       Assets::m_initialized = false;
+    std::unique_ptr<Assets>                    Assets::s_assets{build()};
     std::map<TEXTURE_ENUM, TextureWrapper>     Assets::m_textures{};
     std::map<FONT_ENUM, std::unique_ptr<Font>> Assets::m_fonts{};
 
@@ -32,7 +30,6 @@ namespace view {
 
         m_fonts[FONT_ENUM::MAIN]  = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", MAIN_FONT_SIZE);
         m_fonts[FONT_ENUM::SMALL] = std::make_unique<Font>("assets/UbuntuMono-Bold.ttf", SMALL_FONT_SIZE);
-        m_initialized             = true;
     }
 
     bool Assets::renderTexture(

@@ -70,8 +70,7 @@ namespace view {
 
       private:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        Assets()                    = default;
-        Assets(const Assets& other) = delete;
+        Assets() = default;
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         static void loadTextureWrapper(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
@@ -79,7 +78,6 @@ namespace view {
         friend std::unique_ptr<Assets> build();
 
         /****** DATA MEMBERS  ******/
-        static bool                                       m_initialized;
         static std::unique_ptr<Assets>                    s_assets;
         static std::map<TEXTURE_ENUM, TextureWrapper>     m_textures;
         static std::map<FONT_ENUM, std::unique_ptr<Font>> m_fonts;
