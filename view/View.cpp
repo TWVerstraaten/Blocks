@@ -54,14 +54,14 @@ namespace view {
             std::cout << "SDL_ttf could not initialize, SDL_ttf Error: " << TTF_GetError() << '\n';
         }
 
-        m_assets->init(m_renderer);
+        Assets::init(m_renderer);
         SDL_StartTextInput();
     }
 
     View::~View() {
         SDL_DestroyRenderer(m_renderer);
         SDL_DestroyWindow(m_window);
-        m_assets.reset(nullptr); // Release font before we close subsystems
+        Assets::release();
         TTF_Quit();
         IMG_Quit();
         SDL_Quit();
@@ -203,10 +203,6 @@ namespace view {
         return m_renderer;
     }
 
-    Assets* View::assets() const {
-        return m_assets.get();
-    }
-
     void View::renderClusterName(const Cluster& cluster) {
         const auto worldPosition  = cluster.approximateCenter();
         const auto screenPosition = ScreenXY::fromWorldXY(worldPosition, m_viewPort);
@@ -214,12 +210,12 @@ namespace view {
         if (m_nameTextures.find(cluster.index()) == m_nameTextures.end()) {
             const std::string name = cluster.name() + " " + std::to_string(cluster.index());
             m_nameTextures.insert(
-                {cluster.index(), view::Texture::createFromText(name, view::color::BLACK, m_renderer, m_assets->font(FONT_ENUM::MAIN)->font())});
+                {cluster.index(), view::Texture::createFromText(name, view::color::BLACK, m_renderer, Assets::font(FONT_ENUM::MAIN)->font())});
         }
         const auto& texture = m_nameTextures.at(cluster.index());
         drawRectangle(screenPosition, texture->width(), texture->height(), SDL_Color{105, 115, 133, 255});
 
-        m_assets->renderTexture(texture.get(), screenPosition, texture->width(), texture->height(), m_renderer);
+        Assets::renderTexture(texture.get(), screenPosition, texture->width(), texture->height(), m_renderer);
     }
 
     void View::drawScrollArea(widget::ScrollArea* scrollArea) {
@@ -264,7 +260,7 @@ namespace view {
         const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
         const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
 
-        auto texture = m_assets->getTexture(textureEnum, shrunkBlockSize, shrunkBlockSize);
+        auto texture = Assets::getTexture(textureEnum, shrunkBlockSize, shrunkBlockSize);
         texture->setColor(color);
         for (const auto& block : blocks) {
             const auto position = ScreenXY::fromGridXY(block, m_viewPort) + shrinkInScreenXY;
@@ -317,7 +313,7 @@ namespace view {
         SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
         SDL_RenderClear(m_renderer);
 
-        auto texture = m_assets->getTexture(textureEnum, shrunkSize, shrunkSize);
+        auto texture = Assets::getTexture(textureEnum, shrunkSize, shrunkSize);
         texture->setColor(color);
 
         for (const auto block : blocks) {

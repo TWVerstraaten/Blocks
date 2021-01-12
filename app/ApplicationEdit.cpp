@@ -20,7 +20,6 @@ namespace app {
                                view::widget::BLOCK_SELECT_WIDGET_WIDTH,
                                view::widget::BLOCK_SELECT_WIDGET_HEIGHT}) {
         init();
-        m_blockSelectWidget.init(m_view->assets());
     }
 
     void ApplicationEdit::mouseWheelEvent(const SDL_Event& event) {

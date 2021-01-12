@@ -11,7 +11,18 @@
 #include <cassert>
 
 namespace view {
+
+    std::unique_ptr<Assets> build() {
+        return std::unique_ptr<Assets>(new Assets());
+    }
+
+    std::unique_ptr<Assets>                    Assets::s_assets      = build();
+    bool                                       Assets::m_initialized = false;
+    std::map<TEXTURE_ENUM, TextureWrapper>     Assets::m_textures{};
+    std::map<FONT_ENUM, std::unique_ptr<Font>> Assets::m_fonts{};
+
     void Assets::init(SDL_Renderer* renderer) {
+        assert(s_assets != nullptr);
         loadTextureWrapper(TEXTURE_ENUM::ARROW_CW, renderer);
         loadTextureWrapper(TEXTURE_ENUM::ARROW_CCW, renderer);
         loadTextureWrapper(TEXTURE_ENUM::CLUSTER, renderer);
@@ -24,12 +35,8 @@ namespace view {
         m_initialized             = true;
     }
 
-    bool Assets::renderTexture(TEXTURE_ENUM     textureEnum,
-                               const SDL_Rect&  destination,
-                               SDL_Renderer*    renderer,
-                               double           angle,
-                               const SDL_Point* center,
-                               SDL_RendererFlip flip) const {
+    bool Assets::renderTexture(
+        TEXTURE_ENUM textureEnum, const SDL_Rect& destination, SDL_Renderer* renderer, double angle, const SDL_Point* center, SDL_RendererFlip flip) {
         assert(m_textures.find(textureEnum) != m_textures.end());
         auto* texture = m_textures.at(textureEnum).texture(destination.w, destination.h);
         if (texture->loadedCorrectly()) {
@@ -57,7 +64,7 @@ namespace view {
                                SDL_Renderer*    renderer,
                                double           angle,
                                const SDL_Point* center,
-                               SDL_RendererFlip flip) const {
+                               SDL_RendererFlip flip) {
         if (width < 0) {
             return renderTexture(textureEnum, {screenXY.x() + width, screenXY.y()}, -width, height, renderer, angle, center, flip);
         } else if (height < 0) {
@@ -96,7 +103,7 @@ namespace view {
         return TEXTURE_ENUM::ERROR;
     }
 
-    const Font* Assets::font(FONT_ENUM fontEnum) const {
+    const Font* Assets::font(FONT_ENUM fontEnum) {
         assert(m_fonts.find(fontEnum) != m_fonts.end());
         assert(m_fonts.at(fontEnum)->loadedCorrectly());
         return m_fonts.at(fontEnum).get();
@@ -106,19 +113,20 @@ namespace view {
         m_textures.insert({textureEnum, TextureWrapper(textureEnum, renderer)});
     }
 
-    void Assets::renderText(
-        const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer, FONT_ENUM fontEnum, const SDL_Color& color) const {
+    void Assets::renderText(const std::string& text, const ScreenXY& screenXY, SDL_Renderer* renderer, FONT_ENUM fontEnum, const SDL_Color& color) {
         assert(m_fonts.find(fontEnum) != m_fonts.end());
         const auto texture = view::Texture::createFromText(text, color, renderer, m_fonts.at(fontEnum).get()->font());
         renderTexture(texture.get(), screenXY, texture->width(), texture->height(), renderer);
     }
 
-    bool Assets::initialized() const {
-        return m_initialized;
-    }
-
     Texture* Assets::getTexture(TEXTURE_ENUM textureEnum, int width, int height) {
         return m_textures.at(textureEnum).texture(width, height);
+    }
+
+    void Assets::release() {
+        m_fonts.clear();
+        m_textures.clear();
+        s_assets.reset(nullptr);
     }
 
 } // namespace view

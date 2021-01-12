@@ -22,10 +22,6 @@ namespace view {
 
     class Assets {
       public:
-        /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        Assets()                    = default;
-        Assets(const Assets& other) = delete;
-
         /****** PUBLIC STATIC FUNCTIONS  ******/
         static bool         renderTexture(Texture*         texture,
                                           const SDL_Rect&  destination,
@@ -44,43 +40,49 @@ namespace view {
         static TEXTURE_ENUM getTextureEnum(model::DYNAMIC_BLOCK_TYPE type);
         static TEXTURE_ENUM getTextureEnum(model::INSTANT_BLOCK_TYPE type);
 
-        /****** CONST GETTERS  ******/
-        [[nodiscard]] bool        initialized() const;
-        [[nodiscard]] const Font* font(FONT_ENUM fontEnum) const;
+        [[nodiscard]] static const Font* font(FONT_ENUM fontEnum);
 
         /****** CONST FUNCTIONS  ******/
-        bool renderTexture(TEXTURE_ENUM     textureEnum,
-                           const SDL_Rect&  destination,
-                           SDL_Renderer*    renderer,
-                           double           angle  = 0.0,
-                           const SDL_Point* center = nullptr,
-                           SDL_RendererFlip flip   = SDL_FLIP_NONE) const;
-        bool renderTexture(TEXTURE_ENUM     textureEnum,
-                           const ScreenXY&  screenXY,
-                           int              width,
-                           int              height,
-                           SDL_Renderer*    renderer,
-                           double           angle  = 0.0,
-                           const SDL_Point* center = nullptr,
-                           SDL_RendererFlip flip   = SDL_FLIP_NONE) const;
+        static bool renderTexture(TEXTURE_ENUM     textureEnum,
+                                  const SDL_Rect&  destination,
+                                  SDL_Renderer*    renderer,
+                                  double           angle  = 0.0,
+                                  const SDL_Point* center = nullptr,
+                                  SDL_RendererFlip flip   = SDL_FLIP_NONE);
+        static bool renderTexture(TEXTURE_ENUM     textureEnum,
+                                  const ScreenXY&  screenXY,
+                                  int              width,
+                                  int              height,
+                                  SDL_Renderer*    renderer,
+                                  double           angle  = 0.0,
+                                  const SDL_Point* center = nullptr,
+                                  SDL_RendererFlip flip   = SDL_FLIP_NONE);
 
         /****** NON CONST FUNCTIONS  ******/
-        void     init(SDL_Renderer* renderer);
-        void     renderText(const std::string& text,
-                            const ScreenXY&    screenXY,
-                            SDL_Renderer*      renderer,
-                            FONT_ENUM          fontEnum = FONT_ENUM::MAIN,
-                            const SDL_Color&   color    = color::BLACK) const;
-        Texture* getTexture(TEXTURE_ENUM textureEnum, int width, int height);
+        static void     init(SDL_Renderer* renderer);
+        static void     renderText(const std::string& text,
+                                   const ScreenXY&    screenXY,
+                                   SDL_Renderer*      renderer,
+                                   FONT_ENUM          fontEnum = FONT_ENUM::MAIN,
+                                   const SDL_Color&   color    = color::BLACK);
+        static Texture* getTexture(TEXTURE_ENUM textureEnum, int width, int height);
+        static void     release();
 
       private:
+        /****** CONSTRUCTORS / DESTRUCTORS  ******/
+        Assets()                    = default;
+        Assets(const Assets& other) = delete;
+
         /****** PRIVATE NON CONST FUNCTIONS  ******/
-        void loadTextureWrapper(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
+        static void loadTextureWrapper(TEXTURE_ENUM textureEnum, SDL_Renderer* renderer);
+
+        friend std::unique_ptr<Assets> build();
 
         /****** DATA MEMBERS  ******/
-        bool                                       m_initialized = false;
-        std::map<TEXTURE_ENUM, TextureWrapper>     m_textures;
-        std::map<FONT_ENUM, std::unique_ptr<Font>> m_fonts;
+        static bool                                       m_initialized;
+        static std::unique_ptr<Assets>                    s_assets;
+        static std::map<TEXTURE_ENUM, TextureWrapper>     m_textures;
+        static std::map<FONT_ENUM, std::unique_ptr<Font>> m_fonts;
     };
 } // namespace view
 #endif // BLOCKS_ASSETS_H

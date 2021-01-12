@@ -67,11 +67,6 @@ void view::widget::ScrollArea::render(SDL_Renderer* renderer) {
     renderScrollBar(renderer);
 }
 
-void view::widget::ScrollArea::init(const view::Assets* assets) {
-    assert(assets->initialized());
-    m_assets = assets;
-}
-
 void view::widget::ScrollArea::setHeightAndPositions() {
     int yOffset = 2 * RECT_WIDGET_PADDING;
     for (const auto& w : m_children) {
@@ -128,7 +123,7 @@ void view::widget::ScrollArea::update(SDL_Renderer* renderer) {
 }
 
 void view::widget::ScrollArea::addCommandEditBox(const model::Cluster& cluster) {
-    m_children.emplace_back(CommandEditBox(m_rect.x + RECT_WIDGET_PADDING, 0, LINE_EDIT_WIDTH, 0, m_assets, cluster));
+    m_children.emplace_back(CommandEditBox(m_rect.x + RECT_WIDGET_PADDING, 0, LINE_EDIT_WIDTH, 0, cluster));
     //    m_children.back().setHighLightedLine(cluster.commandIndex());
     m_children.back().setActive(cluster.isAlive());
     m_needsUpdate = true;
@@ -157,7 +152,6 @@ view::widget::ScrollArea::ScrollArea(const view::widget::ScrollArea& other) : Re
     m_firstRender    = other.m_firstRender;
     m_scrollFraction = other.m_scrollFraction;
     m_height         = other.m_height;
-    m_assets         = other.m_assets;
 }
 
 void view::widget::ScrollArea::setHeight(int height) {

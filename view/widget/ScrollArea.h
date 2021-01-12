@@ -32,8 +32,6 @@ namespace view::widget {
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] bool hasChildWithFocus() const;
 
-        /****** NON CONST FUNCTIONS  ******/
-        void                                              init(const view::Assets* assets);
         void                                              addCommandEditBox(const model::Cluster& cluster);
         void                                              setHeightAndPositions();
         CommandEditBox*                                   focusedWidget();
@@ -50,7 +48,6 @@ namespace view::widget {
         bool                      m_firstRender    = true;
         double                    m_scrollFraction = 0.0;
         size_t                    m_height         = 0;
-        const Assets*             m_assets         = nullptr;
         std::list<CommandEditBox> m_children;
     };
 } // namespace view::widget

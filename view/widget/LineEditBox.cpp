@@ -23,8 +23,8 @@ static std::string toUpper(const std::string& text) {
 }
 
 namespace view::widget {
-    LineEditBox::LineEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, std::string title)
-        : RectWidget({x, y, static_cast<int>(w), static_cast<int>(h)}), m_assets(assetHandler), m_title(std::move(title)) {
+    LineEditBox::LineEditBox(int x, int y, Uint32 w, Uint32 h, std::string title)
+        : RectWidget({x, y, static_cast<int>(w), static_cast<int>(h)}), m_title(std::move(title)) {
     }
 
     void LineEditBox::update(SDL_Renderer* renderer) {
@@ -33,14 +33,14 @@ namespace view::widget {
             return;
         }
         if (not m_titleTexture) {
-            m_titleTexture = Texture::createFromText(m_title, view::color::BLACK, renderer, m_assets->font(FONT_ENUM::MAIN)->font());
+            m_titleTexture = Texture::createFromText(m_title, view::color::BLACK, renderer, Assets::font(FONT_ENUM::MAIN)->font());
         }
         m_textures.clear();
         m_yOffsets.clear();
         int yOffset = LINE_EDIT_TITLE_HEIGHT;
         for (auto& str : m_strings) {
             m_yOffsets.push_back(yOffset);
-            m_textures.emplace_back(Texture::createFromText(str, view::color::BLACK, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
+            m_textures.emplace_back(Texture::createFromText(str, view::color::BLACK, renderer, Assets::font(FONT_ENUM::MAIN)->font()));
             yOffset += m_textures.back()->height();
         }
         m_yOffsets.push_back(yOffset);
@@ -85,17 +85,17 @@ namespace view::widget {
 
     void LineEditBox::renderComments(SDL_Renderer* renderer) const {
         for (const auto& [index, comment] : m_comments) {
-            m_assets->renderText(comment,
-                                 view::ScreenXY{m_rect.x + m_rect.w - static_cast<int>(widthOfString(comment)), m_rect.y + m_yOffsets[index]},
-                                 renderer,
-                                 FONT_ENUM::MAIN,
-                                 color::DARK_GREY);
+            Assets::renderText(comment,
+                               view::ScreenXY{m_rect.x + m_rect.w - static_cast<int>(widthOfString(comment)), m_rect.y + m_yOffsets[index]},
+                               renderer,
+                               FONT_ENUM::MAIN,
+                               color::DARK_GREY);
         }
     }
 
     void LineEditBox::renderLineNumbers(SDL_Renderer* renderer) const {
         for (size_t line = 0; line != m_strings.size(); ++line) {
-            m_assets->renderText(
+            Assets::renderText(
                 std::to_string(line + 1), view::ScreenXY{m_rect.x, m_rect.y + m_yOffsets[line]}, renderer, FONT_ENUM::SMALL, color::DARK_GREY);
         }
     }
@@ -312,7 +312,7 @@ namespace view::widget {
     }
 
     size_t LineEditBox::widthOfString(const std::string& string) const {
-        return m_assets->font(FONT_ENUM::MAIN)->widthOfString(string);
+        return Assets::font(FONT_ENUM::MAIN)->widthOfString(string);
     }
 
     void LineEditBox::doBackSpace() {

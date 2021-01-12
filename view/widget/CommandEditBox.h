@@ -20,7 +20,7 @@ namespace view::widget {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        CommandEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, const model::Cluster& cluster);
+        CommandEditBox(int x, int y, Uint32 w, Uint32 h, const model::Cluster& cluster);
         CommandEditBox(const CommandEditBox& other);
         CommandEditBox(CommandEditBox&& other) = default;
         CommandEditBox& operator               =(const CommandEditBox& other);

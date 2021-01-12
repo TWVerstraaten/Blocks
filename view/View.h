@@ -48,7 +48,6 @@ namespace view {
         [[nodiscard]] int             windowWidth() const;
         [[nodiscard]] const ViewPort& viewPort() const;
         [[nodiscard]] SDL_Renderer*   renderer() const;
-        [[nodiscard]] Assets*         assets() const;
 
         /****** CONST FUNCTIONS  ******/
         void renderPresent() const;
@@ -98,7 +97,6 @@ namespace view {
         SDL_Window*                                m_window   = nullptr;
         SDL_Renderer*                              m_renderer = nullptr;
         ViewPort                                   m_viewPort;
-        std::unique_ptr<Assets>                    m_assets{new Assets()};
         std::map<size_t, std::unique_ptr<Texture>> m_nameTextures;
     };
 
@@ -108,11 +106,11 @@ namespace view {
         const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
         const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
         for (const auto& [point, type] : blocks) {
-            m_assets->renderTexture(Assets::getTextureEnum(type),
-                                    ScreenXY::fromGridXY(point, m_viewPort) + shrinkInScreenXY,
-                                    shrunkBlockSize,
-                                    shrunkBlockSize,
-                                    m_renderer);
+            Assets::renderTexture(Assets::getTextureEnum(type),
+                                  ScreenXY::fromGridXY(point, m_viewPort) + shrinkInScreenXY,
+                                  shrunkBlockSize,
+                                  shrunkBlockSize,
+                                  m_renderer);
         }
     }
 

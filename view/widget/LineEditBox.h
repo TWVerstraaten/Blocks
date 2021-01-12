@@ -27,7 +27,7 @@ namespace view {
 
           public:
             /****** CONSTRUCTORS / DESTRUCTORS  ******/
-            LineEditBox(int x, int y, Uint32 w, Uint32 h, const Assets* assetHandler, std::string title);
+            LineEditBox(int x, int y, Uint32 w, Uint32 h, std::string title);
 
             /****** PUBLIC VIRTUAL FUNCTIONS  ******/
             virtual void setNeedsUpdate();
@@ -94,7 +94,6 @@ namespace view {
           protected:
             /****** DATA MEMBERS  ******/
             bool                                        m_needsUpdate = true;
-            const Assets*                               m_assets;
             std::string                                 m_title;
             SelectionData                               m_selectionData;
             std::unique_ptr<Texture>                    m_titleTexture;

@@ -30,11 +30,11 @@ namespace view::widget {
                                       view::View::drawSquare(screenXY(type), app::BLOCK_SIZE_IN_WORLD, toColor(type), renderer);
                                   },
                                   [renderer, this](const CLUSTER_TYPE type) {
-                                      m_assets->renderTexture(
+                                      Assets::renderTexture(
                                           TEXTURE_ENUM::CLUSTER, screenXY(type), app::BLOCK_SIZE_IN_WORLD, app::BLOCK_SIZE_IN_WORLD, renderer);
                                   },
                                   [renderer, this](const auto type) {
-                                      m_assets->renderTexture(
+                                      Assets::renderTexture(
                                           Assets::getTextureEnum(type), screenXY(type), app::BLOCK_SIZE_IN_WORLD, app::BLOCK_SIZE_IN_WORLD, renderer);
                                   }},
                        type);
@@ -47,10 +47,6 @@ namespace view::widget {
 
     void BlockSelectWidget::leftClickEvent([[maybe_unused]] const SDL_Event& event) {
         setSelectedBlock(Mouse::mouseXY());
-    }
-
-    void BlockSelectWidget::init(const Assets* assets) {
-        m_assets = assets;
     }
 
     ScreenXY BlockSelectWidget::screenXY(const model::BlockType& type) {

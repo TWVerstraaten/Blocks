@@ -12,8 +12,8 @@
 
 #include <cassert>
 
-view::widget::CommandEditBox::CommandEditBox(int x, int y, Uint32 w, Uint32 h, const view::Assets* assetHandler, const model::Cluster& cluster)
-    : LineEditBox(x, y, w, h, assetHandler, cluster.name() + " " + std::to_string(cluster.index())), m_index(cluster.index()) {
+view::widget::CommandEditBox::CommandEditBox(int x, int y, Uint32 w, Uint32 h, const model::Cluster& cluster)
+    : LineEditBox(x, y, w, h, cluster.name() + " " + std::to_string(cluster.index())), m_index(cluster.index()) {
     m_strings = cluster.commandVector().strings();
     if (m_strings.empty()) {
         m_strings = {""};
@@ -21,7 +21,7 @@ view::widget::CommandEditBox::CommandEditBox(int x, int y, Uint32 w, Uint32 h, c
 }
 
 view::widget::CommandEditBox::CommandEditBox(const view::widget::CommandEditBox& other)
-    : LineEditBox(other.m_rect.x, other.m_rect.y, other.m_rect.w, other.m_rect.h, other.m_assets, other.m_title), m_index(other.m_index) {
+    : LineEditBox(other.m_rect.x, other.m_rect.y, other.m_rect.w, other.m_rect.h, other.m_title), m_index(other.m_index) {
     m_strings       = other.m_strings;
     m_selectionData = other.m_selectionData;
 }
@@ -91,7 +91,7 @@ view::widget::CommandEditBox& view::widget::CommandEditBox::operator=(const view
 }
 
 void view::widget::CommandEditBox::createTitleTexture(SDL_Renderer* renderer) {
-    m_titleTexture = Texture::createFromText(m_title, view::color::BLACK, renderer, m_assets->font(FONT_ENUM::MAIN)->font());
+    m_titleTexture = Texture::createFromText(m_title, view::color::BLACK, renderer, Assets::font(FONT_ENUM::MAIN)->font());
 }
 
 void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) {
@@ -103,16 +103,16 @@ void view::widget::CommandEditBox::createStringTextures(SDL_Renderer* renderer) 
         m_yOffsets.push_back(yOffset);
         switch (model::CommandParser::stringType(str)) {
             case model::CommandParser::STRING_TYPE::EMPTY:
-                m_textures.emplace_back(Texture::createFromText(" ", view::color::DARK_GREY, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
+                m_textures.emplace_back(Texture::createFromText(" ", view::color::DARK_GREY, renderer, Assets::font(FONT_ENUM::MAIN)->font()));
                 break;
             case model::CommandParser::STRING_TYPE::COMMENT:
-                m_textures.emplace_back(Texture::createFromText(str, view::color::DARK_GREY, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
+                m_textures.emplace_back(Texture::createFromText(str, view::color::DARK_GREY, renderer, Assets::font(FONT_ENUM::MAIN)->font()));
                 break;
             case model::CommandParser::STRING_TYPE::ACTION:
-                m_textures.emplace_back(Texture::createFromText(str, view::color::BLACK, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
+                m_textures.emplace_back(Texture::createFromText(str, view::color::BLACK, renderer, Assets::font(FONT_ENUM::MAIN)->font()));
                 break;
             case model::CommandParser::STRING_TYPE::ERROR:
-                m_textures.emplace_back(Texture::createFromText(str, view::color::TEXT_ERROR, renderer, m_assets->font(FONT_ENUM::MAIN)->font()));
+                m_textures.emplace_back(Texture::createFromText(str, view::color::TEXT_ERROR, renderer, Assets::font(FONT_ENUM::MAIN)->font()));
                 break;
         }
         yOffset += m_textures.back()->height();

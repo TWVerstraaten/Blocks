@@ -32,16 +32,12 @@ namespace view {
             ScreenXY screenXY(const model::BlockType& type);
             void     setSelectedBlock(const ScreenXY& screenXY);
 
-            /****** NON CONST FUNCTIONS  ******/
-            void init(const view::Assets* assets);
-
           private:
             /****** PRIVATE CONST FUNCTIONS  ******/
             [[nodiscard]] ScreenXY indexToScreenXY(size_t index) const;
 
             /****** DATA MEMBERS  ******/
             size_t        m_selected = 0;
-            const Assets* m_assets   = nullptr;
         };
     } // namespace widget
 } // namespace view

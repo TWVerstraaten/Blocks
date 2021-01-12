@@ -18,7 +18,6 @@ namespace app {
                         view::widget::COMMAND_SCROLL_AREA_WIDTH,
                         view::INITIAL_SCREEN_HEIGHT}) {
         m_model.init();
-        m_scrollArea.init(m_view.assets());
     }
 
     void Application::run() {
