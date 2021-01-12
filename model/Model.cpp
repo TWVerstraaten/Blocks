@@ -85,6 +85,9 @@ namespace model {
 
     void Model::startPhase() {
         m_phaseFraction = 1.0;
+        for (auto& cluster : m_clusters) {
+            cluster.setPendingDynamicMoves(PENDING_DYNAMIC_MOVES::ZERO);
+        }
     }
 
     void Model::updateInternal(double dPhase) {
@@ -128,8 +131,9 @@ namespace model {
         return m_level;
     }
 
-    bool Model::noClusterOnBlock(const GridXY& gridXY) const {
-        return std::find_if(__IT(m_clusters), __FUNC(cluster, cluster.contains(gridXY))) == m_clusters.end();
+    bool Model::noLiveOrStoppedClusterOnBlock(const GridXY& gridXY) const {
+        return (std::find_if(__IT(m_clusters), __FUNC(cluster, cluster.contains(gridXY))) == m_clusters.end()) &&
+               (std::find_if(__IT(m_level.stoppedClusters()), __FUNC(cluster, cluster.contains(gridXY))) == m_level.stoppedClusters().end());
     }
 
     std::list<Cluster>::iterator Model::clusterContaining(const GridXY& point) {

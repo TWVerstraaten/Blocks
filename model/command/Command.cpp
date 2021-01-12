@@ -9,13 +9,13 @@
 #include "../Cluster.h"
 #include "../Level.h"
 
-static void setTranslating(model::GridXY::DIRECTION direction, model::Cluster& cluster) {
+static void translate(model::GridXY::DIRECTION direction, model::Cluster& cluster) {
     model::GridXYSet newGridXYSet;
     cluster.setPhase(model::PHASE::TRANSLATING);
     for (auto& idx : cluster.gridXY()) {
         newGridXYSet.emplace(idx.neighbor(direction));
     }
-    std::swap(cluster.gridXY(), newGridXYSet);
+    cluster.gridXY().swap(newGridXYSet);
     switch (direction) {
         case model::GridXY::DIRECTION::UP:
             cluster.setWorldOffset({0, app::BLOCK_SIZE_IN_WORLD});
@@ -32,8 +32,8 @@ static void setTranslating(model::GridXY::DIRECTION direction, model::Cluster& c
     }
 }
 
-model::Command model::toCommand(const model::Command_RepeatWrapper& e) {
-    return std::visit(__FUNC(c, static_cast<Command>(c)), e.command);
+model::Command model::toCommand(const model::Command_RepeatWrapper& repeatWrapper) {
+    return std::visit(__FUNC(command, static_cast<Command>(command)), repeatWrapper.command);
 }
 
 void model::doAction([[maybe_unused]] const model::Command_Error& command, [[maybe_unused]] Cluster& cluster, [[maybe_unused]] Level& level) {
@@ -48,16 +48,16 @@ void model::doAction([[maybe_unused]] const model::Command_Jump& command, [[mayb
 void model::doAction(const model::Command_Simple& command, Cluster& cluster, Level& level) {
     switch (command.type) {
         case COMMAND_TYPE::FWD:
-            setTranslating(GridXY::DIRECTION::UP, cluster);
+            translate(GridXY::DIRECTION::UP, cluster);
             break;
         case COMMAND_TYPE::BCK:
-            setTranslating(GridXY::DIRECTION::DOWN, cluster);
+            translate(GridXY::DIRECTION::DOWN, cluster);
             break;
         case COMMAND_TYPE::LFT:
-            setTranslating(GridXY::DIRECTION::LEFT, cluster);
+            translate(GridXY::DIRECTION::LEFT, cluster);
             break;
         case COMMAND_TYPE::RHT:
-            setTranslating(GridXY::DIRECTION::RIGHT, cluster);
+            translate(GridXY::DIRECTION::RIGHT, cluster);
             break;
         case COMMAND_TYPE::GRB:
             cluster.grabAdjacentStoppedClusters(level);
@@ -75,5 +75,5 @@ void model::doAction(const model::Command_Modified& command, Cluster& cluster, L
 }
 
 void model::doAction(const model::Command_RepeatWrapper& command, Cluster& cluster, Level& level) {
-    std::visit(__FUNC(c, doAction(c, cluster, level)), command.command);
+    std::visit(__FUNC(command, doAction(command, cluster, level)), command.command);
 }

@@ -107,4 +107,24 @@ namespace geom {
         assert(not blocks.empty());
         return blocks.rbegin()->y();
     }
+
+    std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, model::GridXY point) {
+        std::vector<model::Cluster*> result;
+        std::for_each(__IT(clusters), [&](auto& cluster) {
+            if (cluster.isAdjacent(point)) {
+                result.push_back(&cluster);
+            }
+        });
+        return result;
+    }
+
+    std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, const model::Cluster& cluster) {
+        std::vector<model::Cluster*> result;
+        std::for_each(__IT(clusters), [&](auto& candidate) {
+            if (candidate.isAdjacent(cluster)) {
+                result.push_back(&candidate);
+            }
+        });
+        return result;
+    }
 } // namespace geom

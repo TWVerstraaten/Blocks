@@ -197,4 +197,14 @@ namespace model {
         return m_floorBlocks;
     }
 
+    GridXYSet Level::blocks(FLOOR_BLOCK_TYPE blockType) const {
+        std::set<GridXY> result;
+        for (const auto& [point, type] : m_floorBlocks) {
+            if (type == blockType) {
+                result.emplace(point);
+            }
+        }
+        return result;
+    }
+
 } // namespace model

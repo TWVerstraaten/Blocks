@@ -68,7 +68,7 @@ void app::ModelViewInterface::leftClickControl(model::Model&             model,
                                                const model::BlockType&   selectedBlockType) {
     std::visit(overloaded{[&](const CLUSTER_TYPE) { clearBlockFromCluster(model, scrollArea, point); },
                           [&](auto) {
-                              if (model.noClusterOnBlock(point)) {
+                              if (model.noLiveOrStoppedClusterOnBlock(point)) {
                                   addAction(model.level().removeBlock(point));
                               } else {
                                   clearBlockFromCluster(model, scrollArea, point);
@@ -173,10 +173,13 @@ void app::ModelViewInterface::stopSpliceOrKillIfNeeded(Level& level, Cluster& cl
             pendingOperations.emplace_back(point, type);
         }
     }
+    assert(cluster.pendingDynamicMoves() == model::PENDING_DYNAMIC_MOVES::ZERO);
     if (pendingOperations.size() > 1 && cluster.currentModifier() != COMMAND_MODIFIER::IGNORE) {
         cluster.kill();
+        cluster.setPendingDynamicMoves(model::PENDING_DYNAMIC_MOVES::TOO_MANY);
     } else {
         if (pendingOperations.size() == 1 && cluster.currentModifier() != COMMAND_MODIFIER::IGNORE) {
+            cluster.setPendingDynamicMoves(model::PENDING_DYNAMIC_MOVES::ONE);
             return;
         }
         if (cluster.commandVector().currentType() == COMMAND_TYPE::STP) {

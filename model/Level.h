@@ -38,6 +38,9 @@ namespace model {
         [[nodiscard]] const std::list<Cluster>&                   stoppedClusters() const;
         [[nodiscard]] const std::map<GridXY, FLOOR_BLOCK_TYPE>&   floorBlocks() const;
 
+        /****** CONST FUNCTIONS  ******/
+        [[nodiscard]] GridXYSet blocks(FLOOR_BLOCK_TYPE blockType) const;
+
         /****** NON CONST FUNCTIONS  ******/
         void                clear();
         void                createBoundaries();
