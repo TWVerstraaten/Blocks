@@ -62,6 +62,7 @@ namespace model {
         /****** DATA MEMBERS  ******/
         std::map<GridXY, DYNAMIC_BLOCK_TYPE> m_dynamicBLocks;
         std::map<GridXY, INSTANT_BLOCK_TYPE> m_instantBLocks;
+        std::map<GridXY, FLOOR_BLOCK_TYPE>   m_floorBlocks;
         GridXYSet                            m_levelBlocks;
         GridXYSet                            m_spliceBlocks;
         GridXYSet                            m_startBlocks;

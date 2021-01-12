@@ -78,8 +78,8 @@ namespace model {
         void                setPhase(PHASE phase);
         void                resetPhase();
         void                spliceCluster(Level& level);
-        CommandVector&      commandVector();
         Cluster             grabAllButFirstComponent();
+        CommandVector&      commandVector();
         GridXYSet::iterator removeBLock(const GridXY& gridXY);
         std::list<Cluster>  collectAllButFirstComponent();
         GridXYSet&          gridXY();
