@@ -51,7 +51,7 @@ namespace model {
         void increment(const Command_Simple& j);
         void increment(const Command_RepeatWrapper& j);
 
-        size_t getCurrentRepeatCount() const;
+        [[nodiscard]] size_t getCurrentRepeatCount() const;
 
         /****** DATA MEMBERS  ******/
         size_t                   m_commandIndex = 0;

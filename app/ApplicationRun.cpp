@@ -189,7 +189,7 @@ namespace app {
     }
 
     void ApplicationRun::addStoppedClustersToLevel() {
-        auto it = std::partition(__IT(m_model.clusters()), __FUNC(cluster, cluster.state() != model::CLUSTER_STATE::STOPPED));
+        auto it = std::partition(D_IT(m_model.clusters()), D_FUNC(cluster, cluster.state() != model::CLUSTER_STATE::STOPPED));
         m_model.level().stoppedClusters().splice(m_model.level().stoppedClusters().end(), m_model.clusters(), it, m_model.clusters().end());
     }
 
@@ -204,11 +204,11 @@ namespace app {
         for (auto& stoppedCluster : m_model.level().stoppedClusters()) {
             const auto                   adjacentClusters = geom::neighbors(m_model.clusters(), stoppedCluster);
             std::vector<model::Cluster*> grabbers;
-            std::copy_if(__CIT(adjacentClusters),
+            std::copy_if(D_CIT(adjacentClusters),
                          std::back_inserter(grabbers),
-                         __FUNC(cluster, cluster->commandVector().currentType() == model::COMMAND_TYPE::GRB));
+                         D_FUNC(cluster, cluster->commandVector().currentType() == model::COMMAND_TYPE::GRB));
             if (grabbers.size() > 1) {
-                std::copy(__IT(grabbers), std::back_inserter(killList));
+                std::copy(D_IT(grabbers), std::back_inserter(killList));
             }
         }
         for (auto* cluster : killList) {
@@ -238,9 +238,9 @@ namespace app {
             static const std::vector<size_t> B        = {3};
             static const std::vector<size_t> S        = {2, 3};
             const bool                       occupied = not m_model.noLiveOrStoppedClusterOnBlock(conwayBlock);
-            if (occupied && (std::find(__CIT(S), neighborCount) == S.end())) {
+            if (occupied && (std::find(D_CIT(S), neighborCount) == S.end())) {
                 toRemove.emplace_back(conwayBlock);
-            } else if ((not occupied) && (std::find(__CIT(B), neighborCount) != B.end())) {
+            } else if ((not occupied) && (std::find(D_CIT(B), neighborCount) != B.end())) {
                 toAdd.emplace_back(conwayBlock);
             }
         }
@@ -249,7 +249,7 @@ namespace app {
             if (it != m_model.clusters().end()) {
                 it->removeBLock(remove);
             } else {
-                it = std::find_if(__IT(m_model.level().stoppedClusters()), __FUNC(cluster, cluster.contains(remove)));
+                it = std::find_if(D_IT(m_model.level().stoppedClusters()), D_FUNC(cluster, cluster.contains(remove)));
                 assert(it != m_model.level().stoppedClusters().end());
                 it->removeBLock(remove);
             }
@@ -267,7 +267,7 @@ namespace app {
                 }
             }
         }
-        m_model.clusters().remove_if(__FUNC(cluster, cluster.isEmpty()));
-        m_model.level().stoppedClusters().remove_if(__FUNC(cluster, cluster.isEmpty()));
+        m_model.clusters().remove_if(D_FUNC(cluster, cluster.isEmpty()));
+        m_model.level().stoppedClusters().remove_if(D_FUNC(cluster, cluster.isEmpty()));
     }
 } // namespace app

@@ -16,7 +16,7 @@ model::CommandVector::CommandVector(const std::vector<std::string>& strings) {
 }
 
 bool model::CommandVector::wellFormed() const {
-    return std::all_of(__CIT(m_commands), [](const Command& command) { return not std::holds_alternative<Command_Error>(command); });
+    return std::all_of(D_CIT(m_commands), [](const Command& command) { return not std::holds_alternative<Command_Error>(command); });
 }
 
 model::Command model::CommandVector::currentCommand() const {
@@ -61,7 +61,7 @@ void model::CommandVector::set(const std::vector<std::string>& strings) {
     }
     m_repeatCount =
         std::visit(overloaded{[](Command_RepeatWrapper c) { return c.repeatCount - 1; }, [](auto) { return 0; }}, m_commands[m_commandIndex]);
-    std::transform(__CIT(strings), std::back_inserter(m_strings), [](const std::string& str) { return CommandParser::format(str); });
+    std::transform(D_CIT(strings), std::back_inserter(m_strings), [](const std::string& str) { return CommandParser::format(str); });
 }
 
 void model::CommandVector::clear() {
@@ -141,8 +141,8 @@ size_t model::CommandVector::getCurrentRepeatCount() const {
 void model::CommandVector::increment(const model::Command_Jump& commandJump) {
     const auto& jumpLabel = commandJump.label;
     const auto  it =
-        std::find_if(__CIT(m_commands),
-                     __FUNC(command, std::visit(overloaded{[&](const Command_Label& l) { return l.label == jumpLabel; }, __FUNC(, false)}, command)));
+        std::find_if(D_CIT(m_commands),
+                     D_FUNC(command, std::visit(overloaded{[&](const Command_Label& l) { return l.label == jumpLabel; }, D_FUNC(, false)}, command)));
     assert(it != m_commands.end());
     m_commandIndex = std::distance(m_commands.cbegin(), it);
     m_repeatCount  = getCurrentRepeatCount();

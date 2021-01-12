@@ -31,7 +31,7 @@ namespace model {
         if (m_commandVector.isEmpty() || m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
-        std::visit(__FUNC(c, doAction(c, *this, model.level())), m_commandVector.currentCommand());
+        std::visit(D_FUNC(c, doAction(c, *this, model.level())), m_commandVector.currentCommand());
     }
 
     void Cluster::rotateClockWiseAbout(const GridXY& pivotGridXY) {
@@ -40,7 +40,7 @@ namespace model {
             newGridXYSet.emplace(GridXY{pivotGridXY.x() + pivotGridXY.y() - gridXY.y(), pivotGridXY.y() - pivotGridXY.x() + gridXY.x()});
         }
         m_gridXYSet.swap(newGridXYSet);
-        __NOTE_ONCE("Do we want to rotate the directions...?")
+        D_NOTE_ONCE("Do we want to rotate the directions...?")
     }
 
     void Cluster::rotateCounterClockWiseAbout(const GridXY& pivotGridXY) {
@@ -153,7 +153,7 @@ namespace model {
     }
 
     bool Cluster::isConnected() const {
-        __NOTE_ONCE("Implement proper variant of this function")
+        D_NOTE_ONCE("Implement proper variant of this function")
         assert(not isEmpty());
         if (m_gridXYSet.size() == 1) {
             return true;
@@ -314,7 +314,7 @@ namespace model {
     WorldXY Cluster::approximateCenter() const {
         assert(not m_gridXYSet.empty());
         const auto f = phaseTransformation();
-        return std::accumulate(__CIT(m_gridXYSet), WorldXY{0, 0}, __FUNC_2(a, b, a + f(b))) / m_gridXYSet.size();
+        return std::accumulate(D_CIT(m_gridXYSet), WorldXY{0, 0}, D_FUNC_2(a, b, a + f(b))) / m_gridXYSet.size();
     }
 
     CLUSTER_STATE Cluster::state() const {
@@ -323,19 +323,19 @@ namespace model {
 
     bool Cluster::isAdjacent(const Cluster& other) const {
         const auto otherGridXY = other.m_gridXYSet;
-        return std::any_of(__CIT(other.m_gridXYSet), __FUNC(point1, isAdjacent(point1)));
+        return std::any_of(D_CIT(otherGridXY), D_FUNC(point1, gridXYIsAdjacent(point1)));
     }
 
     void Cluster::grabAdjacentStoppedClusters(Level& level) {
         auto&     stoppedClusters = level.stoppedClusters();
         GridXYSet newGridXy;
-        std::for_each(__IT(stoppedClusters), [&](auto& cluster) {
+        std::for_each(D_IT(stoppedClusters), [&](auto& cluster) {
             if (isAdjacent(cluster)) {
                 newGridXy.merge(cluster.m_gridXYSet);
             }
         });
         m_gridXYSet.merge(newGridXy);
-        stoppedClusters.remove_if(__FUNC(cluster, cluster.isEmpty()));
+        stoppedClusters.remove_if(D_FUNC(cluster, cluster.isEmpty()));
     }
 
     void Cluster::spliceCluster(Level& level) {
@@ -400,8 +400,8 @@ namespace model {
         m_phase = phase;
     }
 
-    bool Cluster::isAdjacent(const GridXY& point) const {
-        return std::any_of(__CIT(m_gridXYSet), __FUNC(point2, point.isAdjacent(point2)));
+    bool Cluster::gridXYIsAdjacent(const GridXY& point) const {
+        return std::any_of(D_CIT(m_gridXYSet), D_FUNC(point2, point.isAdjacent(point2)));
     }
 
     PENDING_DYNAMIC_MOVES Cluster::pendingDynamicMoves() const {

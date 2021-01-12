@@ -124,7 +124,7 @@ namespace model {
     }
 
     std::list<Cluster>::iterator Model::clusterWithIndex(size_t index) {
-        return std::find_if(__IT(m_clusters), __FUNC(cluster, cluster.index() == index));
+        return std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.index() == index));
     }
 
     Level& Model::level() {
@@ -132,11 +132,11 @@ namespace model {
     }
 
     bool Model::noLiveOrStoppedClusterOnBlock(const GridXY& gridXY) const {
-        return (std::find_if(__IT(m_clusters), __FUNC(cluster, cluster.contains(gridXY))) == m_clusters.end()) &&
-               (std::find_if(__IT(m_level.stoppedClusters()), __FUNC(cluster, cluster.contains(gridXY))) == m_level.stoppedClusters().end());
+        return (std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(gridXY))) == m_clusters.end()) &&
+               (std::find_if(D_IT(m_level.stoppedClusters()), D_FUNC(cluster, cluster.contains(gridXY))) == m_level.stoppedClusters().end());
     }
 
     std::list<Cluster>::iterator Model::clusterContaining(const GridXY& point) {
-        return std::find_if(__IT(m_clusters), __FUNC(cluster, cluster.contains(point)));
+        return std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(point)));
     }
 } // namespace model

@@ -100,7 +100,7 @@ namespace app {
     }
 
     bool ApplicationEdit::canStart() const {
-        return std::all_of(__CIT(m_scrollArea->children()), __FUNC(box, box.canParse()));
+        return std::all_of(D_CIT(m_scrollArea->children()), D_FUNC(box, box.canParse()));
     }
 
     void ApplicationEdit::getActionsFromEditBoxes() {

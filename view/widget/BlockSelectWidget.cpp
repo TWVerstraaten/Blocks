@@ -50,7 +50,7 @@ namespace view::widget {
     }
 
     ScreenXY BlockSelectWidget::screenXY(const model::BlockType& type) {
-        const auto it = std::find_if(__CIT(model::s_allTypes), __FUNC(blockType, blockType == type));
+        const auto it = std::find_if(D_CIT(model::s_allTypes), D_FUNC(blockType, blockType == type));
         assert(it != model::s_allTypes.end());
         return indexToScreenXY(std::distance(model::s_allTypes.begin(), it));
     }

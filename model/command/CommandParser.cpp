@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
-#include <utility>
 
 namespace model {
 
@@ -74,7 +73,7 @@ namespace model {
         char* c;
         strtol(string.c_str(), &c, 10);
         if (*c != 0) {
-            if (std::all_of(__CIT(string), __FUNC(c, std::isalnum(c)))) {
+            if (std::all_of(D_CIT(string), D_FUNC(c, std::isalnum(c)))) {
                 return string;
             }
             return model::CommandParser::ERROR_TOKEN::ERROR;
@@ -89,7 +88,7 @@ namespace model {
 
     std::string CommandParser::toString(const Token& token) {
         return std::visit(overloaded{[](int i) { return i == std::numeric_limits<int>::max() ? "INF" : std::to_string(i); },
-                                     [](const std::string& str) { return std::all_of(__CIT(str), __FUNC(c, std::isalnum(c))) ? str : "Error"; },
+                                     [](const std::string& str) { return std::all_of(D_CIT(str), D_FUNC(c, std::isalnum(c))) ? str : "Error"; },
                                      [&](auto) {
                                          for (const auto& [str, t] : s_allTokens) {
                                              if (t == token) {
@@ -106,7 +105,7 @@ namespace model {
         const auto               trimmed = boost::trim_copy(string);
         boost::split(parts, trimmed, boost::is_any_of(" "), boost::token_compress_on);
         std::vector<Token> tokens;
-        std::transform(__CIT(parts), back_inserter(tokens), CommandParser::tokenizeSingle);
+        std::transform(D_CIT(parts), back_inserter(tokens), CommandParser::tokenizeSingle);
         return tokens;
     }
 
@@ -125,7 +124,7 @@ namespace model {
     }
 
     std::string CommandParser::toString(const Command& command) {
-        return std::visit(overloaded{__FUNC(, std::string("Error")),
+        return std::visit(overloaded{D_FUNC(, std::string("Error")),
                                      [](const Command_Label& e) { return "LBL " + e.label; },
                                      [](const Command_Jump& e) { return "JMP " + e.label; },
                                      [](const Command_Simple& e) { return toString(e.type); },

@@ -12,13 +12,12 @@
 #include "LineEditBox_constants.h"
 #include "RectWidget_constants.h"
 
-#include <algorithm>
 #include <cassert>
 #include <sstream>
 
 static std::string toUpper(const std::string& text) {
     std::string upperCaseString;
-    std::transform(__CIT(text), std::back_inserter(upperCaseString), ::toupper);
+    std::transform(D_CIT(text), std::back_inserter(upperCaseString), ::toupper);
     return upperCaseString;
 }
 
@@ -311,7 +310,7 @@ namespace view::widget {
                           renderer);
     }
 
-    size_t LineEditBox::widthOfString(const std::string& string) const {
+    size_t LineEditBox::widthOfString(const std::string& string) {
         return Assets::font(FONT_ENUM::MAIN)->widthOfString(string);
     }
 
@@ -437,7 +436,7 @@ namespace view::widget {
         }
     }
 
-    const std::string LineEditBox::selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const {
+    std::string LineEditBox::selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const {
         assert(m_selectionData.m_mode != SelectionData::MODE::SINGLE);
         if (SelectionData::isReversed(first, last)) {
             return selectionToString(last, first);

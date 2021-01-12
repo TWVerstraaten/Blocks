@@ -14,13 +14,13 @@ action::AddLevelBlockAction::AddLevelBlockAction(
 
 void action::AddLevelBlockAction::undoAction(app::ApplicationEdit& applicationEdit) {
     for (const auto& it : m_blockTypes) {
-        std::visit(__FUNC(type, applicationEdit.model()->level().removeBlock(m_point, type)), it);
+        std::visit(D_FUNC(type, applicationEdit.model()->level().removeBlock(m_point, type)), it);
     }
 }
 
 void action::AddLevelBlockAction::redoAction(app::ApplicationEdit& applicationEdit) {
     for (const auto& it : m_blockTypes) {
-        std::visit(__FUNC(type, applicationEdit.model()->level().addBlock(m_point, type)), it);
+        std::visit(D_FUNC(type, applicationEdit.model()->level().addBlock(m_point, type)), it);
     }
 }
 

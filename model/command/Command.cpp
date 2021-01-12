@@ -33,7 +33,7 @@ static void translate(model::GridXY::DIRECTION direction, model::Cluster& cluste
 }
 
 model::Command model::toCommand(const model::Command_RepeatWrapper& repeatWrapper) {
-    return std::visit(__FUNC(command, static_cast<Command>(command)), repeatWrapper.command);
+    return std::visit(D_FUNC(command, static_cast<Command>(command)), repeatWrapper.command);
 }
 
 void model::doAction([[maybe_unused]] const model::Command_Error& command, [[maybe_unused]] Cluster& cluster, [[maybe_unused]] Level& level) {
@@ -75,5 +75,5 @@ void model::doAction(const model::Command_Modified& command, Cluster& cluster, L
 }
 
 void model::doAction(const model::Command_RepeatWrapper& command, Cluster& cluster, Level& level) {
-    std::visit(__FUNC(command, doAction(command, cluster, level)), command.command);
+    std::visit(D_FUNC(command, doAction(command, cluster, level)), command.command);
 }

@@ -56,7 +56,7 @@ void view::widget::CommandEditBox::update(SDL_Renderer* renderer) {
 }
 
 bool view::widget::CommandEditBox::canParse() const {
-    return std::all_of(__CIT(m_strings), &model::CommandParser::canParse);
+    return std::all_of(D_CIT(m_strings), &model::CommandParser::canParse);
 }
 
 void view::widget::CommandEditBox::loseFocus() {
@@ -138,7 +138,7 @@ void view::widget::CommandEditBox::updateSelected(const model::CommandVector& co
 }
 
 size_t view::widget::CommandEditBox::findNthNonTransparent(size_t n) const {
-    assert(std::count_if(__CIT(m_strings), __FUNC(str, not model::CommandParser::isCommentOrEmpty(str))) > static_cast<int>(n));
+    assert(std::count_if(D_CIT(m_strings), D_FUNC(str, not model::CommandParser::isCommentOrEmpty(str))) > static_cast<int>(n));
     for (size_t i = 0; i != m_strings.size(); ++i) {
         if (not model::CommandParser::isCommentOrEmpty(m_strings.at(i))) {
             if (n == 0) {

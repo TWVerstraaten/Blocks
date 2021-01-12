@@ -60,7 +60,7 @@ namespace model {
         [[nodiscard]] bool                                   isAlive() const;
         [[nodiscard]] bool                                   isConnected() const;
         [[nodiscard]] bool                                   isAdjacent(const Cluster& other) const;
-        [[nodiscard]] bool                                   isAdjacent(const GridXY& point) const;
+        [[nodiscard]] bool                                   gridXYIsAdjacent(const GridXY& point) const;
         [[nodiscard]] bool                                   contains(const GridXY& gridXY) const;
         [[nodiscard]] bool                                   intersects(const Cluster& other, int shrinkInWorld) const;
         [[nodiscard]] std::function<WorldXY(const WorldXY&)> phaseTransformation() const;
