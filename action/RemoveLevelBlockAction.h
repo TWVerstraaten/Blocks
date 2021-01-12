@@ -27,4 +27,5 @@ namespace action {
         const model::GridXY                                                                               m_point;
     };
 } // namespace action
+
 #endif // BLOCKS_REMOVELEVELBLOCKACTION_H

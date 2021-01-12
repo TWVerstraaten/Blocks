@@ -59,10 +59,10 @@ namespace app {
                 m_previousGridClickPosition = model::GridXY::fromScreenXY(view::Mouse::mouseXY(), m_view->viewPort());
                 if (SDL_GetModState() & KMOD_CTRL) {
                     m_modelViewInterface.leftClickControl(
-                        *m_model, *m_view, *m_scrollArea, m_previousGridClickPosition, m_blockSelectWidget.selectedBlockType());
+                        *m_model, *m_scrollArea, m_previousGridClickPosition, m_blockSelectWidget.selectedBlockType());
                 } else {
                     m_modelViewInterface.leftMouseClick(
-                        *m_model, *m_view, *m_scrollArea, m_previousGridClickPosition, m_blockSelectWidget.selectedBlockType());
+                        *m_model, *m_scrollArea, m_previousGridClickPosition, m_blockSelectWidget.selectedBlockType());
                 }
             }
         }
@@ -162,10 +162,10 @@ namespace app {
         const auto currentGridPosition = model::GridXY::fromScreenXY(view::Mouse::mouseXY(), m_view->viewPort());
         if (currentGridPosition != m_previousGridClickPosition) {
             if (SDL_GetModState() & KMOD_CTRL) {
-                m_modelViewInterface.leftClickControl(*m_model, *m_view, *m_scrollArea, currentGridPosition, m_blockSelectWidget.selectedBlockType());
+                m_modelViewInterface.leftClickControl(*m_model, *m_scrollArea, currentGridPosition, m_blockSelectWidget.selectedBlockType());
             } else {
                 m_modelViewInterface.leftMouseDrag(
-                    *m_model, *m_view, *m_scrollArea, currentGridPosition, m_previousGridClickPosition, m_blockSelectWidget.selectedBlockType());
+                    *m_model, *m_scrollArea, currentGridPosition, m_previousGridClickPosition, m_blockSelectWidget.selectedBlockType());
             }
             m_previousGridClickPosition = currentGridPosition;
         }

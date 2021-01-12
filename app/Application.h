@@ -27,7 +27,7 @@ namespace app {
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         RUN_MODE  runLevel();
         EDIT_MODE editLevel(ApplicationEdit& editApp);
-        void      handleWindowEvent();
+        void      handleResizeEvent();
 
         /****** DATA MEMBERS  ******/
         APP_MODE                  m_appMode  = APP_MODE::EDITING;

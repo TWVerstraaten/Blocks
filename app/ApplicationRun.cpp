@@ -72,7 +72,7 @@ namespace app {
         }
     }
 
-    void ApplicationRun::mouseMoveEvent(const SDL_Event& event) {
+    void ApplicationRun::mouseMoveEvent([[maybe_unused]] const SDL_Event& event) {
         if (m_rightMouseButtonPressed) {
             const auto mouseXY = view::Mouse::mouseXY();
             m_view->translate((mouseXY.x() - m_previousMousePosition.x()), mouseXY.y() - m_previousMousePosition.y());
@@ -128,7 +128,7 @@ namespace app {
             const auto dt = currentTime - m_previousTime;
             switch (m_currentStep) {
                 case CURRENT_STEP::MOVING:
-                    if (m_timeSinceLastStep >= m_timeStep) {
+                    if (static_cast<Uint32>(m_timeSinceLastStep) >= m_timeStep) {
                         initializeInteractStep();
                         m_timeSinceLastStep %= m_timeStep;
                     } else {
@@ -136,7 +136,7 @@ namespace app {
                     }
                     break;
                 case CURRENT_STEP::INTERACT:
-                    if (m_timeSinceLastStep >= m_timeStep) {
+                    if (static_cast<Uint32>(m_timeSinceLastStep) >= m_timeStep) {
                         initializeMovingStep();
                         m_timeSinceLastStep %= m_timeStep;
                         m_model.update(dt / static_cast<double>(m_timeStep));

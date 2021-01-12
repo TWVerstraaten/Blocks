@@ -14,10 +14,10 @@ namespace view ::widget {
       public:
         /****** PUBLIC VIRTUAL FUNCTIONS  ******/
         virtual void render(SDL_Renderer* renderer) = 0;
-        virtual void keyEvent(const SDL_Event& event){};
-        virtual void leftClickEvent(const SDL_Event& event){};
-        virtual void mouseDragEvent(const SDL_Event& event){};
-        virtual void mouseWheelEvent(const SDL_Event& event){};
+        virtual void keyEvent([[maybe_unused]] const SDL_Event& event){};
+        virtual void leftClickEvent([[maybe_unused]] const SDL_Event& event){};
+        virtual void mouseDragEvent([[maybe_unused]] const SDL_Event& event){};
+        virtual void mouseWheelEvent([[maybe_unused]] const SDL_Event& event){};
     };
 } // namespace view::widget
 

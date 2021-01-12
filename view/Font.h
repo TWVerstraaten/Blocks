@@ -21,7 +21,7 @@ namespace view {
         [[nodiscard]] TTF_Font* font() const;
 
         /****** CONST FUNCTIONS  ******/
-        [[nodiscard]] int widthOfString(const std::string& str) const;
+        [[nodiscard]] size_t widthOfString(const std::string& str) const;
 
       private:
         /****** DATA MEMBERS  ******/

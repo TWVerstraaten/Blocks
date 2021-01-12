@@ -16,9 +16,7 @@ model::CommandVector::CommandVector(const std::vector<std::string>& strings) {
 }
 
 bool model::CommandVector::wellFormed() const {
-    return std::all_of(__CIT(m_commands), [](const Command& command) {
-        return std::visit(overloaded{[](Command_Error e) { return false; }, [](auto) { return true; }}, command);
-    });
+    return std::all_of(__CIT(m_commands), [](const Command& command) { return not std::holds_alternative<Command_Error>(command); });
 }
 
 model::Command model::CommandVector::currentCommand() const {
@@ -62,7 +60,7 @@ void model::CommandVector::set(const std::vector<std::string>& strings) {
         return;
     }
     m_repeatCount =
-        std::visit(overloaded{[](Command_RepeatWrapper c) { return c.repeatCount - 1; }, [](auto c) { return 0; }}, m_commands[m_commandIndex]);
+        std::visit(overloaded{[](Command_RepeatWrapper c) { return c.repeatCount - 1; }, [](auto) { return 0; }}, m_commands[m_commandIndex]);
     std::transform(__CIT(strings), std::back_inserter(m_strings), [](const std::string& str) { return CommandParser::format(str); });
 }
 
@@ -92,14 +90,14 @@ model::COMMAND_TYPE model::CommandVector::getType(const model::Command& c) {
     return std::visit(overloaded{[](const model::Command_RepeatWrapper& e) { return getType(toCommand(e)); },
                                  [](const model::Command_Simple e) { return e.type; },
                                  [](const model::Command_Modified e) { return e.type; },
-                                 [](const auto& e) { return model::COMMAND_TYPE::NONE; }},
+                                 [](const auto&) { return model::COMMAND_TYPE::NONE; }},
                       c);
 }
 
 model::COMMAND_MODIFIER model::CommandVector::getModifier(const model::Command& c) {
     return std::visit(overloaded{[](const model::Command_RepeatWrapper& e) { return getModifier(toCommand(e)); },
                                  [](const model::Command_Modified e) { return e.modifier; },
-                                 [](const auto& e) { return model::COMMAND_MODIFIER::NONE; }},
+                                 [](auto) { return model::COMMAND_MODIFIER::NONE; }},
                       c);
 }
 
@@ -140,8 +138,8 @@ size_t model::CommandVector::getCurrentRepeatCount() const {
                       m_commands.at(m_commandIndex));
 }
 
-void model::CommandVector::increment(const model::Command_Jump& j) {
-    const auto& jumpLabel = j.label;
+void model::CommandVector::increment(const model::Command_Jump& commandJump) {
+    const auto& jumpLabel = commandJump.label;
     const auto  it =
         std::find_if(__CIT(m_commands),
                      __FUNC(command, std::visit(overloaded{[&](const Command_Label& l) { return l.label == jumpLabel; }, __FUNC(, false)}, command)));
@@ -150,13 +148,13 @@ void model::CommandVector::increment(const model::Command_Jump& j) {
     m_repeatCount  = getCurrentRepeatCount();
 }
 
-void model::CommandVector::increment(const model::Command_Simple& j) {
+void model::CommandVector::increment(const model::Command_Simple&) {
     ++m_commandIndex;
     m_commandIndex %= m_commands.size();
     m_repeatCount = getCurrentRepeatCount();
 }
 
-void model::CommandVector::increment(const model::Command_RepeatWrapper& j) {
+void model::CommandVector::increment(const model::Command_RepeatWrapper&) {
     if (m_repeatCount == 0) {
         ++m_commandIndex;
         m_commandIndex %= m_commands.size();

@@ -36,13 +36,13 @@ model::Command model::toCommand(const model::Command_RepeatWrapper& e) {
     return std::visit(__FUNC(c, static_cast<Command>(c)), e.command);
 }
 
-void model::doAction(const model::Command_Error& command, Cluster& cluster, Level& level) {
+void model::doAction([[maybe_unused]] const model::Command_Error& command, [[maybe_unused]] Cluster& cluster, [[maybe_unused]] Level& level) {
 }
 
-void model::doAction(const model::Command_Label& command, Cluster& cluster, Level& level) {
+void model::doAction([[maybe_unused]] const model::Command_Label& command, [[maybe_unused]] Cluster& cluster, [[maybe_unused]] Level& level) {
 }
 
-void model::doAction(const model::Command_Jump& command, Cluster& cluster, Level& level) {
+void model::doAction([[maybe_unused]] const model::Command_Jump& command, [[maybe_unused]] Cluster& cluster, [[maybe_unused]] Level& level) {
 }
 
 void model::doAction(const model::Command_Simple& command, Cluster& cluster, Level& level) {

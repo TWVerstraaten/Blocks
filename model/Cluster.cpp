@@ -23,7 +23,7 @@ namespace model {
     }
 
     Cluster::Cluster(GridXYSet&& gridXY, const CommandVector& commandVector, std::string name)
-        : m_index(s_maxClusterIndex), m_gridXYSet(gridXY), m_commandVector(std::move(commandVector)), m_name(std::move(name)) {
+        : m_index(s_maxClusterIndex), m_commandVector(commandVector), m_gridXYSet(gridXY), m_name(std::move(name)) {
         ++s_maxClusterIndex;
     }
 
@@ -359,11 +359,13 @@ namespace model {
 
     void Cluster::spliceCluster(Level& level) {
         GridXYSet   splicedGridXY;
-        const auto& spliceBlocks = level.spliceBlocks();
+        const auto& floorBlocks = level.floorBlocks();
         for (const auto& gridXY : m_gridXYSet) {
-            if (spliceBlocks.find(gridXY) != spliceBlocks.end()) {
-                splicedGridXY.emplace(gridXY);
+            const auto it = floorBlocks.find(gridXY);
+            if (it == floorBlocks.end() || it->second != FLOOR_BLOCK_TYPE::SPLICE) {
+                continue;
             }
+            splicedGridXY.emplace(gridXY);
         }
         if (splicedGridXY.empty()) {
             return;

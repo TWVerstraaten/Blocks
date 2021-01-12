@@ -86,7 +86,7 @@ namespace view::widget {
     void LineEditBox::renderComments(SDL_Renderer* renderer) const {
         for (const auto& [index, comment] : m_comments) {
             m_assets->renderText(comment,
-                                 view::ScreenXY{m_rect.x + m_rect.w - widthOfString(comment), m_rect.y + m_yOffsets[index]},
+                                 view::ScreenXY{m_rect.x + m_rect.w - static_cast<int>(widthOfString(comment)), m_rect.y + m_yOffsets[index]},
                                  renderer,
                                  FONT_ENUM::MAIN,
                                  color::DARK_GREY);
@@ -184,7 +184,7 @@ namespace view::widget {
                 break;
             case SDLK_x:
                 copyIfSelectionNotEmpty();
-                deleteRange(m_selectionData.m_first, m_selectionData.m_last);
+                deleteRange();
                 break;
             default:
                 break;
@@ -215,7 +215,7 @@ namespace view::widget {
         }
     }
 
-    void LineEditBox::mouseDragEvent(const SDL_Event& event) {
+    void LineEditBox::mouseDragEvent([[maybe_unused]] const SDL_Event& event) {
         const auto mousePoint = Mouse::mouseXY();
         getSelectionFromMousePoint(
             m_selectionData.m_last,
@@ -311,7 +311,7 @@ namespace view::widget {
                           renderer);
     }
 
-    int LineEditBox::widthOfString(const std::string& string) const {
+    size_t LineEditBox::widthOfString(const std::string& string) const {
         return m_assets->font(FONT_ENUM::MAIN)->widthOfString(string);
     }
 
@@ -328,12 +328,12 @@ namespace view::widget {
                 removeCharacterAfter(m_selectionData.m_first);
                 break;
             case SelectionData::MODE::DOUBLE:
-                deleteRange(m_selectionData.m_first, m_selectionData.m_last);
+                deleteRange();
                 break;
         }
     }
 
-    void LineEditBox::deleteRange(const SelectionData::Data& asda, const SelectionData::Data& asdas) {
+    void LineEditBox::deleteRange() {
         assert(m_selectionData.m_mode == SelectionData::MODE::DOUBLE);
         if (SelectionData::isReversed(m_selectionData.m_first, m_selectionData.m_last)) {
             std::swap(m_selectionData.m_first, m_selectionData.m_last);
@@ -364,7 +364,7 @@ namespace view::widget {
                 splitAtFirstSelectionData();
                 break;
             case SelectionData::MODE::DOUBLE:
-                deleteRange(m_selectionData.m_first, m_selectionData.m_last);
+                deleteRange();
                 splitAtFirstSelectionData();
                 break;
         }
@@ -431,7 +431,7 @@ namespace view::widget {
                 removeCharacterAfter(m_selectionData.m_first);
                 break;
             case SelectionData::MODE::DOUBLE:
-                deleteRange(m_selectionData.m_first, m_selectionData.m_last);
+                deleteRange();
                 setNeedsUpdate();
                 break;
         }
@@ -470,7 +470,7 @@ namespace view::widget {
 
     void LineEditBox::insertText(const std::string& text) {
         if (m_selectionData.m_mode == SelectionData::MODE::DOUBLE) {
-            deleteRange(m_selectionData.m_first, m_selectionData.m_last);
+            deleteRange();
         }
         assert(m_selectionData.m_mode == SelectionData::MODE::SINGLE);
         if (text.length() == 0) {

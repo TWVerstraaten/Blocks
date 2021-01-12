@@ -73,7 +73,7 @@ namespace app {
                         break;
                     case SDL_WINDOWEVENT:
                         if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                            handleWindowEvent();
+                            handleResizeEvent();
                         }
                         break;
                     case SDL_KEYDOWN:
@@ -95,7 +95,10 @@ namespace app {
                                     m_timeStep = TIME_STEP_FAST;
                                     return EDIT_MODE::DONE_EDITING;
                             }
+                        } else {
+                            editApp.handleEvent(event);
                         }
+                        break;
                     default:
                         editApp.handleEvent(event);
                 }
@@ -113,8 +116,8 @@ namespace app {
 
     RUN_MODE Application::runLevel() {
         m_appMode = APP_MODE::RUNNING;
-        SDL_Event       event;
-        ApplicationRun  runApp(m_model, &m_view, m_scrollArea);
+        SDL_Event      event;
+        ApplicationRun runApp(m_model, &m_view, m_scrollArea);
         m_runningScrollArea = &runApp.scrollArea();
         runApp.setTimeStep(m_timeStep);
         RUN_MODE currentMode;
@@ -127,8 +130,9 @@ namespace app {
                         break;
                     case SDL_WINDOWEVENT:
                         if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                            handleWindowEvent();
+                            handleResizeEvent();
                         }
+                        break;
                     default:
                         runApp.handleEvent(event);
                 }
@@ -144,7 +148,7 @@ namespace app {
         return RUN_MODE::QUIT;
     }
 
-    void Application::handleWindowEvent() {
+    void Application::handleResizeEvent() {
         const auto windowSize = m_view.windowSize();
         m_scrollArea.setX(windowSize.x() - view::widget::COMMAND_SCROLL_AREA_WIDTH);
         m_scrollArea.setHeight(windowSize.y());

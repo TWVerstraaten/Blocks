@@ -6,15 +6,15 @@
 
 #include "../../global/defines.h"
 #include "../../global/overloaded.h"
-#include "Command_Jump.h"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
+#include <utility>
 
 namespace model {
 
     template <typename... A>
-    Command f(A... a) {
+    Command f([[maybe_unused]] A... a) {
         return Command_Error{};
     }
 
@@ -39,13 +39,13 @@ namespace model {
     }
 
     template <>
-    Command f<>(COMMAND_LABEL t, std::string s) {
-        return Command_Label{s};
+    Command f<>([[maybe_unused]] COMMAND_LABEL t, std::string s) {
+        return Command_Label{std::move(s)};
     }
 
     template <>
-    Command f<>(COMMAND_JUMP t, std::string s) {
-        return Command_Jump{s};
+    Command f<>([[maybe_unused]] COMMAND_JUMP t, std::string s) {
+        return Command_Jump{std::move(s)};
     }
 
     Command CommandParser::parseString(const std::string& string) {
@@ -90,7 +90,7 @@ namespace model {
     std::string CommandParser::toString(const Token& token) {
         return std::visit(overloaded{[](int i) { return i == std::numeric_limits<int>::max() ? "INF" : std::to_string(i); },
                                      [](const std::string& str) { return std::all_of(__CIT(str), __FUNC(c, std::isalnum(c))) ? str : "Error"; },
-                                     [token](const auto& t) {
+                                     [&](auto) {
                                          for (const auto& [str, t] : s_allTokens) {
                                              if (t == token) {
                                                  return str;
@@ -151,8 +151,7 @@ namespace model {
         if (string.at(index) == '#') {
             return STRING_TYPE::COMMENT;
         }
-        return std::visit(overloaded{[](Command_Error e) { return STRING_TYPE::ERROR; }, [](auto e) { return STRING_TYPE::ACTION; }},
-                          parseString(string));
+        return std::holds_alternative<Command_Error>(parseString(string)) ? STRING_TYPE::ERROR : STRING_TYPE::ACTION;
     }
 
 } // namespace model

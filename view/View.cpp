@@ -7,6 +7,7 @@
 #include "../global/geom.h"
 #include "../model/Model.h"
 #include "View_constants.h"
+#include "toColor.h"
 #include "widget/BlockSelectWidget.h"
 #include "widget/ScrollArea.h"
 
@@ -94,9 +95,14 @@ namespace view {
     }
 
     void View::drawLevel(const Level& level) const {
-        drawDisconnected(level.levelBlocks(), view::color::BACKGROUND_PLAYABLE);
-        drawDisconnected(level.startBlocks(), view::color::BACKGROUND_START);
-        drawDisconnected(level.spliceBlocks(), view::color::BACKGROUND_SPLICE);
+        const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
+        const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
+        const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
+
+        for (const auto& [block, type] : level.floorBlocks()) {
+            const auto position = ScreenXY::fromGridXY(block, m_viewPort) + shrinkInScreenXY;
+            drawSquare(position, shrunkBlockSize, toColor(type));
+        }
 
         for (auto stoppedCluster : level.stoppedClusters()) {
             drawConnected(stoppedCluster.gridXY(), view::color::DARK_GREY);
@@ -260,7 +266,7 @@ namespace view {
 
         auto texture = m_assets->getTexture(textureEnum, shrunkBlockSize, shrunkBlockSize);
         texture->setColor(color);
-        for (const auto block : blocks) {
+        for (const auto& block : blocks) {
             const auto position = ScreenXY::fromGridXY(block, m_viewPort) + shrinkInScreenXY;
             texture->render({position.x(), position.y(), shrunkBlockSize, shrunkBlockSize}, m_renderer);
         }

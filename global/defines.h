@@ -19,7 +19,7 @@
 
 #define __IT(x) x.begin(), x.end()
 #define __CIT(x) x.cbegin(), x.cend()
-#define __FUNC(name, f) [&](const auto& name) { return f; }
-#define __FUNC_2(name1, name2, f) [&](const auto& name1, const auto& name2) { return f; }
+#define __FUNC(name, f) [&]([[maybe_unused]] const auto& name) { return f; }
+#define __FUNC_2(name1, name2, f) [&]([[maybe_unused]] const auto& name1, [[maybe_unused]] const auto& name2) { return f; }
 
 #endif // BLOCKS_DEFINES_H

@@ -11,6 +11,7 @@
 #include "../Mouse.h"
 #include "../Rectangle.h"
 #include "../View.h"
+#include "../toColor.h"
 #include "RectWidget_constants.h"
 
 #include <cassert>
@@ -26,12 +27,7 @@ namespace view::widget {
 
         for (const BlockType type : s_allTypes) {
             std::visit(overloaded{[renderer, this](const model::FLOOR_BLOCK_TYPE type) {
-                                      view::View::drawSquare(screenXY(type),
-                                                             app::BLOCK_SIZE_IN_WORLD,
-                                                             type == model::FLOOR_BLOCK_TYPE::LEVEL   ? view::color::BACKGROUND_PLAYABLE
-                                                             : type == model::FLOOR_BLOCK_TYPE::START ? view::color::BACKGROUND_START
-                                                                                                      : view::color::BACKGROUND_SPLICE,
-                                                             renderer);
+                                      view::View::drawSquare(screenXY(type), app::BLOCK_SIZE_IN_WORLD, toColor(type), renderer);
                                   },
                                   [renderer, this](const CLUSTER_TYPE type) {
                                       m_assets->renderTexture(
@@ -49,7 +45,7 @@ namespace view::widget {
         }
     }
 
-    void BlockSelectWidget::leftClickEvent(const SDL_Event& event) {
+    void BlockSelectWidget::leftClickEvent([[maybe_unused]] const SDL_Event& event) {
         setSelectedBlock(Mouse::mouseXY());
     }
 

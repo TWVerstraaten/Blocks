@@ -138,7 +138,7 @@ void view::widget::CommandEditBox::updateSelected(const model::CommandVector& co
 }
 
 size_t view::widget::CommandEditBox::findNthNonTransparent(size_t n) const {
-    assert(std::count_if(__CIT(m_strings), __FUNC(str, not model::CommandParser::isCommentOrEmpty(str))) > n);
+    assert(std::count_if(__CIT(m_strings), __FUNC(str, not model::CommandParser::isCommentOrEmpty(str))) > static_cast<int>(n));
     for (size_t i = 0; i != m_strings.size(); ++i) {
         if (not model::CommandParser::isCommentOrEmpty(m_strings.at(i))) {
             if (n == 0) {

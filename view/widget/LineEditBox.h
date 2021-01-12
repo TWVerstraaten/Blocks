@@ -59,11 +59,11 @@ namespace view {
             void renderSelection(SDL_Renderer* renderer) const;
             void renderHighlightIfSelected(SDL_Renderer* renderer) const;
             void highlightRange(const SelectionData::Data& first, const SelectionData::Data& last, SDL_Renderer* renderer, HIGHLIGHT_MODE mode) const;
-            [[nodiscard]] int               widthOfString(const std::string& string) const;
+            [[nodiscard]] size_t            widthOfString(const std::string& string) const;
             [[nodiscard]] const SDL_Color&  getHighlightColor(HIGHLIGHT_MODE mode) const;
             [[nodiscard]] const std::string selectionToString(const SelectionData::Data& first, const SelectionData::Data& last) const;
-            [[nodiscard]] std::string prefixOfString(const SelectionData::Data& data) const;
-            [[nodiscard]] std::string suffixOfString(const SelectionData::Data& data) const;
+            [[nodiscard]] std::string       prefixOfString(const SelectionData::Data& data) const;
+            [[nodiscard]] std::string       suffixOfString(const SelectionData::Data& data) const;
 
             /****** PRIVATE NON CONST FUNCTIONS  ******/
             void moveFirstSelectionOneDown();
@@ -73,7 +73,7 @@ namespace view {
             void doBackSpace();
             void doDelete();
             void doReturn(bool shiftPressed = false);
-            void deleteRange(const SelectionData::Data& first, const SelectionData::Data& last);
+            void deleteRange();
             void splitAtFirstSelectionData();
             void moveUp();
             void moveDown();

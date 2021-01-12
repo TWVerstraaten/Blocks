@@ -17,6 +17,7 @@ namespace model {
                                                    DYNAMIC_BLOCK_TYPE::ROTATE_CCW,
                                                    DYNAMIC_BLOCK_TYPE::ROTATE_CW,
                                                    FLOOR_BLOCK_TYPE::LEVEL,
+                                                   FLOOR_BLOCK_TYPE::CONWAY,
                                                    FLOOR_BLOCK_TYPE::START,
                                                    FLOOR_BLOCK_TYPE::SPLICE};
 } // namespace model

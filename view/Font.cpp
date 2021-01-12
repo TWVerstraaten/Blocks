@@ -32,9 +32,10 @@ namespace view {
         }
     }
 
-    int Font::widthOfString(const std::string& str) const {
+    size_t Font::widthOfString(const std::string& str) const {
         int w;
         TTF_SizeText(m_font, str.c_str(), &w, nullptr);
+        assert(w >= 0);
         return w;
     }
 } // namespace view

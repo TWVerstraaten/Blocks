@@ -32,13 +32,11 @@ namespace model {
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] bool                                        isFreeStartBlock(const GridXY& gridXY) const;
-        [[nodiscard]] const GridXYSet&                            levelBlocks() const;
-        [[nodiscard]] const GridXYSet&                            startBlocks() const;
-        [[nodiscard]] const GridXYSet&                            spliceBlocks() const;
         [[nodiscard]] const WorldLineSet&                         boundaries() const;
         [[nodiscard]] const std::map<GridXY, DYNAMIC_BLOCK_TYPE>& dynamicBlocks() const;
         [[nodiscard]] const std::map<GridXY, INSTANT_BLOCK_TYPE>& instantBlocks() const;
         [[nodiscard]] const std::list<Cluster>&                   stoppedClusters() const;
+        [[nodiscard]] const std::map<GridXY, FLOOR_BLOCK_TYPE>&   floorBlocks() const;
 
         /****** NON CONST FUNCTIONS  ******/
         void                clear();
@@ -63,9 +61,6 @@ namespace model {
         std::map<GridXY, DYNAMIC_BLOCK_TYPE> m_dynamicBLocks;
         std::map<GridXY, INSTANT_BLOCK_TYPE> m_instantBLocks;
         std::map<GridXY, FLOOR_BLOCK_TYPE>   m_floorBlocks;
-        GridXYSet                            m_levelBlocks;
-        GridXYSet                            m_spliceBlocks;
-        GridXYSet                            m_startBlocks;
         WorldLineSet                         m_boundaries;
         std::list<Cluster>                   m_stoppedClusters;
     };

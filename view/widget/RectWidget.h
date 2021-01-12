@@ -19,7 +19,7 @@ namespace view::widget {
 
         /****** PUBLIC VIRTUAL FUNCTIONS  ******/
         virtual void loseFocus();
-        virtual void update(SDL_Renderer* renderer){};
+        virtual void update([[maybe_unused]] SDL_Renderer* renderer){};
         virtual void setHeight(int height);
         virtual void setX(int x);
 

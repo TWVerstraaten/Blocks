@@ -29,7 +29,7 @@ namespace view {
 
         /****** DATA MEMBERS  ******/
         SDL_Rect  m_rect;
-        SDL_Color m_color = {0, 0, 0};
+        SDL_Color m_color = {0, 0, 0, 255};
     };
 } // namespace view
 #endif // BLOCKS_RECTANGLE_H

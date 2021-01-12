@@ -47,7 +47,7 @@ namespace model {
         static COMMAND_MODIFIER getModifier(const Command& c);
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
-        void increment(const Command_Jump& j);
+        void increment(const Command_Jump& commandJump);
         void increment(const Command_Simple& j);
         void increment(const Command_RepeatWrapper& j);
 

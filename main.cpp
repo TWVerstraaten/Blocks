@@ -2,7 +2,7 @@
 
 #include "app/Application.h"
 
-int main(int argc, char* argv[]) {
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
     app::Application applicationLevel;
     applicationLevel.run();
     return 0;
