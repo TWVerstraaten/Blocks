@@ -6,7 +6,7 @@
 
 namespace view2 {
     TextEdit::TextEdit(QWidget* parent) : QTextEdit(parent) {
-        QFont font("Times", 10, QFont::Bold);
+        QFont font("UbuntuMono-Regular", 10, QFont::Normal);
         setFont(font);
         connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);

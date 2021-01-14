@@ -29,7 +29,9 @@ find_package(Qt5Widgets REQUIRED)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+if (WIN32)
 set(QT_QPA_PLATFORM_PLUGIN_PATH "C:\\Projects\\Qt\\5.15.2\\mingw81_64\\plugins\\platforms")
+endif (WIN32)
 
 qt5_add_resources(SOURCES textures.qrc)
 qt5_add_resources(SOURCES shaders.qrc)

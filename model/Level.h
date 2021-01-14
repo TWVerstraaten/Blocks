@@ -37,7 +37,6 @@ namespace model {
         [[nodiscard]] const std::map<GridXY, INSTANT_BLOCK_TYPE>& instantBlocks() const;
         [[nodiscard]] const std::list<Cluster>&                   stoppedClusters() const;
         [[nodiscard]] const std::map<GridXY, FLOOR_BLOCK_TYPE>&   floorBlocks() const;
-        [[nodiscard]] std::set<GridXY>                            spliceBlocks() const;
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] GridXYSet blocks(FLOOR_BLOCK_TYPE blockType) const;
