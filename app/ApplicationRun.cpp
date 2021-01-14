@@ -5,8 +5,11 @@
 #include "ApplicationRun.h"
 
 #include "../global/defines.h"
+#include "../global/geom.h"
 #include "../view/Mouse.h"
 #include "ModelViewInterface.h"
+
+#include <cassert>
 
 namespace app {
     ApplicationRun::ApplicationRun(const model::Model& model, view::View* view, const view::widget::ScrollArea& scrollArea)
@@ -97,6 +100,13 @@ namespace app {
             }
         }
         ModelViewInterface::interactWithInstantBlocks(m_model, m_scrollArea);
+        doConwayStep();
+
+        for (auto& cluster : m_model.clusters()) {
+            ModelViewInterface::splitIfDisconnected(m_model, m_scrollArea, cluster);
+        }
+
+        m_model.level().createBoundaries();
         ModelViewInterface::removeActionBoxesOfRemovedClusters(m_model.clusters(), m_scrollArea);
         ModelViewInterface::updateSelection(m_model.clusters(), m_scrollArea);
         m_currentStep = CURRENT_STEP::INTERACT;
@@ -108,6 +118,7 @@ namespace app {
             ModelViewInterface::stopSpliceOrKillIfNeeded(m_model.level(), cluster);
         }
         addStoppedClustersToLevel();
+        killDoubleGrabbers();
         for (auto& cluster : m_model.clusters()) {
             if (not ModelViewInterface::interactWithDynamicBlocks(m_model.level(), cluster)) {
                 cluster.doCommand(m_model);
@@ -178,7 +189,7 @@ namespace app {
     }
 
     void ApplicationRun::addStoppedClustersToLevel() {
-        auto it = std::partition(__IT(m_model.clusters()), __FUNC(cluster, cluster.state() != model::CLUSTER_STATE::STOPPED));
+        auto it = std::partition(D_IT(m_model.clusters()), D_FUNC(cluster, cluster.state() != model::CLUSTER_STATE::STOPPED));
         m_model.level().stoppedClusters().splice(m_model.level().stoppedClusters().end(), m_model.clusters(), it, m_model.clusters().end());
     }
 
@@ -186,5 +197,77 @@ namespace app {
         m_view->draw(m_model);
         m_view->drawScrollArea(&m_scrollArea);
         m_view->renderPresent();
+    }
+
+    void ApplicationRun::killDoubleGrabbers() {
+        std::vector<model::Cluster*> killList;
+        for (auto& stoppedCluster : m_model.level().stoppedClusters()) {
+            const auto                   adjacentClusters = geom::neighbors(m_model.clusters(), stoppedCluster);
+            std::vector<model::Cluster*> grabbers;
+            std::copy_if(D_CIT(adjacentClusters),
+                         std::back_inserter(grabbers),
+                         D_FUNC(cluster, cluster->commandVector().currentType() == model::COMMAND_TYPE::GRB));
+            if (grabbers.size() > 1) {
+                std::copy(D_IT(grabbers), std::back_inserter(killList));
+            }
+        }
+        for (auto* cluster : killList) {
+            cluster->kill();
+        }
+    }
+
+    void ApplicationRun::doConwayStep() {
+        std::vector<model::GridXY> toRemove;
+        std::vector<model::GridXY> toAdd;
+        const auto                 conwayBlocks = m_model.level().blocks(model::FLOOR_BLOCK_TYPE::CONWAY);
+        for (const auto conwayBlock : conwayBlocks) {
+            size_t neighborCount = 0;
+            for (int i = -1; i <= 1; ++i) {
+                for (int j = -1; j <= 1; ++j) {
+                    if (i == 0 && j == 0) {
+                        continue;
+                    }
+                    const auto adjacentBlock = conwayBlock + model::GridXY{i, j};
+                    if ((not m_model.noLiveOrStoppedClusterOnBlock(adjacentBlock))) {
+                        ++neighborCount;
+                    }
+                }
+            }
+            //            static const std::vector<size_t> B = {3, 6, 7, 8};
+            //            static const std::vector<size_t> S = {3, 4, 6, 7, 8};
+            static const std::vector<size_t> B        = {3};
+            static const std::vector<size_t> S        = {2, 3};
+            const bool                       occupied = not m_model.noLiveOrStoppedClusterOnBlock(conwayBlock);
+            if (occupied && (std::find(D_CIT(S), neighborCount) == S.end())) {
+                toRemove.emplace_back(conwayBlock);
+            } else if ((not occupied) && (std::find(D_CIT(B), neighborCount) != B.end())) {
+                toAdd.emplace_back(conwayBlock);
+            }
+        }
+        for (const auto& remove : toRemove) {
+            auto it = m_model.clusterContaining(remove);
+            if (it != m_model.clusters().end()) {
+                it->removeBLock(remove);
+            } else {
+                it = std::find_if(D_IT(m_model.level().stoppedClusters()), D_FUNC(cluster, cluster.contains(remove)));
+                assert(it != m_model.level().stoppedClusters().end());
+                it->removeBLock(remove);
+            }
+        }
+        for (const auto& add : toAdd) {
+            const auto neighbors = geom::neighbors(m_model.clusters(), add);
+            if (neighbors.size() == 1) {
+                neighbors.front()->addGridXY(add);
+            } else {
+                const auto stoppedNeighbors = geom::neighbors(m_model.level().stoppedClusters(), add);
+                if (stoppedNeighbors.size() == 1) {
+                    stoppedNeighbors.front()->addGridXY(add);
+                } else {
+                    m_model.level().stoppedClusters().emplace_back(model::GridXYSet{add}, "Conway");
+                }
+            }
+        }
+        m_model.clusters().remove_if(D_FUNC(cluster, cluster.isEmpty()));
+        m_model.level().stoppedClusters().remove_if(D_FUNC(cluster, cluster.isEmpty()));
     }
 } // namespace app

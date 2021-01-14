@@ -39,6 +39,9 @@ namespace model {
         [[nodiscard]] const std::map<GridXY, FLOOR_BLOCK_TYPE>&   floorBlocks() const;
         [[nodiscard]] std::set<GridXY>                            spliceBlocks() const;
 
+        /****** CONST FUNCTIONS  ******/
+        [[nodiscard]] GridXYSet blocks(FLOOR_BLOCK_TYPE blockType) const;
+
         /****** NON CONST FUNCTIONS  ******/
         void                clear();
         void                createBoundaries();

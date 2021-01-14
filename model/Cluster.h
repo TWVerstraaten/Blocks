@@ -36,29 +36,31 @@ namespace model {
         Cluster(Cluster&& other)      = default;
         Cluster& operator=(const Cluster& other) = default;
         Cluster& operator=(Cluster&& other) = default;
-        Cluster(GridXYSet&& gridXY, const CommandVector& commandVector, std::string name);
+        Cluster(GridXYSet&& gridXY, CommandVector commandVector, std::string name);
 
         /****** CONST GETTERS  ******/
-        [[nodiscard]] double               angle() const;
-        [[nodiscard]] size_t               index() const;
-        [[nodiscard]] size_t               size() const;
-        [[nodiscard]] CLUSTER_STATE        state() const;
-        [[nodiscard]] COMMAND_MODIFIER     currentModifier() const;
-        [[nodiscard]] WorldXY              dynamicWorldOffset() const;
-        [[nodiscard]] WorldXY              approximateCenter() const;
-        [[nodiscard]] std::string          string() const;
-        [[nodiscard]] WorldXYSet           cornerPoints(int shrinkInWorld) const;
-        [[nodiscard]] WorldLineSet         sides(int shrinkInWorld) const;
-        [[nodiscard]] const GridXY&        rotationPivot() const;
-        [[nodiscard]] const std::string&   name() const;
-        [[nodiscard]] const GridXYSet&     gridXY() const;
-        [[nodiscard]] const CommandVector& commandVector() const;
+        [[nodiscard]] double                angle() const;
+        [[nodiscard]] size_t                index() const;
+        [[nodiscard]] size_t                size() const;
+        [[nodiscard]] CLUSTER_STATE         state() const;
+        [[nodiscard]] PENDING_DYNAMIC_MOVES pendingDynamicMoves() const;
+        [[nodiscard]] COMMAND_MODIFIER      currentModifier() const;
+        [[nodiscard]] WorldXY               dynamicWorldOffset() const;
+        [[nodiscard]] WorldXY               approximateCenter() const;
+        [[nodiscard]] std::string           string() const;
+        [[nodiscard]] WorldXYSet            cornerPoints(int shrinkInWorld) const;
+        [[nodiscard]] WorldLineSet          sides(int shrinkInWorld) const;
+        [[nodiscard]] const GridXY&         rotationPivot() const;
+        [[nodiscard]] const std::string&    name() const;
+        [[nodiscard]] const GridXYSet&      gridXY() const;
+        [[nodiscard]] const CommandVector&  commandVector() const;
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] bool                                   isEmpty() const;
         [[nodiscard]] bool                                   isAlive() const;
         [[nodiscard]] bool                                   isConnected() const;
-        [[nodiscard]] bool                                   isAdjacent(const Cluster& point2) const;
+        [[nodiscard]] bool                                   isAdjacent(const Cluster& other) const;
+        [[nodiscard]] bool                                   gridXYIsAdjacent(const GridXY& point) const;
         [[nodiscard]] bool                                   contains(const GridXY& gridXY) const;
         [[nodiscard]] bool                                   intersects(const Cluster& other, int shrinkInWorld) const;
         [[nodiscard]] std::function<WorldXY(const WorldXY&)> phaseTransformation() const;
@@ -77,6 +79,7 @@ namespace model {
         void                setWorldOffset(const WorldXY& worldOffset);
         void                setPhase(PHASE phase);
         void                resetPhase();
+        void                setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves);
         void                spliceCluster(Level& level);
         Cluster             grabAllButFirstComponent();
         CommandVector&      commandVector();
@@ -91,9 +94,6 @@ namespace model {
         friend void          doAction(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
 
       private:
-        /****** PRIVATE  CONST FUNCTIONS  ******/
-        [[nodiscard]] bool gridXUYAreUnique() const;
-
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void rotateClockWiseAbout(const GridXY& pivotGridXY);
         void rotateCounterClockWiseAbout(const GridXY& pivotGridXY);
@@ -101,17 +101,18 @@ namespace model {
         void grabAdjacentStoppedClusters(Level& level);
 
         /****** DATA MEMBERS  ******/
-        CLUSTER_STATE m_state         = CLUSTER_STATE::ALIVE;
-        double        m_phaseFraction = 0.0;
-        double        m_angle         = 0.0;
-        size_t        m_index;
-        PHASE         m_phase         = PHASE::NONE;
-        WorldXY       m_worldOffset   = {0, 0};
-        GridXY        m_rotationPivot = {0, 0};
-        CommandVector m_commandVector;
-        GridXYSet     m_gridXYSet;
-        WorldLineSet  m_sides;
-        std::string   m_name;
+        double                m_phaseFraction = 0.0;
+        double                m_angle         = 0.0;
+        size_t                m_index;
+        PENDING_DYNAMIC_MOVES m_pendingDynamicMoves = PENDING_DYNAMIC_MOVES::ZERO;
+        CLUSTER_STATE         m_state               = CLUSTER_STATE::ALIVE;
+        PHASE                 m_phase               = PHASE::NONE;
+        WorldXY               m_worldOffset         = {0, 0};
+        GridXY                m_rotationPivot       = {0, 0};
+        CommandVector         m_commandVector;
+        GridXYSet             m_gridXYSet;
+        WorldLineSet          m_sides;
+        std::string           m_name;
     };
 
 } // namespace model

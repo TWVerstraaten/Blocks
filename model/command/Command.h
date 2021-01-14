@@ -18,7 +18,7 @@ namespace model {
 
     typedef std::variant<Command_Simple, Command_Modified, Command_RepeatWrapper, Command_Label, Command_Jump, Command_Error> Command;
 
-    Command toCommand(const Command_RepeatWrapper& e);
+    Command toCommand(const Command_RepeatWrapper& repeatWrapper);
 
     class Cluster;
     class Level;

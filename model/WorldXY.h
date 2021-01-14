@@ -40,6 +40,7 @@ namespace model {
         friend bool    operator==(const WorldXY& lhs, const WorldXY& rhs);
         friend WorldXY operator-(const WorldXY& lhs, const WorldXY& rhs);
         friend WorldXY operator+(const WorldXY& lhs, const WorldXY& rhs);
+        friend WorldXY operator/(const WorldXY& lhs, double a);
 
       private:
         /****** PRIVATE STATIC FUNCTIONS  ******/

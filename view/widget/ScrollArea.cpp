@@ -6,7 +6,6 @@
 
 #include "../../global/defines.h"
 #include "../../global/geom.h"
-#include "../../model/Cluster.h"
 #include "../Mouse.h"
 #include "../Rectangle.h"
 #include "LineEditBox_constants.h"
@@ -166,9 +165,9 @@ void view::widget::ScrollArea::setX(int x) {
 }
 
 std::list<view::widget::CommandEditBox>::iterator view::widget::ScrollArea::findCommandEditBox(size_t index) {
-    return std::find_if(__IT(m_children), [index](const auto& commandEditBox) { return commandEditBox.index() == index; });
+    return std::find_if(D_IT(m_children), [index](const auto& commandEditBox) { return commandEditBox.index() == index; });
 }
 
 bool view::widget::ScrollArea::hasChildWithFocus() const {
-    return std::any_of(__CIT(m_children), __FUNC(box, box.hasFocus()));
+    return std::any_of(D_CIT(m_children), D_FUNC(box, box.hasFocus()));
 }

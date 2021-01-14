@@ -24,7 +24,7 @@ namespace model {
         [[nodiscard]] const std::list<Cluster>& clusters() const;
 
         /****** CONST FUNCTIONS  ******/
-        [[nodiscard]] bool noClusterOnBlock(const GridXY& gridXY) const;
+        [[nodiscard]] bool noLiveOrStoppedClusterOnBlock(const GridXY& gridXY) const;
 
         /****** NON CONST FUNCTIONS  ******/
         void                         init();

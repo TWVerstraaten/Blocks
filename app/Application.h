@@ -20,6 +20,8 @@ namespace app {
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         Application();
 
+        const model::Model& model() const;
+
         /****** NON CONST FUNCTIONS  ******/
         void run();
 

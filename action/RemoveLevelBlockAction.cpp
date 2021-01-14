@@ -13,11 +13,11 @@ action::RemoveLevelBlockAction::RemoveLevelBlockAction(
 }
 
 void action::RemoveLevelBlockAction::undoAction(app::ApplicationEdit& applicationEdit) {
-    std::visit(__FUNC(type, applicationEdit.model()->level().addBlock(m_point, type)), m_blockType);
+    std::visit(D_FUNC(type, applicationEdit.model()->level().addBlock(m_point, type)), m_blockType);
 }
 
 void action::RemoveLevelBlockAction::redoAction(app::ApplicationEdit& applicationEdit) {
-    std::visit(__FUNC(type, applicationEdit.model()->level().removeBlock(m_point)), m_blockType);
+    std::visit(D_FUNC(type, applicationEdit.model()->level().removeBlock(m_point)), m_blockType);
 }
 
 action::ACTION_TYPE action::RemoveLevelBlockAction::type() const {

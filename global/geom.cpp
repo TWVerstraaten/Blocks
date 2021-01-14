@@ -17,7 +17,7 @@
 namespace geom {
 
     bool intersect(const model::WorldLineSet& lines1, const model::WorldLineSet& lines2) {
-        return std::any_of(__CIT(lines1), __FUNC(line1, std::any_of(__CIT(lines2), __FUNC(line2, intersect(line1, line2)))));
+        return std::any_of(D_CIT(lines1), D_FUNC(line1, std::any_of(D_CIT(lines2), D_FUNC(line2, intersect(line1, line2)))));
     }
 
     model::WorldLineSet getSidesFromGridXY(const model::GridXYSet& blocks) {
@@ -41,7 +41,7 @@ namespace geom {
             }
         }
         assert(cornerPoints.size() % 2 == 0);
-        std::sort(__IT(cornerPoints), __FUNC_2(lhs, rhs, lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x()));
+        std::sort(D_IT(cornerPoints), D_FUNC_2(lhs, rhs, lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x()));
         for (auto it = cornerPoints.begin(); it != cornerPoints.end(); it += 2) {
             result.emplace(model::WorldLine{*it, *std::next(it)});
         }
@@ -90,7 +90,7 @@ namespace geom {
 
     int minX(const model::GridXYSet& blocks) {
         assert(not blocks.empty());
-        return std::min_element(__CIT(blocks), __FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
+        return std::min_element(D_CIT(blocks), D_FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
     }
 
     int minY(const model::GridXYSet& blocks) {
@@ -100,11 +100,31 @@ namespace geom {
 
     int maxX(const model::GridXYSet& blocks) {
         assert(not blocks.empty());
-        return std::max_element(__CIT(blocks), __FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
+        return std::max_element(D_CIT(blocks), D_FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
     }
 
     int maxY(const model::GridXYSet& blocks) {
         assert(not blocks.empty());
         return blocks.rbegin()->y();
+    }
+
+    std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, model::GridXY point) {
+        std::vector<model::Cluster*> result;
+        std::for_each(D_IT(clusters), [&](auto& cluster) {
+            if (cluster.gridXYIsAdjacent(point)) {
+                result.push_back(&cluster);
+            }
+        });
+        return result;
+    }
+
+    std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, const model::Cluster& cluster) {
+        std::vector<model::Cluster*> result;
+        std::for_each(D_IT(clusters), [&](auto& candidate) {
+            if (candidate.isAdjacent(cluster)) {
+                result.push_back(&candidate);
+            }
+        });
+        return result;
     }
 } // namespace geom

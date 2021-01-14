@@ -22,6 +22,20 @@ namespace view {
         }
         return color::WHITE;
     }
+
+    constexpr const QColor& getColor(model::FLOOR_BLOCK_TYPE type) {
+        switch (type) {
+            case model::FLOOR_BLOCK_TYPE::LEVEL:
+                return color::BACKGROUND_PLAYABLE_COLOR;
+            case model::FLOOR_BLOCK_TYPE::START:
+                return color::BACKGROUND_START_COLOR;
+            case model::FLOOR_BLOCK_TYPE::SPLICE:
+                return color::BACKGROUND_SPLICE_COLOR;
+            case model::FLOOR_BLOCK_TYPE::CONWAY:
+                return color::BACKGROUND_CONWAY_COLOR;
+        }
+        return color::BACKGROUND_PLAYABLE_COLOR;
+    }
 } // namespace view
 
 #endif // BLOCKS_ENUM_H

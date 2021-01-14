@@ -21,15 +21,15 @@ using namespace view;
 using namespace widget;
 
 static std::list<Cluster>::iterator findCluster(const CommandEditBox& commandEditBox, std::list<Cluster>& clusters) {
-    return std::find_if(__IT(clusters), __FUNC(cluster, cluster.index() == commandEditBox.index()));
+    return std::find_if(D_IT(clusters), D_FUNC(cluster, cluster.index() == commandEditBox.index()));
 }
 
 static std::list<Cluster>::const_iterator findCluster(const CommandEditBox& commandEditBox, const std::list<Cluster>& clusters) {
-    return std::find_if(__CIT(clusters), __FUNC(cluster, cluster.index() == commandEditBox.index()));
+    return std::find_if(D_CIT(clusters), D_FUNC(cluster, cluster.index() == commandEditBox.index()));
 }
 
 static std::list<CommandEditBox>::iterator findCommandEditBox(const Cluster& cluster, std::list<CommandEditBox>& commandEditBoxes) {
-    return std::find_if(__IT(commandEditBoxes), __FUNC(box, cluster.index() == box.index()));
+    return std::find_if(D_IT(commandEditBoxes), D_FUNC(box, cluster.index() == box.index()));
 }
 
 static void updateCommandEditBoxes(const std::list<Cluster>& clusters, ScrollArea& scrollArea) {
@@ -45,10 +45,10 @@ static void updateCommandEditBoxes(const std::list<Cluster>& clusters, ScrollAre
 }
 
 static void addCommandEditBoxesOfNewClusters(const std::list<Cluster>& clusters, ScrollArea& scrollArea) {
-    auto it = std::find_if(__IT(clusters), __FUNC(cluster, findCommandEditBox(cluster, scrollArea.children()) == scrollArea.children().end()));
+    auto it = std::find_if(D_IT(clusters), D_FUNC(cluster, findCommandEditBox(cluster, scrollArea.children()) == scrollArea.children().end()));
     while (it != clusters.end()) {
         scrollArea.addCommandEditBox(*it);
-        it = std::find_if(__IT(clusters), __FUNC(cluster, findCommandEditBox(cluster, scrollArea.children()) == scrollArea.children().end()));
+        it = std::find_if(D_IT(clusters), D_FUNC(cluster, findCommandEditBox(cluster, scrollArea.children()) == scrollArea.children().end()));
     }
 }
 
@@ -68,7 +68,7 @@ void app::ModelViewInterface::leftClickControl(model::Model&             model,
                                                const model::BlockType&   selectedBlockType) {
     std::visit(overloaded{[&](const CLUSTER_TYPE) { clearBlockFromCluster(model, scrollArea, point); },
                           [&](auto) {
-                              if (model.noClusterOnBlock(point)) {
+                              if (model.noLiveOrStoppedClusterOnBlock(point)) {
                                   addAction(model.level().removeBlock(point));
                               } else {
                                   clearBlockFromCluster(model, scrollArea, point);
@@ -173,10 +173,13 @@ void app::ModelViewInterface::stopSpliceOrKillIfNeeded(Level& level, Cluster& cl
             pendingOperations.emplace_back(point, type);
         }
     }
+    assert(cluster.pendingDynamicMoves() == model::PENDING_DYNAMIC_MOVES::ZERO);
     if (pendingOperations.size() > 1 && cluster.currentModifier() != COMMAND_MODIFIER::IGNORE) {
         cluster.kill();
+        cluster.setPendingDynamicMoves(model::PENDING_DYNAMIC_MOVES::TOO_MANY);
     } else {
         if (pendingOperations.size() == 1 && cluster.currentModifier() != COMMAND_MODIFIER::IGNORE) {
+            cluster.setPendingDynamicMoves(model::PENDING_DYNAMIC_MOVES::ONE);
             return;
         }
         if (cluster.commandVector().currentType() == COMMAND_TYPE::STP) {
@@ -256,11 +259,11 @@ std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(Model&      
                                                                     const GridXY& point,
                                                                     const GridXY& previousPoint) {
     auto&      clusters = model.clusters();
-    const auto baseIt   = std::find_if(__IT(clusters), __FUNC(cluster, cluster.contains(previousPoint)));
+    const auto baseIt   = std::find_if(D_IT(clusters), D_FUNC(cluster, cluster.contains(previousPoint)));
     if (baseIt == clusters.end() || (not previousPoint.isAdjacent(point))) {
         return addSingleBlockToCluster(model, scrollArea, point);
     }
-    auto extensionIt = std::find_if(__IT(clusters), __FUNC(cluster, cluster.contains(point)));
+    auto extensionIt = std::find_if(D_IT(clusters), D_FUNC(cluster, cluster.contains(point)));
     if (baseIt == extensionIt) {
         return nullptr;
     }
@@ -318,5 +321,5 @@ void app::ModelViewInterface::updateSelection(const std::list<model::Cluster>& c
 }
 
 void app::ModelViewInterface::removeActionBoxesOfRemovedClusters(const std::list<model::Cluster>& clusters, ScrollArea& scrollArea) {
-    scrollArea.children().remove_if(__FUNC(box, findCluster(box, clusters) == clusters.end()));
+    scrollArea.children().remove_if(D_FUNC(box, findCluster(box, clusters) == clusters.end()));
 }

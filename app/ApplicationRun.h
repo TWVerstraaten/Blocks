@@ -24,6 +24,8 @@ namespace app {
         /****** NON CONST FUNCTIONS  ******/
         void                      setTimeStep(Uint32 timeStep);
         void                      handleEvent(const SDL_Event& event);
+        void                      killDoubleGrabbers();
+        void                      doConwayStep();
         RUN_MODE                  performSingleLoop();
         view::widget::ScrollArea& scrollArea();
 

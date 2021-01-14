@@ -114,7 +114,7 @@ namespace model {
     }
 
     std::unique_ptr<action::Action> Level::addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType) {
-        __NOTE_ONCE("Implement undoable action")
+        D_NOTE_ONCE("Implement undoable action")
         m_floorBlocks[gridXY] = blockType;
         return nullptr;
     }
@@ -197,9 +197,13 @@ namespace model {
         return m_floorBlocks;
     }
 
-    std::set<GridXY> Level::spliceBlocks() const {
+    GridXYSet Level::blocks(FLOOR_BLOCK_TYPE blockType) const {
         std::set<GridXY> result;
-        std::copy_if(__CIT(m_floorBlocks), std::back_inserter(result), __FUNC(block, block.second == FLOOR_BLOCK_TYPE::SPLICE));
+        for (const auto& [point, type] : m_floorBlocks) {
+            if (type == blockType) {
+                result.emplace(point);
+            }
+        }
         return result;
     }
 

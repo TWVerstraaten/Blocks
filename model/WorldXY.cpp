@@ -40,6 +40,10 @@ namespace model {
         return {lhs.x() + rhs.x(), lhs.y() + rhs.y()};
     }
 
+    model::WorldXY operator/(const model::WorldXY& lhs, double a) {
+        return {static_cast<int>(lhs.x() / a), static_cast<int>(lhs.y() / a)};
+    }
+
     WorldXY::WorldXY(const GridXY& gridXY) {
         *this = fromGridXY(gridXY);
     }

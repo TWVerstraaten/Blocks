@@ -83,4 +83,5 @@ namespace view {
         static std::map<FONT_ENUM, std::unique_ptr<Font>> m_fonts;
     };
 } // namespace view
+
 #endif // BLOCKS_ASSETS_H
