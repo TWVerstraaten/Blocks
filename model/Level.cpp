@@ -197,4 +197,10 @@ namespace model {
         return m_floorBlocks;
     }
 
+    std::set<GridXY> Level::spliceBlocks() const {
+        std::set<GridXY> result;
+        std::copy_if(__CIT(m_floorBlocks), std::back_inserter(result), __FUNC(block, block.second == FLOOR_BLOCK_TYPE::SPLICE));
+        return result;
+    }
+
 } // namespace model
