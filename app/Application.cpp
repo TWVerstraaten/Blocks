@@ -9,6 +9,7 @@
 #include "ApplicationEdit.h"
 #include "ApplicationRun.h"
 
+#include <QApplication>
 #include <cassert>
 
 namespace app {
@@ -156,5 +157,9 @@ namespace app {
             m_runningScrollArea->setX(windowSize.x() - view::widget::COMMAND_SCROLL_AREA_WIDTH);
             m_runningScrollArea->setHeight(windowSize.y());
         }
+    }
+
+    const model::Model& Application::model() const {
+        return m_model;
     }
 } // namespace app
