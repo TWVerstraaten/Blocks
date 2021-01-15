@@ -42,6 +42,7 @@ namespace view2 {
         updateGeometry();
         QSize size = document()->size().toSize();
         setMinimumHeight(size.height());
+        setMaximumHeight(size.height());
     }
 
     std::vector<std::string> TextEdit::contents() const {

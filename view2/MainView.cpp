@@ -3,8 +3,10 @@
 #include "../view/toColor.h"
 
 #include <QApplication>
+#include <QFontDatabase>
 #include <QMouseEvent>
 #include <QPainter>
+#include <global/geom.h>
 
 namespace view2 {
     MainView::MainView(QWidget* parent) : QWidget(parent) {
@@ -36,6 +38,18 @@ namespace view2 {
         }
         for (const auto& cluster : m_model->clusters()) {
             drawConnected(cluster.gridXY(), view::color::CLUSTER_COLOR, painter);
+            const auto namePosition = view::ScreenXY::fromWorldXY(*cluster.gridXY().begin() + app::HALF_BLOCK_IN_WORLD, m_viewPort);
+
+            const int     id     = QFontDatabase::addApplicationFont("assets/UbuntuMono-Italic.ttf");
+            const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+            const QFont   font(family, 12);
+            painter.setFont(font);
+
+            QFontMetrics fontMetrics(font);
+            int          width  = fontMetrics.horizontalAdvance(cluster.name().c_str());
+            int          height = fontMetrics.height();
+            painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, view::color::WHITE_COLOR);
+            painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
         }
         for (const auto& [point, type] : m_model->level().dynamicBlocks()) {
             const auto position = view::ScreenXY::fromGridXY(point, m_viewPort) + shrinkInScreenXY;
@@ -93,16 +107,10 @@ namespace view2 {
     }
 
     void MainView::drawConnected(const model::GridXYSet& blocks, const QColor& color, QPainter& painter) const {
-        const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
-        const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
-        const auto shrinkInScreenXY    = view::ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
+        const auto pixmap  = connectedPixmap(blocks, color);
+        const auto topLeft = view::ScreenXY::fromWorldXY(model::WorldXY(model::GridXY{geom::minX(blocks), geom::minY(blocks)}), m_viewPort);
 
-        painter.setBrush(color);
-        for (const auto& point : blocks) {
-            const auto position = view::ScreenXY::fromGridXY(point, m_viewPort) + shrinkInScreenXY;
-
-            painter.drawRect(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize});
-        }
+        painter.drawPixmap(topLeft.x(), topLeft.y(), *pixmap);
     }
 
     void MainView::init(CommandScrollArea* commandScrollArea) {
@@ -173,4 +181,46 @@ namespace view2 {
             m_commandScrollArea->add(m_model->clusters().back());
         }
     }
+
+    std::unique_ptr<QPixmap> MainView::connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const {
+        const auto shrunkSize  = m_viewPort.blockSizeInScreen() - 2 * m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
+        const auto minX        = geom::minX(blocks);
+        const auto minY        = geom::minY(blocks);
+        const auto maxX        = geom::maxX(blocks);
+        const auto maxY        = geom::maxY(blocks);
+        const auto width       = (maxX - minX + 1) * m_viewPort.blockSizeInScreen();
+        const auto height      = (maxY - minY + 1) * m_viewPort.blockSizeInScreen();
+        const auto twiceShrink = 2 * m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
+
+        assert(width > 0);
+        assert(height > 0);
+
+        auto* result = new QPixmap{width + 20, height + 20};
+        result->fill(Qt::transparent);
+        QPainter painter(result);
+        painter.setBrush(QBrush{color});
+        using namespace model;
+        for (const auto block : blocks) {
+            const auto           positionInWorld = block - GridXY{minX, minY} + WorldXY{app::BLOCK_SHRINK_IN_WORLD, app::BLOCK_SHRINK_IN_WORLD};
+            const view::ScreenXY position        = {m_viewPort.worldToScreenLength(positionInWorld.x()),
+                                             m_viewPort.worldToScreenLength(positionInWorld.y())};
+            painter.fillRect(QRect{position.x(), position.y(), shrunkSize, shrunkSize}, QBrush{color});
+            const bool l = blocks.find(block.neighbor(GridXY::DIRECTION::LEFT)) != blocks.end();
+            const bool u = blocks.find(block.neighbor(GridXY::DIRECTION::UP)) != blocks.end();
+            if (u && l) {
+                const bool ul = blocks.find(block.neighbor(GridXY::DIRECTION::UP).neighbor(GridXY::DIRECTION::LEFT)) != blocks.end();
+                if (ul) {
+                    painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y() - twiceShrink - 1, twiceShrink + 2, twiceShrink + 2}, color);
+                }
+            }
+            if (u) {
+                painter.fillRect(QRect{position.x(), position.y() - twiceShrink - 1, shrunkSize, twiceShrink + 2}, color);
+            }
+            if (l) {
+                painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y(), twiceShrink + 2, shrunkSize}, color);
+            }
+        }
+        return std::unique_ptr<QPixmap>(result);
+    }
+
 } // namespace view2

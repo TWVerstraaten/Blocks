@@ -324,7 +324,7 @@ namespace model {
     WorldXY Cluster::approximateCenter() const {
         assert(not m_gridXYSet.empty());
         const auto f = phaseTransformation();
-        return std::accumulate(D_CIT(m_gridXYSet), WorldXY{0, 0}, D_FUNC_2(a, b, a + f(b))) / m_gridXYSet.size();
+        return std::accumulate(D_CIT(m_gridXYSet), WorldXY{0, 0}, D_FUNC_2(a, b, a + f(b + app::HALF_BLOCK_IN_WORLD))) / m_gridXYSet.size();
     }
 
     CLUSTER_STATE Cluster::state() const {

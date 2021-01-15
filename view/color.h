@@ -28,6 +28,7 @@ namespace view::color {
     static const SDL_Color CLUSTER                      = {250, 235, 65, 255};
     static const SDL_Color CLUSTER_DEAD                 = {255, 0, 0, 255};
 
+    static const QColor WHITE_COLOR               = {255, 255, 255, 255};
     static const QColor CLUSTER_COLOR             = {250, 235, 65, 255};
     static const QColor DARK_GREY_COLOR           = {120, 120, 124, 255};
     static const QColor BACKGROUND_COLOR          = {8, 33, 73, 255};

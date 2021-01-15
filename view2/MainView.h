@@ -25,7 +25,8 @@ namespace view2 {
         void mouseMoveEvent(QMouseEvent* event) override;
 
       private:
-        void drawConnected(const model::GridXYSet& blocks, const QColor& color, QPainter& painter) const;
+        void                                   drawConnected(const model::GridXYSet& blocks, const QColor& color, QPainter& painter) const;
+        [[nodiscard]] std::unique_ptr<QPixmap> connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const;
 
         void mouseLeftPressEvent();
         void mouseLeftDragEvent(const model::GridXY& currentGridXY);

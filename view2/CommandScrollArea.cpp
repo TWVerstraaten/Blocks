@@ -14,8 +14,8 @@ namespace view2 {
         m_layout->addStretch();
         setWidget(widget);
 
-        setMinimumWidth(120);
-        setMaximumWidth(140);
+        setMinimumWidth(200);
+        setMaximumWidth(240);
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
         setWidgetResizable(true);
@@ -71,16 +71,14 @@ namespace view2 {
         m_layout->insertWidget(m_layout->count() - 1, m_commandEditBoxes.back());
 
         const auto& strings = cluster.commandVector().strings();
-        const auto  i       = strings.size();
-        std::cout << i << '\n';
-        QString text;
-        for (const auto& line : strings) {
-            text += line.c_str();
-            text += '\n';
+        if (not strings.empty()) {
+            QString text;
+            text.push_back(strings.front().c_str());
+            for (size_t i = 1; i != strings.size(); ++i) {
+                text += '\n';
+                text += strings[i].c_str();
+            }
+            m_commandEditBoxes.back()->textEdit()->document()->setPlainText(text);
         }
-        if (text.isEmpty()) {
-            text = "Ja";
-        }
-        m_commandEditBoxes.back()->textEdit()->document()->setPlainText(text);
     }
 } // namespace view2
