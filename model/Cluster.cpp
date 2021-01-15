@@ -22,6 +22,11 @@ namespace model {
         m_sides = geom::getSidesFromGridXY(m_gridXYSet);
     }
 
+    Cluster::Cluster(const GridXY& gridXY, std::string name) : m_index(s_maxClusterIndex), m_gridXYSet({gridXY}), m_name(std::move(name)) {
+        ++s_maxClusterIndex;
+        m_sides = geom::getSidesFromGridXY(m_gridXYSet);
+    }
+
     Cluster::Cluster(GridXYSet&& gridXY, CommandVector commandVector, std::string name)
         : m_index(s_maxClusterIndex), m_commandVector(std::move(commandVector)), m_gridXYSet(gridXY), m_name(std::move(name)) {
         ++s_maxClusterIndex;
@@ -280,6 +285,11 @@ namespace model {
         if (result.back().isEmpty()) {
             result.pop_back();
         }
+
+        for (const auto& n : result) {
+            assert(n.commandVector().strings() == m_commandVector.strings());
+        }
+
         return result;
     }
 

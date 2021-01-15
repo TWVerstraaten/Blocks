@@ -1,11 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "MainWidget.h"
+#include "CentralWidget.h"
 #include "app/Application.h"
 
 #include <QDebug>
+#include <QElapsedTimer>
 #include <QMainWindow>
+#include <QTime>
 
 namespace view2 {
 
@@ -14,18 +16,14 @@ namespace view2 {
       public:
         explicit MainWindow(QWidget* parent = nullptr);
 
-      protected:
-        virtual void keyPressEvent(QKeyEvent* e) override;
-
       private slots:
         void init();
         void loop();
 
       private:
-        MainWidget*                       m_mainWidget;
-        std::unique_ptr<app::Application> m_application{nullptr};
-
-      signals:
+        QElapsedTimer                 m_elapsedTimer{};
+        CentralWidget*                m_mainWidget;
+        std::unique_ptr<model::Model> m_model;
     };
 } // namespace view2
 

@@ -1,32 +1,35 @@
 #ifndef COMMANDEDITBOX_H
 #define COMMANDEDITBOX_H
 
+#include "TextEdit.h"
+
+#include <QDebug>
 #include <QWidget>
 
-#include "TextEdit.h"
-#include <QDebug>
+namespace model {
+    class Cluster;
+    class CommandVector;
+} // namespace model
 
 namespace view2 {
 
     class CommandEditBox : public QWidget {
-    Q_OBJECT
-    public:
-        explicit CommandEditBox(QWidget *parent = nullptr);
+        Q_OBJECT
 
-        TextEdit *textEdit() { return m_textEdit; }
+      public:
+        CommandEditBox(QWidget* parent, model::Cluster& cluster);
 
+        [[nodiscard]] TextEdit* textEdit();
+        [[nodiscard]] size_t    index() const;
 
-    private:
-        void setHeight();
+      protected:
+        void resizeEvent(QResizeEvent* event) override;
 
-    signals:
-
-        void moveFocusToNext();
-
-        void textChanged();
-
-    private:
-        TextEdit *m_textEdit;
+      private:
+        size_t                m_index;
+        std::string           m_name;
+        TextEdit*             m_textEdit;
+        model::CommandVector* m_commandVector = nullptr;
     };
-}
+} // namespace view2
 #endif // COMMANDEDITBOX_H

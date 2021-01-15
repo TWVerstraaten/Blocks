@@ -1,40 +1,33 @@
 #ifndef COMMANDSCROLLAREA_H
 #define COMMANDSCROLLAREA_H
 
-#include <QWidget>
+#include "../model/Cluster.h"
+#include "CommandEditBox.h"
 
 #include <QScrollArea>
 #include <QVBoxLayout>
+#include <QWidget>
 #include <vector>
-
-#include "CommandEditBox.h"
 
 namespace view2 {
 
     class CommandScrollArea : public QScrollArea {
-    Q_OBJECT
-    public:
-        explicit CommandScrollArea(QWidget *parent = nullptr);
+        Q_OBJECT
+      public:
+        explicit CommandScrollArea(QWidget* parent = nullptr);
 
-        void add();
+        void add(model::Cluster& cluster);
+        void removeUnnecessary(const std::list<model::Cluster>& clusters);
+        void addNeeded(std::list<model::Cluster>& clusters);
 
-        void remove();
-
-    private slots:
-
+      private slots:
         void moveFocusToNext();
-
         void moveFocusToPrevious();
 
-    signals:
-
-    private:
-
-        std::vector<CommandEditBox *> m_commandEditBoxes;
-        QVBoxLayout *m_layout;
-
-
+      private:
+        std::vector<CommandEditBox*> m_commandEditBoxes;
+        QVBoxLayout*                 m_layout;
     };
-}
+} // namespace view2
 
 #endif // COMMANDSCROLLAREA_H

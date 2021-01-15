@@ -31,7 +31,8 @@ namespace model {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        explicit Cluster(GridXYSet&& gridXY, std::string name);
+        Cluster(GridXYSet&& gridXY, std::string name);
+        Cluster(const GridXY& gridXY, std::string name);
         Cluster(const Cluster& other) = default;
         Cluster(Cluster&& other)      = default;
         Cluster& operator=(const Cluster& other) = default;

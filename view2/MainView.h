@@ -5,18 +5,18 @@
 #include "MainWindow.h"
 
 #include <QWidget>
+#include <memory>
 
 namespace model {
     class Model;
 }
 
 namespace view2 {
-
     class MainView : public QWidget {
         Q_OBJECT
       public:
         explicit MainView(QWidget* parent);
-        void setCurrentModel(const model::Model* model);
+        void init(CommandScrollArea* commandScrollArea);
 
       protected:
         void paintEvent(QPaintEvent* event) override;
@@ -27,9 +27,17 @@ namespace view2 {
       private:
         void drawConnected(const model::GridXYSet& blocks, const QColor& color, QPainter& painter) const;
 
-        QPoint              m_previousMousePosition;
-        view::ViewPort      m_viewPort;
-        const model::Model* m_currentModel = nullptr;
+        void mouseLeftPressEvent();
+        void mouseLeftDragEvent(const model::GridXY& currentGridXY);
+        void removeBlock(const model::GridXY& gridXy);
+        void addBlock(const model::GridXY& gridXy);
+
+        bool                          m_isInitialized = false;
+        view::ScreenXY                m_previousMousePosition;
+        model::GridXY                 m_previousGridPosition{0, 0};
+        view::ViewPort                m_viewPort;
+        std::unique_ptr<model::Model> m_model;
+        CommandScrollArea*            m_commandScrollArea = nullptr;
     };
 } // namespace view2
 #endif // MAINVIEW_H

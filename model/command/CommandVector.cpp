@@ -48,20 +48,18 @@ void model::CommandVector::increment() {
 }
 
 void model::CommandVector::set(const std::vector<std::string>& strings) {
-    m_strings.clear();
+    m_strings = strings;
     m_commands.clear();
-    for (const auto& string : strings) {
+    for (const auto& string : m_strings) {
         if (not CommandParser::isCommentOrEmpty(string)) {
             m_commands.emplace_back(CommandParser::parseString(string));
         }
     }
-    assert(wellFormed());
     if (m_commands.empty()) {
         return;
     }
     m_repeatCount =
         std::visit(overloaded{[](Command_RepeatWrapper c) { return c.repeatCount - 1; }, [](auto) { return 0; }}, m_commands[m_commandIndex]);
-    std::transform(D_CIT(strings), std::back_inserter(m_strings), [](const std::string& str) { return CommandParser::format(str); });
 }
 
 void model::CommandVector::clear() {

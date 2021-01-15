@@ -123,7 +123,7 @@ namespace view {
     }
 
     void View::zoom(int amount) {
-        m_viewPort.zoom(amount);
+//        m_viewPort.zoom(amount, <#initializer #>);
     }
 
     void View::translate(int dx, int dy) {

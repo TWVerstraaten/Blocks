@@ -4,6 +4,8 @@
 
 #include "ViewPort.h"
 
+#include "global/defines.h"
+
 #include <algorithm>
 
 #ifdef _WIN32
@@ -15,9 +17,10 @@ namespace view {
         return static_cast<int>(app::BLOCK_SIZE_IN_WORLD * m_scale);
     }
 
-    void ViewPort::zoom(int dZoom) {
-        m_zoom                            = std::clamp(m_zoom + dZoom, -10, 20);
-        m_scale                           = std::exp(m_zoom / 10.0);
+    void ViewPort::zoom(int dZoom, const view::ScreenXY& point) {
+        D_NOTE_ONCE("Zoom into point");
+        m_zoom                            = std::clamp(m_zoom + dZoom, -2000, 3000);
+        m_scale                           = std::exp(m_zoom / 1000.0);
         m_distanceBetweenBlocksInScreenXY = worldToScreenLength(2 * app::BLOCK_SHRINK_IN_WORLD);
     }
 

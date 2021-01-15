@@ -86,4 +86,9 @@ namespace model {
         return not(lhs == rhs);
     }
 
+    std::ostream& operator<<(std::ostream& out, const GridXY& gridXy) {
+        out << "GridXY(" << gridXy.m_x << ", " << gridXy.m_y << ")";
+        return out;
+    }
+
 } // namespace model

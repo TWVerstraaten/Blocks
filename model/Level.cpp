@@ -82,13 +82,17 @@ namespace model {
     }
 
     bool Level::isFreeStartBlock(const GridXY& gridXY) const {
-        if (m_floorBlocks.find(gridXY) == m_floorBlocks.end() || m_floorBlocks.at(gridXY) != FLOOR_BLOCK_TYPE::START) {
+        D_NOTE_ONCE("Handle starting positions");
+        if (m_floorBlocks.find(gridXY) == m_floorBlocks.end()) {
             return false;
         }
         if (m_instantBLocks.find(gridXY) != m_instantBLocks.end()) {
             return false;
         }
         if (m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end()) {
+            return false;
+        }
+        if (std::find_if(D_CIT(m_stoppedClusters), D_FUNC(cluster, cluster.contains(gridXY))) != m_stoppedClusters.end()) {
             return false;
         }
         return true;

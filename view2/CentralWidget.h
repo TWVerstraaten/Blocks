@@ -14,20 +14,20 @@ namespace model {
 namespace view2 {
     class MainView;
 
-    class MainWidget : public QWidget {
+    class CentralWidget : public QWidget {
         Q_OBJECT
 
       public:
-        MainWidget();
+        CentralWidget();
 
         void keyPressEvent(QKeyEvent* event) override;
 
         [[nodiscard]] MainView*          mainView() const;
-        [[nodiscard]] CommandScrollArea* scrollArea() const;
+        [[nodiscard]] CommandScrollArea* commandScrollArea() const;
 
       private:
         MainView*          m_mainView;
-        CommandScrollArea* m_scrollArea;
+        CommandScrollArea* m_commandScrollArea;
     };
 } // namespace view2
 

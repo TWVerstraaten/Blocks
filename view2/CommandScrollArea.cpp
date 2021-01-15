@@ -1,39 +1,24 @@
 #include "CommandScrollArea.h"
 
+#include "global/defines.h"
+
 #include <QDebug>
+#include <QScrollBar>
+#include <algorithm>
+
 namespace view2 {
 
     CommandScrollArea::CommandScrollArea(QWidget* parent) : QScrollArea(parent) {
-        QWidget* widget = new QWidget(parent);
-        m_layout        = new QVBoxLayout(widget);
+        auto* widget = new QWidget(parent);
+        m_layout     = new QVBoxLayout(widget);
         m_layout->addStretch();
         setWidget(widget);
 
         setMinimumWidth(120);
         setMaximumWidth(140);
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-        for (int i = 0; i < 3; i++) {
-            add();
-        }
 
         setWidgetResizable(true);
-        resize(sizeHint());
-    }
-
-    void CommandScrollArea::add() {
-        m_commandEditBoxes.emplace_back(new CommandEditBox(parentWidget()));
-        connect(m_commandEditBoxes.back()->textEdit(), &TextEdit::tabPressed, this, &CommandScrollArea::moveFocusToNext);
-        connect(m_commandEditBoxes.back()->textEdit(), &TextEdit::backTabPressed, this, &CommandScrollArea::moveFocusToPrevious);
-        m_layout->insertWidget(m_layout->count() - 1, m_commandEditBoxes.back());
-    }
-
-    void CommandScrollArea::remove() {
-        if (m_commandEditBoxes.empty()) {
-            return;
-        }
-        m_layout->removeWidget(m_commandEditBoxes[0]);
-        delete m_commandEditBoxes[0];
-        m_commandEditBoxes.erase(m_commandEditBoxes.begin());
     }
 
     void CommandScrollArea::moveFocusToNext() {
@@ -58,5 +43,44 @@ namespace view2 {
                 return;
             }
         }
+    }
+
+    void CommandScrollArea::removeUnnecessary(const std::list<model::Cluster>& clusters) {
+        for (size_t i = 0; i != m_commandEditBoxes.size(); ++i) {
+            if (std::find_if(D_CIT(clusters), D_FUNC(cluster, cluster.index() == m_commandEditBoxes.at(i)->index())) == clusters.end()) {
+                m_layout->removeWidget(m_commandEditBoxes[i]);
+                delete m_commandEditBoxes[i];
+                m_commandEditBoxes[i] = nullptr;
+            }
+        }
+        m_commandEditBoxes.erase(std::remove_if(D_IT(m_commandEditBoxes), D_FUNC(box, box == nullptr)), m_commandEditBoxes.end());
+    }
+
+    void CommandScrollArea::addNeeded(std::list<model::Cluster>& clusters) {
+        for (auto& cluster : clusters) {
+            if (std::find_if(D_CIT(m_commandEditBoxes), D_FUNC(box, box->index() == cluster.index())) == m_commandEditBoxes.end()) {
+                add(cluster);
+            }
+        }
+    }
+
+    void CommandScrollArea::add(model::Cluster& cluster) {
+        m_commandEditBoxes.emplace_back(new CommandEditBox(parentWidget(), cluster));
+        connect(m_commandEditBoxes.back()->textEdit(), &TextEdit::tabPressed, this, &CommandScrollArea::moveFocusToNext);
+        connect(m_commandEditBoxes.back()->textEdit(), &TextEdit::backTabPressed, this, &CommandScrollArea::moveFocusToPrevious);
+        m_layout->insertWidget(m_layout->count() - 1, m_commandEditBoxes.back());
+
+        const auto& strings = cluster.commandVector().strings();
+        const auto  i       = strings.size();
+        std::cout << i << '\n';
+        QString text;
+        for (const auto& line : strings) {
+            text += line.c_str();
+            text += '\n';
+        }
+        if (text.isEmpty()) {
+            text = "Ja";
+        }
+        m_commandEditBoxes.back()->textEdit()->document()->setPlainText(text);
     }
 } // namespace view2

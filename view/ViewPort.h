@@ -6,6 +6,7 @@
 #define BLOCKS_VIEWPORT_H
 
 #include "../app/Application_constants.h"
+#include "ScreenXY.h"
 
 namespace view {
 
@@ -24,7 +25,7 @@ namespace view {
         [[nodiscard]] int blockSeparationInScreenXY() const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void zoom(int dZoom);
+        void zoom(int dZoom, const view::ScreenXY& point);
         void translate(int dx, int dy);
 
       private:

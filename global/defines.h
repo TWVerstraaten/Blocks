@@ -5,6 +5,10 @@
 #ifndef BLOCKS_DEFINES_H
 #define BLOCKS_DEFINES_H
 
+#ifdef _WIN32
+#include <cstdio>
+#endif
+
 #ifdef DEBUG
 #define D_NOTE(x) fprintf(stderr, x ": %s:%d\n", __FILE__, __LINE__);
 #define D_NOTE_ONCE(x)                                                                                                                               \

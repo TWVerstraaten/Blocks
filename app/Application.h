@@ -40,4 +40,5 @@ namespace app {
         view::widget::ScrollArea* m_runningScrollArea;
     };
 } // namespace app
+
 #endif // BLOCKS_APPLICATION_H

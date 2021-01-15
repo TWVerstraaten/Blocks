@@ -3,7 +3,8 @@
 
 #include <QTextEdit>
 #include <QWidget>
-#include <QStringList>
+#include <string>
+#include <vector>
 
 namespace view2 {
     class TextEdit : public QTextEdit {
@@ -11,13 +12,15 @@ namespace view2 {
       public:
         explicit TextEdit(QWidget* parent = nullptr);
 
-        void keyPressEvent(QKeyEvent* e) override;
+        void keyPressEvent(QKeyEvent* event) override;
 
-        [[nodiscard]] QStringList contents() const;
+        [[nodiscard]] std::vector<std::string> contents() const;
+        void                                   setHeight();
+
+      protected:
+        [[nodiscard]] QSize sizeHint() const override;
 
       private:
-        void setHeight();
-
       signals:
 
         void tabPressed();

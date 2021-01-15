@@ -31,6 +31,7 @@ namespace model {
         void                         clear();
         void                         startPhase();
         void                         update(double dPhase);
+        void                         clearEmpty();
         Level&                       level();
         std::list<Cluster>&          clusters();
         std::list<Cluster>::iterator clusterWithIndex(size_t index);

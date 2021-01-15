@@ -139,4 +139,8 @@ namespace model {
     std::list<Cluster>::iterator Model::clusterContaining(const GridXY& point) {
         return std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(point)));
     }
+
+    void Model::clearEmpty() {
+        m_clusters.remove_if(D_FUNC(cluster, cluster.isEmpty()));
+    }
 } // namespace model
