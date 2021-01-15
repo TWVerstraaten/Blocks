@@ -14,8 +14,8 @@ namespace view2 {
         m_layout->addStretch();
         setWidget(widget);
 
-        setMinimumWidth(200);
-        setMaximumWidth(240);
+        setContentsMargins(0, 0, 0, 0);
+        setMaximumWidth(200);
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
         setWidgetResizable(true);
@@ -69,16 +69,5 @@ namespace view2 {
         connect(m_commandEditBoxes.back()->textEdit(), &TextEdit::tabPressed, this, &CommandScrollArea::moveFocusToNext);
         connect(m_commandEditBoxes.back()->textEdit(), &TextEdit::backTabPressed, this, &CommandScrollArea::moveFocusToPrevious);
         m_layout->insertWidget(m_layout->count() - 1, m_commandEditBoxes.back());
-
-        const auto& strings = cluster.commandVector().strings();
-        if (not strings.empty()) {
-            QString text;
-            text.push_back(strings.front().c_str());
-            for (size_t i = 1; i != strings.size(); ++i) {
-                text += '\n';
-                text += strings[i].c_str();
-            }
-            m_commandEditBoxes.back()->textEdit()->document()->setPlainText(text);
-        }
     }
 } // namespace view2

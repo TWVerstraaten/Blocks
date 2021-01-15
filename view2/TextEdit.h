@@ -10,7 +10,7 @@ namespace view2 {
     class TextEdit : public QTextEdit {
         Q_OBJECT
       public:
-        explicit TextEdit(QWidget* parent = nullptr);
+        TextEdit(QWidget* parent, const QString& string);
 
         void keyPressEvent(QKeyEvent* event) override;
 
@@ -20,7 +20,6 @@ namespace view2 {
       protected:
         [[nodiscard]] QSize sizeHint() const override;
 
-      private:
       signals:
 
         void tabPressed();

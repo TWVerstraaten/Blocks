@@ -22,8 +22,11 @@ namespace view2 {
         [[nodiscard]] TextEdit* textEdit();
         [[nodiscard]] size_t    index() const;
 
+      private slots:
+        void setHeight();
+
       protected:
-        void resizeEvent(QResizeEvent* event) override;
+        //        void resizeEvent(QResizeEvent* event) override;
 
       private:
         size_t                m_index;

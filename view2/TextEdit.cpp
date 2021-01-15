@@ -3,23 +3,22 @@
 #include <QDebug>
 #include <QFontDatabase>
 #include <QKeyEvent>
+#include <QTimer>
 
 namespace view2 {
-    TextEdit::TextEdit(QWidget* parent) : QTextEdit(parent) {
-        QFont font("UbuntuMono-Regular", 10, QFont::Normal);
-        setFont(font);
+    TextEdit::TextEdit(QWidget* parent, const QString& string) : QTextEdit(parent) {
         connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
+
+        setMaximumWidth(200);
+        document()->adjustSize();
+
+        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
-        QPalette pal = palette();
-
-        pal.setColor(QPalette::Window, Qt::green);
-        setAutoFillBackground(true);
-        setPalette(pal);
-        connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
-
-        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+        QFont font("UbuntuMono-Regular", 10, QFont::Normal);
+        setFont(font);
+        append(string);
     }
 
     void TextEdit::keyPressEvent(QKeyEvent* event) {
@@ -41,8 +40,8 @@ namespace view2 {
     void TextEdit::setHeight() {
         updateGeometry();
         QSize size = document()->size().toSize();
-        setMinimumHeight(size.height());
         setMaximumHeight(size.height());
+        setMinimumHeight(size.height());
     }
 
     std::vector<std::string> TextEdit::contents() const {
@@ -57,7 +56,6 @@ namespace view2 {
 
     QSize TextEdit::sizeHint() const {
         QSize size = document()->size().toSize();
-        size.setHeight(size.height());
         return size;
     }
 
