@@ -22,9 +22,6 @@ namespace view2 {
 
         void keyPressEvent(QKeyEvent* event) override;
 
-        [[nodiscard]] MainView*          mainView() const;
-        [[nodiscard]] CommandScrollArea* commandScrollArea() const;
-
       private:
         MainView*          m_mainView;
         CommandScrollArea* m_commandScrollArea;

@@ -40,6 +40,7 @@ namespace view2 {
         view::ViewPort                m_viewPort;
         std::unique_ptr<model::Model> m_model;
         CommandScrollArea*            m_commandScrollArea = nullptr;
+        QFont                         m_font;
     };
 } // namespace view2
 #endif // MAINVIEW_H

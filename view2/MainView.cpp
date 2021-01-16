@@ -4,6 +4,7 @@
 
 #include <QApplication>
 #include <QFontDatabase>
+#include <QLabel>
 #include <QMouseEvent>
 #include <QPainter>
 #include <global/geom.h>
@@ -11,6 +12,10 @@
 namespace view2 {
     MainView::MainView(QWidget* parent) : QWidget(parent) {
         setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+        const int     id     = QFontDatabase::addApplicationFont("assets/UbuntuMono-Italic.ttf");
+        const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+        m_font               = QFont(family, 12);
     }
 
     void MainView::paintEvent(QPaintEvent* event) {
@@ -62,7 +67,11 @@ namespace view2 {
     }
 
     void MainView::wheelEvent(QWheelEvent* event) {
+#ifdef Q_OS_LINUX
+        m_viewPort.zoom(event->angleDelta().y(), event->pos());
+#else
         m_viewPort.zoom(event->angleDelta().y(), event->position());
+#endif
     }
 
     void MainView::mousePressEvent(QMouseEvent* event) {
@@ -92,6 +101,7 @@ namespace view2 {
         }
         m_previousMousePosition = currentMousePosition;
         m_previousGridPosition  = currentGridPosition;
+        update();
     }
 
     void MainView::drawConnected(const model::GridXYSet& blocks, const QColor& color, QPainter& painter) const {
@@ -114,6 +124,7 @@ namespace view2 {
         } else {
             addBlock(m_previousGridPosition);
         }
+        repaint();
     }
 
     void MainView::mouseLeftDragEvent(const model::GridXY& currentGridXY) {
@@ -161,6 +172,7 @@ namespace view2 {
         m_model->clusters().splice(m_model->clusters().end(), newClusters);
         m_model->clearEmpty();
         m_commandScrollArea->removeUnnecessary(m_model->clusters());
+        update();
     }
 
     void MainView::addBlock(const model::GridXY& gridXy) {
@@ -168,6 +180,7 @@ namespace view2 {
             m_model->clusters().emplace_back(gridXy, "CL" + std::to_string(m_model->clusters().size()));
             m_commandScrollArea->add(m_model->clusters().back());
         }
+        update();
     }
 
     std::unique_ptr<QPixmap> MainView::connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const {
@@ -221,13 +234,10 @@ namespace view2 {
         const auto namePosition =
             view::ScreenXY::fromWorldXY(model::WorldXY(*cluster.gridXY().begin()) + model::WorldXY{5, app::HALF_BLOCK_SIZE_IN_WORLD}, m_viewPort);
 
-        const int     id     = QFontDatabase::addApplicationFont("assets/UbuntuMono-Italic.ttf");
-        const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-        const QFont   font(family, 12);
-        painter.setFont(font);
+        painter.setFont(m_font);
 
-        QFontMetrics fontMetrics(font);
-        const int    width  = fontMetrics.horizontalAdvance(cluster.name().c_str());
+        QFontMetrics fontMetrics(m_font);
+        const int    width  = fontMetrics.width(cluster.name().c_str());
         const int    height = fontMetrics.height();
         painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, view::color::WHITE_COLOR);
         painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());

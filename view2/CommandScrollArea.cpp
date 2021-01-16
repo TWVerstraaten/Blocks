@@ -14,7 +14,6 @@ namespace view2 {
         m_layout->addStretch();
         setWidget(widget);
 
-        setContentsMargins(0, 0, 0, 0);
         setMaximumWidth(200);
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 

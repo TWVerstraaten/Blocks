@@ -26,12 +26,15 @@ namespace view2 {
         switch (event->key()) {
             case Qt::Key_Escape:
                 clearFocus();
+                update();
                 break;
             case Qt::Key_Tab:
                 emit tabPressed();
+                update();
                 break;
             case Qt::Key_Backtab:
                 emit backTabPressed();
+                update();
                 break;
             default:
                 QTextEdit::keyPressEvent(event);
@@ -43,11 +46,12 @@ namespace view2 {
         QSize size = document()->size().toSize();
         setMaximumHeight(size.height());
         setMinimumHeight(size.height());
+        update();
     }
 
     std::vector<std::string> TextEdit::contents() const {
         QString                  data       = toPlainText();
-        QStringList              stringList = data.split(QRegExp("[\n]"), Qt::KeepEmptyParts);
+        QStringList              stringList = data.split(QRegExp("[\n]"), QString::KeepEmptyParts);
         std::vector<std::string> result;
         for (const auto& it : stringList) {
             result.emplace_back(it.toStdString());

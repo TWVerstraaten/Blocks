@@ -13,16 +13,13 @@ namespace view2 {
 
     class MainWindow : public QMainWindow {
         Q_OBJECT
+
       public:
         explicit MainWindow(QWidget* parent = nullptr);
 
-      private slots:
-        void init();
-        void loop();
-
       private:
         QElapsedTimer  m_elapsedTimer;
-        CentralWidget* m_mainWidget;
+        CentralWidget* m_centralWidget;
     };
 } // namespace view2
 

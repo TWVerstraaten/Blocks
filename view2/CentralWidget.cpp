@@ -4,6 +4,7 @@
 #include "MainView.h"
 
 #include <QKeyEvent>
+#include <QTimer>
 
 namespace view2 {
 
@@ -17,14 +18,7 @@ namespace view2 {
         layout->addWidget(m_mainView, 0, 0);
         m_commandScrollArea = new CommandScrollArea(this);
         layout->addWidget(m_commandScrollArea, 0, 1);
-    }
-
-    CommandScrollArea* CentralWidget::commandScrollArea() const {
-        return m_commandScrollArea;
-    }
-
-    MainView* CentralWidget::mainView() const {
-        return m_mainView;
+        m_mainView->init(m_commandScrollArea);
     }
 
     void CentralWidget::keyPressEvent(QKeyEvent* event) {
