@@ -95,7 +95,7 @@ namespace view {
     }
 
     void View::drawLevel(const Level& level) const {
-        const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
+        const auto blockShrinkInScreen = m_viewPort.worldToScreen(app::BLOCK_SHRINK_IN_WORLD);
         const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
         const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
 
@@ -147,9 +147,7 @@ namespace view {
     }
 
     void View::drawRectangle(const WorldXY& point, int widthInWorld, int heightInWorld, const SDL_Color& color) const {
-        drawRectangle(ScreenXY::fromWorldXY(point, m_viewPort),
-                      m_viewPort.worldToScreenLength(widthInWorld),
-                      m_viewPort.worldToScreenLength(heightInWorld),
+        drawRectangle(ScreenXY::fromWorldXY(point, m_viewPort), m_viewPort.worldToScreen(widthInWorld), m_viewPort.worldToScreen(heightInWorld),
                       color);
     }
 
@@ -256,7 +254,7 @@ namespace view {
     }
 
     void View::drawDisconnected(const GridXYSet& blocks, const SDL_Color& color, TEXTURE_ENUM textureEnum) const {
-        const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
+        const auto blockShrinkInScreen = m_viewPort.worldToScreen(app::BLOCK_SHRINK_IN_WORLD);
         const auto shrinkInScreenXY    = ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
         const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
 
@@ -277,7 +275,7 @@ namespace view {
         const auto             texture = getTextureInWorld(blocks, textureEnum, color);
         const auto             topLeft = ScreenXY::fromWorldXY(fun(WorldXY(GridXY{geom::minX(blocks), geom::minY(blocks)})), m_viewPort);
         texture->render(
-            {topLeft.x(), topLeft.y(), m_viewPort.worldToScreenLength(texture->width()), m_viewPort.worldToScreenLength(texture->height())},
+            {topLeft.x(), topLeft.y(), m_viewPort.worldToScreen(texture->width()), m_viewPort.worldToScreen(texture->height())},
             m_renderer,
             angle,
             &origin);
@@ -290,7 +288,7 @@ namespace view {
         const auto texture = getTextureInWorld(blocks, textureEnum, color);
         const auto topLeft = ScreenXY::fromWorldXY((WorldXY(GridXY{geom::minX(blocks), geom::minY(blocks)})), m_viewPort);
         texture->render(
-            {topLeft.x(), topLeft.y(), m_viewPort.worldToScreenLength(texture->width()), m_viewPort.worldToScreenLength(texture->height())},
+            {topLeft.x(), topLeft.y(), m_viewPort.worldToScreen(texture->width()), m_viewPort.worldToScreen(texture->height())},
             m_renderer);
     }
 

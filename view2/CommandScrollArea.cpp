@@ -8,7 +8,7 @@
 
 namespace view2 {
 
-    CommandScrollArea::CommandScrollArea(QWidget* parent) : QScrollArea(parent) {
+    CommandScrollArea::CommandScrollArea(QWidget* parent) : QScrollArea(parent), m_undoGroup(this) {
         auto* widget = new QWidget(parent);
         m_layout     = new QVBoxLayout(widget);
         m_layout->addStretch();
@@ -65,9 +65,10 @@ namespace view2 {
     }
 
     void CommandScrollArea::add(model::Cluster& cluster) {
-        m_commandEditBoxes.emplace_back(new CommandEditBox(parentWidget(), cluster));
-        connect(m_commandEditBoxes.back()->textEdit(), &TextEdit::tabPressed, this, &CommandScrollArea::moveFocusToNext);
-        connect(m_commandEditBoxes.back()->textEdit(), &TextEdit::backTabPressed, this, &CommandScrollArea::moveFocusToPrevious);
-        m_layout->insertWidget(m_layout->count() - 1, m_commandEditBoxes.back());
+        auto* commandEditBox = new CommandEditBox(parentWidget(), cluster);
+        m_commandEditBoxes.emplace_back(commandEditBox);
+        connect(commandEditBox->textEdit(), &TextEdit::tabPressed, this, &CommandScrollArea::moveFocusToNext);
+        connect(commandEditBox->textEdit(), &TextEdit::backTabPressed, this, &CommandScrollArea::moveFocusToPrevious);
+        m_layout->insertWidget(m_layout->count() - 1, commandEditBox);
     }
 } // namespace view2

@@ -22,7 +22,7 @@ namespace view2 {
         painter.setRenderHint(QPainter::Antialiasing);
         painter.fillRect(event->rect(), view::color::BACKGROUND_COLOR);
 
-        const auto blockShrinkInScreen = m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
+        const auto blockShrinkInScreen = m_viewPort.worldToScreen(app::BLOCK_SHRINK_IN_WORLD);
         const auto shrinkInScreenXY    = view::ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
         const auto shrunkBlockSize     = m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
 
@@ -37,19 +37,7 @@ namespace view2 {
             drawConnected(stoppedCluster.gridXY(), view::color::DARK_GREY_COLOR, painter);
         }
         for (const auto& cluster : m_model->clusters()) {
-            drawConnected(cluster.gridXY(), view::color::CLUSTER_COLOR, painter);
-            const auto namePosition = view::ScreenXY::fromWorldXY(*cluster.gridXY().begin() + app::HALF_BLOCK_IN_WORLD, m_viewPort);
-
-            const int     id     = QFontDatabase::addApplicationFont("assets/UbuntuMono-Italic.ttf");
-            const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-            const QFont   font(family, 12);
-            painter.setFont(font);
-
-            QFontMetrics fontMetrics(font);
-            int          width  = fontMetrics.horizontalAdvance(cluster.name().c_str());
-            int          height = fontMetrics.height();
-            painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, view::color::WHITE_COLOR);
-            painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
+            drawCluster(cluster, painter);
         }
         for (const auto& [point, type] : m_model->level().dynamicBlocks()) {
             const auto position = view::ScreenXY::fromGridXY(point, m_viewPort) + shrinkInScreenXY;
@@ -132,7 +120,7 @@ namespace view2 {
         if (not m_model->level().isFreeStartBlock(currentGridXY)) {
             return;
         }
-        if (m_model->noLiveOrStoppedClusterOnBlock(m_previousGridPosition)) {
+        if (m_model->noLiveOrStoppedClusterOnBlock(m_previousGridPosition) || not currentGridXY.isAdjacent(m_previousGridPosition)) {
             m_previousGridPosition = currentGridXY;
             mouseLeftPressEvent();
             return;
@@ -183,14 +171,16 @@ namespace view2 {
     }
 
     std::unique_ptr<QPixmap> MainView::connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const {
-        const auto shrunkSize  = m_viewPort.blockSizeInScreen() - 2 * m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
+        using namespace model;
+
+        const auto shrunkSize  = m_viewPort.blockSizeInScreen() - 2 * m_viewPort.worldToScreen(app::BLOCK_SHRINK_IN_WORLD);
+        const auto twiceShrink = 2 * m_viewPort.worldToScreen(app::BLOCK_SHRINK_IN_WORLD);
         const auto minX        = geom::minX(blocks);
         const auto minY        = geom::minY(blocks);
         const auto maxX        = geom::maxX(blocks);
         const auto maxY        = geom::maxY(blocks);
         const auto width       = (maxX - minX + 1) * m_viewPort.blockSizeInScreen();
         const auto height      = (maxY - minY + 1) * m_viewPort.blockSizeInScreen();
-        const auto twiceShrink = 2 * m_viewPort.worldToScreenLength(app::BLOCK_SHRINK_IN_WORLD);
 
         assert(width > 0);
         assert(height > 0);
@@ -199,28 +189,47 @@ namespace view2 {
         result->fill(Qt::transparent);
         QPainter painter(result);
         painter.setBrush(QBrush{color});
-        using namespace model;
         for (const auto block : blocks) {
-            const auto           positionInWorld = block - GridXY{minX, minY} + WorldXY{app::BLOCK_SHRINK_IN_WORLD, app::BLOCK_SHRINK_IN_WORLD};
-            const view::ScreenXY position        = {m_viewPort.worldToScreenLength(positionInWorld.x()),
-                                             m_viewPort.worldToScreenLength(positionInWorld.y())};
+            const auto positionInWorld = block - GridXY{minX, minY} + WorldXY{app::BLOCK_SHRINK_IN_WORLD, app::BLOCK_SHRINK_IN_WORLD};
+            const auto position        = view::ScreenXY{m_viewPort.worldToScreen(positionInWorld.x()), m_viewPort.worldToScreen(positionInWorld.y())};
             painter.fillRect(QRect{position.x(), position.y(), shrunkSize, shrunkSize}, QBrush{color});
-            const bool l = blocks.find(block.neighbor(GridXY::DIRECTION::LEFT)) != blocks.end();
-            const bool u = blocks.find(block.neighbor(GridXY::DIRECTION::UP)) != blocks.end();
-            if (u && l) {
-                const bool ul = blocks.find(block.neighbor(GridXY::DIRECTION::UP).neighbor(GridXY::DIRECTION::LEFT)) != blocks.end();
-                if (ul) {
+
+            const bool leftOccupied = blocks.find(block.neighbor(GridXY::DIRECTION::LEFT)) != blocks.end();
+            const bool upOccupied   = blocks.find(block.neighbor(GridXY::DIRECTION::UP)) != blocks.end();
+            if (upOccupied && leftOccupied) {
+                painter.fillRect(QRect{position.x(), position.y() - twiceShrink - 1, shrunkSize, twiceShrink + 2}, color);
+                painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y(), twiceShrink + 2, shrunkSize}, color);
+
+                const bool upAndLeftOccupied = blocks.find(block.neighbor(GridXY::DIRECTION::UP).neighbor(GridXY::DIRECTION::LEFT)) != blocks.end();
+                if (upAndLeftOccupied) {
                     painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y() - twiceShrink - 1, twiceShrink + 2, twiceShrink + 2}, color);
                 }
-            }
-            if (u) {
-                painter.fillRect(QRect{position.x(), position.y() - twiceShrink - 1, shrunkSize, twiceShrink + 2}, color);
-            }
-            if (l) {
-                painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y(), twiceShrink + 2, shrunkSize}, color);
+            } else {
+                if (upOccupied) {
+                    painter.fillRect(QRect{position.x(), position.y() - twiceShrink - 1, shrunkSize, twiceShrink + 2}, color);
+                }
+                if (leftOccupied) {
+                    painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y(), twiceShrink + 2, shrunkSize}, color);
+                }
             }
         }
         return std::unique_ptr<QPixmap>(result);
     }
 
+    void MainView::drawCluster(const model::Cluster& cluster, QPainter& painter) {
+        drawConnected(cluster.gridXY(), view::color::CLUSTER_COLOR, painter);
+        const auto namePosition =
+            view::ScreenXY::fromWorldXY(model::WorldXY(*cluster.gridXY().begin()) + model::WorldXY{5, app::HALF_BLOCK_SIZE_IN_WORLD}, m_viewPort);
+
+        const int     id     = QFontDatabase::addApplicationFont("assets/UbuntuMono-Italic.ttf");
+        const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+        const QFont   font(family, 12);
+        painter.setFont(font);
+
+        QFontMetrics fontMetrics(font);
+        const int    width  = fontMetrics.horizontalAdvance(cluster.name().c_str());
+        const int    height = fontMetrics.height();
+        painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, view::color::WHITE_COLOR);
+        painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
+    }
 } // namespace view2

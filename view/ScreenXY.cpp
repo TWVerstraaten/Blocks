@@ -24,11 +24,11 @@ namespace view {
     }
 
     ScreenXY ScreenXY::fromWorldXY(const model::WorldXY& worldXY, const ViewPort& viewPort) {
-        return {viewPort.worldToScreenLength(worldXY.x()) + viewPort.xOffset(), viewPort.worldToScreenLength(worldXY.y()) + viewPort.yOffset()};
+        return {viewPort.worldToScreen(worldXY.x()) + viewPort.xOffset(), viewPort.worldToScreen(worldXY.y()) + viewPort.yOffset()};
     }
 
     ScreenXY ScreenXY::fromWorldXYAsVector(const model::WorldXY& worldXY, const ViewPort& viewPort) {
-        return {viewPort.worldToScreenLength(worldXY.x()), viewPort.worldToScreenLength(worldXY.y())};
+        return {viewPort.worldToScreen(worldXY.x()), viewPort.worldToScreen(worldXY.y())};
     }
 
     ScreenXY ScreenXY::fromGridXY(const model::GridXY& gridXY, const ViewPort& viewPort) {

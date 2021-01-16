@@ -25,9 +25,6 @@ namespace view2 {
       private slots:
         void setHeight();
 
-      protected:
-        //        void resizeEvent(QResizeEvent* event) override;
-
       private:
         size_t                m_index;
         std::string           m_name;

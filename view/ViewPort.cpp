@@ -21,7 +21,7 @@ namespace view {
         D_NOTE_ONCE("Zoom into point");
         m_zoom                            = std::clamp(m_zoom + dZoom, -2000, 3000);
         m_scale                           = std::exp(m_zoom / 1000.0);
-        m_distanceBetweenBlocksInScreenXY = worldToScreenLength(2 * app::BLOCK_SHRINK_IN_WORLD);
+        m_distanceBetweenBlocksInScreenXY = worldToScreen(2 * app::BLOCK_SHRINK_IN_WORLD);
     }
 
     void ViewPort::translate(int dx, int dy) {
@@ -37,7 +37,7 @@ namespace view {
         return m_yOffset;
     }
 
-    int ViewPort::worldToScreenLength(int worldLength) const {
+    int ViewPort::worldToScreen(int worldLength) const {
         return static_cast<int>(m_scale * worldLength);
     }
 

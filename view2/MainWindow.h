@@ -21,9 +21,8 @@ namespace view2 {
         void loop();
 
       private:
-        QElapsedTimer                 m_elapsedTimer{};
-        CentralWidget*                m_mainWidget;
-        std::unique_ptr<model::Model> m_model;
+        QElapsedTimer  m_elapsedTimer;
+        CentralWidget* m_mainWidget;
     };
 } // namespace view2
 

@@ -5,6 +5,7 @@
 #include "CommandEditBox.h"
 
 #include <QScrollArea>
+#include <QUndoGroup>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <vector>
@@ -25,6 +26,7 @@ namespace view2 {
         void moveFocusToPrevious();
 
       private:
+        QUndoGroup                   m_undoGroup;
         std::vector<CommandEditBox*> m_commandEditBoxes;
         QVBoxLayout*                 m_layout;
     };

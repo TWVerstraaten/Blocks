@@ -21,7 +21,7 @@ namespace view {
         [[nodiscard]] int yOffset() const;
 
         /****** CONST FUNCTIONS  ******/
-        [[nodiscard]] int worldToScreenLength(int worldLength) const;
+        [[nodiscard]] int worldToScreen(int worldLength) const;
         [[nodiscard]] int blockSeparationInScreenXY() const;
 
         /****** NON CONST FUNCTIONS  ******/

@@ -7,6 +7,7 @@
 
 namespace view2 {
     TextEdit::TextEdit(QWidget* parent, const QString& string) : QTextEdit(parent) {
+
         connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
 
         setMaximumWidth(200);

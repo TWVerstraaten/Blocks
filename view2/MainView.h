@@ -26,6 +26,7 @@ namespace view2 {
 
       private:
         void                                   drawConnected(const model::GridXYSet& blocks, const QColor& color, QPainter& painter) const;
+        void                                   drawCluster(const model::Cluster& cluster, QPainter& painter);
         [[nodiscard]] std::unique_ptr<QPixmap> connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const;
 
         void mouseLeftPressEvent();
