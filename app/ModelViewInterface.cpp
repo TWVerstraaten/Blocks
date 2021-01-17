@@ -4,10 +4,6 @@
 
 #include "ModelViewInterface.h"
 
-#include "../action/GenericCommandEditBoxAction.h"
-#include "../action/GenericModelAction.h"
-#include "../action/RemoveBlockFromClusterAction.h"
-#include "../action/RemoveClusterAction.h"
 #include "../global/defines.h"
 #include "../global/overloaded.h"
 #include "../view/View.h"
@@ -106,7 +102,7 @@ void app::ModelViewInterface::undo(app::ApplicationEdit& applicationEdit) {
     if (m_undoStack.empty()) {
         return;
     }
-    m_undoStack.top()->undoAction(applicationEdit);
+    //    m_undoStack.top()->undo(applicationEdit);
     m_redoStack.push(std::move(m_undoStack.top()));
     assert(m_undoStack.top() == nullptr);
     m_undoStack.pop();
@@ -117,7 +113,7 @@ void app::ModelViewInterface::redo(app::ApplicationEdit& applicationEdit) {
     if (m_redoStack.empty()) {
         return;
     }
-    m_redoStack.top()->redoAction(applicationEdit);
+    //    m_redoStack.top()->redo(applicationEdit);
     m_undoStack.push(std::move(m_redoStack.top()));
     assert(m_redoStack.top() == nullptr);
     m_redoStack.pop();
@@ -133,9 +129,8 @@ std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockFromCluster_s
     if (it->size() > 1) {
         return clearBlockFromCluster(model, scrollArea, point, *it);
     }
-    auto result = std::make_unique<action::RemoveClusterAction>(*it);
     clusters.erase(it);
-    return result;
+    return nullptr;
 }
 
 void app::ModelViewInterface::handleKeyEvent(const SDL_Event& event, ScrollArea& scrollArea, Model& model) {
@@ -147,7 +142,6 @@ void app::ModelViewInterface::handleKeyEvent(const SDL_Event& event, ScrollArea&
             auto clusterIt = findCluster(*w, model.clusters());
             w->updateClusterCommands(*clusterIt);
         }
-        addAction(std::make_unique<action::GenericCommandEditBoxAction>(copy, *w));
     }
 }
 
@@ -216,11 +210,11 @@ std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockFromCluster(M
     assert(cluster.contains(point));
     cluster.removeGridXY(point);
     if (cluster.isConnected()) {
-        return std::make_unique<action::RemoveBlockFromClusterAction>(cluster.index(), point);
+        return nullptr;
     }
     Model copy = model;
     split(model, scrollArea, cluster);
-    return std::make_unique<action::GenericModelAction>(copy, model);
+    return nullptr;
 }
 
 void app::ModelViewInterface::splitIfDisconnected(Model& model, ScrollArea& scrollArea, Cluster& cluster) {
@@ -251,7 +245,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::addSingleBlockToCluster
     }
     clusters.push_back(Cluster({point}, "CL" + std::to_string(clusters.size())));
     addCommandEditBoxesOfNewClusters(clusters, scrollArea);
-    return std::make_unique<action::AddClusterAction>(clusters.back());
+    return nullptr;
 }
 
 std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(Model&        model,
@@ -270,12 +264,12 @@ std::unique_ptr<action::Action> app::ModelViewInterface::linkBlocks(Model&      
     if (extensionIt == clusters.end()) {
         baseIt->addGridXY(point);
         assert(baseIt->isConnected());
-        return std::make_unique<action::AddBlockToClusterAction>(baseIt->index(), point);
+        return nullptr;
     }
     auto copyOfModel = model;
     baseIt->gridXY().merge(extensionIt->gridXY());
     clusters.erase(extensionIt);
-    return std::make_unique<action::GenericModelAction>(copyOfModel, model);
+    return nullptr;
 }
 
 void app::ModelViewInterface::leftMouseClick(Model& model, ScrollArea& scrollArea, const GridXY& point) {

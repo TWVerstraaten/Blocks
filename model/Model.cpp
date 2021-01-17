@@ -4,7 +4,6 @@
 
 #include "Model.h"
 
-#include "../action/RemoveClusterAction.h"
 #include "../app/Application_constants.h"
 #include "../global/defines.h"
 

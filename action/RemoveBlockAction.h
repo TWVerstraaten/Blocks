@@ -20,10 +20,8 @@ namespace action {
       public:
         RemoveBlockAction(model::Model* model, size_t clusterIndex, const model::GridXY& gridXy);
 
-        void                      undoAction(app::ApplicationEdit& applicationEdit) override;
-        void                      redoAction(app::ApplicationEdit& applicationEdit) override;
-        void                      undoAction() override;
-        void                      redoAction() override;
+        void                      undo() override;
+        void                      redo() override;
         [[nodiscard]] ACTION_TYPE type() const override;
 
       private:

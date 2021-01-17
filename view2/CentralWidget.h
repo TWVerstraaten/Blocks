@@ -5,6 +5,7 @@
 
 #include <QList>
 #include <QPainterPath>
+#include <QUndoStack>
 #include <QWidget>
 #include <action/Action.h>
 #include <memory>
@@ -47,6 +48,7 @@ namespace view2 {
         CommandScrollArea*                          m_commandScrollArea;
         std::stack<std::unique_ptr<action::Action>> m_undoStack;
         std::stack<std::unique_ptr<action::Action>> m_redoStack;
+        QUndoStack                                  m_qUndoStack;
     };
 } // namespace view2
 

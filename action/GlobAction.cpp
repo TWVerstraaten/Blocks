@@ -4,21 +4,15 @@
 
 #include "GlobAction.h"
 
-void action::GlobAction::undoAction(app::ApplicationEdit& applicationEdit) {
-}
-
-void action::GlobAction::redoAction(app::ApplicationEdit& applicationEdit) {
-}
-
-void action::GlobAction::undoAction() {
+void action::GlobAction::undo() {
     for (auto it = m_actions.rbegin(); it != m_actions.rend(); ++it) {
-        it->get()->undoAction();
+        it->get()->undo();
     }
 }
 
-void action::GlobAction::redoAction() {
+void action::GlobAction::redo() {
     for (auto& action : m_actions) {
-        action->redoAction();
+        action->redo();
     }
 }
 
@@ -26,7 +20,7 @@ action::ACTION_TYPE action::GlobAction::type() const {
     return ACTION_TYPE::GLOB;
 }
 
-bool action::GlobAction::isEmpty() {
+bool action::GlobAction::isEmpty() const {
     return m_actions.empty();
 }
 

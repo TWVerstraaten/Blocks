@@ -84,7 +84,7 @@ namespace view2 {
         if (m_undoStack.empty()) {
             return;
         }
-        m_undoStack.top()->undoAction();
+        m_undoStack.top()->undo();
         m_redoStack.push(std::move(m_undoStack.top()));
         assert(m_undoStack.top() == nullptr);
         m_undoStack.pop();
@@ -94,7 +94,7 @@ namespace view2 {
         if (m_redoStack.empty()) {
             return;
         }
-        m_redoStack.top()->redoAction();
+        m_redoStack.top()->redo();
         m_undoStack.push(std::move(m_redoStack.top()));
         assert(m_redoStack.top() == nullptr);
         m_redoStack.pop();

@@ -16,10 +16,8 @@ namespace action {
                             const model::Cluster&                    cluster,
                             std::unique_ptr<view2::CommandEditBox>&& commandEditBox);
 
-        void                      undoAction(app::ApplicationEdit& applicationEdit) override;
-        void                      redoAction(app::ApplicationEdit& applicationEdit) override;
-        void                      undoAction() override;
-        void                      redoAction() override;
+        void                      undo() override;
+        void                      redo() override;
         [[nodiscard]] ACTION_TYPE type() const override;
     };
 } // namespace action

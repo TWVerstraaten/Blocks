@@ -13,20 +13,12 @@ action::DeleteClusterAction::DeleteClusterAction(view2::CentralWidget*          
     m_commandEditBox = std::move(commandEditBox);
 }
 
-void action::DeleteClusterAction::undoAction(app::ApplicationEdit& applicationEdit) {
-    assert(false);
+void action::DeleteClusterAction::undo() {
+    NewClusterAction::redo();
 }
 
-void action::DeleteClusterAction::redoAction(app::ApplicationEdit& applicationEdit) {
-    assert(false);
-}
-
-void action::DeleteClusterAction::undoAction() {
-    NewClusterAction::redoAction();
-}
-
-void action::DeleteClusterAction::redoAction() {
-    NewClusterAction::undoAction();
+void action::DeleteClusterAction::redo() {
+    NewClusterAction::undo();
 }
 
 action::ACTION_TYPE action::DeleteClusterAction::type() const {

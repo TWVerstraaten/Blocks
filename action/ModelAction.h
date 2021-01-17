@@ -19,10 +19,8 @@ namespace action {
       public:
         ModelAction(model::Model* model, model::Model oldCopy, model::Model newCopy, view2::CommandScrollArea* commandScrollArea);
 
-        void                      undoAction(app::ApplicationEdit& applicationEdit) override;
-        void                      redoAction(app::ApplicationEdit& applicationEdit) override;
-        void                      undoAction() override;
-        void                      redoAction() override;
+        void                      undo() override;
+        void                      redo() override;
         [[nodiscard]] ACTION_TYPE type() const override;
 
       private:

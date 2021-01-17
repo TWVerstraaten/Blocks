@@ -7,19 +7,15 @@
 
 #include "Action_enums.h"
 
-namespace app {
-    class ApplicationEdit;
-}
+#include <QUndoCommand>
 
 namespace action {
-    class Action {
+    class Action : public QUndoCommand {
 
       public:
         /****** VIRTUAL FUNCTIONS  ******/
-        virtual void                      undoAction(app::ApplicationEdit& applicationEdit) = 0;
-        virtual void                      redoAction(app::ApplicationEdit& applicationEdit) = 0;
-        virtual void                      undoAction(){};
-        virtual void                      redoAction(){};
+        virtual void                      undo()       = 0;
+        virtual void                      redo()       = 0;
         [[nodiscard]] virtual ACTION_TYPE type() const = 0;
     };
 } // namespace action

@@ -12,21 +12,13 @@ action::RemoveBlockAction::RemoveBlockAction(model::Model* model, size_t cluster
     : m_model(model), m_clusterIndex(clusterIndex), m_gridXy(gridXy) {
 }
 
-void action::RemoveBlockAction::undoAction(app::ApplicationEdit& applicationEdit) {
-    assert(false);
-}
-
-void action::RemoveBlockAction::redoAction(app::ApplicationEdit& applicationEdit) {
-    assert(false);
-}
-
-void action::RemoveBlockAction::undoAction() {
+void action::RemoveBlockAction::undo() {
     auto it = m_model->clusterWithIndex(m_clusterIndex);
     assert(it != m_model->clusters().end());
     it->addGridXY(m_gridXy);
 }
 
-void action::RemoveBlockAction::redoAction() {
+void action::RemoveBlockAction::redo() {
     auto it = m_model->clusterWithIndex(m_clusterIndex);
     assert(it != m_model->clusters().end());
     it->removeGridXY(m_gridXy);

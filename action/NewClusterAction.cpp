@@ -14,15 +14,7 @@ action::NewClusterAction::NewClusterAction(view2::CentralWidget* centralWidget, 
     : m_commandEditBox(nullptr), m_centralWidget(centralWidget), m_cluster(std::move(cluster)) {
 }
 
-void action::NewClusterAction::undoAction(app::ApplicationEdit& applicationEdit) {
-    assert(false);
-}
-
-void action::NewClusterAction::redoAction(app::ApplicationEdit& applicationEdit) {
-    assert(false);
-}
-
-void action::NewClusterAction::undoAction() {
+void action::NewClusterAction::undo() {
     auto* model = m_centralWidget->mainView()->model();
     auto  it    = model->clusterWithIndex(m_cluster.index());
     assert(it != model->clusters().end());
@@ -32,7 +24,7 @@ void action::NewClusterAction::undoAction() {
     m_centralWidget->update();
 }
 
-void action::NewClusterAction::redoAction() {
+void action::NewClusterAction::redo() {
     auto* model = m_centralWidget->mainView()->model();
     auto  it    = model->clusterWithIndex(m_cluster.index());
     assert(it == model->clusters().end());

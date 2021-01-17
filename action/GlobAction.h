@@ -15,16 +15,14 @@ namespace action {
     class GlobAction : public Action {
 
       public:
-        void                      undoAction(app::ApplicationEdit& applicationEdit) override;
-        void                      redoAction(app::ApplicationEdit& applicationEdit) override;
-        void                      undoAction() override;
-        void                      redoAction() override;
-        [[nodiscard]] ACTION_TYPE type() const override;
+        void undo() override;
+        void redo() override;
 
-        void                      add(std::unique_ptr<Action>&& action);
-        bool                      isEmpty();
-        bool                      single() const;
-        std::unique_ptr<Action>&& first();
+        void                                    add(std::unique_ptr<Action>&& action);
+        [[nodiscard]] ACTION_TYPE               type() const override;
+        [[nodiscard]] bool                      isEmpty() const;
+        [[nodiscard]] bool                      single() const;
+        [[nodiscard]] std::unique_ptr<Action>&& first();
 
       private:
         std::vector<std::unique_ptr<Action>> m_actions;

@@ -12,20 +12,12 @@ action::ModelAction::ModelAction(model::Model* model, model::Model oldCopy, mode
     : m_model(model), m_old(std::move(oldCopy)), m_new(std::move(newCopy)), m_commandScrollArea(commandScrollArea) {
 }
 
-void action::ModelAction::undoAction(app::ApplicationEdit& applicationEdit) {
-    assert(false);
-}
-
-void action::ModelAction::redoAction(app::ApplicationEdit& applicationEdit) {
-    assert(false);
-}
-
-void action::ModelAction::undoAction() {
+void action::ModelAction::undo() {
     *m_model = m_old;
     m_commandScrollArea->removeUnnecessary(m_model->clusters());
 }
 
-void action::ModelAction::redoAction() {
+void action::ModelAction::redo() {
     *m_model = m_new;
     m_commandScrollArea->addNeeded(m_model->clusters());
 }

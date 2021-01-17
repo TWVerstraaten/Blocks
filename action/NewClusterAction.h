@@ -24,10 +24,8 @@ namespace action {
       public:
         NewClusterAction(view2::CentralWidget* centralWidget, model::Cluster cluster);
 
-        void                      undoAction(app::ApplicationEdit& applicationEdit) override;
-        void                      redoAction(app::ApplicationEdit& applicationEdit) override;
-        void                      undoAction() override;
-        void                      redoAction() override;
+        void                      undo() override;
+        void                      redo() override;
         [[nodiscard]] ACTION_TYPE type() const override;
 
       protected:
