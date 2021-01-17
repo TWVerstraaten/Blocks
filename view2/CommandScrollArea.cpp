@@ -18,6 +18,7 @@ namespace view2 {
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
         setWidgetResizable(true);
+        QUndoGroup f;
     }
 
     void CommandScrollArea::moveFocusToNext() {

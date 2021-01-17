@@ -5,7 +5,6 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <utility>
 
 namespace view2 {
 
@@ -25,7 +24,7 @@ namespace view2 {
             }
         }
 
-        m_textEdit = new TextEdit(this, text);
+        m_textEdit = new TextEdit(this, text, nullptr);
         auto* l    = new QVBoxLayout(this);
         l->addWidget(new QLabel(m_name.c_str()));
         l->addWidget(m_textEdit);

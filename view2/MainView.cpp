@@ -72,9 +72,11 @@ namespace view2 {
 #else
         m_viewPort.zoom(event->angleDelta().y(), event->position());
 #endif
+        update();
     }
 
     void MainView::mousePressEvent(QMouseEvent* event) {
+        setFocus();
         m_previousMousePosition = event->pos();
         m_previousGridPosition  = model::GridXY::fromScreenXY(m_previousMousePosition, m_viewPort);
         if (event->button() == Qt::MouseButton::LeftButton) {

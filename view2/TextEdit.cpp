@@ -1,12 +1,14 @@
 #include "TextEdit.h"
 
+#include <QApplication>
 #include <QDebug>
 #include <QFontDatabase>
 #include <QKeyEvent>
+#include <QTime>
 #include <QTimer>
 
 namespace view2 {
-    TextEdit::TextEdit(QWidget* parent, const QString& string) : QTextEdit(parent) {
+    TextEdit::TextEdit(QWidget* parent, const QString& string, CommandEditBox* commandEditBox) : QTextEdit(parent), m_commandEditBox(commandEditBox) {
 
         connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
 
@@ -20,9 +22,20 @@ namespace view2 {
         QFont font("UbuntuMono-Regular", 10, QFont::Normal);
         setFont(font);
         append(string);
+
+        connect(document(), &QTextDocument::undoCommandAdded, [this]() { qDebug() << QTime::currentTime(); });
     }
 
     void TextEdit::keyPressEvent(QKeyEvent* event) {
+        if ((QApplication::keyboardModifiers() & Qt::ControlModifier) && event->key() == Qt::Key_Z) {
+            if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+                qDebug() << "Redo intercepted";
+            } else {
+                qDebug() << "Undo intercepted";
+            }
+            return;
+        }
+
         switch (event->key()) {
             case Qt::Key_Escape:
                 clearFocus();
