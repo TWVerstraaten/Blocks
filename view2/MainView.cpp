@@ -72,10 +72,11 @@ namespace view2 {
 #else
         m_viewPort.zoom(event->angleDelta().y(), event->position());
 #endif
-        update();Z
+        update();
     }
 
     void MainView::mousePressEvent(QMouseEvent* event) {
+        setFocus();
         m_previousMousePosition = event->pos();
         m_previousGridPosition  = model::GridXY::fromScreenXY(m_previousMousePosition, m_viewPort);
         if (event->button() == Qt::MouseButton::LeftButton) {
@@ -238,14 +239,8 @@ namespace view2 {
         painter.setFont(m_font);
 
         QFontMetrics fontMetrics(m_font);
-
-#ifdef Q_OS_WIN
-        const int width = fontMetrics.horizontalAdvance(cluster.name().c_str());
-#else
-        const int width = fontMetrics.width(cluster.name().c_str());
-#endif
-
-        const int height = fontMetrics.height();
+        const int    width  = fontMetrics.width(cluster.name().c_str());
+        const int    height = fontMetrics.height();
         painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, view::color::WHITE_COLOR);
         painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
     }

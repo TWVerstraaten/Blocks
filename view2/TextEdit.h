@@ -7,10 +7,12 @@
 #include <vector>
 
 namespace view2 {
+    class CommandEditBox;
+
     class TextEdit : public QTextEdit {
         Q_OBJECT
       public:
-        TextEdit(QWidget* parent, const QString& string);
+        TextEdit(QWidget* parent, const QString& string, CommandEditBox* commandEditBox);
 
         void keyPressEvent(QKeyEvent* event) override;
 
@@ -24,6 +26,9 @@ namespace view2 {
 
         void tabPressed();
         void backTabPressed();
+
+      private:
+        CommandEditBox* m_commandEditBox;
     };
 } // namespace view2
 
