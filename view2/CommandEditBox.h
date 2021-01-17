@@ -13,14 +13,19 @@ namespace model {
 
 namespace view2 {
 
+    class CommandScrollArea;
+
     class CommandEditBox : public QWidget {
         Q_OBJECT
 
       public:
-        CommandEditBox(QWidget* parent, model::Cluster& cluster);
+        CommandEditBox(CommandScrollArea* parent, model::Cluster& cluster);
 
-        [[nodiscard]] TextEdit* textEdit();
-        [[nodiscard]] size_t    index() const;
+        void setCommandVectorPointer();
+
+        [[nodiscard]] TextEdit*          textEdit();
+        [[nodiscard]] size_t             index() const;
+        [[nodiscard]] CommandScrollArea* commandScrollArea() const;
 
       private slots:
         void setHeight();
@@ -29,7 +34,8 @@ namespace view2 {
         size_t                m_index;
         std::string           m_name;
         TextEdit*             m_textEdit;
-        model::CommandVector* m_commandVector = nullptr;
+        model::CommandVector* m_commandVector;
+        CommandScrollArea*    m_commandScrollArea;
     };
 } // namespace view2
 #endif // COMMANDEDITBOX_H

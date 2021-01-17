@@ -1,18 +1,22 @@
 #include "MainView.h"
 
+#include "../action/NewClusterAction.h"
 #include "../view/toColor.h"
 
 #include <QApplication>
 #include <QFontDatabase>
-#include <QLabel>
 #include <QMouseEvent>
 #include <QPainter>
 #include <global/geom.h>
 
 namespace view2 {
-    MainView::MainView(QWidget* parent) : QWidget(parent) {
-        setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    MainView::MainView(CentralWidget* centralWidget)
+        : QWidget(centralWidget), m_centralWidget(centralWidget), m_commandScrollArea(centralWidget->commandScrollArea()) {
+        m_model = std::make_unique<model::Model>();
+        m_model->init();
+        m_isInitialized = true;
 
+        setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         const int     id     = QFontDatabase::addApplicationFont("assets/UbuntuMono-Italic.ttf");
         const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
         m_font               = QFont(family, 12);
@@ -113,18 +117,11 @@ namespace view2 {
         painter.drawPixmap(topLeft.x(), topLeft.y(), *pixmap);
     }
 
-    void MainView::init(CommandScrollArea* commandScrollArea) {
-        m_model = std::make_unique<model::Model>();
-        m_model->init();
-        m_commandScrollArea = commandScrollArea;
-        m_isInitialized     = true;
-    }
-
     void MainView::mouseLeftPressEvent() {
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
             removeBlock(m_previousGridPosition);
         } else {
-            addBlock(m_previousGridPosition);
+            createCluster(m_previousGridPosition);
         }
         repaint();
     }
@@ -138,7 +135,7 @@ namespace view2 {
             mouseLeftPressEvent();
             return;
         }
-        addBlock(currentGridXY);
+        createCluster(currentGridXY);
         auto baseIt      = m_model->clusterContaining(m_previousGridPosition);
         auto extensionIt = m_model->clusterContaining(currentGridXY);
 
@@ -177,12 +174,14 @@ namespace view2 {
         update();
     }
 
-    void MainView::addBlock(const model::GridXY& gridXy) {
+    void MainView::createCluster(const model::GridXY& gridXy) {
         if (m_model->noLiveOrStoppedClusterOnBlock(gridXy) && m_model->level().isFreeStartBlock(gridXy)) {
             m_model->clusters().emplace_back(gridXy, "CL" + std::to_string(m_model->clusters().size()));
+            assert(m_commandScrollArea);
             m_commandScrollArea->add(m_model->clusters().back());
+            m_centralWidget->addAction(std::make_unique<action::NewClusterAction>(m_centralWidget, m_model->clusters().back()));
+            update();
         }
-        update();
     }
 
     std::unique_ptr<QPixmap> MainView::connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const {
@@ -237,11 +236,14 @@ namespace view2 {
             view::ScreenXY::fromWorldXY(model::WorldXY(*cluster.gridXY().begin()) + model::WorldXY{5, app::HALF_BLOCK_SIZE_IN_WORLD}, m_viewPort);
 
         painter.setFont(m_font);
-
         QFontMetrics fontMetrics(m_font);
-        const int    width  = fontMetrics.width(cluster.name().c_str());
+        const int    width  = fontMetrics.horizontalAdvance(cluster.name().c_str());
         const int    height = fontMetrics.height();
         painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, view::color::WHITE_COLOR);
         painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
+    }
+
+    model::Model* MainView::model() const {
+        return m_model.get();
     }
 } // namespace view2

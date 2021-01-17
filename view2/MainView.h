@@ -1,6 +1,7 @@
 #ifndef MAINVIEW_H
 #define MAINVIEW_H
 
+#include "../model/Model.h"
 #include "../view/ViewPort.h"
 #include "MainWindow.h"
 
@@ -15,8 +16,9 @@ namespace view2 {
     class MainView : public QWidget {
         Q_OBJECT
       public:
-        explicit MainView(QWidget* parent);
-        void init(CommandScrollArea* commandScrollArea);
+        explicit MainView(CentralWidget* centralWidget);
+
+        [[nodiscard]] model::Model* model() const;
 
       protected:
         void paintEvent(QPaintEvent* event) override;
@@ -32,14 +34,15 @@ namespace view2 {
         void mouseLeftPressEvent();
         void mouseLeftDragEvent(const model::GridXY& currentGridXY);
         void removeBlock(const model::GridXY& gridXy);
-        void addBlock(const model::GridXY& gridXy);
+        void createCluster(const model::GridXY& gridXy);
 
         bool                          m_isInitialized = false;
+        CentralWidget*                m_centralWidget;
         view::ScreenXY                m_previousMousePosition;
         model::GridXY                 m_previousGridPosition{0, 0};
         view::ViewPort                m_viewPort;
         std::unique_ptr<model::Model> m_model;
-        CommandScrollArea*            m_commandScrollArea = nullptr;
+        CommandScrollArea*            m_commandScrollArea;
         QFont                         m_font;
     };
 } // namespace view2

@@ -1,5 +1,8 @@
 #include "TextEdit.h"
 
+#include "../action/GenericTextEditAction.h"
+#include "CentralWidget.h"
+
 #include <QApplication>
 #include <QDebug>
 #include <QFontDatabase>
@@ -8,13 +11,12 @@
 #include <QTimer>
 
 namespace view2 {
-    TextEdit::TextEdit(QWidget* parent, const QString& string, CommandEditBox* commandEditBox) : QTextEdit(parent), m_commandEditBox(commandEditBox) {
-
+    TextEdit::TextEdit(CommandEditBox* commandEditBox, const QString& string) : QTextEdit(commandEditBox), m_commandEditBox(commandEditBox) {
+        assert(m_commandEditBox);
         connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
 
         setMaximumWidth(200);
         document()->adjustSize();
-
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
@@ -23,15 +25,17 @@ namespace view2 {
         setFont(font);
         append(string);
 
-        connect(document(), &QTextDocument::undoCommandAdded, [this]() { qDebug() << QTime::currentTime(); });
+        connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
     }
 
     void TextEdit::keyPressEvent(QKeyEvent* event) {
         if ((QApplication::keyboardModifiers() & Qt::ControlModifier) && event->key() == Qt::Key_Z) {
             if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
-                qDebug() << "Redo intercepted";
+                qDebug() << "Redo";
+                m_commandEditBox->commandScrollArea()->centralWidget()->redo();
             } else {
-                qDebug() << "Undo intercepted";
+                qDebug() << "Undo";
+                m_commandEditBox->commandScrollArea()->centralWidget()->undo();
             }
             return;
         }
@@ -80,6 +84,13 @@ namespace view2 {
     QSize TextEdit::sizeHint() const {
         QSize size = document()->size().toSize();
         return size;
+    }
+
+    void TextEdit::sendUndo() {
+        assert(m_commandEditBox);
+        assert(m_commandEditBox->commandScrollArea());
+        assert(m_commandEditBox->commandScrollArea()->centralWidget());
+        m_commandEditBox->commandScrollArea()->centralWidget()->addAction(std::unique_ptr<action::Action>(new action::GenericTextEditAction(this)));
     }
 
 } // namespace view2

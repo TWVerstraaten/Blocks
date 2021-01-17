@@ -6,6 +6,7 @@
 #define BLOCKS_ENUM_H
 
 #include "../model/Level_enums.h"
+#include "color.h"
 
 namespace view {
 

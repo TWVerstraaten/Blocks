@@ -6,7 +6,7 @@
 
 #include "../app/ApplicationEdit.h"
 
-action::RemoveClusterAction::RemoveClusterAction(const model::Cluster& cluster) : AddClusterAction(cluster) {
+action::RemoveClusterAction::RemoveClusterAction(model::Cluster cluster) : AddClusterAction(std::move(cluster)) {
 }
 
 void action::RemoveClusterAction::undoAction(app::ApplicationEdit& applicationEdit) {

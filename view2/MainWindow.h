@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include "CentralWidget.h"
-#include "app/Application.h"
 
 #include <QDebug>
 #include <QElapsedTimer>
@@ -17,9 +16,11 @@ namespace view2 {
       public:
         explicit MainWindow(QWidget* parent = nullptr);
 
+
       private:
         QElapsedTimer  m_elapsedTimer;
         CentralWidget* m_centralWidget;
+
     };
 } // namespace view2
 

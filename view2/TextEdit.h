@@ -2,7 +2,6 @@
 #define TEXTEDIT_H
 
 #include <QTextEdit>
-#include <QWidget>
 #include <string>
 #include <vector>
 
@@ -12,12 +11,12 @@ namespace view2 {
     class TextEdit : public QTextEdit {
         Q_OBJECT
       public:
-        TextEdit(QWidget* parent, const QString& string, CommandEditBox* commandEditBox);
-
-        void keyPressEvent(QKeyEvent* event) override;
+        TextEdit(CommandEditBox* commandEditBox, const QString& string);
 
         [[nodiscard]] std::vector<std::string> contents() const;
         void                                   setHeight();
+        void                                   keyPressEvent(QKeyEvent* event) override;
+        void                                   sendUndo();
 
       protected:
         [[nodiscard]] QSize sizeHint() const override;

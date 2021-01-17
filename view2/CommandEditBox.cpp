@@ -1,16 +1,18 @@
 #include "CommandEditBox.h"
 
 #include "../model/Cluster.h"
+#include "CentralWidget.h"
+#include "MainView.h"
 
 #include <QKeyEvent>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <global/defines.h>
 
 namespace view2 {
 
-    CommandEditBox::CommandEditBox(QWidget* parent, model::Cluster& cluster)
-        : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandVector(&cluster.commandVector()) {
-
+    CommandEditBox::CommandEditBox(CommandScrollArea* parent, model::Cluster& cluster)
+        : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandVector(&cluster.commandVector()), m_commandScrollArea(parent) {
         setContentsMargins(0, 0, 0, 0);
         setMaximumWidth(200);
 
@@ -24,7 +26,7 @@ namespace view2 {
             }
         }
 
-        m_textEdit = new TextEdit(this, text, nullptr);
+        m_textEdit = new TextEdit(this, text);
         auto* l    = new QVBoxLayout(this);
         l->addWidget(new QLabel(m_name.c_str()));
         l->addWidget(m_textEdit);
@@ -55,9 +57,15 @@ namespace view2 {
         m_textEdit->setHeight();
     }
 
-    //    void CommandEditBox::resizeEvent(QResizeEvent* event) {
-    //        m_textEdit->setHeight();
-    //        QWidget::resizeEvent(event);
-    //    }
+    CommandScrollArea* CommandEditBox::commandScrollArea() const {
+        return m_commandScrollArea;
+    }
+
+    void CommandEditBox::setCommandVectorPointer() {
+        auto it =
+            std::find_if(D_IT(m_commandScrollArea->centralWidget()->mainView()->model()->clusters()), D_FUNC(cluster, cluster.index() == m_index));
+        assert(it != m_commandScrollArea->centralWidget()->mainView()->model()->clusters().end());
+        m_commandVector = &it->commandVector();
+    }
 
 } // namespace view2
