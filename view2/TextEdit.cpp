@@ -50,8 +50,13 @@ namespace view2 {
     }
 
     std::vector<std::string> TextEdit::contents() const {
-        QString                  data       = toPlainText();
-        QStringList              stringList = data.split(QRegExp("[\n]"), QString::KeepEmptyParts);
+        QString data = toPlainText();
+#ifdef Q_OS_WIN
+        QStringList stringList = data.split(QRegExp("[\n]"), Qt::SplitBehaviorFlags::KeepEmptyParts);
+#else
+        QStringList stringList = data.split(QRegExp("[\n]"), QString::KeepEmptyParts);
+#endif
+
         std::vector<std::string> result;
         for (const auto& it : stringList) {
             result.emplace_back(it.toStdString());
