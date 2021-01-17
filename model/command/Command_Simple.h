@@ -13,6 +13,6 @@ namespace model {
         COMMAND_TYPE type;
     };
 
-} // namespace model
+} // namespace m_model
 
 #endif // BLOCKS_COMMAND_SIMPLE_H

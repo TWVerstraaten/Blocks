@@ -84,7 +84,7 @@ namespace model {
         void                spliceCluster(Level& level);
         Cluster             grabAllButFirstComponent();
         CommandVector&      commandVector();
-        GridXYSet::iterator removeBLock(const GridXY& gridXY);
+        GridXYSet::iterator removeGridXY(const GridXY& gridXY);
         std::list<Cluster>  collectAllButFirstComponent();
         GridXYSet&          gridXY();
 

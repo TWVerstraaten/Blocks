@@ -17,6 +17,6 @@ namespace model {
         std::variant<Command_Simple, Command_Modified> command;
     };
 
-} // namespace model
+} // namespace m_model
 
 #endif // BLOCKS_COMMAND_REPEATWRAPPER_H

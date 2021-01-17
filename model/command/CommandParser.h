@@ -62,6 +62,6 @@ namespace model {
                                                                            {"JMP", COMMAND_JUMP::JUMP},     {"INF", std::numeric_limits<int>::max()}};
     };
 
-} // namespace model
+} // namespace m_model
 
 #endif // BLOCKS_COMMANDPARSER_H

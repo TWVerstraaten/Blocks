@@ -14,6 +14,6 @@ namespace model {
     enum class COMMAND_COMPARE { GREATER, GREATER_EQUAL, LESS, LESS_EQUAL, EQUAL };
     enum class COMMAND_MODIFIER { NONE, IGNORE, INCREMENT };
 
-} // namespace model
+} // namespace m_model
 
 #endif // BLOCKS_COMMAND_ENUMS_H

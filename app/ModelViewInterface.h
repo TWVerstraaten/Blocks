@@ -22,7 +22,7 @@ namespace view {
 namespace model {
     class Model;
     class GridXY;
-} // namespace model
+} // namespace m_model
 
 namespace action {
     class Action;

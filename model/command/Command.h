@@ -30,6 +30,6 @@ namespace model {
     void doAction(const Command_Modified& command, Cluster& cluster, Level& level);
     void doAction(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
 
-} // namespace model
+} // namespace m_model
 
 #endif // BLOCKS_COMMAND_H

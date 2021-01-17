@@ -16,5 +16,5 @@ namespace model {
         COMMAND_MODIFIER modifier;
     };
 
-} // namespace model
+} // namespace m_model
 #endif // BLOCKS_COMMAND_MODIFIED_H

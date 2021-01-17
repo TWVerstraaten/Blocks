@@ -247,11 +247,11 @@ namespace app {
         for (const auto& remove : toRemove) {
             auto it = m_model.clusterContaining(remove);
             if (it != m_model.clusters().end()) {
-                it->removeBLock(remove);
+                it->removeGridXY(remove);
             } else {
                 it = std::find_if(D_IT(m_model.level().stoppedClusters()), D_FUNC(cluster, cluster.contains(remove)));
                 assert(it != m_model.level().stoppedClusters().end());
-                it->removeBLock(remove);
+                it->removeGridXY(remove);
             }
         }
         for (const auto& add : toAdd) {

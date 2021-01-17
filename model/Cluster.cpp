@@ -56,7 +56,7 @@ namespace model {
         m_gridXYSet.swap(newGridXYSet);
     }
 
-    GridXYSet::iterator Cluster::removeBLock(const GridXY& gridXY) {
+    GridXYSet::iterator Cluster::removeGridXY(const GridXY& gridXY) {
         const auto it = m_gridXYSet.find(gridXY);
         assert(it != m_gridXYSet.end());
         return m_gridXYSet.erase(it);

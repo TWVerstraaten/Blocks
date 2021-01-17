@@ -153,4 +153,4 @@ namespace model {
         return std::holds_alternative<Command_Error>(parseString(string)) ? STRING_TYPE::ERROR : STRING_TYPE::ACTION;
     }
 
-} // namespace model
+} // namespace m_model

@@ -24,6 +24,7 @@ namespace view2 {
         void paintEvent(QPaintEvent* event) override;
         void wheelEvent(QWheelEvent* event) override;
         void mousePressEvent(QMouseEvent* event) override;
+        void mouseReleaseEvent(QMouseEvent* event) override;
         void mouseMoveEvent(QMouseEvent* event) override;
 
       private:
@@ -34,7 +35,8 @@ namespace view2 {
         void mouseLeftPressEvent();
         void mouseLeftDragEvent(const model::GridXY& currentGridXY);
         void removeBlock(const model::GridXY& gridXy);
-        void createCluster(const model::GridXY& gridXy);
+        void createCluster(const model::GridXY& gridXy, bool blockAction);
+        void deleteCluster(std::list<model::Cluster>::iterator it);
 
         bool                          m_isInitialized = false;
         CentralWidget*                m_centralWidget;

@@ -10,7 +10,7 @@
 namespace model {
     class Cluster;
     class CommandVector;
-} // namespace model
+} // namespace m_model
 
 namespace view::widget {
 

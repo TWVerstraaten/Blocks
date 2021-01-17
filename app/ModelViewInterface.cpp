@@ -214,7 +214,7 @@ std::unique_ptr<action::Action> app::ModelViewInterface::clearBlockFromCluster(M
                                                                                const GridXY& point,
                                                                                Cluster&      cluster) {
     assert(cluster.contains(point));
-    cluster.removeBLock(point);
+    cluster.removeGridXY(point);
     if (cluster.isConnected()) {
         return std::make_unique<action::RemoveBlockFromClusterAction>(cluster.index(), point);
     }

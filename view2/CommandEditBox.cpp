@@ -42,6 +42,7 @@ namespace view2 {
         connect(m_textEdit, &QTextEdit::textChanged, [this]() { m_commandVector->set(m_textEdit->contents()); });
         connect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditBox::setHeight);
         m_textEdit->setHeight();
+        setCommandVectorPointer();
         update();
     }
 

@@ -17,7 +17,9 @@ namespace model {
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         Model();
-        Model& operator=(const Model& other);
+        Model(const Model& other) = default;
+        Model(Model&& other)      = default;
+        Model& operator           =(const Model& other);
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] const Level&              level() const;

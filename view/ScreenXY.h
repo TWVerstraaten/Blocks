@@ -13,7 +13,7 @@
 namespace model {
     class WorldXY;
     class GridXY;
-} // namespace model
+} // namespace m_model
 
 namespace view {
 

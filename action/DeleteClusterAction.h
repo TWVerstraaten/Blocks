@@ -1,0 +1,27 @@
+//
+// Created by teunv on 1/17/2021.
+//
+
+#ifndef BLOCKS_DELETECLUSTERACTION_H
+#define BLOCKS_DELETECLUSTERACTION_H
+
+#include "NewClusterAction.h"
+
+namespace action {
+
+    class DeleteClusterAction : public NewClusterAction {
+
+      public:
+        DeleteClusterAction(view2::CentralWidget*                    centralWidget,
+                            const model::Cluster&                    cluster,
+                            std::unique_ptr<view2::CommandEditBox>&& commandEditBox);
+
+        void                      undoAction(app::ApplicationEdit& applicationEdit) override;
+        void                      redoAction(app::ApplicationEdit& applicationEdit) override;
+        void                      undoAction() override;
+        void                      redoAction() override;
+        [[nodiscard]] ACTION_TYPE type() const override;
+    };
+} // namespace action
+
+#endif // BLOCKS_DELETECLUSTERACTION_H

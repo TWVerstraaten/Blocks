@@ -15,7 +15,7 @@ action::AddBlockToClusterAction::AddBlockToClusterAction(size_t clusterIndex, co
 void action::AddBlockToClusterAction::undoAction(app::ApplicationEdit& applicationEdit) {
     auto it = applicationEdit.model()->clusterWithIndex(m_clusterIndex);
     assert(it != applicationEdit.model()->clusters().end());
-    it->removeBLock(m_gridXY);
+    it->removeGridXY(m_gridXY);
 }
 
 void action::AddBlockToClusterAction::redoAction(app::ApplicationEdit& applicationEdit) {

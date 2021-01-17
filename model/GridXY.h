@@ -48,11 +48,11 @@ namespace model {
 
         /****** FRIENDS  ******/
         friend std::ostream& operator<<(std::ostream& out, const GridXY& gridXy);
-        friend GridXY operator+(const GridXY& lhs, const GridXY& rhs);
-        friend GridXY operator-(const GridXY& lhs, const GridXY& rhs);
-        friend bool   operator<(const GridXY& lhs, const GridXY& rhs);
-        friend bool   operator==(const GridXY& lhs, const GridXY& rhs);
-        friend bool   operator!=(const GridXY& lhs, const GridXY& rhs);
+        friend GridXY        operator+(const GridXY& lhs, const GridXY& rhs);
+        friend GridXY        operator-(const GridXY& lhs, const GridXY& rhs);
+        friend bool          operator<(const GridXY& lhs, const GridXY& rhs);
+        friend bool          operator==(const GridXY& lhs, const GridXY& rhs);
+        friend bool          operator!=(const GridXY& lhs, const GridXY& rhs);
 
       private:
         /****** DATA MEMBERS  ******/

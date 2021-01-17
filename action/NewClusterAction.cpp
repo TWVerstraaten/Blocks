@@ -11,7 +11,7 @@
 #include <cassert>
 
 action::NewClusterAction::NewClusterAction(view2::CentralWidget* centralWidget, model::Cluster cluster)
-    : m_centralWidget(centralWidget), m_commandEditBox(nullptr), m_cluster(std::move(cluster)) {
+    : m_commandEditBox(nullptr), m_centralWidget(centralWidget), m_cluster(std::move(cluster)) {
 }
 
 void action::NewClusterAction::undoAction(app::ApplicationEdit& applicationEdit) {

@@ -18,14 +18,16 @@ namespace view2 {
         explicit CommandScrollArea(CentralWidget* centralWidget);
         ~CommandScrollArea() override;
 
-        void                             add(model::Cluster& cluster);
-        void                             removeUnnecessary(const std::list<model::Cluster>& clusters);
-        std::unique_ptr<CommandEditBox>  removeFromLayout(size_t index);
-        void                             addToLayout(std::unique_ptr<CommandEditBox>&& commandEditBox);
+        void add(model::Cluster& cluster);
+        void addNeeded(std::list<model::Cluster>& clusters);
+        void removeUnnecessary(const std::list<model::Cluster>& clusters);
+        void addToLayout(std::unique_ptr<CommandEditBox>&& commandEditBox);
 
-        [[nodiscard]] CentralWidget* centralWidget() const;
+        [[nodiscard]] CentralWidget*    centralWidget() const;
+        std::unique_ptr<CommandEditBox> removeFromLayout(size_t index);
 
       private slots:
+
         void moveFocusToNext();
         void moveFocusToPrevious();
 

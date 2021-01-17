@@ -20,7 +20,7 @@ namespace model {
     class Cluster;
     class Level;
     class WorldXY;
-} // namespace model
+} // namespace m_model
 
 namespace view {
     namespace widget {

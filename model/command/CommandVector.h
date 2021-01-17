@@ -60,6 +60,6 @@ namespace model {
         std::vector<std::string> m_strings;
     };
 
-} // namespace model
+} // namespace m_model
 
 #endif // BLOCKS_COMMANDVECTOR_H

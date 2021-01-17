@@ -15,7 +15,8 @@ namespace action {
         REMOVE_CLUSTER,
         ADD_LEVEL_BLOCK_ACTION,
         REMOVE_LEVEL_BLOCK_ACTION,
-        GENERIC_TEXT_EDIT_ACTION
+        GENERIC_TEXT_EDIT_ACTION,
+        GLOB
     };
 }
 
