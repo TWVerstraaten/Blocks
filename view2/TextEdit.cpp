@@ -1,6 +1,6 @@
 #include "TextEdit.h"
 
-#include "../action/GenericTextEditAction.h"
+#include "../action/TextEditAction.h"
 #include "CentralWidget.h"
 #include "view/color.h"
 
@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QFontDatabase>
 #include <QKeyEvent>
+#include <QStyle>
 #include <QTime>
 #include <QTimer>
 
@@ -28,10 +29,10 @@ namespace view2 {
 
         connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
 
-        QPalette pal = palette();
-        pal.setColor(QPalette::Window, view::color::COMMAND_EDIT_BACKGROUND);
-        QTextEdit::setAutoFillBackground(true);
-        QTextEdit::setPalette(pal);
+        QTextEdit::setStyleSheet(QString(" selection-background-color : rgb(%1, %2, %3)")
+                                     .arg(view::color::COMMAND_EDIT_BACKGROUND.red())
+                                     .arg(view::color::COMMAND_EDIT_BACKGROUND.green())
+                                     .arg(view::color::COMMAND_EDIT_BACKGROUND.blue()));
     }
 
     void TextEdit::keyPressEvent(QKeyEvent* event) {
@@ -96,7 +97,7 @@ namespace view2 {
         assert(m_commandEditBox);
         assert(m_commandEditBox->commandScrollArea());
         assert(m_commandEditBox->commandScrollArea()->centralWidget());
-        m_commandEditBox->commandScrollArea()->centralWidget()->addAction(new action::GenericTextEditAction(this));
+        m_commandEditBox->commandScrollArea()->centralWidget()->addAction(new action::TextEditAction(this));
     }
 
 } // namespace view2

@@ -30,7 +30,7 @@ namespace view2 {
         m_textEdit = new TextEdit(this, text);
         auto* l    = new QVBoxLayout(this);
 
-        QFont font("UbuntuMono-Regular", 12, QFont::Normal);
+        QFont font("UbuntuMono-Regular", 10, QFont::Normal);
         setFont(font);
         auto* label = new QLabel(m_name.c_str(), this);
         label->setFont(font);

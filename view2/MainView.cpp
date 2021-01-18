@@ -135,15 +135,19 @@ namespace view2 {
             m_previousGridPosition = currentGridXY;
             mouseLeftPressEvent();
         } else {
-            m_centralWidget->startActionGlob();
-            createCluster(currentGridXY);
             auto baseIt      = m_model->clusterContaining(m_previousGridPosition);
             auto extensionIt = m_model->clusterContaining(currentGridXY);
-
-            assert(baseIt != m_model->clusters().end());
-            assert(extensionIt != m_model->clusters().end());
-
-            m_centralWidget->addAction(new action::MergeClusterAction(m_model.get(), *baseIt, *extensionIt, m_commandScrollArea));
+            if (extensionIt != m_model->clusters().end() && baseIt->index() == extensionIt->index()) {
+                return;
+            }
+            m_centralWidget->startActionGlob();
+            createCluster(currentGridXY);
+            extensionIt = m_model->clusterContaining(currentGridXY);
+            if (baseIt->index() != extensionIt->index()) {
+                assert(baseIt != m_model->clusters().end());
+                assert(extensionIt != m_model->clusters().end());
+                m_centralWidget->addAction(new action::MergeClusterAction(m_model.get(), *baseIt, *extensionIt, m_commandScrollArea));
+            }
             m_centralWidget->stopActionGlob();
         }
     }

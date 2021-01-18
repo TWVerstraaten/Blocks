@@ -2,8 +2,8 @@
 // Created by teunv on 1/17/2021.
 //
 
-#ifndef BLOCKS_GENERICTEXTEDITACTION_H
-#define BLOCKS_GENERICTEXTEDITACTION_H
+#ifndef BLOCKS_TEXTEDITACTION_H
+#define BLOCKS_TEXTEDITACTION_H
 
 #include "Action.h"
 
@@ -13,10 +13,10 @@ namespace view2 {
 
 namespace action {
 
-    class GenericTextEditAction : public Action {
+    class TextEditAction : public Action {
 
       public:
-        GenericTextEditAction(view2::TextEdit* mTextEdit);
+        TextEditAction(view2::TextEdit* mTextEdit);
 
         void undo() override;
         void redo() override;
@@ -27,4 +27,4 @@ namespace action {
         view2::TextEdit* m_textEdit;
     };
 } // namespace action
-#endif // BLOCKS_GENERICTEXTEDITACTION_H
+#endif // BLOCKS_TEXTEDITACTION_H
