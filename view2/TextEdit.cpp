@@ -90,7 +90,7 @@ namespace view2 {
         assert(m_commandEditBox);
         assert(m_commandEditBox->commandScrollArea());
         assert(m_commandEditBox->commandScrollArea()->centralWidget());
-        m_commandEditBox->commandScrollArea()->centralWidget()->addAction(std::unique_ptr<action::Action>(new action::GenericTextEditAction(this)));
+        m_commandEditBox->commandScrollArea()->centralWidget()->addAction(new action::GenericTextEditAction(this));
     }
 
 } // namespace view2

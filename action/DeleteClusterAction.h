@@ -12,9 +12,7 @@ namespace action {
     class DeleteClusterAction : public NewClusterAction {
 
       public:
-        DeleteClusterAction(view2::CentralWidget*                    centralWidget,
-                            const model::Cluster&                    cluster,
-                            std::unique_ptr<view2::CommandEditBox>&& commandEditBox);
+        DeleteClusterAction(view2::CentralWidget* centralWidget, const model::Cluster& cluster);
 
         void                      undo() override;
         void                      redo() override;

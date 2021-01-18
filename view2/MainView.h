@@ -35,8 +35,7 @@ namespace view2 {
         void mouseLeftPressEvent();
         void mouseLeftDragEvent(const model::GridXY& currentGridXY);
         void removeBlock(const model::GridXY& gridXy);
-        void createCluster(const model::GridXY& gridXy, bool blockAction);
-        void deleteCluster(std::list<model::Cluster>::iterator it);
+        void createCluster(const model::GridXY& gridXy);
 
         bool                          m_isInitialized = false;
         CentralWidget*                m_centralWidget;

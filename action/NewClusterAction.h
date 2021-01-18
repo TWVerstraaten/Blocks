@@ -30,10 +30,10 @@ namespace action {
 
       protected:
         std::unique_ptr<view2::CommandEditBox> m_commandEditBox;
+        model::Cluster                         m_cluster;
 
       private:
         view2::CentralWidget* m_centralWidget;
-        model::Cluster        m_cluster;
     };
 } // namespace action
 

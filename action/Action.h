@@ -17,6 +17,9 @@ namespace action {
         virtual void                      undo()       = 0;
         virtual void                      redo()       = 0;
         [[nodiscard]] virtual ACTION_TYPE type() const = 0;
+
+      protected:
+        bool m_blockInitial = true;
     };
 } // namespace action
 

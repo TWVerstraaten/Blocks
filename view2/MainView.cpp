@@ -1,5 +1,6 @@
 #include "MainView.h"
 
+#include "../action/AddBlockAction.h"
 #include "../action/NewClusterAction.h"
 #include "../view/toColor.h"
 
@@ -8,8 +9,8 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <action/DeleteClusterAction.h>
-#include <action/ModelAction.h>
-#include <action/RemoveBlockAction.h>
+#include <action/MergeClusterAction.h>
+#include <action/SplitDisconnectedAction.h>
 #include <global/geom.h>
 
 namespace view2 {
@@ -83,7 +84,7 @@ namespace view2 {
     }
 
     void MainView::mousePressEvent(QMouseEvent* event) {
-        m_centralWidget->startActionGlob();
+        //        m_centralWidget->startActionGlob();
         setFocus();
         m_previousMousePosition = event->pos();
         m_previousGridPosition  = model::GridXY::fromScreenXY(m_previousMousePosition, m_viewPort);
@@ -125,7 +126,7 @@ namespace view2 {
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
             removeBlock(m_previousGridPosition);
         } else {
-            createCluster(m_previousGridPosition, false);
+            createCluster(m_previousGridPosition);
         }
         repaint();
     }
@@ -137,20 +138,18 @@ namespace view2 {
         if (m_model->noLiveOrStoppedClusterOnBlock(m_previousGridPosition) || not currentGridXY.isAdjacent(m_previousGridPosition)) {
             m_previousGridPosition = currentGridXY;
             mouseLeftPressEvent();
-            return;
+        } else {
+            m_centralWidget->startActionGlob();
+            createCluster(currentGridXY);
+            auto baseIt      = m_model->clusterContaining(m_previousGridPosition);
+            auto extensionIt = m_model->clusterContaining(currentGridXY);
+
+            assert(baseIt != m_model->clusters().end());
+            assert(extensionIt != m_model->clusters().end());
+
+            m_centralWidget->addAction(new action::MergeClusterAction(m_model.get(), *baseIt, *extensionIt, m_commandScrollArea));
+            m_centralWidget->stopActionGlob();
         }
-        model::Model copy(*m_model);
-        createCluster(currentGridXY, true);
-        auto baseIt      = m_model->clusterContaining(m_previousGridPosition);
-        auto extensionIt = m_model->clusterContaining(currentGridXY);
-
-        assert(baseIt != m_model->clusters().end());
-        assert(extensionIt != m_model->clusters().end());
-
-        baseIt->gridXY().merge(extensionIt->gridXY());
-        m_model->clearEmpty();
-        m_commandScrollArea->removeUnnecessary(m_model->clusters());
-        m_centralWidget->addAction(std::unique_ptr<action::Action>(new action::ModelAction(m_model.get(), copy, *m_model, m_commandScrollArea)));
     }
 
     void MainView::removeBlock(const model::GridXY& gridXy) {
@@ -160,38 +159,26 @@ namespace view2 {
         }
 
         if (it->size() == 1) {
-            deleteCluster(it);
-            return;
+            m_centralWidget->addAction(new action::DeleteClusterAction(m_centralWidget, *it));
+        } else {
+            m_centralWidget->startActionGlob();
+            it->removeGridXY(gridXy);
+            assert(not it->isEmpty());
+            m_centralWidget->addAction(new action::RemoveBlockAction(m_model.get(), it->index(), gridXy));
+            if (not it->isConnected()) {
+                m_centralWidget->addAction(new action::SplitDisconnectedAction(m_model.get(), *it, m_commandScrollArea));
+            }
+            m_centralWidget->stopActionGlob();
+            update();
         }
-
-        model::Model copy(*m_model);
-        it->removeGridXY(gridXy);
-        assert(not it->isEmpty());
-        if (it->isConnected()) {
-            m_centralWidget->addAction(std::unique_ptr<action::Action>(new action::RemoveBlockAction(m_model.get(), it->index(), gridXy)));
-            return;
-        }
-
-        auto newClusters = it->collectAllButFirstComponent();
-        for (auto& newCluster : newClusters) {
-            m_commandScrollArea->add(newCluster);
-        }
-
-        m_model->clusters().splice(m_model->clusters().end(), newClusters);
-        m_model->clearEmpty();
-        m_commandScrollArea->removeUnnecessary(m_model->clusters());
-        m_centralWidget->addAction(std::unique_ptr<action::Action>(new action::ModelAction(m_model.get(), copy, *m_model, m_commandScrollArea)));
-        update();
     }
 
-    void MainView::createCluster(const model::GridXY& gridXy, bool blockAction) {
+    void MainView::createCluster(const model::GridXY& gridXy) {
         if (m_model->noLiveOrStoppedClusterOnBlock(gridXy) && m_model->level().isFreeStartBlock(gridXy)) {
             m_model->clusters().emplace_back(gridXy, "CL" + std::to_string(m_model->clusters().size()));
             assert(m_commandScrollArea);
             m_commandScrollArea->add(m_model->clusters().back());
-            if (not blockAction) {
-                m_centralWidget->addAction(std::make_unique<action::NewClusterAction>(m_centralWidget, m_model->clusters().back()));
-            }
+            m_centralWidget->addAction(new action::NewClusterAction(m_centralWidget, m_model->clusters().back()));
             update();
         }
     }
@@ -260,12 +247,6 @@ namespace view2 {
     }
 
     void MainView::mouseReleaseEvent(QMouseEvent* event) {
-        m_centralWidget->stopActionGlob();
-    }
-
-    void MainView::deleteCluster(std::list<model::Cluster>::iterator it) {
-        m_centralWidget->addAction(std::unique_ptr<action::Action>(
-            new action::DeleteClusterAction(m_centralWidget, *it, m_commandScrollArea->removeFromLayout(it->index()))));
-        m_model->clusters().erase(m_model->clusterWithIndex(it->index()));
+        //        m_centralWidget->stopActionGlob();
     }
 } // namespace view2

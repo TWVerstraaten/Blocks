@@ -68,7 +68,6 @@ namespace view2 {
         }
     }
 
-
     void CommandScrollArea::add(model::Cluster& cluster) {
         assert(std::find_if(D_CIT(m_commandEditBoxes), D_FUNC(box, box->index() == cluster.index())) == m_commandEditBoxes.cend());
         auto* commandEditBox = new CommandEditBox(this, cluster);
@@ -85,6 +84,7 @@ namespace view2 {
     std::unique_ptr<CommandEditBox> CommandScrollArea::removeFromLayout(size_t index) {
         auto it = std::find_if(D_IT(m_commandEditBoxes), D_FUNC(box, box->index() == index));
         assert(it != m_commandEditBoxes.end());
+        it->get()->setVisible(false);
         it->get()->setParent(nullptr);
         auto* commandEditBox = it->release();
         m_commandEditBoxes.erase(it);
@@ -97,6 +97,7 @@ namespace view2 {
         m_layout->insertWidget(m_layout->count() - 1, commandEditBox.get());
         commandEditBox->setCommandVectorPointer();
         m_commandEditBoxes.emplace_back(std::move(commandEditBox));
+        m_commandEditBoxes.back()->show();
     }
 
 } // namespace view2

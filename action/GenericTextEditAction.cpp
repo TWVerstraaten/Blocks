@@ -7,6 +7,7 @@
 #include "../view2/TextEdit.h"
 
 action::GenericTextEditAction::GenericTextEditAction(view2::TextEdit* mTextEdit) : m_textEdit(mTextEdit) {
+    setText(QString("Text edit action"));
 }
 
 action::ACTION_TYPE action::GenericTextEditAction::type() const {
@@ -20,7 +21,10 @@ void action::GenericTextEditAction::undo() {
 }
 
 void action::GenericTextEditAction::redo() {
-    m_textEdit->redo();
-    m_textEdit->update();
-    m_textEdit->setFocus();
+    if (not m_blockInitial) {
+        m_textEdit->redo();
+        m_textEdit->update();
+        m_textEdit->setFocus();
+    }
+    m_blockInitial = false;
 }

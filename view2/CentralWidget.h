@@ -15,6 +15,8 @@ namespace model {
     class Model;
 }
 
+class QUndoView;
+
 namespace view2 {
     class MainView;
 
@@ -31,7 +33,7 @@ namespace view2 {
         void mousePressEvent(QMouseEvent* event) override;
         void mouseReleaseEvent(QMouseEvent* event) override;
 
-        void addAction(std::unique_ptr<action::Action>&& action);
+        void addAction(action::Action* action);
         void startActionGlob();
         void stopActionGlob();
         void undo();
@@ -40,15 +42,11 @@ namespace view2 {
         [[nodiscard]] CommandScrollArea* commandScrollArea() const;
         [[nodiscard]] MainView*          mainView() const;
 
-        void setUndoMode(UNDO_MODE undoMode);
-
       private:
-        UNDO_MODE                                   m_undoMode = UNDO_MODE::NORMAL;
-        MainView*                                   m_mainView;
-        CommandScrollArea*                          m_commandScrollArea;
-        std::stack<std::unique_ptr<action::Action>> m_undoStack;
-        std::stack<std::unique_ptr<action::Action>> m_redoStack;
-        QUndoStack                                  m_qUndoStack;
+        MainView*          m_mainView;
+        CommandScrollArea* m_commandScrollArea;
+        QUndoStack         m_qUndoStack;
+        QUndoView*         m_qUndoView;
     };
 } // namespace view2
 

@@ -11,7 +11,8 @@
 #include <cassert>
 
 action::NewClusterAction::NewClusterAction(view2::CentralWidget* centralWidget, model::Cluster cluster)
-    : m_commandEditBox(nullptr), m_centralWidget(centralWidget), m_cluster(std::move(cluster)) {
+    : m_commandEditBox(nullptr), m_cluster(std::move(cluster)), m_centralWidget(centralWidget) {
+    setText(QString("Creating cluster %1").arg(m_cluster.index()));
 }
 
 void action::NewClusterAction::undo() {
@@ -25,14 +26,17 @@ void action::NewClusterAction::undo() {
 }
 
 void action::NewClusterAction::redo() {
-    auto* model = m_centralWidget->mainView()->model();
-    auto  it    = model->clusterWithIndex(m_cluster.index());
-    assert(it == model->clusters().end());
-    model->clusters().push_back(m_cluster);
+    if (not m_blockInitial) {
+        auto* model = m_centralWidget->mainView()->model();
+        auto  it    = model->clusterWithIndex(m_cluster.index());
+        assert(it == model->clusters().end());
+        model->clusters().push_back(m_cluster);
 
-    m_centralWidget->commandScrollArea()->addToLayout(std::move(m_commandEditBox));
-    assert(m_commandEditBox == nullptr);
-    m_centralWidget->update();
+        m_centralWidget->commandScrollArea()->addToLayout(std::move(m_commandEditBox));
+        assert(m_commandEditBox == nullptr);
+        m_centralWidget->update();
+    }
+    m_blockInitial = false;
 }
 
 action::ACTION_TYPE action::NewClusterAction::type() const {

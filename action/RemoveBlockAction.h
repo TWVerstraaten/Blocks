@@ -24,7 +24,7 @@ namespace action {
         void                      redo() override;
         [[nodiscard]] ACTION_TYPE type() const override;
 
-      private:
+      protected:
         model::Model* m_model;
         size_t        m_clusterIndex;
         model::GridXY m_gridXy;

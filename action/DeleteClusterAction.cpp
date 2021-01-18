@@ -4,13 +4,10 @@
 
 #include "DeleteClusterAction.h"
 
-#include <cassert>
-
-action::DeleteClusterAction::DeleteClusterAction(view2::CentralWidget*                    centralWidget,
-                                                 const model::Cluster&                    cluster,
-                                                 std::unique_ptr<view2::CommandEditBox>&& commandEditBox)
+action::DeleteClusterAction::DeleteClusterAction(view2::CentralWidget* centralWidget, const model::Cluster& cluster)
     : NewClusterAction(centralWidget, cluster) {
-    m_commandEditBox = std::move(commandEditBox);
+    setText(QString("Deleting cluster %1").arg(m_cluster.index()));
+    m_blockInitial = false;
 }
 
 void action::DeleteClusterAction::undo() {

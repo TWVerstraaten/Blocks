@@ -23,8 +23,8 @@ namespace view2 {
         void removeUnnecessary(const std::list<model::Cluster>& clusters);
         void addToLayout(std::unique_ptr<CommandEditBox>&& commandEditBox);
 
-        [[nodiscard]] CentralWidget*    centralWidget() const;
-        std::unique_ptr<CommandEditBox> removeFromLayout(size_t index);
+        [[nodiscard]] CentralWidget*                  centralWidget() const;
+        [[nodiscard]] std::unique_ptr<CommandEditBox> removeFromLayout(size_t index);
 
       private slots:
 

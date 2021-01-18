@@ -10,6 +10,7 @@
 
 action::RemoveBlockAction::RemoveBlockAction(model::Model* model, size_t clusterIndex, const model::GridXY& gridXy)
     : m_model(model), m_clusterIndex(clusterIndex), m_gridXy(gridXy) {
+    setText(QString("Remove block (%1,%2) from cluster %3").arg(m_gridXy.x()).arg(m_gridXy.y()).arg(m_clusterIndex));
 }
 
 void action::RemoveBlockAction::undo() {
@@ -19,9 +20,12 @@ void action::RemoveBlockAction::undo() {
 }
 
 void action::RemoveBlockAction::redo() {
-    auto it = m_model->clusterWithIndex(m_clusterIndex);
-    assert(it != m_model->clusters().end());
-    it->removeGridXY(m_gridXy);
+    if (not m_blockInitial) {
+        auto it = m_model->clusterWithIndex(m_clusterIndex);
+        assert(it != m_model->clusters().end());
+        it->removeGridXY(m_gridXy);
+    }
+    m_blockInitial = false;
 }
 
 action::ACTION_TYPE action::RemoveBlockAction::type() const {
