@@ -13,13 +13,13 @@
 
 namespace view {
 
-    BlockSelectWidget::BlockSelectWidget(QWidget* parent) : QWidget(parent), m_buttonGroup(this) {
+    BlockSelectWidget::BlockSelectWidget(QWidget* parent) : QWidget(parent) {
         auto* l = new QGridLayout(this);
         for (size_t i = 0; i != m_blocks.size(); ++i) {
             auto* button = new ImageButton(this, m_blocks.at(i), QSize{50, 50});
             connect(button, &QPushButton::clicked, [i, this]() { setSelectedIndex(i); });
             l->addWidget(button, 0, i);
-            m_buttonGroup.addButton(button, i);
+            m_imageButtons.push_back(button);
         }
 
         l->setSpacing(16);
@@ -28,6 +28,7 @@ namespace view {
         pal.setColor(QPalette::Window, view::color::SCROLL_AREA_BACKGROUND_COLOR);
         setAutoFillBackground(true);
         setPalette(pal);
+        setSelectedIndex(0);
     }
 
     BlockType BlockSelectWidget::selectedBlockType() const {
@@ -37,6 +38,12 @@ namespace view {
     void BlockSelectWidget::setSelectedIndex(size_t selectedIndex) {
         assert(selectedIndex < m_blocks.size());
         m_selectedIndex = selectedIndex;
+        for (size_t i = 0; i != m_blocks.size(); ++i) {
+            if (i != selectedIndex) {
+                m_imageButtons[i]->setUnselected();
+            }
+        }
+        m_imageButtons[selectedIndex]->setSelected();
     }
 
 } // namespace view

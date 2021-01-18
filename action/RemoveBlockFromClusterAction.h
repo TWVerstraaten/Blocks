@@ -2,8 +2,8 @@
 // Created by teunv on 1/17/2021.
 //
 
-#ifndef BLOCKS_REMOVEBLOCKACTION_H
-#define BLOCKS_REMOVEBLOCKACTION_H
+#ifndef BLOCKS_REMOVEBLOCKFROMCLUSTERACTION_H
+#define BLOCKS_REMOVEBLOCKFROMCLUSTERACTION_H
 
 #include "Action.h"
 
@@ -15,10 +15,10 @@ namespace model {
 
 namespace action {
 
-    class RemoveBlockAction : public Action {
+    class RemoveBlockFromClusterAction : public Action {
 
       public:
-        RemoveBlockAction(model::Model* model, size_t clusterIndex, const model::GridXY& gridXy);
+        RemoveBlockFromClusterAction(model::Model* model, size_t clusterIndex, const model::GridXY& gridXy);
 
         void                      undo() override;
         void                      redo() override;
@@ -31,4 +31,4 @@ namespace action {
     };
 } // namespace action
 
-#endif // BLOCKS_REMOVEBLOCKACTION_H
+#endif // BLOCKS_REMOVEBLOCKFROMCLUSTERACTION_H

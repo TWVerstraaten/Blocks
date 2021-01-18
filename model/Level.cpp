@@ -109,7 +109,6 @@ namespace model {
     }
 
     std::unique_ptr<action::Action> Level::addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType) {
-        D_NOTE_ONCE("Implement undoable action")
         m_floorBlocks[gridXY] = blockType;
         return nullptr;
     }
@@ -149,22 +148,6 @@ namespace model {
 
     std::unique_ptr<action::Action> Level::removeBlock(const GridXY& gridXY, [[maybe_unused]] FLOOR_BLOCK_TYPE blockType) {
         m_floorBlocks.erase(gridXY);
-        //        assert(m_floorBlocks.find(gridXY) != m_floorBlocks.end());
-        //        switch (blockType) {
-        //            case FLOOR_BLOCK_TYPE::LEVEL:
-        //                assert(m_floorBlocks[gridXY] == FLOOR_BLOCK_TYPE::LEVEL);
-        //                m_floorBlocks.erase(gridXY);
-        //                createBoundaries();
-        //                return std::make_unique<action::RemoveLevelBlockAction>(FLOOR_BLOCK_TYPE::LEVEL, gridXY);
-        //            case FLOOR_BLOCK_TYPE::START:
-        //                assert(m_floorBlocks[gridXY] == FLOOR_BLOCK_TYPE::START);
-        //                m_floorBlocks[gridXY] = FLOOR_BLOCK_TYPE::LEVEL;
-        //                return std::make_unique<action::RemoveLevelBlockAction>(FLOOR_BLOCK_TYPE::START, gridXY);
-        //            case FLOOR_BLOCK_TYPE::SPLICE:
-        //                assert(m_floorBlocks[gridXY] == FLOOR_BLOCK_TYPE::SPLICE);
-        //                m_floorBlocks[gridXY] = FLOOR_BLOCK_TYPE::LEVEL;
-        //                return std::make_unique<action::RemoveLevelBlockAction>(FLOOR_BLOCK_TYPE::SPLICE, gridXY);
-        //        }
         return nullptr;
     }
 

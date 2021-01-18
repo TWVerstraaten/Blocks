@@ -8,9 +8,13 @@
 #include "MainView.h"
 
 #include <QApplication>
+#include <action/AddFloorBlockAction.h>
+#include <action/AddLevelBlockAction.h>
+#include <action/ChangeFloorBlockAction.h>
+#include <action/ChangeLevelBlockAction.h>
 #include <action/DeleteClusterAction.h>
 #include <action/MergeClusterAction.h>
-#include <action/RemoveBlockAction.h>
+#include <action/RemoveBlockFromClusterAction.h>
 #include <action/SplitDisconnectedAction.h>
 
 namespace view {
@@ -38,7 +42,7 @@ namespace view {
             case Qt::LeftButton:
                 if (m_previousGridPosition != currentGridPosition) {
                     std::visit([this, currentGridPosition](const auto& a) { mouseLeftDragEvent(currentGridPosition, a); },
-                               m_mainView->m_centralWidget->blockSelectWidget()->selectedBlockType());
+                               m_centralWidget->blockSelectWidget()->selectedBlockType());
                 }
             case Qt::MiddleButton:
             default:
@@ -49,7 +53,7 @@ namespace view {
     }
 
     void MainViewMouseManager::mouseLeftPressEvent() {
-        const auto type = m_mainView->m_centralWidget->blockSelectWidget()->selectedBlockType();
+        const auto type = m_centralWidget->blockSelectWidget()->selectedBlockType();
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
             std::visit([this](const auto& a) { removeBlock(m_previousGridPosition, a); }, type);
         } else {
@@ -70,16 +74,16 @@ namespace view {
             if (extensionIt != m_mainView->m_model->clusters().end() && baseIt->index() == extensionIt->index()) {
                 return;
             }
-            m_mainView->m_centralWidget->startActionGlob();
-            addBlock(currentGridXY, CLUSTER_BLOCK::CLUSTER);
+            m_centralWidget->startActionGlob();
+            addBlock(currentGridXY, type);
             extensionIt = m_mainView->m_model->clusterContaining(currentGridXY);
             if (baseIt->index() != extensionIt->index()) {
                 assert(baseIt != m_mainView->m_model->clusters().end());
                 assert(extensionIt != m_mainView->m_model->clusters().end());
-                m_mainView->m_centralWidget->addAction(
+                m_centralWidget->addAction(
                     new action::MergeClusterAction(m_mainView->m_model.get(), *baseIt, *extensionIt, m_mainView->m_commandScrollArea));
             }
-            m_mainView->m_centralWidget->stopActionGlob();
+            m_centralWidget->stopActionGlob();
         }
     }
 
@@ -90,15 +94,14 @@ namespace view {
         }
 
         if (it->size() == 1) {
-            m_mainView->m_centralWidget->addAction(new action::DeleteClusterAction(m_mainView->m_centralWidget, *it));
+            m_centralWidget->addAction(new action::DeleteClusterAction(m_centralWidget, *it));
         } else {
-            m_mainView->m_centralWidget->startActionGlob();
-            m_mainView->m_centralWidget->addAction(new action::RemoveBlockAction(m_mainView->m_model.get(), it->index(), gridXy));
+            m_centralWidget->startActionGlob();
+            m_centralWidget->addAction(new action::RemoveBlockFromClusterAction(m_mainView->m_model.get(), it->index(), gridXy));
             if (not it->isConnected()) {
-                m_mainView->m_centralWidget->addAction(
-                    new action::SplitDisconnectedAction(m_mainView->m_model.get(), *it, m_mainView->m_commandScrollArea));
+                m_centralWidget->addAction(new action::SplitDisconnectedAction(m_mainView->m_model.get(), *it, m_mainView->m_commandScrollArea));
             }
-            m_mainView->m_centralWidget->stopActionGlob();
+            m_centralWidget->stopActionGlob();
         }
     }
 
@@ -106,17 +109,63 @@ namespace view {
         if (m_mainView->m_model->noLiveOrStoppedClusterOnBlock(gridXy) && m_mainView->m_model->level().isFreeStartBlock(gridXy)) {
             m_mainView->m_model->clusters().emplace_back(gridXy, "CL" + std::to_string(m_mainView->m_model->clusters().size()));
             m_mainView->m_commandScrollArea->add(m_mainView->m_model->clusters().back());
-            m_mainView->m_centralWidget->addAction(new action::NewClusterAction(m_mainView->m_centralWidget, m_mainView->m_model->clusters().back()));
+            m_centralWidget->addAction(new action::NewClusterAction(m_centralWidget, m_mainView->m_model->clusters().back()));
         }
     }
 
     void MainViewMouseManager::addBlock(const model::GridXY& gridXy, model::FLOOR_BLOCK_TYPE type) {
+        if (m_mainView->m_model->level().floorBlocks().find(gridXy) == m_mainView->m_model->level().floorBlocks().end()) {
+            m_centralWidget->addAction(new action::AddFloorBlockAction(m_mainView->m_model.get(), type, gridXy));
+        } else if (m_mainView->m_model->level().floorBlocks().at(gridXy) != type) {
+            m_centralWidget->addAction(
+                new action::ChangeFloorBlockAction(m_mainView->m_model.get(), type, m_mainView->m_model->level().floorBlocks().at(gridXy), gridXy));
+        }
     }
 
     void MainViewMouseManager::addBlock(const model::GridXY& gridXy, model::DYNAMIC_BLOCK_TYPE type) {
+        const auto& level         = m_mainView->m_model->level();
+        const auto& dynamicBlocks = level.dynamicBlocks();
+        const auto& instantBlocks = level.instantBlocks();
+        bool        shouldGlob    = level.floorBlocks().find(gridXy) == level.floorBlocks().end();
+        if (shouldGlob) {
+            m_centralWidget->startActionGlob();
+            addBlock(gridXy, model::FLOOR_BLOCK_TYPE::LEVEL);
+        }
+        if ((dynamicBlocks.find(gridXy) == dynamicBlocks.end()) && instantBlocks.find(gridXy) == instantBlocks.end()) {
+            m_centralWidget->addAction(new action::AddLevelBlockAction(m_mainView->m_model.get(), type, gridXy));
+        } else {
+            if (dynamicBlocks.find(gridXy) != dynamicBlocks.end()) {
+                m_centralWidget->addAction(new action::ChangeLevelBlockAction(m_mainView->m_model.get(), type, dynamicBlocks.at(gridXy), gridXy));
+            } else if (instantBlocks.find(gridXy) != instantBlocks.end()) {
+                m_centralWidget->addAction(new action::ChangeLevelBlockAction(m_mainView->m_model.get(), type, instantBlocks.at(gridXy), gridXy));
+            }
+        }
+        if (shouldGlob) {
+            m_centralWidget->stopActionGlob();
+        }
     }
 
     void MainViewMouseManager::addBlock(const model::GridXY& gridXy, model::INSTANT_BLOCK_TYPE type) {
+        const auto& level         = m_mainView->m_model->level();
+        const auto& dynamicBlocks = level.dynamicBlocks();
+        const auto& instantBlocks = level.instantBlocks();
+        bool        shouldGlob    = level.floorBlocks().find(gridXy) == level.floorBlocks().end();
+        if (shouldGlob) {
+            m_centralWidget->startActionGlob();
+            addBlock(gridXy, model::FLOOR_BLOCK_TYPE::LEVEL);
+        }
+        if ((dynamicBlocks.find(gridXy) == dynamicBlocks.end()) && instantBlocks.find(gridXy) == instantBlocks.end()) {
+            m_centralWidget->addAction(new action::AddLevelBlockAction(m_mainView->m_model.get(), type, gridXy));
+        } else {
+            if (dynamicBlocks.find(gridXy) != dynamicBlocks.end()) {
+                m_centralWidget->addAction(new action::ChangeLevelBlockAction(m_mainView->m_model.get(), type, dynamicBlocks.at(gridXy), gridXy));
+            } else if (instantBlocks.find(gridXy) != instantBlocks.end()) {
+                m_centralWidget->addAction(new action::ChangeLevelBlockAction(m_mainView->m_model.get(), type, instantBlocks.at(gridXy), gridXy));
+            }
+        }
+        if (shouldGlob) {
+            m_centralWidget->stopActionGlob();
+        }
     }
 
     void MainViewMouseManager::removeBlock(const model::GridXY& gridXy, model::FLOOR_BLOCK_TYPE type) {
@@ -129,6 +178,7 @@ namespace view {
     }
 
     void MainViewMouseManager::mouseLeftDragEvent(const model::GridXY& currentGridXY, model::FLOOR_BLOCK_TYPE type) {
+        addBlock(currentGridXY, type);
     }
 
     void MainViewMouseManager::mouseLeftDragEvent(const model::GridXY& currentGridXY, model::DYNAMIC_BLOCK_TYPE type) {

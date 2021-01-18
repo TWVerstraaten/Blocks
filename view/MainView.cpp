@@ -11,6 +11,7 @@ namespace view {
           m_mainViewMouseManager(this) {
         m_model = std::make_unique<model::Model>();
         m_model->init();
+        m_mainViewMouseManager.m_centralWidget = m_centralWidget;
 
         setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     }

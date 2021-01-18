@@ -14,6 +14,7 @@
 namespace view {
 
     class MainView;
+    class CentralWidget;
 
     class MainViewMouseManager {
 
@@ -21,15 +22,14 @@ namespace view {
 
         explicit MainViewMouseManager(MainView* mainView);
 
-        void mousePressEvent(QMouseEvent* event); // OK
-        void mouseMoveEvent(QMouseEvent* event);// OK
-        void mouseLeftPressEvent();  // OK
+        void mousePressEvent(QMouseEvent* event);
+        void mouseMoveEvent(QMouseEvent* event);
+        void mouseLeftPressEvent();
 
         void mouseLeftDragEvent(const model::GridXY& currentGridXY, CLUSTER_BLOCK type);
         void mouseLeftDragEvent(const model::GridXY& currentGridXY, model::FLOOR_BLOCK_TYPE type);
         void mouseLeftDragEvent(const model::GridXY& currentGridXY, model::DYNAMIC_BLOCK_TYPE type);
         void mouseLeftDragEvent(const model::GridXY& currentGridXY, model::INSTANT_BLOCK_TYPE type);
-
         void removeBlock(const model::GridXY& gridXy, CLUSTER_BLOCK type);
         void removeBlock(const model::GridXY& gridXy, model::FLOOR_BLOCK_TYPE type);
         void removeBlock(const model::GridXY& gridXy, model::DYNAMIC_BLOCK_TYPE type);
@@ -40,6 +40,7 @@ namespace view {
         void addBlock(const model::GridXY& gridXy, model::INSTANT_BLOCK_TYPE type);
 
         MainView*      m_mainView;
+        CentralWidget* m_centralWidget;
         view::ScreenXY m_previousMousePosition;
         model::GridXY  m_previousGridPosition{0, 0};
     };

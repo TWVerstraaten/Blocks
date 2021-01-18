@@ -7,17 +7,15 @@
 
 namespace action {
     enum class ACTION_TYPE {
-        ADD_BLOCK_TO_CLUSTER,
         ADD_CLUSTER,
-        GENERIC_COMMAND_EDIT_BOX,
-        GENERIC_MODEL,
         REMOVE_BLOCK_FROM_CLUSTER,
         REMOVE_CLUSTER,
         MERGE_CLUSTERS,
-        ADD_LEVEL_BLOCK_ACTION,
-        REMOVE_LEVEL_BLOCK_ACTION,
+        CHANGE_FLOOR_BLOCK,
+        ADD_FLOOR_BLOCK,
         GENERIC_TEXT_EDIT_ACTION,
-        GLOB
+        ADD_LEVEL_BLOCK,
+        CHANGE_LEVEL_BLOCK
     };
 }
 

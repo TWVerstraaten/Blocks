@@ -7,11 +7,12 @@
 
 #include "BlockType.h"
 
-#include <QButtonGroup>
 #include <QWidget>
 #include <vector>
 
 namespace view {
+
+    class ImageButton;
 
     class BlockSelectWidget : public QWidget {
 
@@ -24,7 +25,7 @@ namespace view {
         void setSelectedIndex(size_t selectedIndex);
 
       private:
-        QButtonGroup m_buttonGroup;
+        std::vector<ImageButton*> m_imageButtons;
 
         size_t                 m_selectedIndex = 0;
         std::vector<BlockType> m_blocks        = {view::CLUSTER_BLOCK::CLUSTER,

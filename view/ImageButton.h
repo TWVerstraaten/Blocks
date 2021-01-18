@@ -16,6 +16,9 @@ namespace view {
       public:
         ImageButton(QWidget* parent, const view::BlockType& type, const QSize& size);
 
+        void setSelected();
+        void setUnselected();
+
       private:
         QPixmap m_pixmap;
     };
