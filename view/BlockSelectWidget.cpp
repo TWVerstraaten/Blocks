@@ -22,6 +22,7 @@ namespace view {
             m_buttonGroup.addButton(button, i);
         }
 
+        l->setSpacing(16);
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         QPalette pal = palette();
         pal.setColor(QPalette::Window, view::color::SCROLL_AREA_BACKGROUND_COLOR);

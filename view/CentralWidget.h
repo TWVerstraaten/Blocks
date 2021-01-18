@@ -34,6 +34,7 @@ namespace view {
         void undo();
         void redo();
 
+        [[nodiscard]] BlockSelectWidget* blockSelectWidget() const;
         [[nodiscard]] CommandScrollArea* commandScrollArea() const;
         [[nodiscard]] MainView*          mainView() const;
 

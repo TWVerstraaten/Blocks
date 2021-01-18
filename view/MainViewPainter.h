@@ -21,8 +21,8 @@ namespace view {
 
     class MainViewPainter {
 
-      private:
         friend class MainView;
+
         explicit MainViewPainter(const MainView* mainView);
 
         void paint(QPainter& painter, QPaintEvent* event);

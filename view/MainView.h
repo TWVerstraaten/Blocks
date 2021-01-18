@@ -1,6 +1,7 @@
 #ifndef MAINVIEW_H
 #define MAINVIEW_H
 
+#include "MainViewMouseManager.h"
 #include "MainViewPainter.h"
 #include "ViewPort.h"
 #include "model/Model.h"
@@ -27,24 +28,19 @@ namespace view {
         void paintEvent(QPaintEvent* event) override;
         void wheelEvent(QWheelEvent* event) override;
         void mousePressEvent(QMouseEvent* event) override;
-        void mouseReleaseEvent(QMouseEvent* event) override;
         void mouseMoveEvent(QMouseEvent* event) override;
 
       private:
         friend class MainViewPainter;
-
-        void mouseLeftPressEvent();
-        void mouseLeftDragEvent(const model::GridXY& currentGridXY);
-        void removeBlock(const model::GridXY& gridXy);
-        void createCluster(const model::GridXY& gridXy);
+        friend class MainViewMouseManager;
 
         CentralWidget*                m_centralWidget;
-        view::ScreenXY                m_previousMousePosition;
-        model::GridXY                 m_previousGridPosition{0, 0};
         view::ViewPort                m_viewPort;
         std::unique_ptr<model::Model> m_model;
         CommandScrollArea*            m_commandScrollArea;
         MainViewPainter               m_mainViewPainter;
+        MainViewMouseManager          m_mainViewMouseManager;
     };
 } // namespace view
+
 #endif // MAINVIEW_H

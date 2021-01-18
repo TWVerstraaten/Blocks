@@ -74,11 +74,11 @@ namespace view {
     }
 
     void CentralWidget::mousePressEvent(QMouseEvent* event) {
-        startActionGlob();
+        //        startActionGlob();
     }
 
     void CentralWidget::mouseReleaseEvent(QMouseEvent* event) {
-        stopActionGlob();
+        //        stopActionGlob();
     }
 
     void CentralWidget::startActionGlob() {
@@ -87,5 +87,9 @@ namespace view {
 
     void CentralWidget::stopActionGlob() {
         m_qUndoStack.endMacro();
+    }
+
+    BlockSelectWidget* CentralWidget::blockSelectWidget() const {
+        return m_blockSelectWidget;
     }
 } // namespace view
