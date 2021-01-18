@@ -6,34 +6,34 @@
 #define BLOCKS_NEWCLUSTERACTION_H
 
 #include "../model/Cluster.h"
-#include "../view2/CommandEditBox.h"
 #include "Action.h"
+#include "view/CommandEditBox.h"
 
 #include <memory>
 
-namespace view2 {
+namespace view {
     class CommandScrollArea;
     class CentralWidget;
     class CommandEditBox;
-} // namespace view2
+} // namespace view
 
 namespace action {
 
     class NewClusterAction : public Action {
 
       public:
-        NewClusterAction(view2::CentralWidget* centralWidget, model::Cluster cluster);
+        NewClusterAction(view::CentralWidget* centralWidget, model::Cluster cluster);
 
         void                      undo() override;
         void                      redo() override;
         [[nodiscard]] ACTION_TYPE type() const override;
 
       protected:
-        std::unique_ptr<view2::CommandEditBox> m_commandEditBox;
-        model::Cluster                         m_cluster;
+        std::unique_ptr<view::CommandEditBox> m_commandEditBox;
+        model::Cluster                        m_cluster;
 
       private:
-        view2::CentralWidget* m_centralWidget;
+        view::CentralWidget* m_centralWidget;
     };
 } // namespace action
 

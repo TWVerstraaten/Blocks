@@ -6,25 +6,12 @@
 #define BLOCKS_ENUM_H
 
 #include "../model/Level_enums.h"
+#include "BlockType.h"
 #include "color.h"
 
 namespace view {
 
-    constexpr const SDL_Color& toColor(model::FLOOR_BLOCK_TYPE type) {
-        switch (type) {
-            case model::FLOOR_BLOCK_TYPE::LEVEL:
-                return color::BACKGROUND_PLAYABLE;
-            case model::FLOOR_BLOCK_TYPE::START:
-                return color::BACKGROUND_START;
-            case model::FLOOR_BLOCK_TYPE::SPLICE:
-                return color::BACKGROUND_SPLICE;
-            case model::FLOOR_BLOCK_TYPE::CONWAY:
-                return color::BACKGROUND_CONWAY;
-        }
-        return color::WHITE;
-    }
-
-    constexpr const QColor& getColor(model::FLOOR_BLOCK_TYPE type) {
+    constexpr const QColor& toColor(model::FLOOR_BLOCK_TYPE type) {
         switch (type) {
             case model::FLOOR_BLOCK_TYPE::LEVEL:
                 return color::BACKGROUND_PLAYABLE_COLOR;
@@ -37,6 +24,15 @@ namespace view {
         }
         return color::BACKGROUND_PLAYABLE_COLOR;
     }
+
+    constexpr const QColor& toColor(view::CLUSTER_BLOCK type) {
+        switch (type) {
+            case CLUSTER_BLOCK::CLUSTER:
+                return color::CLUSTER_COLOR;
+        }
+        return color::BACKGROUND_PLAYABLE_COLOR;
+    }
+
 } // namespace view
 
 #endif // BLOCKS_ENUM_H

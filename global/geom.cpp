@@ -48,10 +48,6 @@ namespace geom {
         return result;
     }
 
-    SDL_Rect pad(const SDL_Rect& rect, int padding) {
-        return {rect.x - padding, rect.y - padding, rect.w + 2 * padding, rect.h + 2 * padding};
-    }
-
     model::WorldXY rotateClockWise(const model::WorldXY& point, double angleInDegrees) {
         if (angleInDegrees == 0.0) {
             return point;

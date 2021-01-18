@@ -60,8 +60,4 @@ namespace model {
         return *this;
     }
 
-    WorldXY::operator SDL_Point() const {
-        return {m_x, m_y};
-    }
-
 } // namespace model

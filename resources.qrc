@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource>
+        <file>assets/arrow_ccw.png</file>
+        <file>assets/arrow_cw.png</file>
+        <file>assets/kill.png</file>
+    </qresource>
+</RCC>

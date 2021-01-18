@@ -10,7 +10,6 @@
 #include "../model/WorldLine.h"
 #include "../model/WorldXY.h"
 
-#include <SDL.h>
 #include <set>
 
 namespace geom {
@@ -21,7 +20,6 @@ namespace geom {
     int                          maxX(const model::GridXYSet& blocks);
     int                          maxY(const model::GridXYSet& blocks);
     int                          cross(const model::WorldXY& lhs, const model::WorldXY& rhs);
-    SDL_Rect                     pad(const SDL_Rect& rect, int padding);
     model::WorldXY               rotateClockWise(const model::WorldXY& point, double angleInDegrees);
     model::WorldXY               rotateAboutPivot(const model::WorldXY& point, const model::WorldXY& pivot, double angleInDegrees);
     model::WorldLineSet          getSidesFromGridXY(const model::GridXYSet& blocks);

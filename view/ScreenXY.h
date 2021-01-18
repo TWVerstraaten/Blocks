@@ -7,13 +7,12 @@
 
 #include <QPoint>
 #include <QPointF>
-#include <SDL.h>
 #include <ostream>
 
 namespace model {
     class WorldXY;
     class GridXY;
-} // namespace m_model
+} // namespace model
 
 namespace view {
 
@@ -24,7 +23,6 @@ namespace view {
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         ScreenXY();
         ScreenXY(int x, int y);
-        ScreenXY(const SDL_Point& point);
         ScreenXY(const QPointF& point);
         ScreenXY(const QPoint& point);
 
@@ -36,9 +34,6 @@ namespace view {
         /****** CONST GETTERS  ******/
         [[nodiscard]] int x() const;
         [[nodiscard]] int y() const;
-
-        /****** OPERATORS  ******/
-        operator SDL_Point() const;
 
         friend std::ostream& operator<<(std::ostream& out, const ScreenXY& screenXy);
 

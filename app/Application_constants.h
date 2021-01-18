@@ -8,9 +8,9 @@
 #include "../model/WorldXY.h"
 
 namespace app {
-    static const Uint32         TIME_STEP_SLOW           = 400;
-    static const Uint32         TIME_STEP_MEDIUM         = 150;
-    static const Uint32         TIME_STEP_FAST           = 20;
+    static const size_t         TIME_STEP_SLOW           = 400;
+    static const size_t         TIME_STEP_MEDIUM         = 150;
+    static const size_t         TIME_STEP_FAST           = 20;
     static const double         MAX_D_PHASE              = 0.1;
     static const int            BLOCK_SHRINK_IN_WORLD    = 3;
     static const int            BLOCK_SIZE_IN_WORLD      = 40;

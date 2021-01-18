@@ -6,8 +6,6 @@
 
 #include "global/defines.h"
 
-#include <algorithm>
-
 #ifdef _WIN32
 #include <cmath>
 #endif
@@ -18,7 +16,7 @@ namespace view {
     }
 
     void ViewPort::zoom(int dZoom, const view::ScreenXY& point) {
-        D_NOTE_ONCE("Zoom into point");
+        D_NOTE_ONCE("Zoom into point")
         m_zoom                            = std::clamp(m_zoom + dZoom, -2000, 3000);
         m_scale                           = std::exp(m_zoom / 1000.0);
         m_distanceBetweenBlocksInScreenXY = worldToScreen(2 * app::BLOCK_SHRINK_IN_WORLD);

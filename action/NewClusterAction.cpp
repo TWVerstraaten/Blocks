@@ -5,12 +5,12 @@
 #include "NewClusterAction.h"
 
 #include "../model/Model.h"
-#include "../view2/CentralWidget.h"
-#include "../view2/MainView.h"
+#include "view/CentralWidget.h"
+#include "view/MainView.h"
 
 #include <cassert>
 
-action::NewClusterAction::NewClusterAction(view2::CentralWidget* centralWidget, model::Cluster cluster)
+action::NewClusterAction::NewClusterAction(view::CentralWidget* centralWidget, model::Cluster cluster)
     : m_commandEditBox(nullptr), m_cluster(std::move(cluster)), m_centralWidget(centralWidget) {
     setText(QString("Creating cluster %1").arg(m_cluster.index()));
 }

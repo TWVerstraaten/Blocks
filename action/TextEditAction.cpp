@@ -4,9 +4,9 @@
 
 #include "TextEditAction.h"
 
-#include "../view2/TextEdit.h"
+#include "view/TextEdit.h"
 
-action::TextEditAction::TextEditAction(view2::TextEdit* mTextEdit) : m_textEdit(mTextEdit) {
+action::TextEditAction::TextEditAction(view::TextEdit* textEdit) : m_textEdit(textEdit) {
     setText(QString("Text edit action"));
 }
 

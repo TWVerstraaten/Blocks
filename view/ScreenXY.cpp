@@ -35,12 +35,6 @@ namespace view {
         return fromWorldXY(gridXY, viewPort);
     }
 
-    ScreenXY::ScreenXY(const SDL_Point& point) : m_x(point.x), m_y(point.y) {
-    }
-
-    ScreenXY::operator SDL_Point() const {
-        return {m_x, m_y};
-    }
     ScreenXY::ScreenXY(const QPointF& point) : m_x(point.x()), m_y(point.y()) {
     }
 
