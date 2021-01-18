@@ -6,14 +6,13 @@
 
 #include <QApplication>
 #include <QDebug>
-#include <QFontDatabase>
-#include <QKeyEvent>
 #include <QStyle>
 #include <QTime>
 #include <QTimer>
 
 namespace view2 {
-    TextEdit::TextEdit(CommandEditBox* commandEditBox, const QString& string) : QTextEdit(commandEditBox), m_commandEditBox(commandEditBox) {
+    TextEdit::TextEdit(CommandEditBox* commandEditBox, const QString& string)
+        : QTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
         assert(m_commandEditBox);
         connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
 
@@ -98,6 +97,10 @@ namespace view2 {
         assert(m_commandEditBox->commandScrollArea());
         assert(m_commandEditBox->commandScrollArea()->centralWidget());
         m_commandEditBox->commandScrollArea()->centralWidget()->addAction(new action::TextEditAction(this));
+    }
+
+    TextEdit::~TextEdit() {
+        delete m_syntaxHighlighter;
     }
 
 } // namespace view2

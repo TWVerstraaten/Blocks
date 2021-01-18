@@ -1,6 +1,8 @@
 #ifndef TEXTEDIT_H
 #define TEXTEDIT_H
 
+#include "SyntaxHighlighter.h"
+
 #include <QTextEdit>
 #include <string>
 #include <vector>
@@ -12,6 +14,7 @@ namespace view2 {
         Q_OBJECT
       public:
         TextEdit(CommandEditBox* commandEditBox, const QString& string);
+        ~TextEdit() override;
 
         [[nodiscard]] std::vector<std::string> contents() const;
         void                                   setHeight();
@@ -27,7 +30,8 @@ namespace view2 {
         void backTabPressed();
 
       private:
-        CommandEditBox* m_commandEditBox;
+        CommandEditBox*    m_commandEditBox;
+        SyntaxHighlighter* m_syntaxHighlighter;
     };
 } // namespace view2
 

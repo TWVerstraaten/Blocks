@@ -5,7 +5,6 @@
 #include "CentralWidget.h"
 #include "MainView.h"
 
-#include <QKeyEvent>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <global/defines.h>
@@ -46,10 +45,15 @@ namespace view2 {
         setPalette(pal);
 
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        connect(m_textEdit, &QTextEdit::textChanged, [this]() { m_commandVector->set(m_textEdit->contents()); });
+        connect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditBox::updateCommandVector);
         connect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditBox::setHeight);
         m_textEdit->setHeight();
         update();
+    }
+
+    CommandEditBox::~CommandEditBox() {
+        disconnect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditBox::updateCommandVector);
+        disconnect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditBox::setHeight);
     }
 
     TextEdit* CommandEditBox::textEdit() {
@@ -73,6 +77,10 @@ namespace view2 {
             std::find_if(D_IT(m_commandScrollArea->centralWidget()->mainView()->model()->clusters()), D_FUNC(cluster, cluster.index() == m_index));
         assert(it != m_commandScrollArea->centralWidget()->mainView()->model()->clusters().end());
         m_commandVector = &it->commandVector();
+    }
+
+    void CommandEditBox::updateCommandVector() {
+        m_commandVector->set(m_textEdit->contents());
     }
 
 } // namespace view2

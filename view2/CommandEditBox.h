@@ -20,6 +20,7 @@ namespace view2 {
 
       public:
         CommandEditBox(CommandScrollArea* parent, model::Cluster& cluster);
+        ~CommandEditBox() override;
 
         void setCommandVectorPointer();
 
@@ -29,6 +30,7 @@ namespace view2 {
 
       private slots:
         void setHeight();
+        void updateCommandVector();
 
       private:
         size_t                m_index;
