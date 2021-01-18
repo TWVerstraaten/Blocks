@@ -3,7 +3,7 @@
 
 #include "../model/Model.h"
 #include "../view/ViewPort.h"
-#include "MainWindow.h"
+#include "MainViewPainter.h"
 
 #include <QWidget>
 #include <memory>
@@ -13,6 +13,9 @@ namespace model {
 }
 
 namespace view2 {
+    class CommandScrollArea;
+    class CentralWidget;
+
     class MainView : public QWidget {
         Q_OBJECT
       public:
@@ -28,9 +31,7 @@ namespace view2 {
         void mouseMoveEvent(QMouseEvent* event) override;
 
       private:
-        void                                   drawConnected(const model::GridXYSet& blocks, const QColor& color, QPainter& painter) const;
-        void                                   drawCluster(const model::Cluster& cluster, QPainter& painter);
-        [[nodiscard]] std::unique_ptr<QPixmap> connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const;
+        friend class MainViewPainter;
 
         void mouseLeftPressEvent();
         void mouseLeftDragEvent(const model::GridXY& currentGridXY);
@@ -43,7 +44,7 @@ namespace view2 {
         view::ViewPort                m_viewPort;
         std::unique_ptr<model::Model> m_model;
         CommandScrollArea*            m_commandScrollArea;
-        QFont                         m_font;
+        MainViewPainter               m_mainViewPainter;
     };
 } // namespace view2
 #endif // MAINVIEW_H

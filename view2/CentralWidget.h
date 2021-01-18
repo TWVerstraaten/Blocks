@@ -2,14 +2,10 @@
 #define WINDOW_H
 
 #include "CommandScrollArea.h"
+#include "action/Action.h"
 
-#include <QList>
-#include <QPainterPath>
 #include <QUndoStack>
 #include <QWidget>
-#include <action/Action.h>
-#include <memory>
-#include <stack>
 
 namespace model {
     class Model;
@@ -24,8 +20,6 @@ namespace view2 {
         Q_OBJECT
 
       public:
-        enum class UNDO_MODE { NORMAL, GLOB };
-
         CentralWidget();
 
         void keyPressEvent(QKeyEvent* event) override;

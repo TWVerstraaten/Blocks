@@ -10,7 +10,8 @@
 #include <QUndoCommand>
 
 namespace action {
-    class Action : public QUndoCommand {
+    class Action : public
+                   QUndoCommand {
 
       public:
         /****** VIRTUAL FUNCTIONS  ******/

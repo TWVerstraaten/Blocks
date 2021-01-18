@@ -1,7 +1,6 @@
 #ifndef COMMANDSCROLLAREA_H
 #define COMMANDSCROLLAREA_H
 
-#include "../model/Cluster.h"
 #include "CommandEditBox.h"
 
 #include <QScrollArea>
@@ -19,8 +18,6 @@ namespace view2 {
         ~CommandScrollArea() override;
 
         void add(model::Cluster& cluster);
-        void addNeeded(std::list<model::Cluster>& clusters);
-        void removeUnnecessary(const std::list<model::Cluster>& clusters);
         void addToLayout(std::unique_ptr<CommandEditBox>&& commandEditBox);
 
         [[nodiscard]] CentralWidget*                  centralWidget() const;

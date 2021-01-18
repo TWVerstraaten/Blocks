@@ -1,9 +1,6 @@
 #include "MainWindow.h"
 
-#include "MainView.h"
-
-#include <QDockWidget>
-#include <QTimer>
+#include "CentralWidget.h"
 
 namespace view2 {
 
@@ -12,10 +9,7 @@ namespace view2 {
         setCentralWidget(m_centralWidget);
         setWindowTitle(tr("Blocks"));
         resize(1000, 800);
-
         m_elapsedTimer.start();
     }
-
-
 
 } // namespace view2

@@ -3,7 +3,6 @@
 
 #include "TextEdit.h"
 
-#include <QDebug>
 #include <QWidget>
 
 namespace model {

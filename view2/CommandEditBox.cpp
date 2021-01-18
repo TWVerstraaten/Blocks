@@ -4,10 +4,10 @@
 #include "../view/color.h"
 #include "CentralWidget.h"
 #include "MainView.h"
+#include "global/defines.h"
 
 #include <QLabel>
 #include <QVBoxLayout>
-#include <global/defines.h>
 
 namespace view2 {
 

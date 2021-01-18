@@ -1,5 +1,6 @@
 #include "CommandScrollArea.h"
 
+#include "../model/Cluster.h"
 #include "../view/color.h"
 #include "CentralWidget.h"
 #include "global/defines.h"
@@ -52,24 +53,6 @@ namespace view2 {
             if ((*it)->textEdit()->hasFocus()) {
                 (*std::prev(it))->textEdit()->setFocus();
                 return;
-            }
-        }
-    }
-
-    void CommandScrollArea::removeUnnecessary(const std::list<model::Cluster>& clusters) {
-        for (size_t i = 0; i != m_commandEditBoxes.size(); ++i) {
-            if (std::find_if(D_CIT(clusters), D_FUNC(cluster, cluster.index() == m_commandEditBoxes.at(i)->index())) == clusters.end()) {
-                m_layout->removeWidget(m_commandEditBoxes[i].get());
-                m_commandEditBoxes[i] = nullptr;
-            }
-        }
-        m_commandEditBoxes.erase(std::remove_if(D_IT(m_commandEditBoxes), D_FUNC(box, box == nullptr)), m_commandEditBoxes.end());
-    }
-
-    void CommandScrollArea::addNeeded(std::list<model::Cluster>& clusters) {
-        for (auto& cluster : clusters) {
-            if (std::find_if(D_CIT(m_commandEditBoxes), D_FUNC(box, box->index() == cluster.index())) == m_commandEditBoxes.end()) {
-                add(cluster);
             }
         }
     }

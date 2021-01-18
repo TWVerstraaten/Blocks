@@ -6,9 +6,6 @@
 
 #include <QApplication>
 #include <QDebug>
-#include <QStyle>
-#include <QTime>
-#include <QTimer>
 
 namespace view2 {
     TextEdit::TextEdit(CommandEditBox* commandEditBox, const QString& string)

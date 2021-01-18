@@ -2,12 +2,12 @@
 
 #include "../model/Model.h"
 #include "MainView.h"
+#include "global/defines.h"
 
 #include <QApplication>
-#include <QKeyEvent>
+#include <QDebug>
 #include <QTimer>
 #include <QUndoView>
-#include <global/defines.h>
 
 namespace view2 {
 
@@ -71,11 +71,11 @@ namespace view2 {
     }
 
     void CentralWidget::mousePressEvent(QMouseEvent* event) {
-        //        startActionGlob();
+        startActionGlob();
     }
 
     void CentralWidget::mouseReleaseEvent(QMouseEvent* event) {
-        //        stopActionGlob();
+        stopActionGlob();
     }
 
     void CentralWidget::startActionGlob() {
