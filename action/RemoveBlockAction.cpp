@@ -20,12 +20,9 @@ void action::RemoveBlockAction::undo() {
 }
 
 void action::RemoveBlockAction::redo() {
-    if (not m_blockInitial) {
-        auto it = m_model->clusterWithIndex(m_clusterIndex);
-        assert(it != m_model->clusters().end());
-        it->removeGridXY(m_gridXy);
-    }
-    m_blockInitial = false;
+    auto it = m_model->clusterWithIndex(m_clusterIndex);
+    assert(it != m_model->clusters().end());
+    it->removeGridXY(m_gridXy);
 }
 
 action::ACTION_TYPE action::RemoveBlockAction::type() const {

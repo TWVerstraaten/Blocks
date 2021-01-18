@@ -1,6 +1,5 @@
 #include "MainView.h"
 
-#include "../action/AddBlockAction.h"
 #include "../action/NewClusterAction.h"
 #include "../view/toColor.h"
 
@@ -10,6 +9,7 @@
 #include <QPainter>
 #include <action/DeleteClusterAction.h>
 #include <action/MergeClusterAction.h>
+#include <action/RemoveBlockAction.h>
 #include <action/SplitDisconnectedAction.h>
 #include <global/geom.h>
 
@@ -18,7 +18,6 @@ namespace view2 {
         : QWidget(centralWidget), m_centralWidget(centralWidget), m_commandScrollArea(centralWidget->commandScrollArea()) {
         m_model = std::make_unique<model::Model>();
         m_model->init();
-        m_isInitialized = true;
 
         setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         const int     id     = QFontDatabase::addApplicationFont("assets/UbuntuMono-Italic.ttf");
@@ -27,9 +26,6 @@ namespace view2 {
     }
 
     void MainView::paintEvent(QPaintEvent* event) {
-        if (not m_isInitialized) {
-            return;
-        }
         QPainter painter;
         painter.begin(this);
         painter.setRenderHint(QPainter::Antialiasing);
@@ -162,8 +158,6 @@ namespace view2 {
             m_centralWidget->addAction(new action::DeleteClusterAction(m_centralWidget, *it));
         } else {
             m_centralWidget->startActionGlob();
-            it->removeGridXY(gridXy);
-            assert(not it->isEmpty());
             m_centralWidget->addAction(new action::RemoveBlockAction(m_model.get(), it->index(), gridXy));
             if (not it->isConnected()) {
                 m_centralWidget->addAction(new action::SplitDisconnectedAction(m_model.get(), *it, m_commandScrollArea));

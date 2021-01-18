@@ -37,7 +37,6 @@ namespace view2 {
         void removeBlock(const model::GridXY& gridXy);
         void createCluster(const model::GridXY& gridXy);
 
-        bool                          m_isInitialized = false;
         CentralWidget*                m_centralWidget;
         view::ScreenXY                m_previousMousePosition;
         model::GridXY                 m_previousGridPosition{0, 0};
