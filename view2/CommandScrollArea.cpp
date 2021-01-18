@@ -1,5 +1,6 @@
 #include "CommandScrollArea.h"
 
+#include "../view/color.h"
 #include "CentralWidget.h"
 #include "global/defines.h"
 
@@ -18,6 +19,11 @@ namespace view2 {
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
         setWidgetResizable(true);
+
+        QPalette pal = palette();
+        pal.setColor(QPalette::Window, view::color::SCROLL_AREA_BACKGROUND_COLOR);
+        setAutoFillBackground(true);
+        setPalette(pal);
     }
 
     CommandScrollArea::~CommandScrollArea() {

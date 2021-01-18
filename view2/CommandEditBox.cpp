@@ -1,6 +1,7 @@
 #include "CommandEditBox.h"
 
 #include "../model/Cluster.h"
+#include "../view/color.h"
 #include "CentralWidget.h"
 #include "MainView.h"
 
@@ -28,13 +29,19 @@ namespace view2 {
 
         m_textEdit = new TextEdit(this, text);
         auto* l    = new QVBoxLayout(this);
-        l->addWidget(new QLabel(m_name.c_str()));
+
+        QFont font("UbuntuMono-Regular", 12, QFont::Normal);
+        setFont(font);
+        auto* label = new QLabel(m_name.c_str(), this);
+        label->setFont(font);
+
+        l->addWidget(label);
         l->addWidget(m_textEdit);
         l->addStretch();
-        l->setMargin(2);
-        QPalette pal = palette();
+        l->setMargin(4);
 
-        pal.setColor(QPalette::Window, Qt::yellow);
+        QPalette pal = palette();
+        pal.setColor(QPalette::Window, view::color::COMMAND_EDIT_BACKGROUND);
         setAutoFillBackground(true);
         setPalette(pal);
 

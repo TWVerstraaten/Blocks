@@ -2,6 +2,7 @@
 
 #include "../action/GenericTextEditAction.h"
 #include "CentralWidget.h"
+#include "view/color.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -21,11 +22,16 @@ namespace view2 {
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
-        QFont font("UbuntuMono-Regular", 10, QFont::Normal);
+        QFont font("UbuntuMono-Bold", 10, QFont::Normal);
         setFont(font);
         append(string);
 
         connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
+
+        QPalette pal = palette();
+        pal.setColor(QPalette::Window, view::color::COMMAND_EDIT_BACKGROUND);
+        QTextEdit::setAutoFillBackground(true);
+        QTextEdit::setPalette(pal);
     }
 
     void TextEdit::keyPressEvent(QKeyEvent* event) {

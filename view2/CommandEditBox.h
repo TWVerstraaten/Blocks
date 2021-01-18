@@ -9,7 +9,7 @@
 namespace model {
     class Cluster;
     class CommandVector;
-} // namespace m_model
+} // namespace model
 
 namespace view2 {
 

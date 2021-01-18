@@ -7,15 +7,18 @@
 #include <QKeyEvent>
 #include <QTimer>
 #include <QUndoView>
+#include <global/defines.h>
 
 namespace view2 {
 
     CentralWidget::CentralWidget() : m_qUndoView(new QUndoView(&m_qUndoStack)) {
+        setGeometry(0, 0, 1000, 800);
+
         m_qUndoView->show();
         m_qUndoView->setGeometry(QRect{20, 20, 200, 200});
         auto* layout = new QGridLayout;
-
-        setGeometry(0, 0, 1000, 800);
+        layout->setSpacing(0);
+        layout->setMargin(0);
         setLayout(layout);
 
         m_commandScrollArea = new CommandScrollArea(this);
@@ -38,6 +41,9 @@ namespace view2 {
         switch (event->key()) {
             case Qt::Key_Space:
                 qDebug() << "Space pressed";
+                if (std::all_of(D_CIT(m_mainView->model()->clusters()), D_FUNC(cluster, cluster.commandVector().wellFormed()))) {
+                    qDebug() << "Start :D";
+                }
                 break;
         }
     }
