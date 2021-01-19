@@ -128,10 +128,10 @@ namespace view {
             m_centralWidget->startActionGlob();
             addBlock(gridXy, model::FLOOR_BLOCK_TYPE::LEVEL);
         }
-        if ((dynamicBlocks.find(gridXy) == dynamicBlocks.end()) && instantBlocks.find(gridXy) == instantBlocks.end()) {
+        if (dynamicBlocks.find(gridXy) == dynamicBlocks.end() && instantBlocks.find(gridXy) == instantBlocks.end()) {
             m_centralWidget->addAction(new action::AddLevelBlockAction(m_model, type, gridXy));
         } else {
-            if (dynamicBlocks.find(gridXy) != dynamicBlocks.end()) {
+            if (dynamicBlocks.find(gridXy) != dynamicBlocks.end() && dynamicBlocks.at(gridXy) != type) {
                 m_centralWidget->addAction(new action::ChangeLevelBlockAction(m_model, type, dynamicBlocks.at(gridXy), gridXy));
             } else if (instantBlocks.find(gridXy) != instantBlocks.end()) {
                 m_centralWidget->addAction(new action::ChangeLevelBlockAction(m_model, type, instantBlocks.at(gridXy), gridXy));
@@ -151,12 +151,12 @@ namespace view {
             m_centralWidget->startActionGlob();
             addBlock(gridXy, model::FLOOR_BLOCK_TYPE::LEVEL);
         }
-        if ((dynamicBlocks.find(gridXy) == dynamicBlocks.end()) && instantBlocks.find(gridXy) == instantBlocks.end()) {
+        if (dynamicBlocks.find(gridXy) == dynamicBlocks.end() && instantBlocks.find(gridXy) == instantBlocks.end()) {
             m_centralWidget->addAction(new action::AddLevelBlockAction(m_model, type, gridXy));
         } else {
             if (dynamicBlocks.find(gridXy) != dynamicBlocks.end()) {
                 m_centralWidget->addAction(new action::ChangeLevelBlockAction(m_model, type, dynamicBlocks.at(gridXy), gridXy));
-            } else if (instantBlocks.find(gridXy) != instantBlocks.end()) {
+            } else if (instantBlocks.find(gridXy) != instantBlocks.end() && instantBlocks.at(gridXy) != type) {
                 m_centralWidget->addAction(new action::ChangeLevelBlockAction(m_model, type, instantBlocks.at(gridXy), gridXy));
             }
         }
