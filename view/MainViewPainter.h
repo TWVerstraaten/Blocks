@@ -29,7 +29,7 @@ namespace view {
         void drawConnected(const model::GridXYSet& blocks, const QColor& color, QPainter& painter) const;
         void drawCluster(const model::Cluster& cluster, QPainter& painter);
 
-        [[nodiscard]] std::unique_ptr<QPixmap> connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const;
+        [[nodiscard]] QPixmap connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const;
 
         const MainView* m_mainView;
         QFont           m_font;

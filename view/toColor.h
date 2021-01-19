@@ -14,23 +14,23 @@ namespace view {
     constexpr const QColor& toColor(model::FLOOR_BLOCK_TYPE type) {
         switch (type) {
             case model::FLOOR_BLOCK_TYPE::LEVEL:
-                return color::BACKGROUND_PLAYABLE_COLOR;
+                return color::PLAYABLE;
             case model::FLOOR_BLOCK_TYPE::START:
-                return color::BACKGROUND_START_COLOR;
+                return color::START;
             case model::FLOOR_BLOCK_TYPE::SPLICE:
-                return color::BACKGROUND_SPLICE_COLOR;
+                return color::SPLICE;
             case model::FLOOR_BLOCK_TYPE::CONWAY:
-                return color::BACKGROUND_CONWAY_COLOR;
+                return color::CONWAY;
         }
-        return color::BACKGROUND_PLAYABLE_COLOR;
+        return color::PLAYABLE;
     }
 
     constexpr const QColor& toColor(view::CLUSTER_BLOCK type) {
         switch (type) {
             case CLUSTER_BLOCK::CLUSTER:
-                return color::CLUSTER_COLOR;
+                return color::CLUSTER;
         }
-        return color::BACKGROUND_PLAYABLE_COLOR;
+        return color::PLAYABLE;
     }
 
 } // namespace view

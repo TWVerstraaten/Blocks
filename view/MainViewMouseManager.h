@@ -11,6 +11,10 @@
 
 #include <QMouseEvent>
 
+namespace model {
+    class Model;
+}
+
 namespace view {
 
     class MainView;
@@ -41,6 +45,7 @@ namespace view {
 
         MainView*      m_mainView;
         CentralWidget* m_centralWidget;
+        model::Model*  m_model;
         view::ScreenXY m_previousMousePosition;
         model::GridXY  m_previousGridPosition{0, 0};
     };

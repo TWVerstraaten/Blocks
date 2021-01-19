@@ -22,7 +22,7 @@ namespace view {
         setWidgetResizable(true);
 
         QPalette pal = palette();
-        pal.setColor(QPalette::Window, view::color::SCROLL_AREA_BACKGROUND_COLOR);
+        pal.setColor(QPalette::Window, view::color::WIDGET_DARK);
         setAutoFillBackground(true);
         setPalette(pal);
     }

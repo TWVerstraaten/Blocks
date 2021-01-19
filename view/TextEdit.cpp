@@ -26,9 +26,9 @@ namespace view {
         connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
 
         QTextEdit::setStyleSheet(QString(" selection-background-color : rgb(%1, %2, %3)")
-                                     .arg(view::color::COMMAND_EDIT_BACKGROUND.red())
-                                     .arg(view::color::COMMAND_EDIT_BACKGROUND.green())
-                                     .arg(view::color::COMMAND_EDIT_BACKGROUND.blue()));
+                                     .arg(view::color::WIDGET_LIGHT.red())
+                                     .arg(view::color::WIDGET_LIGHT.green())
+                                     .arg(view::color::WIDGET_LIGHT.blue()));
     }
 
     void TextEdit::keyPressEvent(QKeyEvent* event) {

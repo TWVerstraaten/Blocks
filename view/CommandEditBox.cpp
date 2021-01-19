@@ -38,7 +38,7 @@ namespace view {
         l->setMargin(4);
 
         QPalette pal = palette();
-        pal.setColor(QPalette::Window, view::color::COMMAND_EDIT_BACKGROUND);
+        pal.setColor(QPalette::Window, view::color::WIDGET_LIGHT);
         setAutoFillBackground(true);
         setPalette(pal);
 

@@ -21,9 +21,9 @@ void view::ImageButton::setSelected() {
                           "    background-color: rgb(%1,%2,%3);\n"
                           "border: 3px solid red;"
                           "}\n")
-                      .arg(view::color::COMMAND_EDIT_BACKGROUND.red())
-                      .arg(view::color::C   OMMAND_EDIT_BACKGROUND.green())
-                      .arg(view::color::COMMAND_EDIT_BACKGROUND.blue()));
+                      .arg(view::color::WIDGET_LIGHT.red())
+                      .arg(view::color::WIDGET_LIGHT.green())
+                      .arg(view::color::WIDGET_LIGHT.blue()));
 }
 
 void view::ImageButton::setUnselected() {
@@ -33,7 +33,7 @@ void view::ImageButton::setUnselected() {
                           "QPushButton:hover {\n"
                           "    background-color: rgb(%1,%2,%3);\n"
                           "}\n")
-                      .arg(view::color::COMMAND_EDIT_BACKGROUND.red())
-                      .arg(view::color::COMMAND_EDIT_BACKGROUND.green())
-                      .arg(view::color::COMMAND_EDIT_BACKGROUND.blue()));
+                      .arg(view::color::WIDGET_LIGHT.red())
+                      .arg(view::color::WIDGET_LIGHT.green())
+                      .arg(view::color::WIDGET_LIGHT.blue()));
 }

@@ -18,7 +18,7 @@ view::MainViewPainter::MainViewPainter(const view::MainView* mainView) : m_mainV
 
 void view::MainViewPainter::paint(QPainter& painter, QPaintEvent* event) {
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.fillRect(event->rect(), view::color::BACKGROUND_COLOR);
+    painter.fillRect(event->rect(), view::color::BACKGROUND);
 
     const auto blockShrinkInScreen = m_mainView->m_viewPort.worldToScreen(app::BLOCK_SHRINK_IN_WORLD);
     const auto shrinkInScreenXY    = view::ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
@@ -32,7 +32,7 @@ void view::MainViewPainter::paint(QPainter& painter, QPaintEvent* event) {
     }
 
     for (const auto& stoppedCluster : m_mainView->m_model->level().stoppedClusters()) {
-        drawConnected(stoppedCluster.gridXY(), view::color::DARK_GREY_COLOR, painter);
+        drawConnected(stoppedCluster.gridXY(), view::color::CLUSTER_STOPPED, painter);
     }
     for (const auto& cluster : m_mainView->m_model->clusters()) {
         drawCluster(cluster, painter);
@@ -58,7 +58,7 @@ void view::MainViewPainter::paint(QPainter& painter, QPaintEvent* event) {
     }
 }
 
-std::unique_ptr<QPixmap> view::MainViewPainter::connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const {
+QPixmap view::MainViewPainter::connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const {
     using namespace model;
 
     const auto shrunkSize  = m_mainView->m_viewPort.blockSizeInScreen() - 2 * m_mainView->m_viewPort.worldToScreen(app::BLOCK_SHRINK_IN_WORLD);
@@ -73,9 +73,9 @@ std::unique_ptr<QPixmap> view::MainViewPainter::connectedPixmap(const model::Gri
     assert(width > 0);
     assert(height > 0);
 
-    auto* result = new QPixmap{width + 20, height + 20};
-    result->fill(Qt::transparent);
-    QPainter painter(result);
+    QPixmap result{width + 20, height + 20};
+    result.fill(Qt::transparent);
+    QPainter painter(&result);
     painter.setBrush(QBrush{color});
     for (const auto block : blocks) {
         const auto positionInWorld = block - GridXY{minX, minY} + WorldXY{app::BLOCK_SHRINK_IN_WORLD, app::BLOCK_SHRINK_IN_WORLD};
@@ -96,24 +96,23 @@ std::unique_ptr<QPixmap> view::MainViewPainter::connectedPixmap(const model::Gri
         } else {
             if (upOccupied) {
                 painter.fillRect(QRect{position.x(), position.y() - twiceShrink - 1, shrunkSize, twiceShrink + 2}, color);
-            }
-            if (leftOccupied) {
+            } else if (leftOccupied) {
                 painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y(), twiceShrink + 2, shrunkSize}, color);
             }
         }
     }
-    return std::unique_ptr<QPixmap>(result);
+    return result;
 }
 
 void view::MainViewPainter::drawConnected(const model::GridXYSet& blocks, const QColor& color, QPainter& painter) const {
     const auto pixmap  = connectedPixmap(blocks, color);
     const auto topLeft = view::ScreenXY::fromWorldXY(model::WorldXY(model::GridXY{geom::minX(blocks), geom::minY(blocks)}), m_mainView->m_viewPort);
 
-    painter.drawPixmap(topLeft.x(), topLeft.y(), *pixmap);
+    painter.drawPixmap(topLeft.x(), topLeft.y(), pixmap);
 }
 
 void view::MainViewPainter::drawCluster(const model::Cluster& cluster, QPainter& painter) {
-    drawConnected(cluster.gridXY(), view::color::CLUSTER_COLOR, painter);
+    drawConnected(cluster.gridXY(), view::color::CLUSTER, painter);
     const auto namePosition = view::ScreenXY::fromWorldXY(
         model::WorldXY(*cluster.gridXY().begin()) + model::WorldXY{5, app::HALF_BLOCK_SIZE_IN_WORLD}, m_mainView->m_viewPort);
 
@@ -121,6 +120,6 @@ void view::MainViewPainter::drawCluster(const model::Cluster& cluster, QPainter&
     QFontMetrics fontMetrics(m_font);
     const int    width  = fontMetrics.horizontalAdvance(cluster.name().c_str());
     const int    height = fontMetrics.height();
-    painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, view::color::WHITE_COLOR);
+    painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, view::color::NAME_BACKGROUND);
     painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
 }
