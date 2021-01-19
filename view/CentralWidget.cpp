@@ -25,9 +25,9 @@ namespace view {
         m_mainView->stackUnder(m_blockSelectWidget);
         layout->addWidget(m_blockSelectWidget, 1, 0);
         layout->addWidget(m_commandScrollArea, 0, 2, 2, 1);
-        layout->addWidget(m_qUndoView, 0, 3, 2, 1);
 
-        m_qUndoView->setMaximumWidth(250);
+        //        layout->addWidget(m_qUndoView, 0, 3, 2, 1);
+        //        m_qUndoView->setMaximumWidth(250);
     }
 
     void CentralWidget::keyPressEvent(QKeyEvent* event) {

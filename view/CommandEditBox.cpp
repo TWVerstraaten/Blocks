@@ -27,8 +27,12 @@ namespace view {
         m_textEdit = new TextEdit(this, text);
         auto* l    = new QVBoxLayout(this);
 
-        QFont font("UbuntuMono-Regular", 10, QFont::Normal);
+        const int id = QFontDatabase::addApplicationFont(":/assets/UbuntuMono-Bold.ttf");
+        assert(id >= 0);
+        const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+        QFont         font(family, 11);
         setFont(font);
+
         auto* label = new QLabel(m_name.c_str(), this);
         label->setFont(font);
 

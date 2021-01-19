@@ -17,6 +17,7 @@ namespace view {
         setWidget(widget);
 
         setMaximumWidth(200);
+        setMinimumWidth(200);
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
         setWidgetResizable(true);

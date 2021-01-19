@@ -13,7 +13,8 @@
 #include <QFontDatabase>
 
 view::MainViewPainter::MainViewPainter(const view::MainView* mainView) : m_mainView(mainView) {
-    const int     id     = QFontDatabase::addApplicationFont("assets/UbuntuMono-Italic.ttf");
+    const int id = QFontDatabase::addApplicationFont(":/assets/UbuntuMono-Italic.ttf");
+    assert(id >= 0);
     const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
     m_font               = QFont(family, 12);
 }
@@ -28,11 +29,9 @@ void view::MainViewPainter::paint(QPainter& painter, QPaintEvent* event) {
 
     for (const auto& [point, type] : m_mainView->m_model->level().floorBlocks()) {
         const auto position = view::ScreenXy::fromGridXy(point, m_mainView->m_viewPort) + shrinkInScreenXy;
-
         painter.setBrush({view::toColor(type)});
         painter.drawRect(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize});
     }
-
     for (const auto& stoppedCluster : m_mainView->m_model->level().stoppedClusters()) {
         drawConnected(stoppedCluster.gridXy(), view::color::CLUSTER_STOPPED, painter);
     }

@@ -92,7 +92,6 @@ namespace view {
         if (it == m_model->clusters().end()) {
             return;
         }
-
         if (it->size() == 1) {
             m_centralWidget->addAction(new action::DeleteClusterAction(m_centralWidget, *it));
         } else {
@@ -179,7 +178,7 @@ namespace view {
         removeTopBlockFromLevel(gridXy);
     }
 
-    void MainViewMouseManager::mouseLeftDragEvent([[maybe_unused]] const model::GridXy& gridXy, [[maybe_unused]] model::FLOOR_BLOCK_TYPE type) {
+    void MainViewMouseManager::mouseLeftDragEvent(const model::GridXy& gridXy, model::FLOOR_BLOCK_TYPE type) {
         addBlock(gridXy, type);
     }
 
