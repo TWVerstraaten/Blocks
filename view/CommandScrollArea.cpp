@@ -58,6 +58,14 @@ namespace view {
         }
     }
 
+    void CommandScrollArea::addNeeded(std::list<model::Cluster>& clusters) {
+        for (auto& cluster : clusters) {
+            if (std::find_if(D_CIT(m_commandEditBoxes), D_FUNC(box, box->index() == cluster.index())) == m_commandEditBoxes.end()) {
+                add(cluster);
+            }
+        }
+    }
+
     void CommandScrollArea::add(model::Cluster& cluster) {
         assert(std::find_if(D_CIT(m_commandEditBoxes), D_FUNC(box, box->index() == cluster.index())) == m_commandEditBoxes.cend());
         auto* commandEditBox = new CommandEditBox(this, cluster);
@@ -88,6 +96,12 @@ namespace view {
         commandEditBox->setCommandVectorPointer();
         m_commandEditBoxes.emplace_back(std::move(commandEditBox));
         m_commandEditBoxes.back()->show();
+    }
+
+    CommandEditBox* CommandScrollArea::withIndex(size_t index) {
+        auto it = std::find_if(D_IT(m_commandEditBoxes), D_FUNC(box, box->index() == index));
+        assert(it != m_commandEditBoxes.end());
+        return it->get();
     }
 
 } // namespace view

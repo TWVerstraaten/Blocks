@@ -19,10 +19,23 @@ namespace view {
 
     class MainView : public QWidget {
         Q_OBJECT
+
       public:
         explicit MainView(CentralWidget* centralWidget);
 
-        [[nodiscard]] model::Model* model() const;
+        void init();
+        void init(const model::Model& model);
+
+        void startRunning();
+        void stopRunning();
+        void setCommandScrollArea(CommandScrollArea* commandScrollArea);
+        void setModel(const std::unique_ptr<model::Model>& model);
+        void setViewPort(const ViewPort& viewPort);
+
+        [[nodiscard]] CommandScrollArea*    commandScrollArea();
+        [[nodiscard]] model::Model*         model() const;
+        [[nodiscard]] MainViewMouseManager& mainViewMouseManager();
+        [[nodiscard]] const ViewPort&       viewPort() const;
 
       protected:
         void paintEvent(QPaintEvent* event) override;
@@ -37,6 +50,7 @@ namespace view {
         CentralWidget*                m_centralWidget;
         view::ViewPort                m_viewPort;
         std::unique_ptr<model::Model> m_model;
+        std::unique_ptr<model::Model> m_modelStash;
         CommandScrollArea*            m_commandScrollArea;
         MainViewPainter               m_mainViewPainter;
         MainViewMouseManager          m_mainViewMouseManager;

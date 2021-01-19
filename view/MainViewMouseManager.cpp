@@ -27,8 +27,10 @@ namespace view {
     void MainViewMouseManager::mousePressEvent(QMouseEvent* event) {
         m_previousMousePosition = event->pos();
         m_previousGridPosition  = model::GridXy::fromScreenXy(m_previousMousePosition, m_mainView->m_viewPort);
-        if (event->button() == Qt::MouseButton::LeftButton) {
-            mouseLeftPressEvent();
+        if (not m_blockEditing) {
+            if (event->button() == Qt::MouseButton::LeftButton) {
+                mouseLeftPressEvent();
+            }
         }
     }
 
@@ -40,13 +42,11 @@ namespace view {
                 m_mainView->m_viewPort.translate((event->x() - m_previousMousePosition.x()), event->y() - m_previousMousePosition.y());
                 m_previousMousePosition = event->pos();
                 break;
-            case Qt::NoButton:
             case Qt::LeftButton:
-                if (m_previousGridPosition != currentGridPosition) {
+                if (m_previousGridPosition != currentGridPosition && (not m_blockEditing)) {
                     std::visit([this, currentGridPosition](const auto& a) { mouseLeftDragEvent(currentGridPosition, a); },
                                m_centralWidget->blockSelectWidget()->selectedBlockType());
                 }
-            case Qt::MiddleButton:
             default:
                 break;
         }
@@ -205,6 +205,10 @@ namespace view {
                 m_centralWidget->addAction(new action::RemoveFloorBlockAction(m_model, model::FLOOR_BLOCK_TYPE::LEVEL, gridXy));
             }
         }
+    }
+
+    void MainViewMouseManager::setBlockEditing(bool blockEditing) {
+        m_blockEditing = blockEditing;
     }
 
 } // namespace view

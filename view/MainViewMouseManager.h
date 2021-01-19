@@ -22,6 +22,10 @@ namespace view {
 
     class MainViewMouseManager {
 
+      public:
+        void setBlockEditing(bool blockEditing);
+
+      private:
         friend class MainView;
 
         explicit MainViewMouseManager(MainView* mainView);
@@ -45,6 +49,7 @@ namespace view {
         void addBlock(const model::GridXy& gridXy, model::INSTANT_BLOCK_TYPE type);
 
         MainView*      m_mainView;
+        bool           m_blockEditing  = false;
         CentralWidget* m_centralWidget = nullptr;
         model::Model*  m_model         = nullptr;
         view::ScreenXy m_previousMousePosition;

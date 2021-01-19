@@ -20,6 +20,9 @@ namespace view {
         void add(model::Cluster& cluster);
         void addToLayout(std::unique_ptr<CommandEditBox>&& commandEditBox);
 
+        void addNeeded(std::list<model::Cluster>& clusters);
+
+        [[nodiscard]] CommandEditBox*                 withIndex(size_t index);
         [[nodiscard]] CentralWidget*                  centralWidget() const;
         [[nodiscard]] std::unique_ptr<CommandEditBox> removeFromLayout(size_t index);
 

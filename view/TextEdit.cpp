@@ -12,6 +12,7 @@ namespace view {
         : QTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
         assert(m_commandEditBox);
         connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
+        setLineWrapMode(LineWrapMode::NoWrap);
 
         setMaximumWidth(200);
         document()->adjustSize();

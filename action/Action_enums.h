@@ -14,7 +14,7 @@ namespace action {
         CHANGE_FLOOR_BLOCK,
         ADD_FLOOR_BLOCK,
         REMOVE_FLOOR_BLOCK,
-        GENERIC_TEXT_EDIT_ACTION,
+        TEXT_EDIT_ACTION,
         ADD_LEVEL_BLOCK,
         REMOVE_LEVEL_BLOCK,
         CHANGE_LEVEL_BLOCK

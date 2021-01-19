@@ -5,6 +5,7 @@
 #ifndef BLOCKS_MAINVIEWPAINTER_H
 #define BLOCKS_MAINVIEWPAINTER_H
 
+#include "MainViewMouseManager.h"
 #include "model/Cluster.h"
 #include "view/ViewPort.h"
 

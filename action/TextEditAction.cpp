@@ -11,7 +11,7 @@ action::TextEditAction::TextEditAction(view::TextEdit* textEdit) : m_textEdit(te
 }
 
 action::ACTION_TYPE action::TextEditAction::type() const {
-    return ACTION_TYPE::GENERIC_TEXT_EDIT_ACTION;
+    return ACTION_TYPE::TEXT_EDIT_ACTION;
 }
 
 void action::TextEditAction::undo() {

@@ -85,4 +85,8 @@ namespace view {
         m_commandVector->set(m_textEdit->contents());
     }
 
+    model::CommandVector* CommandEditBox::commandVector() {
+        return m_commandVector;
+    }
+
 } // namespace view

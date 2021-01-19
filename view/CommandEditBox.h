@@ -23,9 +23,10 @@ namespace view {
 
         void setCommandVectorPointer();
 
-        [[nodiscard]] TextEdit*          textEdit();
-        [[nodiscard]] size_t             index() const;
-        [[nodiscard]] CommandScrollArea* commandScrollArea() const;
+        [[nodiscard]] TextEdit*             textEdit();
+        [[nodiscard]] size_t                index() const;
+        [[nodiscard]] CommandScrollArea*    commandScrollArea() const;
+        [[nodiscard]] model::CommandVector* commandVector();
 
       private slots:
         void setHeight();
