@@ -5,7 +5,6 @@
 #ifndef BLOCKS_LEVEL_H
 #define BLOCKS_LEVEL_H
 
-#include "../action/Action.h"
 #include "Cluster.h"
 #include "GridXY.h"
 #include "Level_enums.h"
@@ -20,15 +19,9 @@ namespace model {
 
     class Level {
 
-        /****** PRIVATE ENUMS / TYPEDEFS  ******/
-        typedef std::unique_ptr<action::Action> Action_u_ptr;
-
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        Level()                   = default;
-        Level(const Level& other) = default;
-        Level(Level&& other)      = default;
-        Level& operator=(const Level& other) = default;
+        Level() = default;
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] bool                                        isFreeStartBlock(const GridXY& gridXY) const;
@@ -44,16 +37,12 @@ namespace model {
         /****** NON CONST FUNCTIONS  ******/
         void                clear();
         void                createBoundaries();
-        Action_u_ptr        addStartBlock(const GridXY& gridXY);
-        Action_u_ptr        addSpliceBlock(const GridXY& gridXY);
-        Action_u_ptr        addLevelBlock(const GridXY& gridXY);
-        Action_u_ptr        addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
-        Action_u_ptr        addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
-        Action_u_ptr        addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
-        Action_u_ptr        removeBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
-        Action_u_ptr        removeBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
-        Action_u_ptr        removeBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
-        Action_u_ptr        removeBlock(const GridXY& gridXY);
+        void                addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
+        void                addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
+        void                addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
+        void                removeBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType);
+        void                removeBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType);
+        void                removeBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType);
         std::list<Cluster>& stoppedClusters();
 
       private:

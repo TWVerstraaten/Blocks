@@ -85,7 +85,7 @@ namespace view {
         }
     }
 
-    void MainViewMouseManager::removeBlock(const model::GridXY& gridXy, CLUSTER_BLOCK type) {
+    void MainViewMouseManager::removeBlock(const model::GridXY& gridXy, [[maybe_unused]] CLUSTER_BLOCK type) {
         auto it = m_model->clusterContaining(gridXy);
         if (it == m_model->clusters().end()) {
             return;
@@ -103,7 +103,7 @@ namespace view {
         }
     }
 
-    void MainViewMouseManager::addBlock(const model::GridXY& gridXy, CLUSTER_BLOCK type) {
+    void MainViewMouseManager::addBlock(const model::GridXY& gridXy, [[maybe_unused]] CLUSTER_BLOCK type) {
         if (m_model->noLiveOrStoppedClusterOnBlock(gridXy) && m_model->level().isFreeStartBlock(gridXy)) {
             m_model->clusters().emplace_back(gridXy, "CL" + std::to_string(m_model->clusters().size()));
             m_mainView->m_commandScrollArea->add(m_model->clusters().back());
@@ -165,23 +165,23 @@ namespace view {
         }
     }
 
-    void MainViewMouseManager::removeBlock(const model::GridXY& gridXy, model::FLOOR_BLOCK_TYPE type) {
+    void MainViewMouseManager::removeBlock([[maybe_unused]] const model::GridXY& gridXy, [[maybe_unused]] model::FLOOR_BLOCK_TYPE type) {
     }
 
-    void MainViewMouseManager::removeBlock(const model::GridXY& gridXy, model::DYNAMIC_BLOCK_TYPE type) {
+    void MainViewMouseManager::removeBlock([[maybe_unused]] const model::GridXY& gridXy, [[maybe_unused]] model::DYNAMIC_BLOCK_TYPE type) {
     }
 
-    void MainViewMouseManager::removeBlock(const model::GridXY& gridXy, model::INSTANT_BLOCK_TYPE type) {
+    void MainViewMouseManager::removeBlock([[maybe_unused]] const model::GridXY& gridXy, [[maybe_unused]] model::INSTANT_BLOCK_TYPE type) {
     }
 
-    void MainViewMouseManager::mouseLeftDragEvent(const model::GridXY& currentGridXY, model::FLOOR_BLOCK_TYPE type) {
-        addBlock(currentGridXY, type);
+    void MainViewMouseManager::mouseLeftDragEvent([[maybe_unused]] const model::GridXY& gridXy, [[maybe_unused]] model::FLOOR_BLOCK_TYPE type) {
+        addBlock(gridXy, type);
     }
 
-    void MainViewMouseManager::mouseLeftDragEvent(const model::GridXY& currentGridXY, model::DYNAMIC_BLOCK_TYPE type) {
+    void MainViewMouseManager::mouseLeftDragEvent([[maybe_unused]] const model::GridXY& gridXy, [[maybe_unused]] model::DYNAMIC_BLOCK_TYPE type) {
     }
 
-    void MainViewMouseManager::mouseLeftDragEvent(const model::GridXY& currentGridXY, model::INSTANT_BLOCK_TYPE type) {
+    void MainViewMouseManager::mouseLeftDragEvent([[maybe_unused]] const model::GridXY& gridXy, [[maybe_unused]] model::INSTANT_BLOCK_TYPE type) {
     }
 
 } // namespace view

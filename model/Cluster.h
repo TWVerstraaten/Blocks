@@ -33,10 +33,6 @@ namespace model {
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         Cluster(GridXYSet&& gridXY, std::string name);
         Cluster(const GridXY& gridXY, std::string name);
-        Cluster(const Cluster& other) = default;
-        Cluster(Cluster&& other)      = default;
-        Cluster& operator=(const Cluster& other) = default;
-        Cluster& operator=(Cluster&& other) = default;
         Cluster(GridXYSet&& gridXY, CommandVector commandVector, std::string name);
 
         /****** CONST GETTERS  ******/

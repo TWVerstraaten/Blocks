@@ -18,52 +18,16 @@ namespace model {
         return m_instantBLocks;
     }
 
-    std::unique_ptr<action::Action> Level::addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
-        bool levelBlockAdded = false;
-        if (m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end() && m_dynamicBLocks[gridXY] == blockType) {
-            return nullptr;
-        }
-        if (m_floorBlocks.find(gridXY) == m_floorBlocks.end()) {
-            levelBlockAdded = true;
-            addBlock(gridXY, model::FLOOR_BLOCK_TYPE::LEVEL);
-        }
+    void Level::addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
+        assert(not(m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end() && m_dynamicBLocks[gridXY] == blockType));
+        assert(m_floorBlocks.find(gridXY) != m_floorBlocks.end());
         m_dynamicBLocks[gridXY] = blockType;
-
-        return nullptr;
     }
 
-    std::unique_ptr<action::Action> Level::addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType) {
-        bool levelBlockAdded = false;
-        if (m_instantBLocks.find(gridXY) != m_instantBLocks.end() && m_instantBLocks[gridXY] == blockType) {
-            return nullptr;
-        }
-        if (m_floorBlocks.find(gridXY) == m_floorBlocks.end()) {
-            levelBlockAdded = true;
-            addBlock(gridXY, model::FLOOR_BLOCK_TYPE::LEVEL);
-        }
+    void Level::addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType) {
+        assert(not(m_instantBLocks.find(gridXY) != m_instantBLocks.end() && m_instantBLocks[gridXY] == blockType));
+        assert(m_floorBlocks.find(gridXY) != m_floorBlocks.end());
         m_instantBLocks[gridXY] = blockType;
-        return nullptr;
-    }
-
-    std::unique_ptr<action::Action> Level::addLevelBlock(const GridXY& gridXY) {
-        if (m_floorBlocks.find(gridXY) != m_floorBlocks.end()) {
-            return nullptr;
-        }
-        m_floorBlocks.emplace(std::make_pair(gridXY, FLOOR_BLOCK_TYPE::LEVEL));
-        createBoundaries();
-        return nullptr;
-    }
-
-    std::unique_ptr<action::Action> Level::addStartBlock(const GridXY& gridXY) {
-        if (m_floorBlocks.find(gridXY) != m_floorBlocks.end() && m_floorBlocks[gridXY] == FLOOR_BLOCK_TYPE::START) {
-            return nullptr;
-        }
-        if (m_floorBlocks.find(gridXY) == m_floorBlocks.end()) {
-            m_floorBlocks[gridXY] = FLOOR_BLOCK_TYPE::START;
-            return nullptr;
-        }
-        m_floorBlocks[gridXY] = FLOOR_BLOCK_TYPE::START;
-        return nullptr;
     }
 
     void Level::clear() {
@@ -73,7 +37,7 @@ namespace model {
     }
 
     bool Level::isFreeStartBlock(const GridXY& gridXY) const {
-        D_NOTE_ONCE("Handle starting positions");
+        D_NOTE_ONCE("Handle starting positions")
         if (m_floorBlocks.find(gridXY) == m_floorBlocks.end()) {
             return false;
         }
@@ -108,47 +72,23 @@ namespace model {
         }
     }
 
-    std::unique_ptr<action::Action> Level::addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType) {
+    void Level::addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType) {
         m_floorBlocks[gridXY] = blockType;
-        return nullptr;
     }
 
-    std::unique_ptr<action::Action> Level::removeBlock(const GridXY& gridXY) {
-        if (m_instantBLocks.find(gridXY) != m_instantBLocks.end()) {
-            return removeBlock(gridXY, m_instantBLocks[gridXY]);
-        }
-        if (m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end()) {
-            return removeBlock(gridXY, m_dynamicBLocks[gridXY]);
-        }
-        if (m_floorBlocks.find(gridXY) != m_floorBlocks.end()) {
-            if (m_floorBlocks[gridXY] == FLOOR_BLOCK_TYPE::LEVEL) {
-                m_floorBlocks.erase(gridXY);
-                return nullptr;
-            }
-            const auto type       = m_floorBlocks[gridXY];
-            m_floorBlocks[gridXY] = FLOOR_BLOCK_TYPE::LEVEL;
-            return nullptr;
-        }
-        return nullptr;
-    }
-
-    std::unique_ptr<action::Action> Level::removeBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
+    void Level::removeBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
         assert(m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end() && m_dynamicBLocks[gridXY] == blockType);
-        const auto type = m_dynamicBLocks[gridXY];
         m_dynamicBLocks.erase(gridXY);
-        return nullptr;
     }
 
-    std::unique_ptr<action::Action> Level::removeBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType) {
+    void Level::removeBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType) {
         assert(m_instantBLocks.find(gridXY) != m_instantBLocks.end() && m_instantBLocks[gridXY] == blockType);
-        const auto type = m_instantBLocks[gridXY];
         m_instantBLocks.erase(gridXY);
-        return nullptr;
     }
 
-    std::unique_ptr<action::Action> Level::removeBlock(const GridXY& gridXY, [[maybe_unused]] FLOOR_BLOCK_TYPE blockType) {
+    void Level::removeBlock(const GridXY& gridXY, [[maybe_unused]] FLOOR_BLOCK_TYPE blockType) {
+        assert(m_floorBlocks.find(gridXY) != m_floorBlocks.end());
         m_floorBlocks.erase(gridXY);
-        return nullptr;
     }
 
     std::list<Cluster>& Level::stoppedClusters() {
@@ -157,18 +97,6 @@ namespace model {
 
     const std::list<Cluster>& Level::stoppedClusters() const {
         return m_stoppedClusters;
-    }
-
-    Level::Action_u_ptr Level::addSpliceBlock(const GridXY& gridXY) {
-        if (m_floorBlocks.find(gridXY) != m_floorBlocks.end() && m_floorBlocks[gridXY] == FLOOR_BLOCK_TYPE::SPLICE) {
-            return nullptr;
-        }
-        if (m_floorBlocks.find(gridXY) == m_floorBlocks.end()) {
-            m_floorBlocks[gridXY] = FLOOR_BLOCK_TYPE::SPLICE;
-            return nullptr;
-        }
-        m_floorBlocks[gridXY] = FLOOR_BLOCK_TYPE::SPLICE;
-        return nullptr;
     }
 
     const std::map<GridXY, FLOOR_BLOCK_TYPE>& Level::floorBlocks() const {

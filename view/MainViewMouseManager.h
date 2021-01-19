@@ -44,8 +44,8 @@ namespace view {
         void addBlock(const model::GridXY& gridXy, model::INSTANT_BLOCK_TYPE type);
 
         MainView*      m_mainView;
-        CentralWidget* m_centralWidget;
-        model::Model*  m_model;
+        CentralWidget* m_centralWidget = nullptr;
+        model::Model*  m_model         = nullptr;
         view::ScreenXY m_previousMousePosition;
         model::GridXY  m_previousGridPosition{0, 0};
     };

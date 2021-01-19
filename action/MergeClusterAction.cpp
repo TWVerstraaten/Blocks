@@ -7,8 +7,6 @@
 #include "../model/Model.h"
 #include "view/CommandScrollArea.h"
 
-#include <utility>
-
 action::MergeClusterAction::MergeClusterAction(model::Model*            model,
                                                model::Cluster           target,
                                                model::Cluster           second,

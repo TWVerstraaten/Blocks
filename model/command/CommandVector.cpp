@@ -142,7 +142,7 @@ void model::CommandVector::increment(const model::Command_Jump& commandJump) {
         std::find_if(D_CIT(m_commands),
                      D_FUNC(command, std::visit(overloaded{[&](const Command_Label& l) { return l.label == jumpLabel; }, D_FUNC(, false)}, command)));
     assert(it != m_commands.end());
-    m_commandIndex = std::distance(m_commands.cbegin(), it);
+    m_commandIndex = static_cast<size_t>(std::distance(m_commands.cbegin(), it));
     m_repeatCount  = getCurrentRepeatCount();
 }
 

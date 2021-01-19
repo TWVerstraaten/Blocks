@@ -48,7 +48,7 @@ namespace model {
 
         for (int i = -2; i != 15; ++i) {
             if (i > 5) {
-                m_level.addLevelBlock({i, -3});
+                m_level.addBlock({i, -3}, FLOOR_BLOCK_TYPE::LEVEL);
             }
             for (int j = -2; j != 11; ++j) {
                 if (i == 11 && j == 3) {
@@ -60,12 +60,12 @@ namespace model {
                 if (i == 11 && j == 4) {
                     continue;
                 }
-                m_level.addLevelBlock({i, j});
+                m_level.addBlock({i, j}, FLOOR_BLOCK_TYPE::LEVEL);
             }
         }
         for (int i = -2; i != 4; ++i) {
             for (int j = -2; j != 3; ++j) {
-                m_level.addStartBlock({i, j});
+                m_level.addBlock({i, j}, FLOOR_BLOCK_TYPE::START);
             }
         }
         m_level.createBoundaries();

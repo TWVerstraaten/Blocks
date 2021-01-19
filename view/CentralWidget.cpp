@@ -73,11 +73,11 @@ namespace view {
         return m_mainView;
     }
 
-    void CentralWidget::mousePressEvent(QMouseEvent* event) {
+    void CentralWidget::mousePressEvent([[maybe_unused]] QMouseEvent* event) {
         //        startActionGlob();
     }
 
-    void CentralWidget::mouseReleaseEvent(QMouseEvent* event) {
+    void CentralWidget::mouseReleaseEvent([[maybe_unused]] QMouseEvent* event) {
         //        stopActionGlob();
     }
 

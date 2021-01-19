@@ -41,8 +41,6 @@ namespace model {
                 return {x() - 1, y()};
             case model::GridXY::DIRECTION::RIGHT:
                 return {x() + 1, y()};
-            default:
-                return {x(), y()};
         }
     }
 
@@ -78,8 +76,8 @@ namespace model {
     }
 
     GridXY GridXY::fromScreenXY(const view::ScreenXY& screenXY, const view::ViewPort& viewPort) {
-        return GridXY(std::floor((screenXY.x() - viewPort.xOffset()) / static_cast<double>(viewPort.blockSizeInScreen())),
-                      std::floor((screenXY.y() - viewPort.yOffset()) / static_cast<double>(viewPort.blockSizeInScreen())));
+        return GridXY(static_cast<int>(std::floor((screenXY.x() - viewPort.xOffset()) / static_cast<double>(viewPort.blockSizeInScreen()))),
+                      static_cast<int>(std::floor((screenXY.y() - viewPort.yOffset()) / static_cast<double>(viewPort.blockSizeInScreen()))));
     }
 
     bool operator!=(const GridXY& lhs, const GridXY& rhs) {

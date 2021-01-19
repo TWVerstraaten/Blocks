@@ -35,7 +35,7 @@ namespace view {
         return fromWorldXY(gridXY, viewPort);
     }
 
-    ScreenXY::ScreenXY(const QPointF& point) : m_x(point.x()), m_y(point.y()) {
+    ScreenXY::ScreenXY(const QPointF& point) : m_x(static_cast<int>(point.x())), m_y(static_cast<int>(point.y())) {
     }
 
     ScreenXY::ScreenXY(const QPoint& point) : m_x(point.x()), m_y(point.y()) {

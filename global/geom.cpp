@@ -6,9 +6,7 @@
 
 #include "defines.h"
 
-#include <algorithm>
 #include <cassert>
-#include <vector>
 
 #ifdef _WIN32
 #include <cmath>

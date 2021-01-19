@@ -8,7 +8,6 @@
 #include "view/CommandScrollArea.h"
 
 #include <global/defines.h>
-#include <utility>
 
 action::SplitDisconnectedAction::SplitDisconnectedAction(model::Model* model, model::Cluster disconnected, view::CommandScrollArea* commandScrollArea)
     : m_model(model), m_disconnected(std::move(disconnected)), m_commandScrollArea(commandScrollArea) {

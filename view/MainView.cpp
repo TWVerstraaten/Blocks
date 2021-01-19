@@ -2,8 +2,6 @@
 
 #include "CentralWidget.h"
 
-#include <QApplication>
-
 namespace view {
 
     MainView::MainView(CentralWidget* centralWidget)

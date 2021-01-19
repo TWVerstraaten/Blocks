@@ -16,7 +16,7 @@ namespace action {
     class TextEditAction : public Action {
 
       public:
-        TextEditAction(view::TextEdit* textEdit);
+        explicit TextEditAction(view::TextEdit* textEdit);
 
         void undo() override;
         void redo() override;

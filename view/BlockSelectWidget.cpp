@@ -4,7 +4,6 @@
 
 #include "BlockSelectWidget.h"
 
-#include "../global/overloaded.h"
 #include "ImageButton.h"
 #include "color.h"
 
@@ -18,7 +17,7 @@ namespace view {
         for (size_t i = 0; i != m_blocks.size(); ++i) {
             auto* button = new ImageButton(this, m_blocks.at(i), QSize{50, 50});
             connect(button, &QPushButton::clicked, [i, this]() { setSelectedIndex(i); });
-            l->addWidget(button, 0, i);
+            l->addWidget(button, 0, static_cast<int>(i));
             m_imageButtons.push_back(button);
         }
 
