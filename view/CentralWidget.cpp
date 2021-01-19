@@ -27,7 +27,7 @@ namespace view {
         layout->addWidget(m_commandScrollArea, 0, 2, 2, 1);
         layout->addWidget(m_qUndoView, 0, 3, 2, 1);
 
-        m_qUndoView->setMaximumWidth(150);
+        m_qUndoView->setMaximumWidth(250);
     }
 
     void CentralWidget::keyPressEvent(QKeyEvent* event) {

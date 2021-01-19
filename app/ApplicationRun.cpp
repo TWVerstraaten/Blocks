@@ -51,11 +51,11 @@
 //        switch (event.button.button) {
 //            case SDL_BUTTON_RIGHT:
 //                m_rightMouseButtonPressed = true;
-//                m_previousMousePosition   = view::Mouse::mouseXY();
+//                m_previousMousePosition   = view::Mouse::mouseXy();
 //                break;
 //            case SDL_BUTTON_LEFT:
 //                m_leftMouseButtonPressed = true;
-//                m_previousMousePosition  = view::Mouse::mouseXY();
+//                m_previousMousePosition  = view::Mouse::mouseXy();
 //                break;
 //            default:
 //                break;
@@ -77,9 +77,9 @@
 //
 //    void ApplicationRun::mouseMoveEvent([[maybe_unused]] const SDL_Event& event) {
 //        if (m_rightMouseButtonPressed) {
-//            const auto mouseXY = view::Mouse::mouseXY();
-//            m_view->translate((mouseXY.x() - m_previousMousePosition.x()), mouseXY.y() - m_previousMousePosition.y());
-//            m_previousMousePosition = mouseXY;
+//            const auto mouseXy = view::Mouse::mouseXy();
+//            m_view->translate((mouseXy.x() - m_previousMousePosition.x()), mouseXy.y() - m_previousMousePosition.y());
+//            m_previousMousePosition = mouseXy;
 //        }
 //    }
 //
@@ -217,8 +217,8 @@
 //    }
 //
 //    void ApplicationRun::doConwayStep() {
-//        std::vector<model::GridXY> toRemove;
-//        std::vector<model::GridXY> toAdd;
+//        std::vector<model::GridXy> toRemove;
+//        std::vector<model::GridXy> toAdd;
 //        const auto                 conwayBlocks = m_model.level().blocks(model::FLOOR_BLOCK_TYPE::CONWAY);
 //        for (const auto conwayBlock : conwayBlocks) {
 //            size_t neighborCount = 0;
@@ -227,7 +227,7 @@
 //                    if (i == 0 && j == 0) {
 //                        continue;
 //                    }
-//                    const auto adjacentBlock = conwayBlock + model::GridXY{i, j};
+//                    const auto adjacentBlock = conwayBlock + model::GridXy{i, j};
 //                    if ((not m_model.noLiveOrStoppedClusterOnBlock(adjacentBlock))) {
 //                        ++neighborCount;
 //                    }
@@ -247,23 +247,23 @@
 //        for (const auto& remove : toRemove) {
 //            auto it = m_model.clusterContaining(remove);
 //            if (it != m_model.clusters().end()) {
-//                it->removeGridXY(remove);
+//                it->removeGridXy(remove);
 //            } else {
 //                it = std::find_if(D_IT(m_model.level().stoppedClusters()), D_FUNC(cluster, cluster.contains(remove)));
 //                assert(it != m_model.level().stoppedClusters().end());
-//                it->removeGridXY(remove);
+//                it->removeGridXy(remove);
 //            }
 //        }
 //        for (const auto& add : toAdd) {
 //            const auto neighbors = geom::neighbors(m_model.clusters(), add);
 //            if (neighbors.size() == 1) {
-//                neighbors.front()->addGridXY(add);
+//                neighbors.front()->addGridXy(add);
 //            } else {
 //                const auto stoppedNeighbors = geom::neighbors(m_model.level().stoppedClusters(), add);
 //                if (stoppedNeighbors.size() == 1) {
-//                    stoppedNeighbors.front()->addGridXY(add);
+//                    stoppedNeighbors.front()->addGridXy(add);
 //                } else {
-//                    m_model.level().stoppedClusters().emplace_back(model::GridXYSet{add}, "Conway");
+//                    m_model.level().stoppedClusters().emplace_back(model::GridXySet{add}, "Conway");
 //                }
 //            }
 //        }

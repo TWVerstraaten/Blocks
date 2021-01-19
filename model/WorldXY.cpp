@@ -2,59 +2,59 @@
 // Created by pc on 21-12-20.
 //
 
-#include "WorldXY.h"
+#include "WorldXy.h"
 
 #include "../app/Application_constants.h"
-#include "GridXY.h"
+#include "GridXy.h"
 
 namespace model {
 
-    WorldXY::WorldXY(int x, int y) noexcept : m_x(x), m_y(y) {
+    WorldXy::WorldXy(int x, int y) noexcept : m_x(x), m_y(y) {
     }
 
-    int WorldXY::x() const {
+    int WorldXy::x() const {
         return m_x;
     }
 
-    int WorldXY::y() const {
+    int WorldXy::y() const {
         return m_y;
     }
 
-    WorldXY WorldXY::fromGridXY(const model::GridXY& gridXY) {
-        return {app::BLOCK_SIZE_IN_WORLD * gridXY.x(), app::BLOCK_SIZE_IN_WORLD * gridXY.y()};
+    WorldXy WorldXy::fromGridXy(const model::GridXy& gridXy) {
+        return {app::BLOCK_SIZE_IN_WORLD * gridXy.x(), app::BLOCK_SIZE_IN_WORLD * gridXy.y()};
     }
 
-    bool operator<(const WorldXY& lhs, const WorldXY& rhs) {
+    bool operator<(const WorldXy& lhs, const WorldXy& rhs) {
         return lhs.y() == rhs.y() ? lhs.x() < rhs.x() : lhs.y() < rhs.y();
     }
 
-    bool operator==(const WorldXY& lhs, const WorldXY& rhs) {
+    bool operator==(const WorldXy& lhs, const WorldXy& rhs) {
         return lhs.x() == rhs.x() && lhs.y() == rhs.y();
     }
 
-    model::WorldXY operator-(const model::WorldXY& lhs, const model::WorldXY& rhs) {
+    model::WorldXy operator-(const model::WorldXy& lhs, const model::WorldXy& rhs) {
         return {lhs.x() - rhs.x(), lhs.y() - rhs.y()};
     }
 
-    model::WorldXY operator+(const model::WorldXY& lhs, const model::WorldXY& rhs) {
+    model::WorldXy operator+(const model::WorldXy& lhs, const model::WorldXy& rhs) {
         return {lhs.x() + rhs.x(), lhs.y() + rhs.y()};
     }
 
-    model::WorldXY operator/(const model::WorldXY& lhs, double a) {
+    model::WorldXy operator/(const model::WorldXy& lhs, double a) {
         return {static_cast<int>(lhs.x() / a), static_cast<int>(lhs.y() / a)};
     }
 
-    WorldXY::WorldXY(const GridXY& gridXY) {
-        *this = fromGridXY(gridXY);
+    WorldXy::WorldXy(const GridXy& gridXy) {
+        *this = fromGridXy(gridXy);
     }
 
-    WorldXY& WorldXY::operator+=(const WorldXY& other) {
+    WorldXy& WorldXy::operator+=(const WorldXy& other) {
         m_x += other.m_x;
         m_y += other.m_y;
         return *this;
     }
 
-    WorldXY& WorldXY::operator/=(int divisor) {
+    WorldXy& WorldXy::operator/=(int divisor) {
         m_x /= divisor;
         m_y /= divisor;
         return *this;

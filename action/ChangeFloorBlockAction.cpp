@@ -7,7 +7,7 @@
 action::ChangeFloorBlockAction::ChangeFloorBlockAction(model::Model*           model,
                                                        model::FLOOR_BLOCK_TYPE newType,
                                                        model::FLOOR_BLOCK_TYPE oldType,
-                                                       const model::GridXY&    gridXy)
+                                                       const model::GridXy&    gridXy)
     : m_newType(newType), m_oldType(oldType), m_gridXy(gridXy), m_model(model) {
 }
 

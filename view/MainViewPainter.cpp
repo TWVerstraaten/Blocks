@@ -7,7 +7,9 @@
 #include "MainView.h"
 #include "global/geom.h"
 #include "toColor.h"
+#include "toPixmap.h"
 
+#include <QDebug>
 #include <QFontDatabase>
 
 view::MainViewPainter::MainViewPainter(const view::MainView* mainView) : m_mainView(mainView) {
@@ -21,44 +23,35 @@ void view::MainViewPainter::paint(QPainter& painter, QPaintEvent* event) {
     painter.fillRect(event->rect(), view::color::BACKGROUND);
 
     const auto blockShrinkInScreen = m_mainView->m_viewPort.worldToScreen(app::BLOCK_SHRINK_IN_WORLD);
-    const auto shrinkInScreenXY    = view::ScreenXY{blockShrinkInScreen, blockShrinkInScreen};
+    const auto shrinkInScreenXy    = view::ScreenXy{blockShrinkInScreen, blockShrinkInScreen};
     const auto shrunkBlockSize     = m_mainView->m_viewPort.blockSizeInScreen() - 2 * blockShrinkInScreen;
 
     for (const auto& [point, type] : m_mainView->m_model->level().floorBlocks()) {
-        const auto position = view::ScreenXY::fromGridXY(point, m_mainView->m_viewPort) + shrinkInScreenXY;
+        const auto position = view::ScreenXy::fromGridXy(point, m_mainView->m_viewPort) + shrinkInScreenXy;
 
         painter.setBrush({view::toColor(type)});
         painter.drawRect(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize});
     }
 
     for (const auto& stoppedCluster : m_mainView->m_model->level().stoppedClusters()) {
-        drawConnected(stoppedCluster.gridXY(), view::color::CLUSTER_STOPPED, painter);
+        drawConnected(stoppedCluster.gridXy(), view::color::CLUSTER_STOPPED, painter);
     }
     for (const auto& cluster : m_mainView->m_model->clusters()) {
         drawCluster(cluster, painter);
     }
     for (const auto& [point, type] : m_mainView->m_model->level().dynamicBlocks()) {
-        const auto position = view::ScreenXY::fromGridXY(point, m_mainView->m_viewPort) + shrinkInScreenXY;
-        switch (type) {
-            case model::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
-                painter.drawImage(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize}, QImage("assets/arrow_cw.png"));
-                break;
-            case model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
-                painter.drawImage(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize}, QImage("assets/arrow_ccw.png"));
-                break;
-        }
+        const auto position = view::ScreenXy::fromGridXy(point, m_mainView->m_viewPort) + shrinkInScreenXy;
+        painter.drawPixmap(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize},
+                           toPixmap(type, QSize{shrunkBlockSize, shrunkBlockSize}));
     }
     for (const auto& [point, type] : m_mainView->m_model->level().instantBlocks()) {
-        const auto position = view::ScreenXY::fromGridXY(point, m_mainView->m_viewPort) + shrinkInScreenXY;
-        switch (type) {
-            case model::INSTANT_BLOCK_TYPE::KILL:
-                painter.drawImage(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize}, QImage("assets/kill.png"));
-                break;
-        }
+        const auto position = view::ScreenXy::fromGridXy(point, m_mainView->m_viewPort) + shrinkInScreenXy;
+        painter.drawPixmap(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize},
+                           toPixmap(type, QSize{shrunkBlockSize, shrunkBlockSize}));
     }
 }
 
-QPixmap view::MainViewPainter::connectedPixmap(const model::GridXYSet& blocks, const QColor& color) const {
+QPixmap view::MainViewPainter::connectedPixmap(const model::GridXySet& blocks, const QColor& color) const {
     using namespace model;
 
     const auto shrunkSize  = m_mainView->m_viewPort.blockSizeInScreen() - 2 * m_mainView->m_viewPort.worldToScreen(app::BLOCK_SHRINK_IN_WORLD);
@@ -78,18 +71,18 @@ QPixmap view::MainViewPainter::connectedPixmap(const model::GridXYSet& blocks, c
     QPainter painter(&result);
     painter.setBrush(QBrush{color});
     for (const auto block : blocks) {
-        const auto positionInWorld = block - GridXY{minX, minY} + WorldXY{app::BLOCK_SHRINK_IN_WORLD, app::BLOCK_SHRINK_IN_WORLD};
+        const auto positionInWorld = block - GridXy{minX, minY} + WorldXy{app::BLOCK_SHRINK_IN_WORLD, app::BLOCK_SHRINK_IN_WORLD};
         const auto position =
-            view::ScreenXY{m_mainView->m_viewPort.worldToScreen(positionInWorld.x()), m_mainView->m_viewPort.worldToScreen(positionInWorld.y())};
+            view::ScreenXy{m_mainView->m_viewPort.worldToScreen(positionInWorld.x()), m_mainView->m_viewPort.worldToScreen(positionInWorld.y())};
         painter.fillRect(QRect{position.x(), position.y(), shrunkSize, shrunkSize}, QBrush{color});
 
-        const bool leftOccupied = blocks.find(block.neighbor(GridXY::DIRECTION::LEFT)) != blocks.end();
-        const bool upOccupied   = blocks.find(block.neighbor(GridXY::DIRECTION::UP)) != blocks.end();
+        const bool leftOccupied = blocks.find(block.neighbor(GridXy::DIRECTION::LEFT)) != blocks.end();
+        const bool upOccupied   = blocks.find(block.neighbor(GridXy::DIRECTION::UP)) != blocks.end();
         if (upOccupied && leftOccupied) {
             painter.fillRect(QRect{position.x(), position.y() - twiceShrink - 1, shrunkSize, twiceShrink + 2}, color);
             painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y(), twiceShrink + 2, shrunkSize}, color);
 
-            const bool upAndLeftOccupied = blocks.find(block.neighbor(GridXY::DIRECTION::UP).neighbor(GridXY::DIRECTION::LEFT)) != blocks.end();
+            const bool upAndLeftOccupied = blocks.find(block.neighbor(GridXy::DIRECTION::UP).neighbor(GridXy::DIRECTION::LEFT)) != blocks.end();
             if (upAndLeftOccupied) {
                 painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y() - twiceShrink - 1, twiceShrink + 2, twiceShrink + 2}, color);
             }
@@ -104,17 +97,17 @@ QPixmap view::MainViewPainter::connectedPixmap(const model::GridXYSet& blocks, c
     return result;
 }
 
-void view::MainViewPainter::drawConnected(const model::GridXYSet& blocks, const QColor& color, QPainter& painter) const {
+void view::MainViewPainter::drawConnected(const model::GridXySet& blocks, const QColor& color, QPainter& painter) const {
     const auto pixmap  = connectedPixmap(blocks, color);
-    const auto topLeft = view::ScreenXY::fromWorldXY(model::WorldXY(model::GridXY{geom::minX(blocks), geom::minY(blocks)}), m_mainView->m_viewPort);
+    const auto topLeft = view::ScreenXy::fromWorldXy(model::WorldXy(model::GridXy{geom::minX(blocks), geom::minY(blocks)}), m_mainView->m_viewPort);
 
     painter.drawPixmap(topLeft.x(), topLeft.y(), pixmap);
 }
 
 void view::MainViewPainter::drawCluster(const model::Cluster& cluster, QPainter& painter) {
-    drawConnected(cluster.gridXY(), view::color::CLUSTER, painter);
-    const auto namePosition = view::ScreenXY::fromWorldXY(
-        model::WorldXY(*cluster.gridXY().begin()) + model::WorldXY{5, app::HALF_BLOCK_SIZE_IN_WORLD}, m_mainView->m_viewPort);
+    drawConnected(cluster.gridXy(), view::color::CLUSTER, painter);
+    const auto namePosition = view::ScreenXy::fromWorldXy(
+        model::WorldXy(*cluster.gridXy().begin()) + model::WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}, m_mainView->m_viewPort);
 
     painter.setFont(m_font);
     QFontMetrics fontMetrics(m_font);

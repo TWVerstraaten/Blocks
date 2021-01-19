@@ -26,7 +26,7 @@ namespace model {
         [[nodiscard]] const std::list<Cluster>& clusters() const;
 
         /****** CONST FUNCTIONS  ******/
-        [[nodiscard]] bool noLiveOrStoppedClusterOnBlock(const GridXY& gridXY) const;
+        [[nodiscard]] bool noLiveOrStoppedClusterOnBlock(const GridXy& gridXy) const;
 
         /****** NON CONST FUNCTIONS  ******/
         void                         init();
@@ -37,7 +37,7 @@ namespace model {
         Level&                       level();
         std::list<Cluster>&          clusters();
         std::list<Cluster>::iterator clusterWithIndex(size_t index);
-        std::list<Cluster>::iterator clusterContaining(const GridXY& point);
+        std::list<Cluster>::iterator clusterContaining(const GridXy& point);
 
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/

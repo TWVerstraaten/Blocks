@@ -18,9 +18,9 @@ action::MergeClusterAction::MergeClusterAction(model::Model*            model,
 void action::MergeClusterAction::undo() {
     auto targetIt = m_model->clusterWithIndex(m_target.index());
     assert(targetIt != m_model->clusters().end());
-    for (const auto& point : m_second.gridXY()) {
+    for (const auto& point : m_second.gridXy()) {
         assert(targetIt->contains(point));
-        targetIt->removeGridXY(point);
+        targetIt->removeGridXy(point);
     }
     m_model->clusters().emplace_back(m_second);
     m_commandScrollArea->addToLayout(std::move(m_commandEditBox));
@@ -31,7 +31,7 @@ void action::MergeClusterAction::redo() {
     assert(secondIt != m_model->clusters().end());
     auto targetIt = m_model->clusterWithIndex(m_target.index());
     assert(targetIt != m_model->clusters().end());
-    targetIt->gridXY().merge(secondIt->gridXY());
+    targetIt->gridXy().merge(secondIt->gridXy());
     m_model->clusters().erase(secondIt);
     m_commandEditBox = m_commandScrollArea->removeFromLayout(m_second.index());
 }

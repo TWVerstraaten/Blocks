@@ -46,18 +46,18 @@
 //        void mouseReleaseEvent(const SDL_Event& event);
 //        void mouseMoveEvent(const SDL_Event& event);
 //        void setButtonBooleans(const SDL_Event& event);
-//        void determineFocus(view::ScreenXY screenXY);
+//        void determineFocus(view::ScreenXy screenXy);
 //
 //        /****** DATA MEMBERS  ******/
 //        bool                            m_rightMouseButtonPressed = false;
 //        bool                            m_leftMouseButtonPressed  = false;
 //        EDIT_MODE                       m_editMode                = EDIT_MODE::EDITING;
-//        model::GridXY                   m_previousGridClickPosition{0, 0};
+//        model::GridXy                   m_previousGridClickPosition{0, 0};
 //        view::View*                     m_view;
 //        model::Model*                   m_model;
 //        view::widget::ScrollArea*       m_scrollArea;
 //        view::widget::BlockSelectWidget m_blockSelectWidget;
-//        view::ScreenXY                  m_previousMousePosition;
+//        view::ScreenXy                  m_previousMousePosition;
 //        ModelViewInterface              m_modelViewInterface;
 //    };
 //} // namespace app

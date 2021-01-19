@@ -5,15 +5,15 @@
 #ifndef BLOCKS_MODEL_TYPEDEFS_H
 #define BLOCKS_MODEL_TYPEDEFS_H
 
-#include "GridXY.h"
+#include "GridXy.h"
 #include "WorldLine.h"
 
 #include <set>
 
 namespace model {
     typedef std::set<model::WorldLine> WorldLineSet;
-    typedef std::set<model::GridXY>    GridXYSet;
-    typedef std::set<model::WorldXY>   WorldXYSet;
+    typedef std::set<model::GridXy>    GridXySet;
+    typedef std::set<model::WorldXy>   WorldXySet;
 } // namespace model
 
 #endif // BLOCKS_MODEL_TYPEDEFS_H

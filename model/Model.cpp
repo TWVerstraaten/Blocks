@@ -130,12 +130,12 @@ namespace model {
         return m_level;
     }
 
-    bool Model::noLiveOrStoppedClusterOnBlock(const GridXY& gridXY) const {
-        return (std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(gridXY))) == m_clusters.end()) &&
-               (std::find_if(D_IT(m_level.stoppedClusters()), D_FUNC(cluster, cluster.contains(gridXY))) == m_level.stoppedClusters().end());
+    bool Model::noLiveOrStoppedClusterOnBlock(const GridXy& gridXy) const {
+        return (std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(gridXy))) == m_clusters.end()) &&
+               (std::find_if(D_IT(m_level.stoppedClusters()), D_FUNC(cluster, cluster.contains(gridXy))) == m_level.stoppedClusters().end());
     }
 
-    std::list<Cluster>::iterator Model::clusterContaining(const GridXY& point) {
+    std::list<Cluster>::iterator Model::clusterContaining(const GridXy& point) {
         return std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(point)));
     }
 

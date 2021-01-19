@@ -19,7 +19,6 @@ namespace view {
 
       private:
         QTextCharFormat m_errorFormat;
-        QTextCharFormat m_normalFormat;
     };
 } // namespace view
 

@@ -10,24 +10,24 @@
 #include <cassert>
 
 namespace model {
-    const std::map<GridXY, DYNAMIC_BLOCK_TYPE>& Level::dynamicBlocks() const {
+    const std::map<GridXy, DYNAMIC_BLOCK_TYPE>& Level::dynamicBlocks() const {
         return m_dynamicBLocks;
     }
 
-    const std::map<GridXY, INSTANT_BLOCK_TYPE>& Level::instantBlocks() const {
+    const std::map<GridXy, INSTANT_BLOCK_TYPE>& Level::instantBlocks() const {
         return m_instantBLocks;
     }
 
-    void Level::addBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
-        assert(not(m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end() && m_dynamicBLocks[gridXY] == blockType));
-        assert(m_floorBlocks.find(gridXY) != m_floorBlocks.end());
-        m_dynamicBLocks[gridXY] = blockType;
+    void Level::addBlock(const GridXy& gridXy, DYNAMIC_BLOCK_TYPE blockType) {
+        assert(not(m_dynamicBLocks.find(gridXy) != m_dynamicBLocks.end() && m_dynamicBLocks[gridXy] == blockType));
+        assert(m_floorBlocks.find(gridXy) != m_floorBlocks.end());
+        m_dynamicBLocks[gridXy] = blockType;
     }
 
-    void Level::addBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType) {
-        assert(not(m_instantBLocks.find(gridXY) != m_instantBLocks.end() && m_instantBLocks[gridXY] == blockType));
-        assert(m_floorBlocks.find(gridXY) != m_floorBlocks.end());
-        m_instantBLocks[gridXY] = blockType;
+    void Level::addBlock(const GridXy& gridXy, INSTANT_BLOCK_TYPE blockType) {
+        assert(not(m_instantBLocks.find(gridXy) != m_instantBLocks.end() && m_instantBLocks[gridXy] == blockType));
+        assert(m_floorBlocks.find(gridXy) != m_floorBlocks.end());
+        m_instantBLocks[gridXy] = blockType;
     }
 
     void Level::clear() {
@@ -36,18 +36,18 @@ namespace model {
         m_dynamicBLocks.clear();
     }
 
-    bool Level::isFreeStartBlock(const GridXY& gridXY) const {
+    bool Level::isFreeStartBlock(const GridXy& gridXy) const {
         D_NOTE_ONCE("Handle starting positions")
-        if (m_floorBlocks.find(gridXY) == m_floorBlocks.end()) {
+        if (m_floorBlocks.find(gridXy) == m_floorBlocks.end()) {
             return false;
         }
-        if (m_instantBLocks.find(gridXY) != m_instantBLocks.end()) {
+        if (m_instantBLocks.find(gridXy) != m_instantBLocks.end()) {
             return false;
         }
-        if (m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end()) {
+        if (m_dynamicBLocks.find(gridXy) != m_dynamicBLocks.end()) {
             return false;
         }
-        if (std::find_if(D_CIT(m_stoppedClusters), D_FUNC(cluster, cluster.contains(gridXY))) != m_stoppedClusters.end()) {
+        if (std::find_if(D_CIT(m_stoppedClusters), D_FUNC(cluster, cluster.contains(gridXy))) != m_stoppedClusters.end()) {
             return false;
         }
         return true;
@@ -57,38 +57,38 @@ namespace model {
         return m_boundaries;
     }
 
-    bool Level::contains(const GridXY& gridXY) const {
-        return m_floorBlocks.find(gridXY) != m_floorBlocks.end();
+    bool Level::contains(const GridXy& gridXy) const {
+        return m_floorBlocks.find(gridXy) != m_floorBlocks.end();
     }
 
     void Level::createBoundaries() {
-        std::set<GridXY> blocks;
+        std::set<GridXy> blocks;
         for (const auto& [point, _] : m_floorBlocks) {
             blocks.emplace(point);
         }
-        m_boundaries = geom::getSidesFromGridXY(blocks);
+        m_boundaries = geom::getSidesFromGridXy(blocks);
         for (const auto& cluster : m_stoppedClusters) {
-            m_boundaries.merge(geom::getSidesFromGridXY(cluster.gridXY()));
+            m_boundaries.merge(geom::getSidesFromGridXy(cluster.gridXy()));
         }
     }
 
-    void Level::addBlock(const GridXY& gridXY, FLOOR_BLOCK_TYPE blockType) {
-        m_floorBlocks[gridXY] = blockType;
+    void Level::addBlock(const GridXy& gridXy, FLOOR_BLOCK_TYPE blockType) {
+        m_floorBlocks[gridXy] = blockType;
     }
 
-    void Level::removeBlock(const GridXY& gridXY, DYNAMIC_BLOCK_TYPE blockType) {
-        assert(m_dynamicBLocks.find(gridXY) != m_dynamicBLocks.end() && m_dynamicBLocks[gridXY] == blockType);
-        m_dynamicBLocks.erase(gridXY);
+    void Level::removeBlock(const GridXy& gridXy, DYNAMIC_BLOCK_TYPE blockType) {
+        assert(m_dynamicBLocks.find(gridXy) != m_dynamicBLocks.end() && m_dynamicBLocks[gridXy] == blockType);
+        m_dynamicBLocks.erase(gridXy);
     }
 
-    void Level::removeBlock(const GridXY& gridXY, INSTANT_BLOCK_TYPE blockType) {
-        assert(m_instantBLocks.find(gridXY) != m_instantBLocks.end() && m_instantBLocks[gridXY] == blockType);
-        m_instantBLocks.erase(gridXY);
+    void Level::removeBlock(const GridXy& gridXy, INSTANT_BLOCK_TYPE blockType) {
+        assert(m_instantBLocks.find(gridXy) != m_instantBLocks.end() && m_instantBLocks[gridXy] == blockType);
+        m_instantBLocks.erase(gridXy);
     }
 
-    void Level::removeBlock(const GridXY& gridXY, [[maybe_unused]] FLOOR_BLOCK_TYPE blockType) {
-        assert(m_floorBlocks.find(gridXY) != m_floorBlocks.end());
-        m_floorBlocks.erase(gridXY);
+    void Level::removeBlock(const GridXy& gridXy, [[maybe_unused]] FLOOR_BLOCK_TYPE blockType) {
+        assert(m_floorBlocks.find(gridXy) != m_floorBlocks.end());
+        m_floorBlocks.erase(gridXy);
     }
 
     std::list<Cluster>& Level::stoppedClusters() {
@@ -99,12 +99,12 @@ namespace model {
         return m_stoppedClusters;
     }
 
-    const std::map<GridXY, FLOOR_BLOCK_TYPE>& Level::floorBlocks() const {
+    const std::map<GridXy, FLOOR_BLOCK_TYPE>& Level::floorBlocks() const {
         return m_floorBlocks;
     }
 
-    GridXYSet Level::blocks(FLOOR_BLOCK_TYPE blockType) const {
-        std::set<GridXY> result;
+    GridXySet Level::blocks(FLOOR_BLOCK_TYPE blockType) const {
+        std::set<GridXy> result;
         for (const auto& [point, type] : m_floorBlocks) {
             if (type == blockType) {
                 result.emplace(point);

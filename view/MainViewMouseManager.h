@@ -6,8 +6,8 @@
 #define BLOCKS_MAINVIEWMOUSEMANAGER_H
 
 #include "BlockSelectWidget.h"
-#include "ScreenXY.h"
-#include "model/GridXY.h"
+#include "ScreenXy.h"
+#include "model/GridXy.h"
 
 #include <QMouseEvent>
 
@@ -30,24 +30,25 @@ namespace view {
         void mouseMoveEvent(QMouseEvent* event);
         void mouseLeftPressEvent();
 
-        void mouseLeftDragEvent(const model::GridXY& currentGridXY, CLUSTER_BLOCK type);
-        void mouseLeftDragEvent(const model::GridXY& currentGridXY, model::FLOOR_BLOCK_TYPE type);
-        void mouseLeftDragEvent(const model::GridXY& currentGridXY, model::DYNAMIC_BLOCK_TYPE type);
-        void mouseLeftDragEvent(const model::GridXY& currentGridXY, model::INSTANT_BLOCK_TYPE type);
-        void removeBlock(const model::GridXY& gridXy, CLUSTER_BLOCK type);
-        void removeBlock(const model::GridXY& gridXy, model::FLOOR_BLOCK_TYPE type);
-        void removeBlock(const model::GridXY& gridXy, model::DYNAMIC_BLOCK_TYPE type);
-        void removeBlock(const model::GridXY& gridXy, model::INSTANT_BLOCK_TYPE type);
-        void addBlock(const model::GridXY& gridXy, CLUSTER_BLOCK type);
-        void addBlock(const model::GridXY& gridXy, model::FLOOR_BLOCK_TYPE type);
-        void addBlock(const model::GridXY& gridXy, model::DYNAMIC_BLOCK_TYPE type);
-        void addBlock(const model::GridXY& gridXy, model::INSTANT_BLOCK_TYPE type);
+        void mouseLeftDragEvent(const model::GridXy& currentGridXy, CLUSTER_BLOCK type);
+        void mouseLeftDragEvent(const model::GridXy& currentGridXy, model::FLOOR_BLOCK_TYPE type);
+        void mouseLeftDragEvent(const model::GridXy& currentGridXy, model::DYNAMIC_BLOCK_TYPE type);
+        void mouseLeftDragEvent(const model::GridXy& currentGridXy, model::INSTANT_BLOCK_TYPE type);
+        void removeBlock(const model::GridXy& gridXy, CLUSTER_BLOCK type);
+        void removeBlock(const model::GridXy& gridXy, model::FLOOR_BLOCK_TYPE type);
+        void removeBlock(const model::GridXy& gridXy, model::DYNAMIC_BLOCK_TYPE type);
+        void removeBlock(const model::GridXy& gridXy, model::INSTANT_BLOCK_TYPE type);
+        void removeTopBlockFromLevel(const model::GridXy& gridXy);
+        void addBlock(const model::GridXy& gridXy, CLUSTER_BLOCK type);
+        void addBlock(const model::GridXy& gridXy, model::FLOOR_BLOCK_TYPE type);
+        void addBlock(const model::GridXy& gridXy, model::DYNAMIC_BLOCK_TYPE type);
+        void addBlock(const model::GridXy& gridXy, model::INSTANT_BLOCK_TYPE type);
 
         MainView*      m_mainView;
         CentralWidget* m_centralWidget = nullptr;
         model::Model*  m_model         = nullptr;
-        view::ScreenXY m_previousMousePosition;
-        model::GridXY  m_previousGridPosition{0, 0};
+        view::ScreenXy m_previousMousePosition;
+        model::GridXy  m_previousGridPosition{0, 0};
     };
 
 } // namespace view

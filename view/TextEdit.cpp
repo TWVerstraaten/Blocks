@@ -19,7 +19,7 @@ namespace view {
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
-        QFont font("UbuntuMono-Bold", 10, QFont::Normal);
+        QFont font("UbuntuMono-Bold", 10, QFont::Bold);
         setFont(font);
         append(string);
 

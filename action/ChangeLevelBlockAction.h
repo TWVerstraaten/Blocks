@@ -7,7 +7,7 @@
 
 #include "../model/Level_enums.h"
 #include "Action.h"
-#include "model/GridXY.h"
+#include "model/GridXy.h"
 #include "model/Model.h"
 
 namespace action {
@@ -18,7 +18,7 @@ namespace action {
         ChangeLevelBlockAction(model::Model*                                                             model,
                                const std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE>& newType,
                                const std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE>& oldType,
-                               const model::GridXY&                                                      gridXy);
+                               const model::GridXy&                                                      gridXy);
 
         void                      undo() override;
         void                      redo() override;
@@ -28,7 +28,7 @@ namespace action {
         model::Model*                                                      m_model;
         std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE> m_newType;
         std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE> m_oldType;
-        model::GridXY                                                      m_gridXy;
+        model::GridXy                                                      m_gridXy;
     };
 
 } // namespace action

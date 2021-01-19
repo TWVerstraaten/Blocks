@@ -4,7 +4,7 @@
 
 #include "AddFloorBlockAction.h"
 
-action::AddFloorBlockAction::AddFloorBlockAction(model::Model* model, model::FLOOR_BLOCK_TYPE type, const model::GridXY& gridXy)
+action::AddFloorBlockAction::AddFloorBlockAction(model::Model* model, model::FLOOR_BLOCK_TYPE type, const model::GridXy& gridXy)
     : m_type(type), m_gridXy(gridXy), m_model(model) {
 }
 

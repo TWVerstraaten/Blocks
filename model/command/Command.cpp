@@ -9,24 +9,24 @@
 #include "../Cluster.h"
 #include "../Level.h"
 
-static void translate(model::GridXY::DIRECTION direction, model::Cluster& cluster) {
-    model::GridXYSet newGridXYSet;
+static void translate(model::GridXy::DIRECTION direction, model::Cluster& cluster) {
+    model::GridXySet newGridXySet;
     cluster.setPhase(model::PHASE::TRANSLATING);
-    for (auto& idx : cluster.gridXY()) {
-        newGridXYSet.emplace(idx.neighbor(direction));
+    for (auto& idx : cluster.gridXy()) {
+        newGridXySet.emplace(idx.neighbor(direction));
     }
-    cluster.gridXY().swap(newGridXYSet);
+    cluster.gridXy().swap(newGridXySet);
     switch (direction) {
-        case model::GridXY::DIRECTION::UP:
+        case model::GridXy::DIRECTION::UP:
             cluster.setWorldOffset({0, app::BLOCK_SIZE_IN_WORLD});
             break;
-        case model::GridXY::DIRECTION::DOWN:
+        case model::GridXy::DIRECTION::DOWN:
             cluster.setWorldOffset({0, -app::BLOCK_SIZE_IN_WORLD});
             break;
-        case model::GridXY::DIRECTION::LEFT:
+        case model::GridXy::DIRECTION::LEFT:
             cluster.setWorldOffset({app::BLOCK_SIZE_IN_WORLD, 0});
             break;
-        case model::GridXY::DIRECTION::RIGHT:
+        case model::GridXy::DIRECTION::RIGHT:
             cluster.setWorldOffset({-app::BLOCK_SIZE_IN_WORLD, 0});
             break;
     }
@@ -48,16 +48,16 @@ void model::doAction([[maybe_unused]] const model::Command_Jump& command, [[mayb
 void model::doAction(const model::Command_Simple& command, Cluster& cluster, Level& level) {
     switch (command.type) {
         case COMMAND_TYPE::FWD:
-            translate(GridXY::DIRECTION::UP, cluster);
+            translate(GridXy::DIRECTION::UP, cluster);
             break;
         case COMMAND_TYPE::BCK:
-            translate(GridXY::DIRECTION::DOWN, cluster);
+            translate(GridXy::DIRECTION::DOWN, cluster);
             break;
         case COMMAND_TYPE::LFT:
-            translate(GridXY::DIRECTION::LEFT, cluster);
+            translate(GridXy::DIRECTION::LEFT, cluster);
             break;
         case COMMAND_TYPE::RHT:
-            translate(GridXY::DIRECTION::RIGHT, cluster);
+            translate(GridXy::DIRECTION::RIGHT, cluster);
             break;
         case COMMAND_TYPE::GRB:
             cluster.grabAdjacentStoppedClusters(level);

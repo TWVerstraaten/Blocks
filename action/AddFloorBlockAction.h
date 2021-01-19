@@ -7,7 +7,7 @@
 
 #include "../model/Level_enums.h"
 #include "Action.h"
-#include "model/GridXY.h"
+#include "model/GridXy.h"
 #include "model/Model.h"
 
 namespace action {
@@ -15,7 +15,7 @@ namespace action {
     class AddFloorBlockAction : public Action {
 
       public:
-        AddFloorBlockAction(model::Model* model, model::FLOOR_BLOCK_TYPE type, const model::GridXY& gridXy);
+        AddFloorBlockAction(model::Model* model, model::FLOOR_BLOCK_TYPE type, const model::GridXy& gridXy);
 
         void                      undo() override;
         void                      redo() override;
@@ -23,7 +23,7 @@ namespace action {
 
       private:
         model::FLOOR_BLOCK_TYPE m_type;
-        model::GridXY           m_gridXy;
+        model::GridXy           m_gridXy;
         model::Model*           m_model;
     };
 

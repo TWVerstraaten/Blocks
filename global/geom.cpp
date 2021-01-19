@@ -18,21 +18,21 @@ namespace geom {
         return std::any_of(D_CIT(lines1), D_FUNC(line1, std::any_of(D_CIT(lines2), D_FUNC(line2, intersect(line1, line2)))));
     }
 
-    model::WorldLineSet getSidesFromGridXY(const model::GridXYSet& blocks) {
+    model::WorldLineSet getSidesFromGridXy(const model::GridXySet& blocks) {
         model::WorldLineSet        result;
-        std::vector<model::GridXY> cornerPoints;
-        for (const auto& dir : {model::GridXY::DIRECTION::UP, model::GridXY::DIRECTION::DOWN}) {
+        std::vector<model::GridXy> cornerPoints;
+        for (const auto& dir : {model::GridXy::DIRECTION::UP, model::GridXy::DIRECTION::DOWN}) {
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {
                 if (blocks.find(it->neighbor(dir)) == blocks.end()) {
                     const auto start = *it;
                     auto       next  = std::next(it);
-                    while (next != blocks.end() && *next - *it == model::GridXY{1, 0} && (blocks.find(next->neighbor(dir)) == blocks.end())) {
+                    while (next != blocks.end() && *next - *it == model::GridXy{1, 0} && (blocks.find(next->neighbor(dir)) == blocks.end())) {
                         ++it;
                         ++next;
                     }
-                    const model::GridXY point1 = start + model::GridXY{0, dir == model::GridXY::DIRECTION::UP ? 0 : 1};
-                    const model::GridXY point2 = model::GridXY{it->x() + 1, start.y() + (dir == model::GridXY::DIRECTION::UP ? 0 : 1)};
-                    result.emplace(model::WorldXY(point1), model::WorldXY(point2));
+                    const model::GridXy point1 = start + model::GridXy{0, dir == model::GridXy::DIRECTION::UP ? 0 : 1};
+                    const model::GridXy point2 = model::GridXy{it->x() + 1, start.y() + (dir == model::GridXy::DIRECTION::UP ? 0 : 1)};
+                    result.emplace(model::WorldXy(point1), model::WorldXy(point2));
                     cornerPoints.emplace_back(point1);
                     cornerPoints.emplace_back(point2);
                 }
@@ -46,7 +46,7 @@ namespace geom {
         return result;
     }
 
-    model::WorldXY rotateClockWise(const model::WorldXY& point, double angleInDegrees) {
+    model::WorldXy rotateClockWise(const model::WorldXy& point, double angleInDegrees) {
         if (angleInDegrees == 0.0) {
             return point;
         }
@@ -55,11 +55,11 @@ namespace geom {
         return {static_cast<int>(ca * point.x() - sa * point.y()), static_cast<int>(sa * point.x() + ca * point.y())};
     }
 
-    model::WorldXY rotateAboutPivot(const model::WorldXY& point, const model::WorldXY& pivot, double angleInDegrees) {
+    model::WorldXy rotateAboutPivot(const model::WorldXy& point, const model::WorldXy& pivot, double angleInDegrees) {
         return rotateClockWise(point - pivot, angleInDegrees) + pivot;
     }
 
-    int cross(const model::WorldXY& lhs, const model::WorldXY& rhs) {
+    int cross(const model::WorldXy& lhs, const model::WorldXy& rhs) {
         return lhs.x() * rhs.y() - lhs.y() * rhs.x();
     }
 
@@ -82,30 +82,30 @@ namespace geom {
         return (containedInClosedInterval(cross(qMinusP, s), 0, rCrossS) && containedInClosedInterval(cross(qMinusP, r), 0, rCrossS));
     }
 
-    int minX(const model::GridXYSet& blocks) {
+    int minX(const model::GridXySet& blocks) {
         assert(not blocks.empty());
         return std::min_element(D_CIT(blocks), D_FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
     }
 
-    int minY(const model::GridXYSet& blocks) {
+    int minY(const model::GridXySet& blocks) {
         assert(not blocks.empty());
         return blocks.begin()->y();
     }
 
-    int maxX(const model::GridXYSet& blocks) {
+    int maxX(const model::GridXySet& blocks) {
         assert(not blocks.empty());
         return std::max_element(D_CIT(blocks), D_FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
     }
 
-    int maxY(const model::GridXYSet& blocks) {
+    int maxY(const model::GridXySet& blocks) {
         assert(not blocks.empty());
         return blocks.rbegin()->y();
     }
 
-    std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, model::GridXY point) {
+    std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, model::GridXy point) {
         std::vector<model::Cluster*> result;
         std::for_each(D_IT(clusters), [&](auto& cluster) {
-            if (cluster.gridXYIsAdjacent(point)) {
+            if (cluster.gridXyIsAdjacent(point)) {
                 result.push_back(&cluster);
             }
         });
