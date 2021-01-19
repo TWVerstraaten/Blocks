@@ -226,7 +226,7 @@ namespace model {
     }
 
     void Cluster::collideWithLevel(const Level& level, int shrinkInWorld) {
-        if (geom::intersect(sides(shrinkInWorld), level.boundaries())) {
+        if (geom::intersect(sides(shrinkInWorld), level.sides())) {
             kill();
         }
     }

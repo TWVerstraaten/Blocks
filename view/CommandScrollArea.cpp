@@ -104,4 +104,19 @@ namespace view {
         return it->get();
     }
 
+    void CommandScrollArea::updateSelection() {
+        for (auto& box : m_commandEditBoxes) {
+            box->updateSelection();
+            box->repaint();
+        }
+    }
+
+    void CommandScrollArea::disable() {
+        for (auto& box : m_commandEditBoxes) {
+            box->textEdit()->setReadOnly(true);
+            box->setStyleSheet(QString("QTextEdit { background-color: %0 }").arg(QColor(Qt::gray).name(QColor::HexRgb)));
+            box->disconnectCommandVectorUpdate();
+        }
+    }
+
 } // namespace view

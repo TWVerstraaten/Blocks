@@ -12,6 +12,7 @@ namespace view {
 
     class TextEdit : public QTextEdit {
         Q_OBJECT
+
       public:
         TextEdit(CommandEditBox* commandEditBox, const QString& string);
         ~TextEdit() override;

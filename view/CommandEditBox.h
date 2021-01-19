@@ -22,6 +22,8 @@ namespace view {
         ~CommandEditBox() override;
 
         void setCommandVectorPointer();
+        void updateSelection();
+        void disconnectCommandVectorUpdate();
 
         [[nodiscard]] TextEdit*             textEdit();
         [[nodiscard]] size_t                index() const;

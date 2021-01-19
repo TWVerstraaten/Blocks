@@ -106,14 +106,14 @@
 //            ModelViewInterface::splitIfDisconnected(m_model, m_scrollArea, cluster);
 //        }
 //
-//        m_model.level().createBoundaries();
+//        m_model.level().buildSides();
 //        ModelViewInterface::removeActionBoxesOfRemovedClusters(m_model.clusters(), m_scrollArea);
 //        ModelViewInterface::updateSelection(m_model.clusters(), m_scrollArea);
 //        m_currentStep = CURRENT_STEP::INTERACT;
 //    }
 //
 //    void ApplicationRun::initializeMovingStep() {
-//        m_model.startPhase();
+//        m_model.resetPhase();
 //        for (auto& cluster : m_model.clusters()) {
 //            ModelViewInterface::stopSpliceOrKillIfNeeded(m_model.level(), cluster);
 //        }
@@ -127,7 +127,7 @@
 //        for (auto& cluster : m_model.clusters()) {
 //            cluster.buildSides();
 //        }
-//        m_model.level().createBoundaries();
+//        m_model.level().buildSides();
 //        ModelViewInterface::updateCommandScrollArea(m_model, m_scrollArea, APP_MODE::RUNNING);
 //        m_currentStep = CURRENT_STEP::MOVING;
 //    }

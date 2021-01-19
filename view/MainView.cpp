@@ -15,6 +15,7 @@ namespace view {
         m_model->init();
         m_mainViewMouseManager.m_centralWidget = m_centralWidget;
         m_mainViewMouseManager.m_model         = m_model.get();
+        m_model->level().buildSides();
     }
 
     void MainView::init(const model::Model& model) {

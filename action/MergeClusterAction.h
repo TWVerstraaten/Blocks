@@ -26,9 +26,9 @@ namespace action {
         [[nodiscard]] ACTION_TYPE type() const override;
 
       private:
-        model::Model*                          m_model;
-        const model::Cluster                   m_target;
-        const model::Cluster                   m_second;
+        model::Model*                         m_model;
+        const model::Cluster                  m_target;
+        const model::Cluster                  m_second;
         view::CommandScrollArea*              m_commandScrollArea;
         std::unique_ptr<view::CommandEditBox> m_commandEditBox = nullptr;
     };

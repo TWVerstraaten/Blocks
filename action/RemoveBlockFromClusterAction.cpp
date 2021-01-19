@@ -17,12 +17,14 @@ void action::RemoveBlockFromClusterAction::undo() {
     auto it = m_model->clusterWithIndex(m_clusterIndex);
     assert(it != m_model->clusters().end());
     it->addGridXy(m_gridXy);
+    it->buildSides();
 }
 
 void action::RemoveBlockFromClusterAction::redo() {
     auto it = m_model->clusterWithIndex(m_clusterIndex);
     assert(it != m_model->clusters().end());
     it->removeGridXy(m_gridXy);
+    it->buildSides();
 }
 
 action::ACTION_TYPE action::RemoveBlockFromClusterAction::type() const {

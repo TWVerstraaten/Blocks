@@ -13,14 +13,16 @@ namespace view {
 
     class CommandScrollArea : public QScrollArea {
         Q_OBJECT
+
       public:
         explicit CommandScrollArea(CentralWidget* centralWidget);
         ~CommandScrollArea() override;
 
         void add(model::Cluster& cluster);
         void addToLayout(std::unique_ptr<CommandEditBox>&& commandEditBox);
-
         void addNeeded(std::list<model::Cluster>& clusters);
+        void updateSelection();
+        void disable();
 
         [[nodiscard]] CommandEditBox*                 withIndex(size_t index);
         [[nodiscard]] CentralWidget*                  centralWidget() const;

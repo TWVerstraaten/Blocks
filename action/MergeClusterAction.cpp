@@ -24,6 +24,7 @@ void action::MergeClusterAction::undo() {
     }
     m_model->clusters().emplace_back(m_second);
     m_commandScrollArea->addToLayout(std::move(m_commandEditBox));
+    targetIt->buildSides();
 }
 
 void action::MergeClusterAction::redo() {
@@ -33,6 +34,7 @@ void action::MergeClusterAction::redo() {
     assert(targetIt != m_model->clusters().end());
     targetIt->gridXy().merge(secondIt->gridXy());
     m_model->clusters().erase(secondIt);
+    targetIt->buildSides();
     m_commandEditBox = m_commandScrollArea->removeFromLayout(m_second.index());
 }
 

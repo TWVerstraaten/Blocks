@@ -16,10 +16,10 @@ namespace model {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        Model();
+        Model()                   = default;
         Model(const Model& other) = default;
         Model(Model&& other)      = default;
-        Model& operator           =(const Model& other);
+        Model& operator=(const Model& other) = default;
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] const Level&              level() const;
@@ -31,7 +31,7 @@ namespace model {
         /****** NON CONST FUNCTIONS  ******/
         void                         init();
         void                         clear();
-        void                         startPhase();
+        void                         resetPhase();
         void                         update(double dPhase);
         void                         clearEmpty();
         Level&                       level();

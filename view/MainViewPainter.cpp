@@ -100,17 +100,28 @@ QPixmap view::MainViewPainter::connectedPixmap(const model::GridXySet& blocks, c
 void view::MainViewPainter::drawConnected(const model::GridXySet& blocks, const QColor& color, QPainter& painter) const {
     const auto topLeft = view::ScreenXy::fromWorldXy(model::WorldXy(model::GridXy{geom::minX(blocks), geom::minY(blocks)}), m_mainView->m_viewPort);
     const auto pixmap  = connectedPixmap(blocks, color);
-
     painter.drawPixmap(topLeft.x(), topLeft.y(), pixmap);
 }
 
 void view::MainViewPainter::drawCluster(const model::Cluster& cluster, QPainter& painter) {
+    const auto f = cluster.phaseTransformation();
     if (cluster.phaseTransformation()) {
-        drawConnected(cluster.gridXy(), view::color::CLUSTER, painter, -cluster.angle(), cluster.phaseTransformation());
+        drawConnected(cluster.gridXy(), cluster.isAlive() ? view::color::CLUSTER : view::color::CLUSTER_DEAD_COLOR, painter, -cluster.angle(), f);
     }
     const auto namePosition = view::ScreenXy::fromWorldXy(
-        cluster.phaseTransformation()(model::WorldXy(*cluster.gridXy().begin()) + model::WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}),
-        m_mainView->m_viewPort);
+        f(model::WorldXy(*cluster.gridXy().begin()) + model::WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}), m_mainView->m_viewPort);
+
+#ifdef DEBUG
+    const auto sides = cluster.sides(0);
+    for (const auto& side : sides) {
+        const auto start = view::ScreenXy::fromWorldXy(side.start(), m_mainView->viewPort());
+        const auto end   = view::ScreenXy::fromWorldXy(side.end(), m_mainView->viewPort());
+        painter.save();
+        painter.setPen(QPen{Qt::white, 3});
+        painter.drawLine(start.x(), start.y(), end.x(), end.y());
+        painter.restore();
+    }
+#endif
 
     painter.setFont(m_font);
     QFontMetrics fontMetrics(m_font);

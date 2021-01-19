@@ -63,7 +63,7 @@ namespace view {
     }
 
     void CentralWidget::addAction(action::Action* action) {
-        if (action != nullptr) {
+        if (action != nullptr && m_mode == MODE::EDITING) {
             m_qUndoStack.push(action);
         }
     }
@@ -137,6 +137,7 @@ namespace view {
 
         if (m_phaseTimer.elapsed() > m_timeStep) {
             togglePhase();
+            m_elapsedTimer.restart();
             m_phaseTimer.restart();
         }
         update();
@@ -201,27 +202,32 @@ namespace view {
         m_mainView->mainViewMouseManager().setBlockEditing(true);
         m_mainView->setCommandScrollArea(m_commandScrollArea);
         m_commandScrollArea->addNeeded(m_mainView->model()->clusters());
-        m_commandScrollArea->setEnabled(false);
+        m_commandScrollArea->disable();
 
         m_layout->addWidget(m_mainView, 0, 0, 2, 2);
         m_mainView->stackUnder(m_blockSelectWidget);
         m_layout->addWidget(m_commandScrollArea, 0, 2, 2, 1);
 
-        m_mainView->model()->startPhase();
+        m_mainView->model()->resetPhase();
         for (auto& cluster : m_mainView->model()->clusters()) {
-            cluster.resetPhase();
             cluster.doCommand(*m_mainView->model());
+            cluster.buildSides();
         }
+
+        m_mainView->model()->update(0.0001);
         m_elapsedTimer.restart();
         m_phaseTimer.restart();
-        m_mainView->model()->update(0.001);
 
         mainLoop();
-        update();
     }
 
     void CentralWidget::moveLoop(size_t elapsed) {
-        m_mainView->model()->update(1.1 * elapsed / static_cast<double>(m_timeStep));
+        auto& model    = *m_mainView->model();
+        auto& clusters = model.clusters();
+
+        model.update(1.1 * elapsed / static_cast<double>(m_timeStep));
+        m_commandScrollArea->updateSelection();
+
         update();
     }
 
@@ -229,16 +235,15 @@ namespace view {
     }
 
     void CentralWidget::endMovePhase() {
-        for (auto& cluster : m_mainView->model()->clusters()) {
-            cluster.resetPhase();
-        }
+        m_mainView->model()->resetPhase();
     }
 
     void CentralWidget::endInteractPhase() {
-        m_mainView->model()->startPhase();
+        m_mainView->model()->resetPhase();
         for (auto& cluster : m_mainView->model()->clusters()) {
             cluster.incrementCommandIndex();
             cluster.doCommand(*m_mainView->model());
+            cluster.buildSides();
         }
     }
 

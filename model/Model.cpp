@@ -11,8 +11,6 @@
 
 namespace model {
 
-    Model::Model() = default;
-
     const std::list<Cluster>& Model::clusters() const {
         return m_clusters;
     }
@@ -68,7 +66,7 @@ namespace model {
                 m_level.addBlock({i, j}, FLOOR_BLOCK_TYPE::START);
             }
         }
-        m_level.createBoundaries();
+        m_level.buildSides();
     }
 
     void Model::clear() {
@@ -76,16 +74,13 @@ namespace model {
         m_level.clear();
     }
 
-    Model& Model::operator=(const Model& other) {
-        m_level    = other.m_level;
-        m_clusters = other.m_clusters;
-        return *this;
-    }
-
-    void Model::startPhase() {
+    void Model::resetPhase() {
         m_phaseFraction = 1.0;
         for (auto& cluster : m_clusters) {
-            cluster.setPendingDynamicMoves(PENDING_DYNAMIC_MOVES::ZERO);
+            if (cluster.isAlive()) {
+                cluster.resetPhase();
+                cluster.setPendingDynamicMoves(PENDING_DYNAMIC_MOVES::ZERO);
+            }
         }
     }
 

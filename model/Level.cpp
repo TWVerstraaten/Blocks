@@ -53,22 +53,22 @@ namespace model {
         return true;
     }
 
-    const WorldLineSet& Level::boundaries() const {
-        return m_boundaries;
+    const WorldLineSet& Level::sides() const {
+        return m_sides;
     }
 
     bool Level::contains(const GridXy& gridXy) const {
         return m_floorBlocks.find(gridXy) != m_floorBlocks.end();
     }
 
-    void Level::createBoundaries() {
+    void Level::buildSides() {
         std::set<GridXy> blocks;
         for (const auto& [point, _] : m_floorBlocks) {
             blocks.emplace(point);
         }
-        m_boundaries = geom::getSidesFromGridXy(blocks);
+        m_sides = geom::getSidesFromGridXy(blocks);
         for (const auto& cluster : m_stoppedClusters) {
-            m_boundaries.merge(geom::getSidesFromGridXy(cluster.gridXy()));
+            m_sides.merge(geom::getSidesFromGridXy(cluster.gridXy()));
         }
     }
 
