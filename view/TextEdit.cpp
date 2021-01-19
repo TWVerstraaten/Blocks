@@ -50,6 +50,7 @@ namespace view {
         switch (event->key()) {
             case Qt::Key_Escape:
                 clearFocus();
+                m_commandEditBox->commandScrollArea()->centralWidget()->setFocus();
                 update();
                 break;
             case Qt::Key_Tab:

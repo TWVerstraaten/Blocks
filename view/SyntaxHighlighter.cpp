@@ -10,10 +10,15 @@ view::SyntaxHighlighter::SyntaxHighlighter(QTextDocument* textDocument) : QSynta
     m_errorFormat.setFontUnderline(true);
     m_errorFormat.setUnderlineColor(Qt::red);
     m_errorFormat.setForeground(Qt::red);
+
+    m_noteFormat.setForeground(Qt::gray);
 }
 
 void view::SyntaxHighlighter::highlightBlock(const QString& text) {
+    const auto trimmed = text.trimmed();
     if (not model::CommandParser::canParse(text.toStdString())) {
         setFormat(0, text.length(), m_errorFormat);
+    } else if ((not text.isEmpty()) && text.front() == "#") {
+        setFormat(0, text.length(), m_noteFormat);
     }
 }

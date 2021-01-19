@@ -4,6 +4,7 @@
 
 #include "MainViewPainter.h"
 
+#include "../model/Cluster.h"
 #include "MainView.h"
 #include "global/geom.h"
 #include "toColor.h"
@@ -97,16 +98,19 @@ QPixmap view::MainViewPainter::connectedPixmap(const model::GridXySet& blocks, c
 }
 
 void view::MainViewPainter::drawConnected(const model::GridXySet& blocks, const QColor& color, QPainter& painter) const {
-    const auto pixmap  = connectedPixmap(blocks, color);
     const auto topLeft = view::ScreenXy::fromWorldXy(model::WorldXy(model::GridXy{geom::minX(blocks), geom::minY(blocks)}), m_mainView->m_viewPort);
+    const auto pixmap  = connectedPixmap(blocks, color);
 
     painter.drawPixmap(topLeft.x(), topLeft.y(), pixmap);
 }
 
 void view::MainViewPainter::drawCluster(const model::Cluster& cluster, QPainter& painter) {
-    drawConnected(cluster.gridXy(), view::color::CLUSTER, painter);
+    if (cluster.phaseTransformation()) {
+        drawConnected(cluster.gridXy(), view::color::CLUSTER, painter, -cluster.angle(), cluster.phaseTransformation());
+    }
     const auto namePosition = view::ScreenXy::fromWorldXy(
-        model::WorldXy(*cluster.gridXy().begin()) + model::WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}, m_mainView->m_viewPort);
+        cluster.phaseTransformation()(model::WorldXy(*cluster.gridXy().begin()) + model::WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}),
+        m_mainView->m_viewPort);
 
     painter.setFont(m_font);
     QFontMetrics fontMetrics(m_font);
@@ -114,4 +118,16 @@ void view::MainViewPainter::drawCluster(const model::Cluster& cluster, QPainter&
     const int    height = fontMetrics.height();
     painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, view::color::NAME_BACKGROUND);
     painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
+}
+
+void view::MainViewPainter::drawConnected(
+    const model::GridXySet& blocks, const QColor& color, QPainter& painter, double angle, const model::PhaseTransformation& f) const {
+    painter.save();
+    const auto topLeft =
+        view::ScreenXy::fromWorldXy(f(model::WorldXy(model::GridXy{geom::minX(blocks), geom::minY(blocks)})), m_mainView->m_viewPort);
+    painter.translate(topLeft.x(), topLeft.y());
+    painter.rotate(angle);
+    const auto pixmap = connectedPixmap(blocks, color);
+    painter.drawPixmap(0, 0, pixmap);
+    painter.restore();
 }

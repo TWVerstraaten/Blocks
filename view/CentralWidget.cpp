@@ -44,6 +44,18 @@ namespace view {
             case Qt::Key_Space:
                 tryStart();
                 break;
+            case Qt::Key_1:
+                m_timeStep = app::TIME_STEP_SLOW;
+                tryStart();
+                break;
+            case Qt::Key_2:
+                m_timeStep = app::TIME_STEP_MEDIUM;
+                tryStart();
+                break;
+            case Qt::Key_3:
+                m_timeStep = app::TIME_STEP_FAST;
+                tryStart();
+                break;
             case Qt::Key_Escape:
                 tryStop();
                 break;
@@ -195,20 +207,39 @@ namespace view {
         m_mainView->stackUnder(m_blockSelectWidget);
         m_layout->addWidget(m_commandScrollArea, 0, 2, 2, 1);
 
+        m_mainView->model()->startPhase();
+        for (auto& cluster : m_mainView->model()->clusters()) {
+            cluster.resetPhase();
+            cluster.doCommand(*m_mainView->model());
+        }
+        m_elapsedTimer.restart();
+        m_phaseTimer.restart();
+        m_mainView->model()->update(0.001);
+
         mainLoop();
         update();
     }
 
     void CentralWidget::moveLoop(size_t elapsed) {
+        m_mainView->model()->update(1.1 * elapsed / static_cast<double>(m_timeStep));
+        update();
     }
 
     void CentralWidget::interactLoop(size_t elapsed) {
     }
 
     void CentralWidget::endMovePhase() {
+        for (auto& cluster : m_mainView->model()->clusters()) {
+            cluster.resetPhase();
+        }
     }
 
     void CentralWidget::endInteractPhase() {
+        m_mainView->model()->startPhase();
+        for (auto& cluster : m_mainView->model()->clusters()) {
+            cluster.incrementCommandIndex();
+            cluster.doCommand(*m_mainView->model());
+        }
     }
 
 } // namespace view

@@ -19,6 +19,7 @@ namespace view {
 
       private:
         QTextCharFormat m_errorFormat;
+        QTextCharFormat m_noteFormat;
     };
 } // namespace view
 

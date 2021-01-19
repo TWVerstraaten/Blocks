@@ -9,6 +9,7 @@
 #include "GridXy.h"
 #include "Level_enums.h"
 #include "Model_typedefs.h"
+#include "PhaseTransformation.h"
 #include "WorldLine.h"
 #include "WorldXy.h"
 #include "command/Command.h"
@@ -53,14 +54,14 @@ namespace model {
         [[nodiscard]] const CommandVector&  commandVector() const;
 
         /****** CONST FUNCTIONS  ******/
-        [[nodiscard]] bool                                   isEmpty() const;
-        [[nodiscard]] bool                                   isAlive() const;
-        [[nodiscard]] bool                                   isConnected() const;
-        [[nodiscard]] bool                                   isAdjacent(const Cluster& other) const;
-        [[nodiscard]] bool                                   gridXyIsAdjacent(const GridXy& point) const;
-        [[nodiscard]] bool                                   contains(const GridXy& gridXy) const;
-        [[nodiscard]] bool                                   intersects(const Cluster& other, int shrinkInWorld) const;
-        [[nodiscard]] std::function<WorldXy(const WorldXy&)> phaseTransformation() const;
+        [[nodiscard]] bool                isEmpty() const;
+        [[nodiscard]] bool                isAlive() const;
+        [[nodiscard]] bool                isConnected() const;
+        [[nodiscard]] bool                isAdjacent(const Cluster& other) const;
+        [[nodiscard]] bool                gridXyIsAdjacent(const GridXy& point) const;
+        [[nodiscard]] bool                contains(const GridXy& gridXy) const;
+        [[nodiscard]] bool                intersects(const Cluster& other, int shrinkInWorld) const;
+        [[nodiscard]] PhaseTransformation phaseTransformation() const;
 
         /****** NON CONST FUNCTIONS  ******/
         void                addGridXy(const GridXy& gridXy);

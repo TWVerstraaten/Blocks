@@ -5,16 +5,19 @@
 #ifndef BLOCKS_MAINVIEWPAINTER_H
 #define BLOCKS_MAINVIEWPAINTER_H
 
+#include "../model/Model_typedefs.h"
+#include "../model/PhaseTransformation.h"
 #include "MainViewMouseManager.h"
-#include "model/Cluster.h"
 #include "view/ViewPort.h"
 
 #include <QPaintEvent>
 #include <QPainter>
+#include <functional>
 
 namespace model {
     class Model;
-}
+    class Cluster;
+} // namespace model
 
 namespace view {
 
@@ -26,8 +29,12 @@ namespace view {
 
         explicit MainViewPainter(const MainView* mainView);
 
+        //
+
         void paint(QPainter& painter, QPaintEvent* event);
         void drawConnected(const model::GridXySet& blocks, const QColor& color, QPainter& painter) const;
+        void drawConnected(
+            const model::GridXySet& blocks, const QColor& color, QPainter& painter, double angle, const model::PhaseTransformation& f) const;
         void drawCluster(const model::Cluster& cluster, QPainter& painter);
 
         [[nodiscard]] QPixmap connectedPixmap(const model::GridXySet& blocks, const QColor& color) const;

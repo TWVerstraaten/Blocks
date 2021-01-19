@@ -13,11 +13,11 @@
 #include "action/DeleteClusterAction.h"
 #include "action/MergeClusterAction.h"
 #include "action/RemoveBlockFromClusterAction.h"
+#include "action/RemoveFloorBlockAction.h"
+#include "action/RemoveLevelBlockAction.h"
 #include "action/SplitDisconnectedAction.h"
 
 #include <QApplication>
-#include <action/RemoveFloorBlockAction.h>
-#include <action/RemoveLevelBlockAction.h>
 
 namespace view {
 

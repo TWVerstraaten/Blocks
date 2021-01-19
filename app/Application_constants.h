@@ -8,7 +8,7 @@
 #include "../model/WorldXy.h"
 
 namespace app {
-    static const size_t         TIME_STEP_SLOW           = 400;
+    static const size_t         TIME_STEP_SLOW           = 500;
     static const size_t         TIME_STEP_MEDIUM         = 150;
     static const size_t         TIME_STEP_FAST           = 20;
     static const double         MAX_D_PHASE              = 0.1;
