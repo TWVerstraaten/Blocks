@@ -31,9 +31,10 @@ namespace view {
 
         append(string);
 
-        connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
+        connect(this, &TextEdit::textChanged, this, &TextEdit::setHeight);
         connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
-        connect(this, &QTextEdit::cursorPositionChanged, [this]() { highlightLine(textCursor()); });
+        connect(this, &TextEdit::cursorPositionChanged, [this]() { highlightLine(textCursor()); });
+        setMinimumHeight(40);
     }
 
     TextEdit::~TextEdit() {
