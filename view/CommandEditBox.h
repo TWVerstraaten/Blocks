@@ -2,6 +2,7 @@
 #define COMMANDEDITBOX_H
 
 #include "TextEdit.h"
+#include "TextEditCommentWidget.h"
 
 #include <QWidget>
 
@@ -35,11 +36,13 @@ namespace view {
         void updateCommandVector();
 
       private:
-        size_t                m_index;
-        std::string           m_name;
-        TextEdit*             m_textEdit;
-        model::CommandVector* m_commandVector;
-        CommandScrollArea*    m_commandScrollArea;
+        size_t                 m_index;
+        std::string            m_name;
+        TextEdit*              m_textEdit;
+        model::CommandVector*  m_commandVector;
+        CommandScrollArea*     m_commandScrollArea;
+        TextEditCommentWidget* m_lineWidget;
+        TextEditCommentWidget* m_commentWidget;
     };
 } // namespace view
 #endif // COMMANDEDITBOX_H

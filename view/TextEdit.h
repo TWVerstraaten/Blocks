@@ -20,8 +20,10 @@ namespace view {
         void setHeight();
         void keyPressEvent(QKeyEvent* event) override;
         void sendUndo();
-        void setSelection(size_t index);
+        void setSelection(size_t actionIndex);
 
+        [[nodiscard]] size_t                   lineHeight() const;
+        [[nodiscard]] size_t                   topMargin() const;
         [[nodiscard]] std::vector<std::string> contents() const;
 
       protected:
@@ -33,7 +35,7 @@ namespace view {
         void backTabPressed();
 
       private:
-        void highlightLine(size_t lineNumber);
+        void highlightLine(const QTextCursor& cursor);
 
         size_t nThOpaqueLine(size_t n);
 

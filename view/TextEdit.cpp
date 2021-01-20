@@ -14,9 +14,7 @@ namespace view {
 
         connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
         connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
-        //        connect(this, &QTextEdit::cursorPositionChanged, [this](){
-        //           textCursor().selection()
-        //        });
+        connect(this, &QTextEdit::cursorPositionChanged, [this]() { highlightLine(textCursor()); });
 
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
@@ -27,10 +25,10 @@ namespace view {
         QFont         font(family, 10);
         setFont(font);
 
-        QTextEdit::setStyleSheet(QString(" selection-background-color : rgb(%1, %2, %3)")
-                                     .arg(view::color::WIDGET_LIGHT.red())
-                                     .arg(view::color::WIDGET_LIGHT.green())
-                                     .arg(view::color::WIDGET_LIGHT.blue()));
+        QPalette palette = this->palette();
+        palette.setColor(QPalette::Highlight, QColor(view::color::WIDGET_LIGHT.lighter(110)));
+        palette.setColor(QPalette::HighlightedText, QColor(Qt::black));
+        setPalette(palette);
 
         setMaximumWidth(200);
         document()->adjustSize();
@@ -108,20 +106,21 @@ namespace view {
         m_commandEditBox->commandScrollArea()->centralWidget()->addAction(new action::TextEditAction(this));
     }
 
-    void TextEdit::setSelection(size_t index) {
-        highlightLine(nThOpaqueLine(index));
+    void TextEdit::setSelection(size_t actionIndex) {
+        QTextCursor  cursor     = QTextCursor(document());
+        const size_t lineNumber = nThOpaqueLine(actionIndex);
+        for (size_t i = 0; i != lineNumber; ++i) {
+            cursor.movePosition(QTextCursor::Down);
+        }
+        highlightLine(cursor);
     }
 
-    void TextEdit::highlightLine(size_t lineNumber) {
+    void TextEdit::highlightLine(const QTextCursor& cursor) {
         QList<QTextEdit::ExtraSelection> extraSelections;
         QTextEdit::ExtraSelection        selection;
+        selection.cursor = cursor;
 
-        selection.format.setBackground(view::color::EDIT_BOX_HIGHLIGHT_SOFT_COLOR);
-        selection.cursor = QTextCursor(document());
-        //        selection.cursor.setPosition(0);
-        for (size_t i = 0; i != lineNumber; ++i) {
-            selection.cursor.movePosition(QTextCursor::Down);
-        }
+        selection.format.setBackground(view::color::WIDGET_LIGHT.lighter(110));
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
         extraSelections.append(selection);
         setExtraSelections(extraSelections);
@@ -140,6 +139,14 @@ namespace view {
             }
         }
         return i;
+    }
+
+    size_t TextEdit::lineHeight() const {
+        return QFontMetrics(font()).height();
+    }
+
+    size_t TextEdit::topMargin() const {
+        return document()->documentMargin();
     }
 
 } // namespace view

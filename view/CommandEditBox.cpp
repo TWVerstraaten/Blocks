@@ -6,12 +6,14 @@
 #include "color.h"
 #include "global/defines.h"
 
+#include <QGridLayout>
 #include <QLabel>
 
 namespace view {
 
     CommandEditBox::CommandEditBox(CommandScrollArea* parent, model::Cluster& cluster)
-        : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandVector(&cluster.commandVector()), m_commandScrollArea(parent) {
+        : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandVector(&cluster.commandVector()), m_commandScrollArea(parent),
+          m_lineWidget(new TextEditCommentWidget(this)), m_commentWidget(new TextEditCommentWidget(this)) {
         setContentsMargins(0, 0, 0, 0);
         setMaximumWidth(200);
 
@@ -26,21 +28,36 @@ namespace view {
         }
 
         m_textEdit = new TextEdit(this, text);
-        auto* l    = new QVBoxLayout(this);
+        auto* l    = new QGridLayout(this);
 
         const int id = QFontDatabase::addApplicationFont(":/assets/UbuntuMono-Bold.ttf");
         assert(id >= 0);
         const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
         QFont         font(family, 11);
-        setFont(font);
 
         auto* label = new QLabel(m_name.c_str(), this);
         label->setFont(font);
 
-        l->addWidget(label);
-        l->addWidget(m_textEdit);
-        l->addStretch();
+        l->addWidget(label, 0, 0, 1, 3);
+        m_lineWidget->setWidth(30);
+        m_lineWidget->setBackgroundColor(view::color::WIDGET_LIGHT.lighter(115));
+        m_lineWidget->setLineHeight(m_textEdit->lineHeight());
+        m_lineWidget->setTopMargin(m_textEdit->topMargin());
+        m_lineWidget->fillLineNumbers(1);
+
+        connect(m_textEdit, &QTextEdit::textChanged, [this]() { m_lineWidget->fillLineNumbers(m_textEdit->document()->blockCount()); });
+
+        m_commentWidget->setWidth(30);
+        m_commentWidget->setLineHeight(m_textEdit->lineHeight());
+        m_commentWidget->setBackgroundColor(view::color::WIDGET_LIGHT.lighter(115));
+        m_commentWidget->setTopMargin(m_textEdit->topMargin());
+
+        l->addWidget(m_lineWidget, 1, 0);
+        l->addWidget(m_textEdit, 1, 1);
+        l->addWidget(m_commentWidget, 1, 2);
         l->setMargin(4);
+
+        l->setHorizontalSpacing(0);
 
         QPalette pal = palette();
         pal.setColor(QPalette::Window, view::color::WIDGET_LIGHT);
@@ -91,7 +108,9 @@ namespace view {
     }
 
     void CommandEditBox::updateSelection() {
-        m_textEdit->setSelection(m_commandVector->commandIndex());
+        if (not m_commandVector->isEmpty()) {
+            m_textEdit->setSelection(m_commandVector->commandIndex());
+        }
     }
 
     void CommandEditBox::disconnectCommandVectorUpdate() {
