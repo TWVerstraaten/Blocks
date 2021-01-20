@@ -1,8 +1,6 @@
 #ifndef TEXTEDIT_H
 #define TEXTEDIT_H
 
-#include "SyntaxHighlighter.h"
-
 #include <QPlainTextEdit>
 #include <QTextEdit>
 #include <string>
@@ -10,6 +8,7 @@
 
 namespace view {
     class CommandEditWidget;
+    class SyntaxHighlighter;
 
     class TextEdit : public QPlainTextEdit {
         Q_OBJECT

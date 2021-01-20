@@ -2,7 +2,6 @@
 #define WINDOW_H
 
 #include "../app/Application_constants.h"
-#include "BlockSelectWidget.h"
 #include "CentralWidget_enums.h"
 #include "action/Action.h"
 
@@ -20,6 +19,7 @@ class QUndoView;
 namespace view {
     class MainView;
     class CommandScrollArea;
+    class BlockSelectWidget;
 
     class CentralWidget : public QWidget {
         Q_OBJECT

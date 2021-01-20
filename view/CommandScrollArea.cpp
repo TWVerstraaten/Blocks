@@ -1,6 +1,7 @@
 #include "CommandScrollArea.h"
 
 #include "CentralWidget.h"
+#include "TextEdit.h"
 #include "color.h"
 #include "global/defines.h"
 #include "model/Cluster.h"

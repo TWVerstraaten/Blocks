@@ -4,6 +4,7 @@
 
 #include "MainViewMouseManager.h"
 
+#include "BlockSelectWidget.h"
 #include "CentralWidget.h"
 #include "CommandScrollArea.h"
 #include "MainView.h"

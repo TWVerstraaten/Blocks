@@ -2,8 +2,6 @@
 #define COMMANDEDITBOX_H
 
 #include "CentralWidget_enums.h"
-#include "TextEdit.h"
-#include "TextEditCommentWidget.h"
 
 #include <QWidget>
 
@@ -14,6 +12,8 @@ namespace model {
 
 namespace view {
 
+    class TextEditCommentWidget;
+    class TextEdit;
     class CommandScrollArea;
 
     class CommandEditWidget : public QWidget {

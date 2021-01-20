@@ -5,7 +5,7 @@
 #ifndef BLOCKS_MAINVIEWMOUSEMANAGER_H
 #define BLOCKS_MAINVIEWMOUSEMANAGER_H
 
-#include "BlockSelectWidget.h"
+#include "BlockType.h"
 #include "ScreenXy.h"
 #include "model/GridXy.h"
 

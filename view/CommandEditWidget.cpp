@@ -6,6 +6,8 @@
 #include "MainView.h"
 #include "color.h"
 #include "global/defines.h"
+#include "TextEdit.h"
+#include "TextEditCommentWidget.h"
 
 #include <QGridLayout>
 #include <QLabel>

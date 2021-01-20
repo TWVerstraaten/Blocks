@@ -3,6 +3,7 @@
 #include "../model/command/CommandParser.h"
 #include "CentralWidget.h"
 #include "CommandScrollArea.h"
+#include "SyntaxHighlighter.h"
 #include "action/TextEditAction.h"
 #include "view/color.h"
 

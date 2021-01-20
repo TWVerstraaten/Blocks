@@ -1,5 +1,6 @@
 #include "CentralWidget.h"
 
+#include "BlockSelectWidget.h"
 #include "CommandScrollArea.h"
 #include "MainView.h"
 #include "global/defines.h"

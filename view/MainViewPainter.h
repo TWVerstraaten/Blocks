@@ -7,12 +7,9 @@
 
 #include "../model/Model_typedefs.h"
 #include "../model/PhaseTransformation.h"
-#include "MainViewMouseManager.h"
-#include "view/ViewPort.h"
 
 #include <QPaintEvent>
 #include <QPainter>
-#include <functional>
 
 namespace model {
     class Model;
@@ -28,8 +25,6 @@ namespace view {
         friend class MainView;
 
         explicit MainViewPainter(const MainView* mainView);
-
-        //
 
         void paint(QPainter& painter, QPaintEvent* event);
         void drawConnected(const model::GridXySet& blocks, const QColor& color, QPainter& painter) const;
