@@ -6,20 +6,23 @@
 
 #include "model/command/CommandParser.h"
 
-view::SyntaxHighlighter::SyntaxHighlighter(QTextDocument* textDocument) : QSyntaxHighlighter(textDocument) {
-    m_errorFormat.setFontUnderline(true);
-    m_errorFormat.setUnderlineColor(Qt::red);
-    m_errorFormat.setForeground(Qt::red);
+namespace view {
 
-    m_noteFormat.setForeground(Qt::gray);
-}
+    SyntaxHighlighter::SyntaxHighlighter(QTextDocument* textDocument) : QSyntaxHighlighter(textDocument) {
+        m_errorFormat.setFontUnderline(true);
+        m_errorFormat.setUnderlineColor(Qt::red);
+        m_errorFormat.setForeground(Qt::red);
 
-void view::SyntaxHighlighter::highlightBlock(const QString& text) {
-    const auto trimmed = text.trimmed();
-    if (not model::CommandParser::canParse(text.toStdString())) {
-        setFormat(0, text.length(), m_errorFormat);
-        setCurrentBlockState(currentBlockState() + 1);
-    } else if ((not text.isEmpty()) && text.front() == "#") {
-        setFormat(0, text.length(), m_noteFormat);
+        m_noteFormat.setForeground(Qt::gray);
     }
-}
+
+    void SyntaxHighlighter::highlightBlock(const QString& text) {
+        const auto trimmed = text.trimmed();
+        if (not model::CommandParser::canParse(text.toStdString())) {
+            setFormat(0, text.length(), m_errorFormat);
+            setCurrentBlockState(currentBlockState() + 1);
+        } else if ((not text.isEmpty()) && text.front() == "#") {
+            setFormat(0, text.length(), m_noteFormat);
+        }
+    }
+} // namespace view

@@ -30,7 +30,7 @@ namespace action {
 
       protected:
         std::unique_ptr<view::CommandEditWidget> m_commandEditBox;
-        model::Cluster                        m_cluster;
+        model::Cluster                           m_cluster;
 
       private:
         view::CentralWidget* m_centralWidget;

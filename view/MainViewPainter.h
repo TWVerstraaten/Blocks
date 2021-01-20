@@ -35,6 +35,7 @@ namespace view {
         [[nodiscard]] QPixmap connectedPixmap(const model::GridXySet& blocks, const QColor& color) const;
 
         const MainView* m_mainView;
+        const ViewPort* m_viewPort;
         QFont           m_font;
     };
 

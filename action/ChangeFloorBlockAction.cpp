@@ -4,6 +4,8 @@
 
 #include "ChangeFloorBlockAction.h"
 
+#include "../model/Model.h"
+
 action::ChangeFloorBlockAction::ChangeFloorBlockAction(model::Model*           model,
                                                        model::FLOOR_BLOCK_TYPE newType,
                                                        model::FLOOR_BLOCK_TYPE oldType,

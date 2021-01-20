@@ -8,25 +8,28 @@
 
 #include <cassert>
 
-action::RemoveBlockFromClusterAction::RemoveBlockFromClusterAction(model::Model* model, size_t clusterIndex, const model::GridXy& gridXy)
-    : m_model(model), m_clusterIndex(clusterIndex), m_gridXy(gridXy) {
-    setText(QString("Remove block (%1,%2) from cluster %3").arg(m_gridXy.x()).arg(m_gridXy.y()).arg(m_clusterIndex));
-}
+namespace action {
 
-void action::RemoveBlockFromClusterAction::undo() {
-    auto it = m_model->clusterWithIndex(m_clusterIndex);
-    assert(it != m_model->clusters().end());
-    it->addGridXy(m_gridXy);
-    it->buildSides();
-}
+    RemoveBlockFromClusterAction::RemoveBlockFromClusterAction(model::Model* model, size_t clusterIndex, const model::GridXy& gridXy)
+        : m_model(model), m_clusterIndex(clusterIndex), m_gridXy(gridXy) {
+        setText(QString("Remove block (%1,%2) from cluster %3").arg(m_gridXy.x()).arg(m_gridXy.y()).arg(m_clusterIndex));
+    }
 
-void action::RemoveBlockFromClusterAction::redo() {
-    auto it = m_model->clusterWithIndex(m_clusterIndex);
-    assert(it != m_model->clusters().end());
-    it->removeGridXy(m_gridXy);
-    it->buildSides();
-}
+    void RemoveBlockFromClusterAction::undo() {
+        auto it = m_model->clusterWithIndex(m_clusterIndex);
+        assert(it != m_model->clusters().end());
+        it->addGridXy(m_gridXy);
+        it->buildSides();
+    }
 
-action::ACTION_TYPE action::RemoveBlockFromClusterAction::type() const {
-    return ACTION_TYPE::REMOVE_BLOCK_FROM_CLUSTER;
-}
+    void RemoveBlockFromClusterAction::redo() {
+        auto it = m_model->clusterWithIndex(m_clusterIndex);
+        assert(it != m_model->clusters().end());
+        it->removeGridXy(m_gridXy);
+        it->buildSides();
+    }
+
+    ACTION_TYPE RemoveBlockFromClusterAction::type() const {
+        return ACTION_TYPE::REMOVE_BLOCK_FROM_CLUSTER;
+    }
+} // namespace action

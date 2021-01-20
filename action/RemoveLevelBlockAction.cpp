@@ -4,22 +4,24 @@
 
 #include "RemoveLevelBlockAction.h"
 
-action::RemoveLevelBlockAction::RemoveLevelBlockAction(model::Model* model, model::DYNAMIC_BLOCK_TYPE type, const model::GridXy& gridXy)
-    : AddLevelBlockAction(model, type, gridXy) {
-}
+namespace action {
+    RemoveLevelBlockAction::RemoveLevelBlockAction(model::Model* model, model::DYNAMIC_BLOCK_TYPE type, const model::GridXy& gridXy)
+        : AddLevelBlockAction(model, type, gridXy) {
+    }
 
-action::RemoveLevelBlockAction::RemoveLevelBlockAction(model::Model* model, model::INSTANT_BLOCK_TYPE type, const model::GridXy& gridXy)
-    : AddLevelBlockAction(model, type, gridXy) {
-}
+    RemoveLevelBlockAction::RemoveLevelBlockAction(model::Model* model, model::INSTANT_BLOCK_TYPE type, const model::GridXy& gridXy)
+        : AddLevelBlockAction(model, type, gridXy) {
+    }
 
-void action::RemoveLevelBlockAction::undo() {
-    AddLevelBlockAction::redo();
-}
+    void RemoveLevelBlockAction::undo() {
+        AddLevelBlockAction::redo();
+    }
 
-void action::RemoveLevelBlockAction::redo() {
-    AddLevelBlockAction::undo();
-}
+    void RemoveLevelBlockAction::redo() {
+        AddLevelBlockAction::undo();
+    }
 
-action::ACTION_TYPE action::RemoveLevelBlockAction::type() const {
-    return ACTION_TYPE::REMOVE_LEVEL_BLOCK;
-}
+    ACTION_TYPE RemoveLevelBlockAction::type() const {
+        return ACTION_TYPE::REMOVE_LEVEL_BLOCK;
+    }
+} // namespace action

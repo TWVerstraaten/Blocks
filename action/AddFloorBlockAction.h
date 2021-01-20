@@ -8,7 +8,10 @@
 #include "../model/Level_enums.h"
 #include "Action.h"
 #include "model/GridXy.h"
-#include "model/Model.h"
+
+namespace model {
+    class Model;
+}
 
 namespace action {
 

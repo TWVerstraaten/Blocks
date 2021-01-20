@@ -4,6 +4,8 @@
 
 #include "ChangeLevelBlockAction.h"
 
+#include "../model/Model.h"
+
 action::ChangeLevelBlockAction::ChangeLevelBlockAction(model::Model*                                                             model,
                                                        const std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE>& newType,
                                                        const std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE>& oldType,

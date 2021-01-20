@@ -6,6 +6,7 @@
 #define BLOCKS_REMOVEFLOORBLOCKACTION_H
 
 #include "AddFloorBlockAction.h"
+
 namespace action {
 
     class RemoveFloorBlockAction : public AddFloorBlockAction {

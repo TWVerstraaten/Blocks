@@ -17,6 +17,7 @@
 size_t model::Cluster::s_maxClusterIndex = 0;
 
 namespace model {
+
     Cluster::Cluster(GridXySet&& gridXy, std::string name) : m_index(s_maxClusterIndex), m_gridXySet(gridXy), m_name(std::move(name)) {
         ++s_maxClusterIndex;
         m_sides = geom::getSidesFromGridXy(m_gridXySet);
@@ -32,7 +33,7 @@ namespace model {
         ++s_maxClusterIndex;
     }
 
-    void Cluster::doCommand(model::Model& model) {
+    void Cluster::doCommand(Model& model) {
         if (m_commandVector.isEmpty() || m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
@@ -97,10 +98,10 @@ namespace model {
         const auto        f = phaseTransformation();
 
         for (const auto& it : m_gridXySet) {
-            const bool          u = contains(it.neighbor(model::GridXy::DIRECTION::UP));
-            const bool          l = contains(it.neighbor(model::GridXy::DIRECTION::LEFT));
-            const bool          d = contains(it.neighbor(model::GridXy::DIRECTION::DOWN));
-            const bool          r = contains(it.neighbor(model::GridXy::DIRECTION::RIGHT));
+            const bool          u = contains(it.neighbor(GridXy::DIRECTION::UP));
+            const bool          l = contains(it.neighbor(GridXy::DIRECTION::LEFT));
+            const bool          d = contains(it.neighbor(GridXy::DIRECTION::DOWN));
+            const bool          r = contains(it.neighbor(GridXy::DIRECTION::RIGHT));
             std::vector<GridXy> corners;
             if (not(u && l)) {
                 corners.emplace_back(0, 0);
@@ -167,7 +168,7 @@ namespace model {
         return copy.grabAllButFirstComponent().isEmpty();
     }
 
-    model::Cluster Cluster::grabAllButFirstComponent() {
+    Cluster Cluster::grabAllButFirstComponent() {
         assert(not isEmpty());
         assert(size() > 1);
 
@@ -177,7 +178,7 @@ namespace model {
         copy.emplace(*m_gridXySet.begin());
         m_gridXySet.erase(m_gridXySet.begin());
         while (not queue.empty() && not m_gridXySet.empty()) {
-            using dir = model::GridXy::DIRECTION;
+            using dir = GridXy::DIRECTION;
             for (const auto direction : {dir::RIGHT, dir::DOWN, dir::UP, dir::LEFT}) {
                 const auto it = m_gridXySet.find(queue.front().neighbor(direction));
                 if (it != m_gridXySet.end()) {
@@ -250,19 +251,19 @@ namespace model {
     std::function<WorldXy(const WorldXy&)> Cluster::phaseTransformation() const {
         switch (m_phase) {
             case PHASE::NONE:
-                return [](const model::WorldXy& b) { return b; };
+                return [](const WorldXy& b) { return b; };
             case PHASE::TRANSLATING: {
                 const WorldXy offset = dynamicWorldOffset();
-                return [offset](const model::WorldXy& b) { return b + offset; };
+                return [offset](const WorldXy& b) { return b + offset; };
             }
             case PHASE::ROTATING: {
                 const WorldXy center = WorldXy(m_rotationPivot) + app::HALF_BLOCK_IN_WORLD;
                 const double  theta  = -angle();
-                return [center, theta](const model::WorldXy& b) { return geom::rotateAboutPivot(b, center, theta); };
+                return [center, theta](const WorldXy& b) { return geom::rotateAboutPivot(b, center, theta); };
             }
         }
         assert(false);
-        return [](const model::WorldXy& b) { return b; };
+        return [](const WorldXy& b) { return b; };
     }
 
     size_t Cluster::size() const {
@@ -371,11 +372,11 @@ namespace model {
 
     void Cluster::handleDynamicBlock(const GridXy& point, DYNAMIC_BLOCK_TYPE type) {
         switch (type) {
-            case model::DYNAMIC_BLOCK_TYPE::ROTATE_CW:
+            case DYNAMIC_BLOCK_TYPE::ROTATE_CW:
                 setRotation(-90.0, point);
                 rotateClockWiseAbout(point);
                 break;
-            case model::DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
+            case DYNAMIC_BLOCK_TYPE::ROTATE_CCW:
                 setRotation(90.0, point);
                 rotateCounterClockWiseAbout(point);
                 break;

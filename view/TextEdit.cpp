@@ -46,10 +46,8 @@ namespace view {
     void TextEdit::keyPressEvent(QKeyEvent* event) {
         if ((QApplication::keyboardModifiers() & Qt::ControlModifier) && event->key() == Qt::Key_Z) {
             if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
-                qDebug() << "Redo";
                 m_commandEditBox->commandScrollArea()->centralWidget()->redo();
             } else {
-                qDebug() << "Undo";
                 m_commandEditBox->commandScrollArea()->centralWidget()->undo();
             }
             return;

@@ -29,8 +29,8 @@ namespace view {
         m_layout->addWidget(m_blockSelectWidget, 1, 0);
         m_layout->addWidget(m_commandScrollArea, 0, 2, 2, 1);
 
-        m_layout->addWidget(m_qUndoView, 0, 3, 2, 1);
-        m_qUndoView->setMaximumWidth(250);
+        //        m_layout->addWidget(m_qUndoView, 0, 3, 2, 1);
+        //        m_qUndoView->setMaximumWidth(250);
     }
 
     void CentralWidget::keyPressEvent(QKeyEvent* event) {
@@ -225,12 +225,8 @@ namespace view {
     }
 
     void CentralWidget::moveLoop(size_t elapsed) {
-        auto& model    = *m_mainView->model();
-        auto& clusters = model.clusters();
-
+        auto& model = *m_mainView->model();
         model.update(1.1 * elapsed / static_cast<double>(m_timeStep));
-
-        update();
     }
 
     void CentralWidget::interactLoop(size_t elapsed) {
