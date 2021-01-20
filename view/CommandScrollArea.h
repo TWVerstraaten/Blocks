@@ -1,7 +1,8 @@
 #ifndef COMMANDSCROLLAREA_H
 #define COMMANDSCROLLAREA_H
 
-#include "CommandEditBox.h"
+#include "CentralWidget_enums.h"
+#include "CommandEditWidget.h"
 
 #include <QScrollArea>
 #include <QVBoxLayout>
@@ -13,15 +14,20 @@ namespace view {
 
     class CommandScrollArea : public QScrollArea {
         Q_OBJECT
+
       public:
         explicit CommandScrollArea(CentralWidget* centralWidget);
         ~CommandScrollArea() override;
 
         void add(model::Cluster& cluster);
-        void addToLayout(std::unique_ptr<CommandEditBox>&& commandEditBox);
+        void addToLayout(std::unique_ptr<CommandEditWidget>&& commandEditBox);
+        void addNeeded(std::list<model::Cluster>& clusters);
+        void updateSelection();
+        void disable();
 
-        [[nodiscard]] CentralWidget*                  centralWidget() const;
-        [[nodiscard]] std::unique_ptr<CommandEditBox> removeFromLayout(size_t index);
+        [[nodiscard]] CommandEditWidget*                 withIndex(size_t index);
+        [[nodiscard]] CentralWidget*                     centralWidget() const;
+        [[nodiscard]] std::unique_ptr<CommandEditWidget> removeFromLayout(size_t index);
 
       private slots:
 
@@ -29,9 +35,9 @@ namespace view {
         void moveFocusToPrevious();
 
       private:
-        std::vector<std::unique_ptr<CommandEditBox>> m_commandEditBoxes;
-        QVBoxLayout*                                 m_layout;
-        CentralWidget*                               m_centralWidget;
+        std::vector<std::unique_ptr<CommandEditWidget>> m_commandEditBoxes;
+        QVBoxLayout*                                    m_layout;
+        CentralWidget*                                  m_centralWidget;
     };
 } // namespace view
 

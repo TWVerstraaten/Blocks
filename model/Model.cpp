@@ -11,8 +11,6 @@
 
 namespace model {
 
-    Model::Model() = default;
-
     const std::list<Cluster>& Model::clusters() const {
         return m_clusters;
     }
@@ -48,7 +46,7 @@ namespace model {
 
         for (int i = -2; i != 15; ++i) {
             if (i > 5) {
-                m_level.addLevelBlock({i, -3});
+                m_level.addBlock({i, -3}, FLOOR_BLOCK_TYPE::LEVEL);
             }
             for (int j = -2; j != 11; ++j) {
                 if (i == 11 && j == 3) {
@@ -60,15 +58,15 @@ namespace model {
                 if (i == 11 && j == 4) {
                     continue;
                 }
-                m_level.addLevelBlock({i, j});
+                m_level.addBlock({i, j}, FLOOR_BLOCK_TYPE::LEVEL);
             }
         }
         for (int i = -2; i != 4; ++i) {
             for (int j = -2; j != 3; ++j) {
-                m_level.addStartBlock({i, j});
+                m_level.addBlock({i, j}, FLOOR_BLOCK_TYPE::START);
             }
         }
-        m_level.createBoundaries();
+        m_level.buildSides();
     }
 
     void Model::clear() {
@@ -76,16 +74,13 @@ namespace model {
         m_level.clear();
     }
 
-    Model& Model::operator=(const Model& other) {
-        m_level    = other.m_level;
-        m_clusters = other.m_clusters;
-        return *this;
-    }
-
-    void Model::startPhase() {
+    void Model::resetPhase() {
         m_phaseFraction = 1.0;
         for (auto& cluster : m_clusters) {
-            cluster.setPendingDynamicMoves(PENDING_DYNAMIC_MOVES::ZERO);
+            if (cluster.isAlive()) {
+                cluster.resetPhase();
+                cluster.setPendingDynamicMoves(PENDING_DYNAMIC_MOVES::ZERO);
+            }
         }
     }
 
@@ -100,6 +95,7 @@ namespace model {
             m_phaseFraction = 0.0;
         } else {
             for (auto& cluster : m_clusters) {
+                assert(m_phaseFraction <= 1.0);
                 // SmoothStep(x) = 3x^2 - 2x^2 : [0,1] -> [0,1]
                 cluster.update(m_phaseFraction * m_phaseFraction * (3 - 2 * m_phaseFraction));
             }
@@ -130,12 +126,12 @@ namespace model {
         return m_level;
     }
 
-    bool Model::noLiveOrStoppedClusterOnBlock(const GridXY& gridXY) const {
-        return (std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(gridXY))) == m_clusters.end()) &&
-               (std::find_if(D_IT(m_level.stoppedClusters()), D_FUNC(cluster, cluster.contains(gridXY))) == m_level.stoppedClusters().end());
+    bool Model::noLiveOrStoppedClusterOnBlock(const GridXy& gridXy) const {
+        return (std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(gridXy))) == m_clusters.end()) &&
+               (std::find_if(D_IT(m_level.stoppedClusters()), D_FUNC(cluster, cluster.contains(gridXy))) == m_level.stoppedClusters().end());
     }
 
-    std::list<Cluster>::iterator Model::clusterContaining(const GridXY& point) {
+    std::list<Cluster>::iterator Model::clusterContaining(const GridXy& point) {
         return std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(point)));
     }
 

@@ -5,7 +5,7 @@
 #ifndef BLOCKS_WORLDLINE_H
 #define BLOCKS_WORLDLINE_H
 
-#include "WorldXY.h"
+#include "WorldXy.h"
 
 namespace model {
 
@@ -13,20 +13,20 @@ namespace model {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        WorldLine(const WorldXY& start, const WorldXY& end);
+        WorldLine(const WorldXy& start, const WorldXy& end);
 
         /****** CONST GETTERS  ******/
-        [[nodiscard]] const WorldXY& start() const;
-        [[nodiscard]] const WorldXY& end() const;
-        [[nodiscard]] WorldXY        displacementVector() const;
+        [[nodiscard]] const WorldXy& start() const;
+        [[nodiscard]] const WorldXy& end() const;
+        [[nodiscard]] WorldXy        displacementVector() const;
 
         /****** FRIENDS  ******/
         friend bool operator<(const WorldLine& w1, const WorldLine& w2);
 
       private:
         /****** DATA MEMBERS  ******/
-        WorldXY m_start;
-        WorldXY m_end;
+        WorldXy m_start;
+        WorldXy m_end;
     };
 } // namespace model
 

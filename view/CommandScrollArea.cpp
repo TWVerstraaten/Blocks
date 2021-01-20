@@ -1,6 +1,7 @@
 #include "CommandScrollArea.h"
 
 #include "CentralWidget.h"
+#include "TextEdit.h"
 #include "color.h"
 #include "global/defines.h"
 #include "model/Cluster.h"
@@ -17,6 +18,7 @@ namespace view {
         setWidget(widget);
 
         setMaximumWidth(200);
+        setMinimumWidth(200);
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
         setWidgetResizable(true);
@@ -57,9 +59,17 @@ namespace view {
         }
     }
 
+    void CommandScrollArea::addNeeded(std::list<model::Cluster>& clusters) {
+        for (auto& cluster : clusters) {
+            if (std::find_if(D_CIT(m_commandEditBoxes), D_FUNC(box, box->index() == cluster.index())) == m_commandEditBoxes.end()) {
+                add(cluster);
+            }
+        }
+    }
+
     void CommandScrollArea::add(model::Cluster& cluster) {
         assert(std::find_if(D_CIT(m_commandEditBoxes), D_FUNC(box, box->index() == cluster.index())) == m_commandEditBoxes.cend());
-        auto* commandEditBox = new CommandEditBox(this, cluster);
+        auto* commandEditBox = new CommandEditWidget(this, cluster);
         m_commandEditBoxes.emplace_back(commandEditBox);
         connect(commandEditBox->textEdit(), &TextEdit::tabPressed, this, &CommandScrollArea::moveFocusToNext);
         connect(commandEditBox->textEdit(), &TextEdit::backTabPressed, this, &CommandScrollArea::moveFocusToPrevious);
@@ -70,7 +80,7 @@ namespace view {
         return m_centralWidget;
     }
 
-    std::unique_ptr<CommandEditBox> CommandScrollArea::removeFromLayout(size_t index) {
+    std::unique_ptr<CommandEditWidget> CommandScrollArea::removeFromLayout(size_t index) {
         auto it = std::find_if(D_IT(m_commandEditBoxes), D_FUNC(box, box->index() == index));
         assert(it != m_commandEditBoxes.end());
         it->get()->setVisible(false);
@@ -78,15 +88,36 @@ namespace view {
         auto* commandEditBox = it->release();
         m_commandEditBoxes.erase(it);
         update();
-        return std::unique_ptr<CommandEditBox>(commandEditBox);
+        return std::unique_ptr<CommandEditWidget>(commandEditBox);
     }
 
-    void CommandScrollArea::addToLayout(std::unique_ptr<CommandEditBox>&& commandEditBox) {
+    void CommandScrollArea::addToLayout(std::unique_ptr<CommandEditWidget>&& commandEditBox) {
         commandEditBox->setParent(this);
         m_layout->insertWidget(m_layout->count() - 1, commandEditBox.get());
         commandEditBox->setCommandVectorPointer();
         m_commandEditBoxes.emplace_back(std::move(commandEditBox));
         m_commandEditBoxes.back()->show();
+    }
+
+    CommandEditWidget* CommandScrollArea::withIndex(size_t index) {
+        auto it = std::find_if(D_IT(m_commandEditBoxes), D_FUNC(box, box->index() == index));
+        assert(it != m_commandEditBoxes.end());
+        return it->get();
+    }
+
+    void CommandScrollArea::updateSelection() {
+        for (auto& box : m_commandEditBoxes) {
+            box->updateSelection();
+            box->update();
+        }
+    }
+
+    void CommandScrollArea::disable() {
+        for (auto& box : m_commandEditBoxes) {
+            box->textEdit()->setReadOnly(true);
+            box->setStyleSheet(QString("QTextEdit { background-color: %0 }").arg(QColor(Qt::gray).lighter().name(QColor::HexRgb)));
+            box->disconnectCommandVectorUpdate();
+        }
     }
 
 } // namespace view

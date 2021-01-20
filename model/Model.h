@@ -16,28 +16,28 @@ namespace model {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        Model();
+        Model()                   = default;
         Model(const Model& other) = default;
         Model(Model&& other)      = default;
-        Model& operator           =(const Model& other);
+        Model& operator=(const Model& other) = default;
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] const Level&              level() const;
         [[nodiscard]] const std::list<Cluster>& clusters() const;
 
         /****** CONST FUNCTIONS  ******/
-        [[nodiscard]] bool noLiveOrStoppedClusterOnBlock(const GridXY& gridXY) const;
+        [[nodiscard]] bool noLiveOrStoppedClusterOnBlock(const GridXy& gridXy) const;
 
         /****** NON CONST FUNCTIONS  ******/
         void                         init();
         void                         clear();
-        void                         startPhase();
+        void                         resetPhase();
         void                         update(double dPhase);
         void                         clearEmpty();
         Level&                       level();
         std::list<Cluster>&          clusters();
         std::list<Cluster>::iterator clusterWithIndex(size_t index);
-        std::list<Cluster>::iterator clusterContaining(const GridXY& point);
+        std::list<Cluster>::iterator clusterContaining(const GridXy& point);
 
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/

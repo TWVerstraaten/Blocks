@@ -9,15 +9,16 @@
 #include <cmath>
 
 namespace view {
+
     int ViewPort::blockSizeInScreen() const {
         return static_cast<int>(app::BLOCK_SIZE_IN_WORLD * m_scale);
     }
 
-    void ViewPort::zoom(int dZoom, const view::ScreenXY& point) {
+    void ViewPort::zoom(int dZoom, const view::ScreenXy& point) {
         D_NOTE_ONCE("Zoom into point")
         m_zoom                            = std::clamp(m_zoom + dZoom, -2000, 3000);
         m_scale                           = std::exp(m_zoom / 1000.0);
-        m_distanceBetweenBlocksInScreenXY = worldToScreen(2 * app::BLOCK_SHRINK_IN_WORLD);
+        m_distanceBetweenBlocksInScreenXy = worldToScreen(2 * app::BLOCK_SHRINK_IN_WORLD);
     }
 
     void ViewPort::translate(int dx, int dy) {
@@ -37,7 +38,7 @@ namespace view {
         return static_cast<int>(m_scale * worldLength);
     }
 
-    int ViewPort::blockSeparationInScreenXY() const {
-        return m_distanceBetweenBlocksInScreenXY;
+    int ViewPort::blockSeparationInScreenXy() const {
+        return m_distanceBetweenBlocksInScreenXy;
     }
 } // namespace view

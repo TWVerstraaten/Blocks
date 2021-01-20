@@ -6,18 +6,18 @@
 
 namespace model {
 
-    WorldLine::WorldLine(const WorldXY& start, const WorldXY& end) : m_start(start), m_end(end) {
+    WorldLine::WorldLine(const WorldXy& start, const WorldXy& end) : m_start(start), m_end(end) {
     }
 
-    const WorldXY& WorldLine::start() const {
+    const WorldXy& WorldLine::start() const {
         return m_start;
     }
 
-    const WorldXY& WorldLine::end() const {
+    const WorldXy& WorldLine::end() const {
         return m_end;
     }
 
-    WorldXY WorldLine::displacementVector() const {
+    WorldXy WorldLine::displacementVector() const {
         return m_end - m_start;
     }
 

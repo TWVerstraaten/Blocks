@@ -73,7 +73,7 @@ namespace model {
         char* c;
         strtol(string.c_str(), &c, 10);
         if (*c != 0) {
-            if (std::all_of(D_CIT(string), D_FUNC(c, std::isalnum(c)))) {
+            if (std::all_of(D_CIT(string), D_FUNC(c, std::isalnum(c) != 0))) {
                 return string;
             }
             return model::CommandParser::ERROR_TOKEN::ERROR;
@@ -88,14 +88,10 @@ namespace model {
 
     std::string CommandParser::toString(const Token& token) {
         return std::visit(overloaded{[](int i) { return i == std::numeric_limits<int>::max() ? "INF" : std::to_string(i); },
-                                     [](const std::string& str) { return std::all_of(D_CIT(str), D_FUNC(c, std::isalnum(c))) ? str : "Error"; },
+                                     [](const std::string& str) { return std::all_of(D_CIT(str), D_FUNC(c, std::isalnum(c) != 0)) ? str : "Error"; },
                                      [&](auto) {
-                                         for (const auto& [str, t] : s_allTokens) {
-                                             if (t == token) {
-                                                 return str;
-                                             }
-                                         }
-                                         return std::string("Error");
+                                         const auto it = std::find_if(D_CIT(s_allTokens), D_FUNC(t, t.second == token));
+                                         return it == s_allTokens.end() ? std::string("Error") : it->first;
                                      }},
                           token);
     }
@@ -153,4 +149,4 @@ namespace model {
         return std::holds_alternative<Command_Error>(parseString(string)) ? STRING_TYPE::ERROR : STRING_TYPE::ACTION;
     }
 
-} // namespace m_model
+} // namespace model

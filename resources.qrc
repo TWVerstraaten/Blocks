@@ -1,7 +1,12 @@
-<!DOCTYPE RCC><RCC version="1.0">
+<!DOCTYPE RCC>
+<RCC version="1.0">
     <qresource>
         <file>assets/arrow_ccw.png</file>
         <file>assets/arrow_cw.png</file>
         <file>assets/kill.png</file>
+        <file>assets/UbuntuMono-Italic.ttf</file>
+        <file>assets/UbuntuMono-Bold.ttf</file>
+        <file>assets/UbuntuMono-Regular.ttf</file>
     </qresource>
 </RCC>
+

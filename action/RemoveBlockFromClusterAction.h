@@ -6,8 +6,7 @@
 #define BLOCKS_REMOVEBLOCKFROMCLUSTERACTION_H
 
 #include "Action.h"
-
-#include <model/GridXY.h>
+#include "model/GridXy.h"
 
 namespace model {
     class Model;
@@ -18,7 +17,7 @@ namespace action {
     class RemoveBlockFromClusterAction : public Action {
 
       public:
-        RemoveBlockFromClusterAction(model::Model* model, size_t clusterIndex, const model::GridXY& gridXy);
+        RemoveBlockFromClusterAction(model::Model* model, size_t clusterIndex, const model::GridXy& gridXy);
 
         void                      undo() override;
         void                      redo() override;
@@ -27,7 +26,7 @@ namespace action {
       protected:
         model::Model* m_model;
         size_t        m_clusterIndex;
-        model::GridXY m_gridXy;
+        model::GridXy m_gridXy;
     };
 } // namespace action
 

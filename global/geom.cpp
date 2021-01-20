@@ -6,32 +6,35 @@
 
 #include "defines.h"
 
-#include <algorithm>
 #include <cassert>
+
+#ifdef _WIN32
 #include <cmath>
-#include <vector>
+#endif
 
 namespace geom {
 
-    bool intersect(const model::WorldLineSet& lines1, const model::WorldLineSet& lines2) {
+    using namespace model;
+
+    bool intersect(const WorldLineSet& lines1, const WorldLineSet& lines2) {
         return std::any_of(D_CIT(lines1), D_FUNC(line1, std::any_of(D_CIT(lines2), D_FUNC(line2, intersect(line1, line2)))));
     }
 
-    model::WorldLineSet getSidesFromGridXY(const model::GridXYSet& blocks) {
-        model::WorldLineSet        result;
-        std::vector<model::GridXY> cornerPoints;
-        for (const auto& dir : {model::GridXY::DIRECTION::UP, model::GridXY::DIRECTION::DOWN}) {
+    WorldLineSet getSidesFromGridXy(const GridXySet& blocks) {
+        WorldLineSet        result;
+        std::vector<GridXy> cornerPoints;
+        for (const auto& dir : {GridXy::DIRECTION::UP, GridXy::DIRECTION::DOWN}) {
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {
                 if (blocks.find(it->neighbor(dir)) == blocks.end()) {
                     const auto start = *it;
                     auto       next  = std::next(it);
-                    while (next != blocks.end() && *next - *it == model::GridXY{1, 0} && (blocks.find(next->neighbor(dir)) == blocks.end())) {
+                    while (next != blocks.end() && *next - *it == GridXy{1, 0} && (blocks.find(next->neighbor(dir)) == blocks.end())) {
                         ++it;
                         ++next;
                     }
-                    const model::GridXY point1 = start + model::GridXY{0, dir == model::GridXY::DIRECTION::UP ? 0 : 1};
-                    const model::GridXY point2 = model::GridXY{it->x() + 1, start.y() + (dir == model::GridXY::DIRECTION::UP ? 0 : 1)};
-                    result.emplace(model::WorldXY(point1), model::WorldXY(point2));
+                    const GridXy point1 = start + GridXy{0, dir == GridXy::DIRECTION::UP ? 0 : 1};
+                    const GridXy point2 = GridXy{it->x() + 1, start.y() + (dir == GridXy::DIRECTION::UP ? 0 : 1)};
+                    result.emplace(WorldXy(point1), WorldXy(point2));
                     cornerPoints.emplace_back(point1);
                     cornerPoints.emplace_back(point2);
                 }
@@ -40,12 +43,12 @@ namespace geom {
         assert(cornerPoints.size() % 2 == 0);
         std::sort(D_IT(cornerPoints), D_FUNC_2(lhs, rhs, lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x()));
         for (auto it = cornerPoints.begin(); it != cornerPoints.end(); it += 2) {
-            result.emplace(model::WorldLine{*it, *std::next(it)});
+            result.emplace(WorldLine{*it, *std::next(it)});
         }
         return result;
     }
 
-    model::WorldXY rotateClockWise(const model::WorldXY& point, double angleInDegrees) {
+    WorldXy rotateClockWise(const WorldXy& point, double angleInDegrees) {
         if (angleInDegrees == 0.0) {
             return point;
         }
@@ -54,11 +57,11 @@ namespace geom {
         return {static_cast<int>(ca * point.x() - sa * point.y()), static_cast<int>(sa * point.x() + ca * point.y())};
     }
 
-    model::WorldXY rotateAboutPivot(const model::WorldXY& point, const model::WorldXY& pivot, double angleInDegrees) {
+    WorldXy rotateAboutPivot(const WorldXy& point, const WorldXy& pivot, double angleInDegrees) {
         return rotateClockWise(point - pivot, angleInDegrees) + pivot;
     }
 
-    int cross(const model::WorldXY& lhs, const model::WorldXY& rhs) {
+    int cross(const WorldXy& lhs, const WorldXy& rhs) {
         return lhs.x() * rhs.y() - lhs.y() * rhs.x();
     }
 
@@ -70,7 +73,7 @@ namespace geom {
         return value <= upper && value >= lower;
     }
 
-    bool intersect(const model::WorldLine& lhs, const model::WorldLine& rhs) {
+    bool intersect(const WorldLine& lhs, const WorldLine& rhs) {
         const auto s       = lhs.displacementVector();
         const auto r       = rhs.displacementVector();
         const auto rCrossS = cross(r, s);
@@ -81,38 +84,38 @@ namespace geom {
         return (containedInClosedInterval(cross(qMinusP, s), 0, rCrossS) && containedInClosedInterval(cross(qMinusP, r), 0, rCrossS));
     }
 
-    int minX(const model::GridXYSet& blocks) {
+    int minX(const GridXySet& blocks) {
         assert(not blocks.empty());
         return std::min_element(D_CIT(blocks), D_FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
     }
 
-    int minY(const model::GridXYSet& blocks) {
+    int minY(const GridXySet& blocks) {
         assert(not blocks.empty());
         return blocks.begin()->y();
     }
 
-    int maxX(const model::GridXYSet& blocks) {
+    int maxX(const GridXySet& blocks) {
         assert(not blocks.empty());
         return std::max_element(D_CIT(blocks), D_FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
     }
 
-    int maxY(const model::GridXYSet& blocks) {
+    int maxY(const GridXySet& blocks) {
         assert(not blocks.empty());
         return blocks.rbegin()->y();
     }
 
-    std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, model::GridXY point) {
-        std::vector<model::Cluster*> result;
+    std::vector<Cluster*> neighbors(std::list<Cluster>& clusters, GridXy point) {
+        std::vector<Cluster*> result;
         std::for_each(D_IT(clusters), [&](auto& cluster) {
-            if (cluster.gridXYIsAdjacent(point)) {
+            if (cluster.gridXyIsAdjacent(point)) {
                 result.push_back(&cluster);
             }
         });
         return result;
     }
 
-    std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, const model::Cluster& cluster) {
-        std::vector<model::Cluster*> result;
+    std::vector<Cluster*> neighbors(std::list<Cluster>& clusters, const Cluster& cluster) {
+        std::vector<Cluster*> result;
         std::for_each(D_IT(clusters), [&](auto& candidate) {
             if (candidate.isAdjacent(cluster)) {
                 result.push_back(&candidate);

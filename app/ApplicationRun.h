@@ -51,7 +51,7 @@
 //        int                      m_timeSinceLastStep = 0;
 //        Uint32                   m_timeStep          = TIME_STEP_SLOW;
 //        RUN_MODE                 m_runningMode       = RUN_MODE::RUNNING;
-//        view::ScreenXY           m_previousMousePosition;
+//        view::ScreenXy           m_previousMousePosition;
 //        model::Model             m_model;
 //        view::View*              m_view;
 //        view::widget::ScrollArea m_scrollArea;

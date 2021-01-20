@@ -6,7 +6,7 @@
 #define BLOCKS_VIEWPORT_H
 
 #include "../app/Application_constants.h"
-#include "ScreenXY.h"
+#include "ScreenXy.h"
 
 namespace view {
 
@@ -22,10 +22,10 @@ namespace view {
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] int worldToScreen(int worldLength) const;
-        [[nodiscard]] int blockSeparationInScreenXY() const;
+        [[nodiscard]] int blockSeparationInScreenXy() const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void zoom(int dZoom, const view::ScreenXY& point);
+        void zoom(int dZoom, const view::ScreenXy& point);
         void translate(int dx, int dy);
 
       private:
@@ -34,7 +34,7 @@ namespace view {
         int    m_zoom                            = 0;
         int    m_xOffset                         = 0;
         int    m_yOffset                         = 0;
-        int    m_distanceBetweenBlocksInScreenXY = 2 * app::BLOCK_SHRINK_IN_WORLD;
+        int    m_distanceBetweenBlocksInScreenXy = 2 * app::BLOCK_SHRINK_IN_WORLD;
     };
 } // namespace view
 #endif // BLOCKS_VIEWPORT_H

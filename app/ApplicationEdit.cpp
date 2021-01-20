@@ -23,9 +23,9 @@
 //    }
 //
 //    void ApplicationEdit::mouseWheelEvent(const SDL_Event& event) {
-//        if (m_scrollArea->pointIsOverWidget(view::Mouse::mouseXY())) {
+//        if (m_scrollArea->pointIsOverWidget(view::Mouse::mouseXy())) {
 //            m_scrollArea->mouseWheelEvent(event);
-//        } else if (m_blockSelectWidget.pointIsOverWidget(view::Mouse::mouseXY())) {
+//        } else if (m_blockSelectWidget.pointIsOverWidget(view::Mouse::mouseXy())) {
 //        } else {
 //            m_view->zoom(event.wheel.y);
 //        }
@@ -48,14 +48,14 @@
 //
 //    void ApplicationEdit::mouseClickEvent(const SDL_Event& event) {
 //        setButtonBooleans(event);
-//        determineFocus(view::Mouse::mouseXY());
+//        determineFocus(view::Mouse::mouseXy());
 //        if (m_scrollArea->hasFocus()) {
 //            m_scrollArea->leftClickEvent(event);
 //        } else if (m_blockSelectWidget.hasFocus()) {
 //            m_blockSelectWidget.leftClickEvent(event);
 //        } else {
 //            if (event.button.button == SDL_BUTTON_LEFT) {
-//                m_previousGridClickPosition = model::GridXY::fromScreenXY(view::Mouse::mouseXY(), m_view->viewPort());
+//                m_previousGridClickPosition = model::GridXy::fromScreenXy(view::Mouse::mouseXy(), m_view->viewPort());
 //                if (SDL_GetModState() & KMOD_CTRL) {
 //                    m_modelViewInterface.leftClickControl(
 //                        *m_model, *m_scrollArea, m_previousGridClickPosition, m_blockSelectWidget.selectedBlockType());
@@ -158,7 +158,7 @@
 //    void ApplicationEdit::handleLeftMouseMove() {
 //        assert(m_leftMouseButtonPressed);
 //        assert(not m_rightMouseButtonPressed);
-//        const auto currentGridPosition = model::GridXY::fromScreenXY(view::Mouse::mouseXY(), m_view->viewPort());
+//        const auto currentGridPosition = model::GridXy::fromScreenXy(view::Mouse::mouseXy(), m_view->viewPort());
 //        if (currentGridPosition != m_previousGridClickPosition) {
 //            if (SDL_GetModState() & KMOD_CTRL) {
 //                m_modelViewInterface.leftClickControl(*m_model, *m_scrollArea, currentGridPosition, m_blockSelectWidget.selectedBlockType());
@@ -173,9 +173,9 @@
 //    void ApplicationEdit::handleRightMouseMove() {
 //        assert(m_rightMouseButtonPressed);
 //        assert(not m_leftMouseButtonPressed);
-//        const auto mouseXY = view::Mouse::mouseXY();
-//        m_view->translate((mouseXY.x() - m_previousMousePosition.x()), mouseXY.y() - m_previousMousePosition.y());
-//        m_previousMousePosition = mouseXY;
+//        const auto mouseXy = view::Mouse::mouseXy();
+//        m_view->translate((mouseXy.x() - m_previousMousePosition.x()), mouseXy.y() - m_previousMousePosition.y());
+//        m_previousMousePosition = mouseXy;
 //    }
 //
 //    void ApplicationEdit::setButtonBooleans(const SDL_Event& event) {
@@ -183,11 +183,11 @@
 //        switch (event.button.button) {
 //            case SDL_BUTTON_RIGHT:
 //                m_rightMouseButtonPressed = true;
-//                m_previousMousePosition   = view::Mouse::mouseXY();
+//                m_previousMousePosition   = view::Mouse::mouseXy();
 //                break;
 //            case SDL_BUTTON_LEFT:
 //                m_leftMouseButtonPressed = true;
-//                m_previousMousePosition  = view::Mouse::mouseXY();
+//                m_previousMousePosition  = view::Mouse::mouseXy();
 //                break;
 //            default:
 //                break;
@@ -210,12 +210,12 @@
 //        return m_scrollArea;
 //    }
 //
-//    void ApplicationEdit::determineFocus(view::ScreenXY screenXY) {
+//    void ApplicationEdit::determineFocus(view::ScreenXy screenXy) {
 //        m_scrollArea->loseFocus();
 //        m_blockSelectWidget.loseFocus();
-//        if (m_scrollArea->pointIsOverWidget(screenXY)) {
+//        if (m_scrollArea->pointIsOverWidget(screenXy)) {
 //            m_scrollArea->getFocus();
-//        } else if (m_blockSelectWidget.pointIsOverWidget(screenXY)) {
+//        } else if (m_blockSelectWidget.pointIsOverWidget(screenXy)) {
 //            m_blockSelectWidget.getFocus();
 //        }
 //    }

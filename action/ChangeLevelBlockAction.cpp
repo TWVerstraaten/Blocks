@@ -4,10 +4,12 @@
 
 #include "ChangeLevelBlockAction.h"
 
+#include "../model/Model.h"
+
 action::ChangeLevelBlockAction::ChangeLevelBlockAction(model::Model*                                                             model,
                                                        const std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE>& newType,
                                                        const std::variant<model::DYNAMIC_BLOCK_TYPE, model::INSTANT_BLOCK_TYPE>& oldType,
-                                                       const model::GridXY&                                                      gridXy)
+                                                       const model::GridXy&                                                      gridXy)
     : m_model(model), m_newType(newType), m_oldType(oldType), m_gridXy(gridXy) {
 }
 

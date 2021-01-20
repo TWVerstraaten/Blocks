@@ -1,4 +1,4 @@
-Set max character count on CommandEditBox
+Set max character count on CommandEditWidget
 
 Implement the following commands:
     set var_name value_type
@@ -9,3 +9,7 @@ Implement the following commands:
 here value_type should be one of Integer | { SIZE } | declared var_name
 
 Some sort of winning condition
+
+SPL should cut and kill what was cut,
+CUT should just split the cluster and keep all alive
+GRB should grab what is alive nearby and pause those clusters

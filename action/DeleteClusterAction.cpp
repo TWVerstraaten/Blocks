@@ -4,20 +4,22 @@
 
 #include "DeleteClusterAction.h"
 
-action::DeleteClusterAction::DeleteClusterAction(view::CentralWidget* centralWidget, const model::Cluster& cluster)
-    : NewClusterAction(centralWidget, cluster) {
-    setText(QString("Deleting cluster %1").arg(m_cluster.index()));
-    m_blockInitial = false;
-}
+namespace action {
+    DeleteClusterAction::DeleteClusterAction(view::CentralWidget* centralWidget, const model::Cluster& cluster)
+        : NewClusterAction(centralWidget, cluster) {
+        setText(QString("Deleting cluster %1").arg(m_cluster.index()));
+        m_blockInitial = false;
+    }
 
-void action::DeleteClusterAction::undo() {
-    NewClusterAction::redo();
-}
+    void DeleteClusterAction::undo() {
+        NewClusterAction::redo();
+    }
 
-void action::DeleteClusterAction::redo() {
-    NewClusterAction::undo();
-}
+    void DeleteClusterAction::redo() {
+        NewClusterAction::undo();
+    }
 
-action::ACTION_TYPE action::DeleteClusterAction::type() const {
-    return ACTION_TYPE::REMOVE_CLUSTER;
-}
+    ACTION_TYPE DeleteClusterAction::type() const {
+        return ACTION_TYPE::REMOVE_CLUSTER;
+    }
+} // namespace action

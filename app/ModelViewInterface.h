@@ -21,7 +21,7 @@
 //
 //namespace model {
 //    class Model;
-//    class GridXY;
+//    class GridXy;
 //} // namespace m_model
 //
 //namespace action {
@@ -49,22 +49,22 @@
 //        static void updateSelection(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea);
 //        static void removeActionBoxesOfRemovedClusters(const std::list<model::Cluster>& clusters, view::widget::ScrollArea& scrollArea);
 //
-//        static Action_u_ptr clearBlockFromCluster_static(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
+//        static Action_u_ptr clearBlockFromCluster_static(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXy& point);
 //
 //        /****** NON CONST FUNCTIONS  ******/
 //        void handleKeyEvent(const SDL_Event& event, view::widget::ScrollArea& scrollArea, model::Model& model);
 //        void leftMouseDrag(model::Model&             model,
 //                           view::widget::ScrollArea& scrollArea,
-//                           const model::GridXY&      point,
-//                           const model::GridXY&      previousPoint,
+//                           const model::GridXy&      point,
+//                           const model::GridXy&      previousPoint,
 //                           const model::BlockType&   selectedBlockType);
 //        void leftClickControl(model::Model&             model,
 //                              view::widget::ScrollArea& scrollArea,
-//                              const model::GridXY&      point,
+//                              const model::GridXy&      point,
 //                              const model::BlockType&   selectedBlockType);
 //        void leftMouseClick(model::Model&             model,
 //                            view::widget::ScrollArea& scrollArea,
-//                            const model::GridXY&      point,
+//                            const model::GridXy&      point,
 //                            const model::BlockType&   selectedBlockType);
 //        void undo(ApplicationEdit& applicationEdit);
 //        void redo(ApplicationEdit& applicationEdit);
@@ -73,19 +73,19 @@
 //        /****** PRIVATE STATIC FUNCTIONS  ******/
 //        static Action_u_ptr clearBlockFromCluster(model::Model&             model,
 //                                                  view::widget::ScrollArea& scrollArea,
-//                                                  const model::GridXY&      point,
+//                                                  const model::GridXy&      point,
 //                                                  model::Cluster&           cluster);
-//        static Action_u_ptr addSingleBlockToCluster(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
+//        static Action_u_ptr addSingleBlockToCluster(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXy& point);
 //        static Action_u_ptr linkBlocks(model::Model&             model,
 //                                       view::widget::ScrollArea& scrollArea,
-//                                       const model::GridXY&      point,
-//                                       const model::GridXY&      previousPoint);
+//                                       const model::GridXy&      point,
+//                                       const model::GridXy&      previousPoint);
 //
 //        /****** PRIVATE NON CONST FUNCTIONS  ******/
 //        void addAction(Action_u_ptr&& action);
-//        void leftMouseClick(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
-//        void clearBlockFromCluster(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point);
-//        void clusterDrag(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXY& point, const model::GridXY& previousPoint);
+//        void leftMouseClick(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXy& point);
+//        void clearBlockFromCluster(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXy& point);
+//        void clusterDrag(model::Model& model, view::widget::ScrollArea& scrollArea, const model::GridXy& point, const model::GridXy& previousPoint);
 //
 //        /****** PUBLIC STATIC DATA MEMBERS  ******/
 //        std::stack<Action_u_ptr> m_undoStack;
