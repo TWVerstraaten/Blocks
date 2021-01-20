@@ -33,6 +33,8 @@ namespace view {
         void backTabPressed();
 
       private:
+        void highlightLine(size_t lineNumber);
+
         size_t nThOpaqueLine(size_t n);
 
         CommandEditBox*    m_commandEditBox;

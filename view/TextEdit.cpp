@@ -11,14 +11,13 @@
 namespace view {
     TextEdit::TextEdit(CommandEditBox* commandEditBox, const QString& string)
         : QTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
-        assert(m_commandEditBox);
-        connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
-        //        setLineWrapMode(LineWrapMode::NoWrap);
-        //        connect(this, &QTextEdit::cursorPositionChanged, [this]() { setSelection(0); });
 
-        setMaximumWidth(200);
-        document()->adjustSize();
-        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+        connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
+        connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
+        //        connect(this, &QTextEdit::cursorPositionChanged, [this](){
+        //           textCursor().selection()
+        //        });
+
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
@@ -27,14 +26,20 @@ namespace view {
         const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
         QFont         font(family, 10);
         setFont(font);
-        append(string);
-
-        connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
 
         QTextEdit::setStyleSheet(QString(" selection-background-color : rgb(%1, %2, %3)")
                                      .arg(view::color::WIDGET_LIGHT.red())
                                      .arg(view::color::WIDGET_LIGHT.green())
                                      .arg(view::color::WIDGET_LIGHT.blue()));
+
+        setMaximumWidth(200);
+        document()->adjustSize();
+        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+        append(string);
+    }
+
+    TextEdit::~TextEdit() {
+        delete m_syntaxHighlighter;
     }
 
     void TextEdit::keyPressEvent(QKeyEvent* event) {
@@ -103,33 +108,22 @@ namespace view {
         m_commandEditBox->commandScrollArea()->centralWidget()->addAction(new action::TextEditAction(this));
     }
 
-    TextEdit::~TextEdit() {
-        delete m_syntaxHighlighter;
+    void TextEdit::setSelection(size_t index) {
+        highlightLine(nThOpaqueLine(index));
     }
 
-    void TextEdit::setSelection(size_t index) {
-        qDebug() << document()->toPlainText();
-
-        qDebug() << nThOpaqueLine(index);
-
+    void TextEdit::highlightLine(size_t lineNumber) {
         QList<QTextEdit::ExtraSelection> extraSelections;
         QTextEdit::ExtraSelection        selection;
 
-        QColor lineColor = QColor(Qt::yellow).lighter(160);
-
-        selection.format.setBackground(lineColor);
-        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+        selection.format.setBackground(view::color::EDIT_BOX_HIGHLIGHT_SOFT_COLOR);
         selection.cursor = QTextCursor(document());
-        selection.cursor.setPosition(0);
-
-        const auto lineNumber = nThOpaqueLine(index);
+        //        selection.cursor.setPosition(0);
         for (size_t i = 0; i != lineNumber; ++i) {
             selection.cursor.movePosition(QTextCursor::Down);
         }
-
-        //        selection.cursor.select(QTextCursor::LineUnderCursor);
+        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
         extraSelections.append(selection);
-
         setExtraSelections(extraSelections);
     }
 
@@ -139,11 +133,11 @@ namespace view {
             ++i;
         }
         while (n != 0) {
+            ++i;
+            --n;
             while (model::CommandParser::isCommentOrEmpty(document()->findBlockByLineNumber(i).text().toStdString())) {
                 ++i;
             }
-            ++i;
-            --n;
         }
         return i;
     }
