@@ -127,7 +127,7 @@ namespace view {
 
         const auto elapsed = m_elapsedTimer.elapsed();
         m_elapsedTimer.restart();
-        qDebug() << elapsed;
+        //        qDebug() << elapsed;
 
         if (m_phase == PHASE::MOVE) {
             moveLoop(elapsed);
@@ -215,6 +215,7 @@ namespace view {
         }
 
         m_mainView->model()->update(0.0001);
+        m_commandScrollArea->updateSelection();
         m_elapsedTimer.restart();
         m_phaseTimer.restart();
 
@@ -226,7 +227,6 @@ namespace view {
         auto& clusters = model.clusters();
 
         model.update(1.1 * elapsed / static_cast<double>(m_timeStep));
-        m_commandScrollArea->updateSelection();
 
         update();
     }
@@ -236,10 +236,12 @@ namespace view {
 
     void CentralWidget::endMovePhase() {
         m_mainView->model()->resetPhase();
+        m_commandScrollArea->updateSelection();
     }
 
     void CentralWidget::endInteractPhase() {
         m_mainView->model()->resetPhase();
+        m_commandScrollArea->updateSelection();
         for (auto& cluster : m_mainView->model()->clusters()) {
             cluster.incrementCommandIndex();
             cluster.doCommand(*m_mainView->model());

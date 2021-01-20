@@ -91,46 +91,7 @@ namespace view {
     }
 
     void CommandEditBox::updateSelection() {
-        assert(m_commandVector);
-        auto index = m_commandVector->commandIndex();
-
-        QTextCharFormat textFormat = m_textEdit->currentCharFormat();
-        textFormat.setBackground(Qt::yellow);
-
-        QTextCharFormat f;
-        QTextCursor     c(m_textEdit->document());
-        c.setPosition(m_textEdit->document()->characterCount() - 1, QTextCursor::KeepAnchor);
-        c.setCharFormat(f);
-
-        QString data = m_textEdit->toPlainText();
-#ifdef Q_OS_WIN
-        QStringList stringList = data.split(QRegExp("[\n]"), Qt::SplitBehaviorFlags::KeepEmptyParts);
-#else
-        QStringList stringList = data.split(QRegExp("[\n]"), QString::KeepEmptyParts);
-#endif
-
-        if (stringList.empty()) {
-            return;
-        }
-
-        size_t blockIndex = 0;
-        while (true) {
-            while (model::CommandParser::isCommentOrEmpty(stringList[blockIndex].toStdString())) {
-                ++blockIndex;
-            }
-            if (index == 0) {
-                break;
-            }
-            --index;
-            ++blockIndex;
-        }
-        const auto block    = m_textEdit->document()->findBlockByLineNumber(blockIndex);
-        const auto blockPos = block.position();
-
-        auto cursor = QTextCursor(m_textEdit->document());
-        cursor.setPosition(blockPos);
-        cursor.select(cursor.LineUnderCursor);
-        cursor.setCharFormat(textFormat);
+        m_textEdit->setSelection(m_commandVector->commandIndex());
     }
 
     void CommandEditBox::disconnectCommandVectorUpdate() {

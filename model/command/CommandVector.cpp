@@ -48,7 +48,7 @@ void model::CommandVector::increment() {
 }
 
 void model::CommandVector::set(const std::vector<std::string>& strings) {
-        m_strings = strings;
+    m_strings = strings;
     m_commands.clear();
     for (const auto& string : m_strings) {
         if (not CommandParser::isCommentOrEmpty(string)) {

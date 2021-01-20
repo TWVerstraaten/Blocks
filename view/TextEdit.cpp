@@ -1,5 +1,6 @@
 #include "TextEdit.h"
 
+#include "../model/command/CommandParser.h"
 #include "CentralWidget.h"
 #include "action/TextEditAction.h"
 #include "view/color.h"
@@ -12,7 +13,8 @@ namespace view {
         : QTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
         assert(m_commandEditBox);
         connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
-        setLineWrapMode(LineWrapMode::NoWrap);
+        //        setLineWrapMode(LineWrapMode::NoWrap);
+        //        connect(this, &QTextEdit::cursorPositionChanged, [this]() { setSelection(0); });
 
         setMaximumWidth(200);
         document()->adjustSize();
@@ -103,6 +105,47 @@ namespace view {
 
     TextEdit::~TextEdit() {
         delete m_syntaxHighlighter;
+    }
+
+    void TextEdit::setSelection(size_t index) {
+        qDebug() << document()->toPlainText();
+
+        qDebug() << nThOpaqueLine(index);
+
+        QList<QTextEdit::ExtraSelection> extraSelections;
+        QTextEdit::ExtraSelection        selection;
+
+        QColor lineColor = QColor(Qt::yellow).lighter(160);
+
+        selection.format.setBackground(lineColor);
+        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+        selection.cursor = QTextCursor(document());
+        selection.cursor.setPosition(0);
+
+        const auto lineNumber = nThOpaqueLine(index);
+        for (size_t i = 0; i != lineNumber; ++i) {
+            selection.cursor.movePosition(QTextCursor::Down);
+        }
+
+        //        selection.cursor.select(QTextCursor::LineUnderCursor);
+        extraSelections.append(selection);
+
+        setExtraSelections(extraSelections);
+    }
+
+    size_t TextEdit::nThOpaqueLine(size_t n) {
+        size_t i = 0;
+        while (model::CommandParser::isCommentOrEmpty(document()->findBlockByLineNumber(i).text().toStdString())) {
+            ++i;
+        }
+        while (n != 0) {
+            while (model::CommandParser::isCommentOrEmpty(document()->findBlockByLineNumber(i).text().toStdString())) {
+                ++i;
+            }
+            ++i;
+            --n;
+        }
+        return i;
     }
 
 } // namespace view

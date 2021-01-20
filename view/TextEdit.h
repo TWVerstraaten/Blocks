@@ -17,10 +17,12 @@ namespace view {
         TextEdit(CommandEditBox* commandEditBox, const QString& string);
         ~TextEdit() override;
 
+        void setHeight();
+        void keyPressEvent(QKeyEvent* event) override;
+        void sendUndo();
+        void setSelection(size_t index);
+
         [[nodiscard]] std::vector<std::string> contents() const;
-        void                                   setHeight();
-        void                                   keyPressEvent(QKeyEvent* event) override;
-        void                                   sendUndo();
 
       protected:
         [[nodiscard]] QSize sizeHint() const override;
@@ -31,6 +33,8 @@ namespace view {
         void backTabPressed();
 
       private:
+        size_t nThOpaqueLine(size_t n);
+
         CommandEditBox*    m_commandEditBox;
         SyntaxHighlighter* m_syntaxHighlighter;
     };

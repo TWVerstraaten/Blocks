@@ -107,7 +107,7 @@ namespace view {
     void CommandScrollArea::updateSelection() {
         for (auto& box : m_commandEditBoxes) {
             box->updateSelection();
-            box->repaint();
+            box->update();
         }
     }
 
