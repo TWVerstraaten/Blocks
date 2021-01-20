@@ -7,7 +7,7 @@
 
 #include "../model/Cluster.h"
 #include "Action.h"
-#include "view/CommandEditBox.h"
+#include "view/CommandEditWidget.h"
 
 #include <list>
 
@@ -32,9 +32,9 @@ namespace action {
       private:
         model::Model*                                    m_model;
         const model::Cluster                             m_disconnected;
-        std::unique_ptr<view::CommandEditBox>            m_disconnectedCommandEditBox;
+        std::unique_ptr<view::CommandEditWidget>            m_disconnectedCommandEditBox;
         std::list<model::Cluster>                        m_components;
-        std::list<std::unique_ptr<view::CommandEditBox>> m_componentCommandEditBoxes;
+        std::list<std::unique_ptr<view::CommandEditWidget>> m_componentCommandEditBoxes;
         view::CommandScrollArea*                         m_commandScrollArea;
     };
 } // namespace action

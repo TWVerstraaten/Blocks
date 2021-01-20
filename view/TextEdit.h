@@ -8,13 +8,13 @@
 #include <vector>
 
 namespace view {
-    class CommandEditBox;
+    class CommandEditWidget;
 
     class TextEdit : public QTextEdit {
         Q_OBJECT
 
       public:
-        TextEdit(CommandEditBox* commandEditBox, const QString& string);
+        TextEdit(CommandEditWidget* commandEditBox, const QString& string);
         ~TextEdit() override;
 
         void setHeight();
@@ -39,7 +39,7 @@ namespace view {
 
         size_t nThOpaqueLine(size_t n);
 
-        CommandEditBox*    m_commandEditBox;
+        CommandEditWidget*    m_commandEditBox;
         SyntaxHighlighter* m_syntaxHighlighter;
     };
 } // namespace view

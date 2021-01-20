@@ -7,14 +7,14 @@
 
 #include "../model/Cluster.h"
 #include "Action.h"
-#include "view/CommandEditBox.h"
+#include "view/CommandEditWidget.h"
 
 #include <memory>
 
 namespace view {
     class CommandScrollArea;
     class CentralWidget;
-    class CommandEditBox;
+    class CommandEditWidget;
 } // namespace view
 
 namespace action {
@@ -29,7 +29,7 @@ namespace action {
         [[nodiscard]] ACTION_TYPE type() const override;
 
       protected:
-        std::unique_ptr<view::CommandEditBox> m_commandEditBox;
+        std::unique_ptr<view::CommandEditWidget> m_commandEditBox;
         model::Cluster                        m_cluster;
 
       private:

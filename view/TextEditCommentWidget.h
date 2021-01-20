@@ -23,6 +23,7 @@ namespace view {
         void setBackgroundColor(const QColor& color);
         void addComment(size_t index, const QString& string);
         void setComments(std::vector<std::pair<size_t, QString>>&& comments);
+        void clearComments();
 
       public slots:
         void fillLineNumbers(size_t lineNumbers);

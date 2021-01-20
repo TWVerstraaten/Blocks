@@ -15,12 +15,12 @@ namespace view {
 
     class CommandScrollArea;
 
-    class CommandEditBox : public QWidget {
+    class CommandEditWidget : public QWidget {
         Q_OBJECT
 
       public:
-        CommandEditBox(CommandScrollArea* parent, model::Cluster& cluster);
-        ~CommandEditBox() override;
+        CommandEditWidget(CommandScrollArea* parent, model::Cluster& cluster);
+        ~CommandEditWidget() override;
 
         void setCommandVectorPointer();
         void updateSelection();

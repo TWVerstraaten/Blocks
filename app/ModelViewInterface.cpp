@@ -14,15 +14,15 @@
 //using namespace view;
 //using namespace widget;
 //
-//static std::list<Cluster>::iterator findCluster(const CommandEditBox& commandEditBox, std::list<Cluster>& clusters) {
+//static std::list<Cluster>::iterator findCluster(const CommandEditWidget& commandEditBox, std::list<Cluster>& clusters) {
 //    return std::find_if(D_IT(clusters), D_FUNC(cluster, cluster.index() == commandEditBox.index()));
 //}
 //
-//static std::list<Cluster>::const_iterator findCluster(const CommandEditBox& commandEditBox, const std::list<Cluster>& clusters) {
+//static std::list<Cluster>::const_iterator findCluster(const CommandEditWidget& commandEditBox, const std::list<Cluster>& clusters) {
 //    return std::find_if(D_CIT(clusters), D_FUNC(cluster, cluster.index() == commandEditBox.index()));
 //}
 //
-//static std::list<CommandEditBox>::iterator findCommandEditBox(const Cluster& cluster, std::list<CommandEditBox>& commandEditBoxes) {
+//static std::list<CommandEditWidget>::iterator findCommandEditBox(const Cluster& cluster, std::list<CommandEditWidget>& commandEditBoxes) {
 //    return std::find_if(D_IT(commandEditBoxes), D_FUNC(box, cluster.index() == box.index()));
 //}
 //
@@ -134,7 +134,7 @@
 //void app::ModelViewInterface::handleKeyEvent(const SDL_Event& event, ScrollArea& scrollArea, Model& model) {
 //    const auto w = scrollArea.focusedWidget();
 //    if (w) {
-//        CommandEditBox copy(*w);
+//        CommandEditWidget copy(*w);
 //        w->keyEvent(event);
 //        if (w->clusterShouldBeUpdated()) {
 //            auto clusterIt = findCluster(*w, model.clusters());

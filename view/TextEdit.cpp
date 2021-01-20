@@ -9,13 +9,8 @@
 #include <QDebug>
 
 namespace view {
-    TextEdit::TextEdit(CommandEditBox* commandEditBox, const QString& string)
+    TextEdit::TextEdit(CommandEditWidget* commandEditBox, const QString& string)
         : QTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
-
-        connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
-        connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
-        connect(this, &QTextEdit::cursorPositionChanged, [this]() { highlightLine(textCursor()); });
-
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
@@ -33,7 +28,12 @@ namespace view {
         setMaximumWidth(200);
         document()->adjustSize();
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+
         append(string);
+
+        connect(this, &QTextEdit::textChanged, this, &TextEdit::setHeight);
+        connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
+        connect(this, &QTextEdit::cursorPositionChanged, [this]() { highlightLine(textCursor()); });
     }
 
     TextEdit::~TextEdit() {

@@ -62,3 +62,7 @@ void view::TextEditCommentWidget::fillLineNumbers(size_t lineNumbers) {
         addComment(i, QString("%1").arg(i + 1));
     }
 }
+
+void view::TextEditCommentWidget::clearComments() {
+    m_comments = {};
+}

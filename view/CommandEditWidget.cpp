@@ -1,4 +1,4 @@
-#include "CommandEditBox.h"
+#include "CommandEditWidget.h"
 
 #include "../model/command/CommandParser.h"
 #include "CentralWidget.h"
@@ -11,7 +11,7 @@
 
 namespace view {
 
-    CommandEditBox::CommandEditBox(CommandScrollArea* parent, model::Cluster& cluster)
+    CommandEditWidget::CommandEditWidget(CommandScrollArea* parent, model::Cluster& cluster)
         : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandVector(&cluster.commandVector()), m_commandScrollArea(parent),
           m_lineWidget(new TextEditCommentWidget(this)), m_commentWidget(new TextEditCommentWidget(this)) {
         setContentsMargins(0, 0, 0, 0);
@@ -65,55 +65,55 @@ namespace view {
         setPalette(pal);
 
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        connect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditBox::updateCommandVector);
-        connect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditBox::setHeight);
+        connect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
+        connect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditWidget::setHeight);
         m_textEdit->setHeight();
         update();
     }
 
-    CommandEditBox::~CommandEditBox() {
-        disconnect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditBox::updateCommandVector);
-        disconnect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditBox::setHeight);
+    CommandEditWidget::~CommandEditWidget() {
+        disconnect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
+        disconnect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditWidget::setHeight);
     }
 
-    TextEdit* CommandEditBox::textEdit() {
+    TextEdit* CommandEditWidget::textEdit() {
         return m_textEdit;
     }
 
-    size_t CommandEditBox::index() const {
+    size_t CommandEditWidget::index() const {
         return m_index;
     }
 
-    void CommandEditBox::setHeight() {
+    void CommandEditWidget::setHeight() {
         m_textEdit->setHeight();
     }
 
-    CommandScrollArea* CommandEditBox::commandScrollArea() const {
+    CommandScrollArea* CommandEditWidget::commandScrollArea() const {
         return m_commandScrollArea;
     }
 
-    void CommandEditBox::setCommandVectorPointer() {
+    void CommandEditWidget::setCommandVectorPointer() {
         auto it =
             std::find_if(D_IT(m_commandScrollArea->centralWidget()->mainView()->model()->clusters()), D_FUNC(cluster, cluster.index() == m_index));
         assert(it != m_commandScrollArea->centralWidget()->mainView()->model()->clusters().end());
         m_commandVector = &it->commandVector();
     }
 
-    void CommandEditBox::updateCommandVector() {
+    void CommandEditWidget::updateCommandVector() {
         m_commandVector->set(m_textEdit->contents());
     }
 
-    model::CommandVector* CommandEditBox::commandVector() {
+    model::CommandVector* CommandEditWidget::commandVector() {
         return m_commandVector;
     }
 
-    void CommandEditBox::updateSelection() {
+    void CommandEditWidget::updateSelection() {
         if (not m_commandVector->isEmpty()) {
             m_textEdit->setSelection(m_commandVector->commandIndex());
         }
     }
 
-    void CommandEditBox::disconnectCommandVectorUpdate() {
+    void CommandEditWidget::disconnectCommandVectorUpdate() {
         m_textEdit->blockSignals(true);
     }
 

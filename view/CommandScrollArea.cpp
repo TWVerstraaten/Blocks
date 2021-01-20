@@ -68,7 +68,7 @@ namespace view {
 
     void CommandScrollArea::add(model::Cluster& cluster) {
         assert(std::find_if(D_CIT(m_commandEditBoxes), D_FUNC(box, box->index() == cluster.index())) == m_commandEditBoxes.cend());
-        auto* commandEditBox = new CommandEditBox(this, cluster);
+        auto* commandEditBox = new CommandEditWidget(this, cluster);
         m_commandEditBoxes.emplace_back(commandEditBox);
         connect(commandEditBox->textEdit(), &TextEdit::tabPressed, this, &CommandScrollArea::moveFocusToNext);
         connect(commandEditBox->textEdit(), &TextEdit::backTabPressed, this, &CommandScrollArea::moveFocusToPrevious);
@@ -79,7 +79,7 @@ namespace view {
         return m_centralWidget;
     }
 
-    std::unique_ptr<CommandEditBox> CommandScrollArea::removeFromLayout(size_t index) {
+    std::unique_ptr<CommandEditWidget> CommandScrollArea::removeFromLayout(size_t index) {
         auto it = std::find_if(D_IT(m_commandEditBoxes), D_FUNC(box, box->index() == index));
         assert(it != m_commandEditBoxes.end());
         it->get()->setVisible(false);
@@ -87,10 +87,10 @@ namespace view {
         auto* commandEditBox = it->release();
         m_commandEditBoxes.erase(it);
         update();
-        return std::unique_ptr<CommandEditBox>(commandEditBox);
+        return std::unique_ptr<CommandEditWidget>(commandEditBox);
     }
 
-    void CommandScrollArea::addToLayout(std::unique_ptr<CommandEditBox>&& commandEditBox) {
+    void CommandScrollArea::addToLayout(std::unique_ptr<CommandEditWidget>&& commandEditBox) {
         commandEditBox->setParent(this);
         m_layout->insertWidget(m_layout->count() - 1, commandEditBox.get());
         commandEditBox->setCommandVectorPointer();
@@ -98,7 +98,7 @@ namespace view {
         m_commandEditBoxes.back()->show();
     }
 
-    CommandEditBox* CommandScrollArea::withIndex(size_t index) {
+    CommandEditWidget* CommandScrollArea::withIndex(size_t index) {
         auto it = std::find_if(D_IT(m_commandEditBoxes), D_FUNC(box, box->index() == index));
         assert(it != m_commandEditBoxes.end());
         return it->get();
