@@ -10,6 +10,7 @@
 #include "view/CommandEditBox.h"
 
 #include <list>
+#include <memory>
 
 namespace model {
     class Model;

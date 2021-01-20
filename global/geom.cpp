@@ -8,11 +8,8 @@
 
 #include <algorithm>
 #include <cassert>
-#include <vector>
-
-#ifdef _WIN32
 #include <cmath>
-#endif
+#include <vector>
 
 namespace geom {
 

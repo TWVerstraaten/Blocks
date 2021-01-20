@@ -6,9 +6,7 @@
 
 #include "global/defines.h"
 
-#ifdef _WIN32
 #include <cmath>
-#endif
 
 namespace view {
     int ViewPort::blockSizeInScreen() const {
