@@ -10,7 +10,7 @@
 
 namespace view {
     TextEdit::TextEdit(CommandEditWidget* commandEditBox, const QString& string)
-        : QTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
+        : QPlainTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
@@ -25,16 +25,15 @@ namespace view {
         palette.setColor(QPalette::HighlightedText, QColor(Qt::black));
         setPalette(palette);
 
-        setMaximumWidth(200);
         document()->adjustSize();
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-
-        append(string);
+        setMinimumHeight(100);
 
         connect(this, &TextEdit::textChanged, this, &TextEdit::setHeight);
         connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
         connect(this, &TextEdit::cursorPositionChanged, [this]() { highlightLine(textCursor()); });
-        setMinimumHeight(40);
+
+        appendPlainText(string);
     }
 
     TextEdit::~TextEdit() {
@@ -68,15 +67,16 @@ namespace view {
                 update();
                 break;
             default:
-                QTextEdit::keyPressEvent(event);
+                QPlainTextEdit::keyPressEvent(event);
         }
     }
 
     void TextEdit::setHeight() {
         updateGeometry();
+//        auto size = document()->pageSize();
         QSize size = document()->size().toSize();
-        setMaximumHeight(size.height());
-        setMinimumHeight(size.height());
+        setMaximumHeight(size.height() * (lineHeight() + 1) + 10);
+        setMinimumHeight(size.height() * (lineHeight() + 1) + 10);
         update();
     }
 

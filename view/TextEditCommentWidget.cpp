@@ -39,6 +39,7 @@ void view::TextEditCommentWidget::setBackgroundColor(const QColor& color) {
 void view::TextEditCommentWidget::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);
     QPainter painter(this);
+    painter.setPen(Qt::darkGray);
     for (const auto& [index, comment] : m_comments) {
         painter.drawText(2, m_topMargin + m_lineHeight * (index + 1), comment);
     }
@@ -59,7 +60,7 @@ void view::TextEditCommentWidget::setTopMargin(size_t topMargin) {
 void view::TextEditCommentWidget::fillLineNumbers(size_t lineNumbers) {
     m_comments.clear();
     for (size_t i = 0; i != lineNumbers; ++i) {
-        addComment(i, QString("%1").arg(i + 1));
+        addComment(i, QString("%1.").arg(i + 1));
     }
 }
 

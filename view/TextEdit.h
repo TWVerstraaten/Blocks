@@ -3,6 +3,7 @@
 
 #include "SyntaxHighlighter.h"
 
+#include <QPlainTextEdit>
 #include <QTextEdit>
 #include <string>
 #include <vector>
@@ -10,7 +11,7 @@
 namespace view {
     class CommandEditWidget;
 
-    class TextEdit : public QTextEdit {
+    class TextEdit : public QPlainTextEdit {
         Q_OBJECT
 
       public:
@@ -39,7 +40,7 @@ namespace view {
 
         size_t nThOpaqueLine(size_t n);
 
-        CommandEditWidget*    m_commandEditBox;
+        CommandEditWidget* m_commandEditBox;
         SyntaxHighlighter* m_syntaxHighlighter;
     };
 } // namespace view

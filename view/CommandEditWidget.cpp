@@ -43,9 +43,9 @@ namespace view {
         m_lineWidget->setBackgroundColor(view::color::WIDGET_LIGHT.lighter(115));
         m_lineWidget->setLineHeight(m_textEdit->lineHeight());
         m_lineWidget->setTopMargin(m_textEdit->topMargin());
-        m_lineWidget->fillLineNumbers(1);
+        m_lineWidget->fillLineNumbers(m_textEdit->document()->blockCount());
 
-        connect(m_textEdit, &QTextEdit::textChanged, [this]() { m_lineWidget->fillLineNumbers(m_textEdit->document()->blockCount()); });
+        connect(m_textEdit, &TextEdit::textChanged, [this]() { m_lineWidget->fillLineNumbers(m_textEdit->document()->blockCount()); });
 
         m_commentWidget->setWidth(30);
         m_commentWidget->setLineHeight(m_textEdit->lineHeight());
@@ -65,15 +65,15 @@ namespace view {
         setPalette(pal);
 
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        connect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
-        connect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditWidget::setHeight);
-        m_textEdit->setHeight();
+        connect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
+//        connect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::setHeight);
+        //        m_textEdit->setHeight();
         update();
     }
 
     CommandEditWidget::~CommandEditWidget() {
-        disconnect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
-        disconnect(m_textEdit, &QTextEdit::textChanged, this, &CommandEditWidget::setHeight);
+        disconnect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
+        disconnect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::setHeight);
     }
 
     TextEdit* CommandEditWidget::textEdit() {
