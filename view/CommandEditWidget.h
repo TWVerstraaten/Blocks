@@ -1,6 +1,7 @@
 #ifndef COMMANDEDITBOX_H
 #define COMMANDEDITBOX_H
 
+#include "CentralWidget_enums.h"
 #include "TextEdit.h"
 #include "TextEditCommentWidget.h"
 

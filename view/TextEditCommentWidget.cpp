@@ -47,6 +47,7 @@ void view::TextEditCommentWidget::paintEvent(QPaintEvent* event) {
 
 void view::TextEditCommentWidget::addComment(size_t index, const QString& string) {
     m_comments.emplace_back(index, string);
+    update();
 }
 
 void view::TextEditCommentWidget::setComments(std::vector<std::pair<size_t, QString>>&& comments) {

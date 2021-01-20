@@ -3,7 +3,7 @@
 
 #include "../app/Application_constants.h"
 #include "BlockSelectWidget.h"
-#include "CommandScrollArea.h"
+#include "CentralWidget_enums.h"
 #include "action/Action.h"
 
 #include <QElapsedTimer>
@@ -19,6 +19,7 @@ class QUndoView;
 
 namespace view {
     class MainView;
+    class CommandScrollArea;
 
     class CentralWidget : public QWidget {
         Q_OBJECT
@@ -50,11 +51,12 @@ namespace view {
         void togglePhase();
         void endMovePhase();
         void endInteractPhase();
+        void startMovePhase();
+        void startInteractPhase();
         void moveLoop(size_t elapsed);
         void interactLoop(size_t elapsed);
 
         enum class MODE { EDITING, RUNNING };
-        enum class PHASE { MOVE, INTERACT };
 
         MODE  m_mode  = MODE::EDITING;
         PHASE m_phase = PHASE::MOVE;

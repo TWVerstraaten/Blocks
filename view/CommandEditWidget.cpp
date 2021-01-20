@@ -2,6 +2,7 @@
 
 #include "../model/command/CommandParser.h"
 #include "CentralWidget.h"
+#include "CommandScrollArea.h"
 #include "MainView.h"
 #include "color.h"
 #include "global/defines.h"
@@ -64,16 +65,13 @@ namespace view {
         setAutoFillBackground(true);
         setPalette(pal);
 
-        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
         connect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
-//        connect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::setHeight);
-        //        m_textEdit->setHeight();
         update();
     }
 
     CommandEditWidget::~CommandEditWidget() {
         disconnect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
-        disconnect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::setHeight);
     }
 
     TextEdit* CommandEditWidget::textEdit() {
@@ -110,6 +108,11 @@ namespace view {
     void CommandEditWidget::updateSelection() {
         if (not m_commandVector->isEmpty()) {
             m_textEdit->setSelection(m_commandVector->commandIndex());
+        }
+        m_commentWidget->clearComments();
+        if (m_commandVector->currentIsRepeat()) {
+            m_commentWidget->addComment(m_textEdit->nThOpaqueLine(m_commandVector->commandIndex()),
+                                        QString("%1").arg(m_commandVector->repeatCount() + 1));
         }
     }
 

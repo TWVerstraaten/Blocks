@@ -1,6 +1,7 @@
 #ifndef COMMANDSCROLLAREA_H
 #define COMMANDSCROLLAREA_H
 
+#include "CentralWidget_enums.h"
 #include "CommandEditWidget.h"
 
 #include <QScrollArea>
@@ -25,7 +26,7 @@ namespace view {
         void disable();
 
         [[nodiscard]] CommandEditWidget*                 withIndex(size_t index);
-        [[nodiscard]] CentralWidget*                  centralWidget() const;
+        [[nodiscard]] CentralWidget*                     centralWidget() const;
         [[nodiscard]] std::unique_ptr<CommandEditWidget> removeFromLayout(size_t index);
 
       private slots:
@@ -35,8 +36,8 @@ namespace view {
 
       private:
         std::vector<std::unique_ptr<CommandEditWidget>> m_commandEditBoxes;
-        QVBoxLayout*                                 m_layout;
-        CentralWidget*                               m_centralWidget;
+        QVBoxLayout*                                    m_layout;
+        CentralWidget*                                  m_centralWidget;
     };
 } // namespace view
 

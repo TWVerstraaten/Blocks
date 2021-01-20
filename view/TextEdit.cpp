@@ -2,6 +2,7 @@
 
 #include "../model/command/CommandParser.h"
 #include "CentralWidget.h"
+#include "CommandScrollArea.h"
 #include "action/TextEditAction.h"
 #include "view/color.h"
 
@@ -19,6 +20,7 @@ namespace view {
         const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
         QFont         font(family, 10);
         setFont(font);
+        m_lineHeight = QFontMetrics(font).height();
 
         QPalette palette = this->palette();
         palette.setColor(QPalette::Highlight, QColor(view::color::WIDGET_LIGHT.lighter(110)));
@@ -73,10 +75,8 @@ namespace view {
 
     void TextEdit::setHeight() {
         updateGeometry();
-//        auto size = document()->pageSize();
         QSize size = document()->size().toSize();
-        setMaximumHeight(size.height() * (lineHeight() + 1) + 10);
-        setMinimumHeight(size.height() * (lineHeight() + 1) + 10);
+        setFixedHeight(size.height() * (m_lineHeight + 1) + 10);
         update();
     }
 
@@ -87,7 +87,6 @@ namespace view {
 #else
         QStringList stringList = data.split(QRegExp("[\n]"), QString::KeepEmptyParts);
 #endif
-
         std::vector<std::string> result;
         for (const auto& it : stringList) {
             result.emplace_back(it.toStdString());
@@ -127,7 +126,7 @@ namespace view {
         setExtraSelections(extraSelections);
     }
 
-    size_t TextEdit::nThOpaqueLine(size_t n) {
+    size_t TextEdit::nThOpaqueLine(size_t n) const {
         size_t i = 0;
         while (model::CommandParser::isCommentOrEmpty(document()->findBlockByLineNumber(i).text().toStdString())) {
             ++i;
@@ -143,7 +142,7 @@ namespace view {
     }
 
     size_t TextEdit::lineHeight() const {
-        return QFontMetrics(font()).height();
+        return m_lineHeight;
     }
 
     size_t TextEdit::topMargin() const {

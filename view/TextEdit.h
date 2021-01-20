@@ -26,6 +26,7 @@ namespace view {
         [[nodiscard]] size_t                   lineHeight() const;
         [[nodiscard]] size_t                   topMargin() const;
         [[nodiscard]] std::vector<std::string> contents() const;
+        [[nodiscard]] size_t                   nThOpaqueLine(size_t n) const;
 
       protected:
         [[nodiscard]] QSize sizeHint() const override;
@@ -38,10 +39,9 @@ namespace view {
       private:
         void highlightLine(const QTextCursor& cursor);
 
-        size_t nThOpaqueLine(size_t n);
-
         CommandEditWidget* m_commandEditBox;
         SyntaxHighlighter* m_syntaxHighlighter;
+        size_t             m_lineHeight;
     };
 } // namespace view
 

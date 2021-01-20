@@ -5,6 +5,7 @@
 #include "MainViewMouseManager.h"
 
 #include "CentralWidget.h"
+#include "CommandScrollArea.h"
 #include "MainView.h"
 #include "action/AddFloorBlockAction.h"
 #include "action/AddLevelBlockAction.h"

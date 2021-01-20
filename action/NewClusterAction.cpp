@@ -5,6 +5,7 @@
 #include "NewClusterAction.h"
 
 #include "../model/Model.h"
+#include "../view/CommandScrollArea.h"
 #include "view/CentralWidget.h"
 #include "view/MainView.h"
 

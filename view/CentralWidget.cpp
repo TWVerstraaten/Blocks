@@ -1,5 +1,6 @@
 #include "CentralWidget.h"
 
+#include "CommandScrollArea.h"
 #include "MainView.h"
 #include "global/defines.h"
 
@@ -235,18 +236,26 @@ namespace view {
     }
 
     void CentralWidget::endMovePhase() {
-        m_mainView->model()->resetPhase();
-        for (auto& cluster : m_mainView->model()->clusters()) {
-            cluster.incrementCommandIndex();
-        }
-        m_commandScrollArea->updateSelection();
+        startInteractPhase();
     }
 
     void CentralWidget::endInteractPhase() {
+        startMovePhase();
+    }
+
+    void CentralWidget::startMovePhase() {
         m_mainView->model()->resetPhase();
         for (auto& cluster : m_mainView->model()->clusters()) {
             cluster.doCommand(*m_mainView->model());
             cluster.buildSides();
+        }
+        m_commandScrollArea->updateSelection();
+    }
+
+    void CentralWidget::startInteractPhase() {
+        m_mainView->model()->resetPhase();
+        for (auto& cluster : m_mainView->model()->clusters()) {
+            cluster.incrementCommandIndex();
         }
         m_commandScrollArea->updateSelection();
     }
