@@ -126,12 +126,12 @@ namespace view {
         }
 #endif
 
-        painter.setFont(m_font);
-        QFontMetrics fontMetrics(m_font);
-        const int    width  = fontMetrics.horizontalAdvance(cluster.name().c_str());
-        const int    height = fontMetrics.height();
-        painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, color::NAME_BACKGROUND);
-        painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
+//        painter.setFont(m_font);
+//        QFontMetrics fontMetrics(m_font);
+//        const int    width  = fontMetrics.horizontalAdvance(cluster.name().c_str());
+//        const int    height = fontMetrics.height();
+//        painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, color::NAME_BACKGROUND);
+//        painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
     }
 
     void MainViewPainter::drawConnected(

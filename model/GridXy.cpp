@@ -7,9 +7,7 @@
 #include "../view/ScreenXy.h"
 #include "../view/ViewPort.h"
 
-#ifdef _WIN32
 #include <cmath>
-#endif
 
 namespace model {
     GridXy::GridXy(int x, int y) : m_x(x), m_y(y) {

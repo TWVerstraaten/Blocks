@@ -103,9 +103,10 @@ namespace view {
     }
 
     void CommandEditWidget::updateSelection() {
-        if (not m_commandVector->isEmpty()) {
-            m_textEdit->setSelection(m_commandVector->commandIndex());
+        if (m_commandVector->isEmpty()) {
+            return;
         }
+        m_textEdit->setSelection(m_commandVector->commandIndex());
         m_commentWidget->clearComments();
         if (m_commandVector->currentIsRepeat()) {
             m_commentWidget->addComment(m_textEdit->nThOpaqueLine(m_commandVector->commandIndex()),

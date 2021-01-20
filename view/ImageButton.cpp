@@ -27,11 +27,11 @@ namespace view {
 
     void ImageButton::setUnselected() {
         setStyleSheet(QString("QPushButton {\n"
-                              "    background-color: rgba(255,255,255,0);\n"
+                              "    background-color: %1;\n"
                               "}\n"
                               "QPushButton:hover {\n"
-                              "    background-color: %1;\n"
-                              "}\n")
+                              "    background-color: %2;\n"
+                              "}\n")                          .arg(color::WIDGET_DARK.name(QColor::HexRgb))
                           .arg(color::WIDGET_LIGHT.name(QColor::HexRgb)));
     }
 } // namespace view

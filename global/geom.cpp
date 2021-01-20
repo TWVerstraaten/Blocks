@@ -7,10 +7,7 @@
 #include "defines.h"
 
 #include <cassert>
-
-#ifdef _WIN32
 #include <cmath>
-#endif
 
 namespace geom {
 
