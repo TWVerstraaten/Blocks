@@ -42,6 +42,8 @@ namespace model {
             case model::GridXy::DIRECTION::RIGHT:
                 return {x() + 1, y()};
         }
+        assert(false);
+        return {x(), y()};
     }
 
     bool operator==(const GridXy& lhs, const GridXy& rhs) {

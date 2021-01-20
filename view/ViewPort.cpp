@@ -11,6 +11,7 @@
 #endif
 
 namespace view {
+
     int ViewPort::blockSizeInScreen() const {
         return static_cast<int>(app::BLOCK_SIZE_IN_WORLD * m_scale);
     }

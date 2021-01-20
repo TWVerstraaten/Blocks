@@ -26,10 +26,7 @@ namespace view {
         void init();
         void init(const model::Model& model);
 
-        void startRunning();
-        void stopRunning();
         void setCommandScrollArea(CommandScrollArea* commandScrollArea);
-        void setModel(const std::unique_ptr<model::Model>& model);
         void setViewPort(const ViewPort& viewPort);
 
         [[nodiscard]] CommandScrollArea*    commandScrollArea();

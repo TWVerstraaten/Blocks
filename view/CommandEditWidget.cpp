@@ -4,12 +4,11 @@
 #include "CentralWidget.h"
 #include "CommandScrollArea.h"
 #include "MainView.h"
-#include "color.h"
-#include "global/defines.h"
 #include "TextEdit.h"
 #include "TextEditCommentWidget.h"
+#include "color.h"
+#include "global/defines.h"
 
-#include <QGridLayout>
 #include <QLabel>
 
 namespace view {
@@ -82,10 +81,6 @@ namespace view {
 
     size_t CommandEditWidget::index() const {
         return m_index;
-    }
-
-    void CommandEditWidget::setHeight() {
-        m_textEdit->setHeight();
     }
 
     CommandScrollArea* CommandEditWidget::commandScrollArea() const {

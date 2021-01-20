@@ -33,7 +33,6 @@ namespace view {
         [[nodiscard]] model::CommandVector* commandVector();
 
       private slots:
-        void setHeight();
         void updateCommandVector();
 
       private:

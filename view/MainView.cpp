@@ -59,26 +59,12 @@ namespace view {
         return m_mainViewMouseManager;
     }
 
-    void MainView::startRunning() {
-        std::swap(m_model, m_modelStash);
-        m_model = std::make_unique<model::Model>(*m_modelStash);
-    }
-
-    void MainView::stopRunning() {
-        std::swap(m_model, m_modelStash);
-        m_modelStash.reset(nullptr);
-    }
-
     void MainView::setCommandScrollArea(CommandScrollArea* commandScrollArea) {
         m_commandScrollArea = commandScrollArea;
     }
 
     CommandScrollArea* MainView::commandScrollArea() {
         return m_commandScrollArea;
-    }
-
-    void MainView::setModel(const std::unique_ptr<model::Model>& model) {
-        m_model = std::make_unique<model::Model>(*model);
     }
 
     void MainView::setViewPort(const ViewPort& viewPort) {
