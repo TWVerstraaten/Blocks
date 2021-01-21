@@ -7,7 +7,7 @@
 
 #include <vector>
 
-namespace global {
+namespace str {
 
     class CircularBuffer {
 
