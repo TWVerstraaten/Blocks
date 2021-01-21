@@ -110,7 +110,7 @@ namespace view {
         const auto namePosition =
             ScreenXy::fromWorldXy(f(WorldXy(*cluster.gridXy().begin()) + WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}), *m_viewPort);
 
-        painter.setFont(FontManager::font(FONT_ENUM::UBUNTU_ITALIC, 12));
+        painter.setFont(FontManager::font(FONT_ENUM::ANON_PRO_ITALIC, 12));
         QFontMetrics fontMetrics(painter.font());
         const int    width  = fontMetrics.horizontalAdvance(cluster.name().c_str());
         const int    height = fontMetrics.height();

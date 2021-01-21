@@ -33,7 +33,7 @@ namespace view {
         auto* l    = new QGridLayout(this);
 
         auto* label = new QLabel(m_name.c_str(), this);
-        label->setFont(FontManager ::font(FONT_ENUM::UBUNTU_BOLD, 11));
+        label->setFont(FontManager ::font(FONT_ENUM::ANON_PRO_BOLD, 11));
 
         l->addWidget(label, 0, 0, 1, 3);
         m_lineWidget->setWidth(30);

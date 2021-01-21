@@ -8,9 +8,10 @@
 namespace view {
     enum class FONT_ENUM {
 
-        UBUNTU_BOLD,
-        UBUNTU_ITALIC,
-        UBUNTU_REGULAR
+        ANON_PRO_BOLD,
+        ANON_PRO_ITALIC,
+        ANON_PRO_BOLD_ITALIC,
+        ANON_PRO
 
     };
 }

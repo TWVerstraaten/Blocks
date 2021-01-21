@@ -17,7 +17,7 @@ namespace view {
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
-        const QFont& font = FontManager::font(FONT_ENUM::UBUNTU_REGULAR, 10);
+        const QFont& font = FontManager::font(FONT_ENUM::ANON_PRO, 10);
         setFont(font);
         m_lineHeight = QFontMetrics(font).height();
 

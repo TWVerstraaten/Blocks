@@ -7,6 +7,10 @@
         <file>assets/UbuntuMono-Italic.ttf</file>
         <file>assets/UbuntuMono-Bold.ttf</file>
         <file>assets/UbuntuMono-Regular.ttf</file>
+        <file>assets/Anonymous_Pro.ttf</file>
+        <file>assets/Anonymous_Pro_B.ttf</file>
+        <file>assets/Anonymous_Pro_BI.ttf</file>
+        <file>assets/Anonymous_Pro_I.ttf</file>
     </qresource>
 </RCC>
 

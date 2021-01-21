@@ -11,7 +11,7 @@
 namespace view {
 
     TextEditCommentWidget::TextEditCommentWidget(QWidget* parent) : QWidget(parent) {
-        setFont(FontManager::font(FONT_ENUM::UBUNTU_REGULAR, 9));
+        setFont(FontManager::font(FONT_ENUM::ANON_PRO, 9));
 
         QPalette palette = this->palette();
         palette.setColor(QPalette::Text, Qt::black);

@@ -23,21 +23,26 @@ namespace view {
         if (s_ids.find(fontEnum) == s_ids.end()) {
             int id;
             switch (fontEnum) {
-                case FONT_ENUM::UBUNTU_BOLD:
-                    id = QFontDatabase::addApplicationFont(":/assets/UbuntuMono-Italic.ttf");
+                case FONT_ENUM::ANON_PRO_BOLD:
+                    id = QFontDatabase::addApplicationFont(":/assets/Anonymous_Pro_B.ttf");
                     break;
-                case FONT_ENUM::UBUNTU_ITALIC:
-                    id = QFontDatabase::addApplicationFont(":/assets/UbuntuMono-Italic.ttf");
+                case FONT_ENUM::ANON_PRO_ITALIC:
+                    id = QFontDatabase::addApplicationFont(":/assets/Anonymous_Pro_I.ttf");
                     break;
-                case FONT_ENUM::UBUNTU_REGULAR:
-                    id = QFontDatabase::addApplicationFont(":/assets/UbuntuMono-Italic.ttf");
+                case FONT_ENUM::ANON_PRO_BOLD_ITALIC:
+                    id = QFontDatabase::addApplicationFont(":/assets/Anonymous_Pro_BI.ttf");
+                    break;
+                case FONT_ENUM::ANON_PRO:
+                    id = QFontDatabase::addApplicationFont(":/assets/Anonymous_Pro.ttf");
                     break;
             }
             assert(id >= 0);
             s_ids.emplace(fontEnum, id);
         }
-        const QString family = QFontDatabase::applicationFontFamilies(s_ids[fontEnum]).at(0);
-        s_fonts.emplace(std::make_pair(fontEnum, size), QFont(family, size));
+        const auto family = QFontDatabase::applicationFontFamilies(s_ids[fontEnum]).at(0);
+        auto       font   = QFont(family, size);
+
+        s_fonts.emplace(std::make_pair(fontEnum, size), font);
     }
 
 } // namespace view

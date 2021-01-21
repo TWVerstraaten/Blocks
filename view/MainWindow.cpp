@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 
 #include "CentralWidget.h"
+#include "FontManager.h"
 
 namespace view {
 
