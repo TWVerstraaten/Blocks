@@ -12,7 +12,8 @@
 
 namespace view {
 
-    CentralWidget::CentralWidget() : m_qUndoView(new QUndoView(&m_qUndoStack)), m_blockSelectWidget(new BlockSelectWidget(this)) {
+    CentralWidget::CentralWidget()
+        : m_qUndoView(new QUndoView(&m_qUndoStack)), m_blockSelectWidget(new BlockSelectWidget(this)), m_frameRateLabel(new QLabel(this)) {
         setGeometry(0, 0, 1000, 800);
 
         m_layout = new QGridLayout;
@@ -28,6 +29,8 @@ namespace view {
         m_mainView->stackUnder(m_blockSelectWidget);
         m_layout->addWidget(m_blockSelectWidget, 1, 0);
         m_layout->addWidget(m_commandScrollArea, 0, 2, 2, 1);
+        m_layout->addWidget(m_frameRateLabel, 2, 0, 1, 3);
+        m_frameRateLabel->setFixedHeight(50);
 
         //        m_layout->addWidget(m_qUndoView, 0, 3, 2, 1);
         //        m_qUndoView->setMaximumWidth(250);
@@ -142,7 +145,7 @@ namespace view {
             m_elapsedTimer.restart();
             m_phaseTimer.restart();
         }
-        update();
+        //        update();
         QTimer::singleShot(0, this, &CentralWidget::mainLoop);
     }
 
@@ -177,6 +180,7 @@ namespace view {
 
         std::swap(m_mainView, m_mainViewStash);
         std::swap(m_commandScrollArea, m_commandScrollAreaStash);
+        m_commandScrollArea->show();
 
         m_layout->addWidget(m_mainView, 0, 0, 2, 2);
         m_mainView->stackUnder(m_blockSelectWidget);
@@ -196,6 +200,7 @@ namespace view {
 
         std::swap(m_mainView, m_mainViewStash);
         std::swap(m_commandScrollArea, m_commandScrollAreaStash);
+        m_commandScrollAreaStash->hide();
 
         m_commandScrollArea = new CommandScrollArea(this);
         m_mainView          = new MainView(this);
@@ -227,9 +232,12 @@ namespace view {
     void CentralWidget::moveLoop(size_t elapsed) {
         auto& model = *m_mainView->model();
         model.update(1.1 * elapsed / static_cast<double>(m_timeStep));
+
+        update();
     }
 
     void CentralWidget::interactLoop(size_t elapsed) {
+        update();
     }
 
     void CentralWidget::endMovePhase() {
@@ -246,6 +254,7 @@ namespace view {
             cluster.doCommand(*m_mainView->model());
             cluster.buildSides();
         }
+        m_mainView->model()->update(0.0001);
         m_commandScrollArea->updateSelection();
     }
 
@@ -255,6 +264,19 @@ namespace view {
             cluster.incrementCommandIndex();
         }
         m_commandScrollArea->updateSelection();
+    }
+
+    void CentralWidget::paintEvent(QPaintEvent* event) {
+        QWidget::paintEvent(event);
+
+        m_circularBuffer.add(m_frameRateTimer.elapsed());
+        m_frameRateLabel->setText(QString("Ave:\t %1\n"
+                                          "Max:\t %2\n"
+                                          "Min:\t %3\n")
+                                      .arg(m_circularBuffer.size() * 1000.0 / static_cast<double>(m_circularBuffer.sum()))
+                                      .arg(1000.0 / static_cast<double>(m_circularBuffer.min()))
+                                      .arg(1000.0 / static_cast<double>(m_circularBuffer.max())));
+        m_frameRateTimer.restart();
     }
 
 } // namespace view

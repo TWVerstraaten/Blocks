@@ -17,14 +17,12 @@ namespace action {
 
     void TextEditAction::undo() {
         m_textEdit->undo();
-        m_textEdit->update();
         m_textEdit->setFocus();
     }
 
     void TextEditAction::redo() {
         if (not m_blockInitial) {
             m_textEdit->redo();
-            m_textEdit->update();
             m_textEdit->setFocus();
         }
         m_blockInitial = false;

@@ -13,7 +13,7 @@ namespace view {
         ANON_PRO_BOLD_ITALIC,
         ANON_PRO,
         UBUNTU_MONO,
-        UBUNTU_MONO_BOLd,
+        UBUNTU_MONO_BOLD,
         UBUNTU_MONO_ITALIC,
         UBUNTU_MONO_BOLD_ITALIC
 

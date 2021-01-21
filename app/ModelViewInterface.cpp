@@ -15,15 +15,15 @@
 //using namespace widget;
 //
 //static std::list<Cluster>::iterator findCluster(const CommandEditWidget& commandEditBox, std::list<Cluster>& clusters) {
-//    return std::find_if(D_IT(clusters), D_FUNC(cluster, cluster.index() == commandEditBox.index()));
+//    return std::find_if(D_IT(clusters), D_FUNC(cluster, cluster.m_currentIndex() == commandEditBox.m_currentIndex()));
 //}
 //
 //static std::list<Cluster>::const_iterator findCluster(const CommandEditWidget& commandEditBox, const std::list<Cluster>& clusters) {
-//    return std::find_if(D_CIT(clusters), D_FUNC(cluster, cluster.index() == commandEditBox.index()));
+//    return std::find_if(D_CIT(clusters), D_FUNC(cluster, cluster.m_currentIndex() == commandEditBox.m_currentIndex()));
 //}
 //
 //static std::list<CommandEditWidget>::iterator findCommandEditBox(const Cluster& cluster, std::list<CommandEditWidget>& commandEditBoxes) {
-//    return std::find_if(D_IT(commandEditBoxes), D_FUNC(box, cluster.index() == box.index()));
+//    return std::find_if(D_IT(commandEditBoxes), D_FUNC(box, cluster.m_currentIndex() == box.m_currentIndex()));
 //}
 //
 //static void updateCommandEditBoxes(const std::list<Cluster>& clusters, ScrollArea& scrollArea) {

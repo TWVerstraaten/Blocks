@@ -14,7 +14,6 @@ namespace view {
         setIconSize(size - QSize{6, 6});
         setIcon(m_pixmap);
         setFixedSize(size);
-        update();
     }
 
     void ImageButton::setSelected() {

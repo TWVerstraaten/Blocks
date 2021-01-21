@@ -25,7 +25,6 @@ namespace action {
         model->clusters().erase(it);
 
         m_commandEditBox = m_centralWidget->commandScrollArea()->removeFromLayout(m_cluster.index());
-        m_centralWidget->update();
     }
 
     void NewClusterAction::redo() {
@@ -38,7 +37,6 @@ namespace action {
 
             m_centralWidget->commandScrollArea()->addToLayout(std::move(m_commandEditBox));
             assert(m_commandEditBox == nullptr);
-            m_centralWidget->update();
         }
         m_blockInitial = false;
     }

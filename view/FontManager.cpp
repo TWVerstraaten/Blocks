@@ -32,13 +32,15 @@ namespace view {
                 return ":/assets/Anonymous_Pro.ttf";
             case FONT_ENUM::UBUNTU_MONO:
                 return ":/assets/UbuntuMono-Regular.ttf";
-            case FONT_ENUM::UBUNTU_MONO_BOLd:
+            case FONT_ENUM::UBUNTU_MONO_BOLD:
                 return ":/assets/UbuntuMono-Bold.ttf";
             case FONT_ENUM::UBUNTU_MONO_ITALIC:
                 return ":/assets/UbuntuMono-Italic.ttf";
             case FONT_ENUM::UBUNTU_MONO_BOLD_ITALIC:
                 return ":/assets/UbuntuMono-BoldItalic.ttf";
         }
+        assert(false);
+        return "";
     }
 
     void FontManager::build(FONT_ENUM fontEnum, size_t size) {

@@ -63,7 +63,6 @@ namespace view {
 
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
         connect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
-        update();
     }
 
     CommandEditWidget::~CommandEditWidget() {
@@ -103,10 +102,12 @@ namespace view {
         }
         m_textEdit->setSelection(m_commandVector->commandIndex());
         m_commentWidget->clearComments();
+        m_commentWidget->update();
         if (m_commandVector->currentIsRepeat()) {
             m_commentWidget->addComment(m_textEdit->nThOpaqueLine(m_commandVector->commandIndex()),
                                         QString("%1").arg(m_commandVector->repeatCount() + 1));
         }
+        update();
     }
 
     void CommandEditWidget::disconnectCommandVectorUpdate() {

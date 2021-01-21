@@ -18,7 +18,7 @@ namespace view {
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
-        const QFont& font = FontManager::font(FONT_ENUM::UBUNTU_MONO, 10);
+        const QFont& font = FontManager::font(FONT_ENUM::UBUNTU_MONO_BOLD, 10);
         setFont(font);
         m_lineHeight = QFontMetrics(font).height();
 
@@ -56,15 +56,12 @@ namespace view {
             case Qt::Key_Escape:
                 clearFocus();
                 m_commandEditBox->commandScrollArea()->centralWidget()->setFocus();
-                update();
                 break;
             case Qt::Key_Tab:
                 emit tabPressed();
-                update();
                 break;
             case Qt::Key_Backtab:
                 emit backTabPressed();
-                update();
                 break;
             default:
                 QPlainTextEdit::keyPressEvent(event);
@@ -75,7 +72,6 @@ namespace view {
         updateGeometry();
         QSize size = document()->size().toSize();
         setFixedHeight(size.height() * (m_lineHeight + 1) + 10);
-        update();
     }
 
     std::vector<std::string> TextEdit::contents() const {

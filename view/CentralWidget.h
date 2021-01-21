@@ -2,11 +2,13 @@
 #define WINDOW_H
 
 #include "../app/Application_constants.h"
+#include "../global/CircularBuffer.h"
 #include "CentralWidget_enums.h"
 #include "action/Action.h"
 
 #include <QElapsedTimer>
 #include <QGridLayout>
+#include <QLabel>
 #include <QUndoStack>
 #include <QWidget>
 
@@ -42,6 +44,9 @@ namespace view {
         [[nodiscard]] CommandScrollArea* commandScrollArea() const;
         [[nodiscard]] MainView*          mainView() const;
 
+      protected:
+        void paintEvent(QPaintEvent* event) override;
+
       private:
         void tryStart();
         void tryStop();
@@ -63,17 +68,21 @@ namespace view {
 
         size_t m_timeStep = app::TIME_STEP_SLOW;
 
-        MainView*          m_mainView;
-        MainView*          m_mainViewStash = nullptr;
-        CommandScrollArea* m_commandScrollArea;
-        CommandScrollArea* m_commandScrollAreaStash = nullptr;
-        QGridLayout*       m_layout;
-        QUndoStack         m_qUndoStack;
-        QUndoView*         m_qUndoView;
-        BlockSelectWidget* m_blockSelectWidget;
-        QElapsedTimer      m_phaseTimer;
-        QElapsedTimer      m_elapsedTimer;
+        MainView*              m_mainView;
+        MainView*              m_mainViewStash = nullptr;
+        CommandScrollArea*     m_commandScrollArea;
+        CommandScrollArea*     m_commandScrollAreaStash = nullptr;
+        QGridLayout*           m_layout;
+        QUndoStack             m_qUndoStack;
+        QUndoView*             m_qUndoView;
+        BlockSelectWidget*     m_blockSelectWidget;
+        QElapsedTimer          m_phaseTimer;
+        QElapsedTimer          m_elapsedTimer;
+        QElapsedTimer          m_frameRateTimer;
+        QLabel*                m_frameRateLabel;
+        global::CircularBuffer m_circularBuffer{50};
     };
+
 } // namespace view
 
 #endif
