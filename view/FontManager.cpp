@@ -19,23 +19,31 @@ namespace view {
         return s_fonts.at({fontEnum, size});
     }
 
+    static QString fromEnum(FONT_ENUM fontEnum) {
+        switch (fontEnum) {
+
+            case FONT_ENUM::ANON_PRO_BOLD:
+                return ":/assets/Anonymous_Pro_B.ttf";
+            case FONT_ENUM::ANON_PRO_ITALIC:
+                return ":/assets/Anonymous_Pro_I.ttf";
+            case FONT_ENUM::ANON_PRO_BOLD_ITALIC:
+                return ":/assets/Anonymous_Pro_BI.ttf";
+            case FONT_ENUM::ANON_PRO:
+                return ":/assets/Anonymous_Pro.ttf";
+            case FONT_ENUM::UBUNTU_MONO:
+                return ":/assets/UbuntuMono-Regular.ttf";
+            case FONT_ENUM::UBUNTU_MONO_BOLd:
+                return ":/assets/UbuntuMono-Bold.ttf";
+            case FONT_ENUM::UBUNTU_MONO_ITALIC:
+                return ":/assets/UbuntuMono-Italic.ttf";
+            case FONT_ENUM::UBUNTU_MONO_BOLD_ITALIC:
+                return ":/assets/UbuntuMono-BoldItalic.ttf";
+        }
+    }
+
     void FontManager::build(FONT_ENUM fontEnum, size_t size) {
         if (s_ids.find(fontEnum) == s_ids.end()) {
-            int id;
-            switch (fontEnum) {
-                case FONT_ENUM::ANON_PRO_BOLD:
-                    id = QFontDatabase::addApplicationFont(":/assets/Anonymous_Pro_B.ttf");
-                    break;
-                case FONT_ENUM::ANON_PRO_ITALIC:
-                    id = QFontDatabase::addApplicationFont(":/assets/Anonymous_Pro_I.ttf");
-                    break;
-                case FONT_ENUM::ANON_PRO_BOLD_ITALIC:
-                    id = QFontDatabase::addApplicationFont(":/assets/Anonymous_Pro_BI.ttf");
-                    break;
-                case FONT_ENUM::ANON_PRO:
-                    id = QFontDatabase::addApplicationFont(":/assets/Anonymous_Pro.ttf");
-                    break;
-            }
+            int id = QFontDatabase::addApplicationFont(fromEnum(fontEnum));
             assert(id >= 0);
             s_ids.emplace(fontEnum, id);
         }

@@ -12,12 +12,13 @@
 #include <QDebug>
 
 namespace view {
+
     TextEdit::TextEdit(CommandEditWidget* commandEditBox, const QString& string)
         : QPlainTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
-        const QFont& font = FontManager::font(FONT_ENUM::ANON_PRO, 10);
+        const QFont& font = FontManager::font(FONT_ENUM::UBUNTU_MONO, 10);
         setFont(font);
         m_lineHeight = QFontMetrics(font).height();
 
