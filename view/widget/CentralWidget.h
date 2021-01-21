@@ -1,10 +1,12 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "../action/Action.h"
-#include "../app/Application_constants.h"
-#include "../str/CircularBuffer.h"
+#include "../../app/Application_constants.h"
+#include "../../datstr/CircularBuffer.h"
+#include "../../datstr/Stash.h"
 #include "CentralWidget_enums.h"
+#include "CommandScrollArea.h"
+#include "MainView.h"
 
 #include <QElapsedTimer>
 #include <QGridLayout>
@@ -12,14 +14,17 @@
 #include <QUndoStack>
 #include <QWidget>
 
+class QUndoView;
+
 namespace model {
     class Model;
 }
 
-class QUndoView;
+namespace action {
+    class Action;
+}
 
 namespace view {
-    class MainView;
     class CommandScrollArea;
     class BlockSelectWidget;
 
@@ -68,19 +73,17 @@ namespace view {
 
         size_t m_timeStep = app::TIME_STEP_SLOW;
 
-        MainView*           m_mainView;
-        MainView*           m_mainViewStash = nullptr;
-        CommandScrollArea*  m_commandScrollArea;
-        CommandScrollArea*  m_commandScrollAreaStash = nullptr;
-        QGridLayout*        m_layout;
-        QUndoStack          m_qUndoStack;
-        QUndoView*          m_qUndoView;
-        BlockSelectWidget*  m_blockSelectWidget;
-        QElapsedTimer       m_phaseTimer;
-        QElapsedTimer       m_elapsedTimer;
-        QElapsedTimer       m_frameRateTimer;
-        QLabel*             m_frameRateLabel;
-        str::CircularBuffer m_circularBuffer{50};
+        datstr::Stash<MainView>          m_mainView;
+        datstr::Stash<CommandScrollArea> m_commandScrollArea;
+        QGridLayout*                     m_layout;
+        QUndoStack                       m_qUndoStack;
+        QUndoView*                       m_qUndoView;
+        BlockSelectWidget*               m_blockSelectWidget;
+        QElapsedTimer                    m_phaseTimer;
+        QElapsedTimer                    m_elapsedTimer;
+        QElapsedTimer                    m_frameRateTimer;
+        QLabel*                          m_frameRateLabel;
+        datstr::CircularBuffer           m_circularBuffer{50};
     };
 
 } // namespace view

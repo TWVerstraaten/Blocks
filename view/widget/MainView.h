@@ -1,10 +1,7 @@
 #ifndef MAINVIEW_H
 #define MAINVIEW_H
 
-#include "MainViewMouseManager.h"
-#include "MainViewPainter.h"
-#include "ViewPort.h"
-#include "model/Model.h"
+#include "view/ViewPort.h"
 
 #include <QWidget>
 #include <memory>
@@ -14,6 +11,9 @@ namespace model {
 }
 
 namespace view {
+
+    class MainViewMouseManager;
+    class MainViewPainter;
     class CommandScrollArea;
     class CentralWidget;
 
@@ -22,6 +22,8 @@ namespace view {
 
       public:
         explicit MainView(CentralWidget* centralWidget);
+
+        ~MainView() override;
 
         void init();
         void init(const model::Model& model);
@@ -44,13 +46,12 @@ namespace view {
         friend class MainViewPainter;
         friend class MainViewMouseManager;
 
-        CentralWidget*                m_centralWidget;
-        view::ViewPort                m_viewPort;
-        std::unique_ptr<model::Model> m_model;
-        std::unique_ptr<model::Model> m_modelStash;
-        CommandScrollArea*            m_commandScrollArea;
-        MainViewPainter               m_mainViewPainter;
-        MainViewMouseManager          m_mainViewMouseManager;
+        CentralWidget*        m_centralWidget;
+        view::ViewPort        m_viewPort;
+        model::Model*         m_model;
+        CommandScrollArea*    m_commandScrollArea;
+        MainViewPainter*      m_mainViewPainter;
+        MainViewMouseManager* m_mainViewMouseManager;
     };
 } // namespace view
 

@@ -7,7 +7,7 @@
 
 #include <vector>
 
-namespace str {
+namespace datstr {
 
     class CircularBuffer {
 
@@ -29,6 +29,6 @@ namespace str {
         size_t              m_sum;
     };
 
-} // namespace global
+} // namespace datstr
 
 #endif // BLOCKS_CIRCULARBUFFER_H

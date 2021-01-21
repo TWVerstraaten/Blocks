@@ -5,7 +5,7 @@
 #include "MergeClusterAction.h"
 
 #include "../model/Model.h"
-#include "view/CommandScrollArea.h"
+#include "view/widget/CommandScrollArea.h"
 
 namespace action {
 

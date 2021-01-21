@@ -5,7 +5,7 @@
 #include "Command.h"
 
 #include "../../app/Application_constants.h"
-#include "../../global/defines.h"
+#include "../../misc/defines.h"
 #include "../Cluster.h"
 #include "../Level.h"
 

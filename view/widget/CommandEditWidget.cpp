@@ -1,14 +1,12 @@
 #include "CommandEditWidget.h"
 
-#include "../model/command/CommandParser.h"
+#include "../../misc/defines.h"
+#include "../../model/Model.h"
+#include "../FontManager.h"
+#include "../color.h"
 #include "CentralWidget.h"
-#include "CommandScrollArea.h"
-#include "FontManager.h"
-#include "MainView.h"
 #include "TextEdit.h"
 #include "TextEditCommentWidget.h"
-#include "color.h"
-#include "global/defines.h"
 
 #include <QLabel>
 

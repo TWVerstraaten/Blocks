@@ -4,7 +4,7 @@
 
 #include "TextEditCommentWidget.h"
 
-#include "FontManager.h"
+#include "view/FontManager.h"
 
 #include <QPainter>
 

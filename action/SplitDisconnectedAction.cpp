@@ -4,10 +4,9 @@
 
 #include "SplitDisconnectedAction.h"
 
+#include "../misc/defines.h"
 #include "../model/Model.h"
-#include "view/CommandScrollArea.h"
-
-#include <global/defines.h>
+#include "view/widget/CommandScrollArea.h"
 
 namespace action {
     SplitDisconnectedAction::SplitDisconnectedAction(model::Model* model, model::Cluster disconnected, view::CommandScrollArea* commandScrollArea)

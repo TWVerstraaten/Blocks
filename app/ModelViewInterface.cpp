@@ -4,8 +4,8 @@
 //
 //#include "ModelViewInterface.h"
 //
-//#include "../global/defines.h"
-//#include "../global/overloaded.h"
+//#include "../misc/defines.h"
+//#include "../misc/overloaded.h"
 //#include "ApplicationEdit.h"
 //
 //#include <cassert>

@@ -4,8 +4,8 @@
 
 #include "BlockSelectWidget.h"
 
-#include "ImageButton.h"
-#include "color.h"
+#include "view/ImageButton.h"
+#include "view/color.h"
 
 #include <QDebug>
 #include <QGridLayout>

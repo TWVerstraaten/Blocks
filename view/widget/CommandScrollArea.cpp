@@ -2,9 +2,9 @@
 
 #include "CentralWidget.h"
 #include "TextEdit.h"
-#include "color.h"
-#include "global/defines.h"
+#include "misc/defines.h"
 #include "model/Cluster.h"
+#include "view/color.h"
 
 #include <QDebug>
 #include <QScrollBar>

@@ -4,8 +4,8 @@
 
 #include "CommandVector.h"
 
-#include "../../global/defines.h"
-#include "../../global/overloaded.h"
+#include "../../misc/defines.h"
+#include "../../misc/overloaded.h"
 #include "CommandParser.h"
 
 #include <algorithm>

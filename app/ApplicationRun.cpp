@@ -4,8 +4,8 @@
 //
 //#include "ApplicationRun.h"
 //
-//#include "../global/defines.h"
-//#include "../global/geom.h"
+//#include "../misc/defines.h"
+//#include "../misc/geom.h"
 //#include "../view/Mouse.h"
 //#include "ModelViewInterface.h"
 //

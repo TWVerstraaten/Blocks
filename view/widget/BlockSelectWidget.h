@@ -5,7 +5,7 @@
 #ifndef BLOCKS_BLOCKSELECTWIDGET_H
 #define BLOCKS_BLOCKSELECTWIDGET_H
 
-#include "BlockType.h"
+#include "view/BlockType.h"
 
 #include <QWidget>
 #include <vector>

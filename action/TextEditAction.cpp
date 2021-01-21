@@ -4,7 +4,7 @@
 
 #include "TextEditAction.h"
 
-#include "view/TextEdit.h"
+#include "view/widget/TextEdit.h"
 
 namespace action {
     TextEditAction::TextEditAction(view::TextEdit* textEdit) : m_textEdit(textEdit) {

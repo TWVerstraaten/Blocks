@@ -5,7 +5,7 @@
 #include "Model.h"
 
 #include "../app/Application_constants.h"
-#include "../global/defines.h"
+#include "../misc/defines.h"
 
 #include <cassert>
 

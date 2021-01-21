@@ -4,7 +4,7 @@
 //
 //#include "ApplicationEdit.h"
 //
-//#include "../global/defines.h"
+//#include "../misc/defines.h"
 //#include "../view/Mouse.h"
 //#include "../view/widget/BlockSelectWidget_constants.h"
 //#include "Application.h"

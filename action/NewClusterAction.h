@@ -7,7 +7,7 @@
 
 #include "../model/Cluster.h"
 #include "Action.h"
-#include "view/CommandEditWidget.h"
+#include "view/widget/CommandEditWidget.h"
 
 #include <memory>
 

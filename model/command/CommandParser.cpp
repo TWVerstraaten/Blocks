@@ -4,8 +4,8 @@
 
 #include "CommandParser.h"
 
-#include "../../global/defines.h"
-#include "../../global/overloaded.h"
+#include "../../misc/defines.h"
+#include "../../misc/overloaded.h"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>

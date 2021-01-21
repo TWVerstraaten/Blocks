@@ -4,20 +4,19 @@
 
 #include "MainViewMouseManager.h"
 
+#include "../../action/AddFloorBlockAction.h"
+#include "../../action/AddLevelBlockAction.h"
+#include "../../action/ChangeFloorBlockAction.h"
+#include "../../action/ChangeLevelBlockAction.h"
+#include "../../action/DeleteClusterAction.h"
+#include "../../action/MergeClusterAction.h"
+#include "../../action/RemoveBlockFromClusterAction.h"
+#include "../../action/RemoveFloorBlockAction.h"
+#include "../../action/RemoveLevelBlockAction.h"
+#include "../../action/SplitDisconnectedAction.h"
+#include "../../model/Model.h"
 #include "BlockSelectWidget.h"
 #include "CentralWidget.h"
-#include "CommandScrollArea.h"
-#include "MainView.h"
-#include "action/AddFloorBlockAction.h"
-#include "action/AddLevelBlockAction.h"
-#include "action/ChangeFloorBlockAction.h"
-#include "action/ChangeLevelBlockAction.h"
-#include "action/DeleteClusterAction.h"
-#include "action/MergeClusterAction.h"
-#include "action/RemoveBlockFromClusterAction.h"
-#include "action/RemoveFloorBlockAction.h"
-#include "action/RemoveLevelBlockAction.h"
-#include "action/SplitDisconnectedAction.h"
 
 #include <QApplication>
 

@@ -7,7 +7,7 @@
 
 #include <cassert>
 
-namespace str {
+namespace datstr {
 
     template <typename T>
     class Stash {
@@ -34,6 +34,18 @@ namespace str {
             std::swap(m_value, m_stash);
         }
 
+        T* get() {
+            return m_value;
+        }
+
+        T* get() const {
+            return m_value;
+        }
+
+        void set(T* value) {
+            m_value = value;
+        }
+
         void recover() {
             assert(m_hasStash == TRUE);
             m_hasStash = FALSE;
@@ -46,8 +58,17 @@ namespace str {
             return *m_value;
         }
 
+        T* operator->() {
+            return m_value;
+        }
+
         explicit operator T*() {
             return m_value;
+        }
+
+        T* stashedValue() {
+            assert(m_hasStash == TRUE);
+            return m_stash;
         }
 
       private:
@@ -57,6 +78,6 @@ namespace str {
         T* m_stash;
     };
 
-} // namespace str
+} // namespace datstr
 
 #endif // BLOCKS_STASH_H

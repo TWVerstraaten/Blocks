@@ -5,8 +5,8 @@
 #ifndef BLOCKS_MAINVIEWPAINTER_H
 #define BLOCKS_MAINVIEWPAINTER_H
 
-#include "../model/Model_typedefs.h"
-#include "../model/PhaseTransformation.h"
+#include "model/Model_typedefs.h"
+#include "model/PhaseTransformation.h"
 
 #include <QPaintEvent>
 #include <QPainter>

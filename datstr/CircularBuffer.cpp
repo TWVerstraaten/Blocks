@@ -4,11 +4,11 @@
 
 #include "CircularBuffer.h"
 
-#include "global/defines.h"
+#include "misc/defines.h"
 
 #include <algorithm>
 
-namespace str {
+namespace datstr {
 
     CircularBuffer::CircularBuffer(size_t n) : m_values(std::vector<size_t>(n, 0)), m_currentIndex(0), m_size(n), m_sum(0) {
     }
@@ -40,4 +40,4 @@ namespace str {
     size_t CircularBuffer::min() const {
         return *std::min_element(D_IT(m_values));
     }
-} // namespace str
+} // namespace datstr

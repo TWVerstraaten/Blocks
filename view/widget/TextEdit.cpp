@@ -1,11 +1,11 @@
 #include "TextEdit.h"
 
-#include "../model/command/CommandParser.h"
 #include "CentralWidget.h"
 #include "CommandScrollArea.h"
-#include "FontManager.h"
 #include "SyntaxHighlighter.h"
 #include "action/TextEditAction.h"
+#include "model/command/CommandParser.h"
+#include "view/FontManager.h"
 #include "view/color.h"
 
 #include <QApplication>

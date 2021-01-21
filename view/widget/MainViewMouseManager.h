@@ -5,9 +5,9 @@
 #ifndef BLOCKS_MAINVIEWMOUSEMANAGER_H
 #define BLOCKS_MAINVIEWMOUSEMANAGER_H
 
-#include "BlockType.h"
-#include "ScreenXy.h"
 #include "model/GridXy.h"
+#include "view/BlockType.h"
+#include "view/ScreenXy.h"
 
 #include <QMouseEvent>
 

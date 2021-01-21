@@ -4,12 +4,12 @@
 
 #include "MainViewPainter.h"
 
-#include "../model/Cluster.h"
-#include "FontManager.h"
+#include "../../misc/geom.h"
+#include "../../model/Model.h"
+#include "../FontManager.h"
+#include "../PixmapManager.h"
+#include "../toColor.h"
 #include "MainView.h"
-#include "PixmapManager.h"
-#include "global/geom.h"
-#include "toColor.h"
 
 #include <QDebug>
 

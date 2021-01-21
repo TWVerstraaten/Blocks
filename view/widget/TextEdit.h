@@ -2,7 +2,6 @@
 #define TEXTEDIT_H
 
 #include <QPlainTextEdit>
-#include <QTextEdit>
 #include <string>
 #include <vector>
 
