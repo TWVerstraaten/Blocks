@@ -4,17 +4,14 @@
 
 #include "TextEditCommentWidget.h"
 
+#include "FontManager.h"
+
 #include <QFontDatabase>
 #include <QPainter>
-
 namespace view {
 
     TextEditCommentWidget::TextEditCommentWidget(QWidget* parent) : QWidget(parent) {
-        const int id = QFontDatabase::addApplicationFont(":/assets/UbuntuMono-Regular.ttf");
-        assert(id >= 0);
-        const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-        QFont         font(family, 10);
-        setFont(font);
+        setFont(FontManager::font(FONT_ENUM::UBUNTU_REGULAR, 9));
 
         QPalette palette = this->palette();
         palette.setColor(QPalette::Text, Qt::black);

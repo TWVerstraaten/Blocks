@@ -36,7 +36,6 @@ namespace view {
 
         const MainView* m_mainView;
         const ViewPort* m_viewPort;
-        QFont           m_font;
     };
 
 } // namespace view

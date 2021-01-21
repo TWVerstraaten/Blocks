@@ -3,6 +3,7 @@
 #include "../model/command/CommandParser.h"
 #include "CentralWidget.h"
 #include "CommandScrollArea.h"
+#include "FontManager.h"
 #include "SyntaxHighlighter.h"
 #include "action/TextEditAction.h"
 #include "view/color.h"
@@ -16,10 +17,7 @@ namespace view {
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
-        const int id = QFontDatabase::addApplicationFont(":/assets/UbuntuMono-Regular.ttf");
-        assert(id >= 0);
-        const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-        QFont         font(family, 10);
+        const QFont& font = FontManager::font(FONT_ENUM::UBUNTU_REGULAR, 10);
         setFont(font);
         m_lineHeight = QFontMetrics(font).height();
 

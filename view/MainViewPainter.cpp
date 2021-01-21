@@ -5,23 +5,19 @@
 #include "MainViewPainter.h"
 
 #include "../model/Cluster.h"
+#include "FontManager.h"
 #include "MainView.h"
 #include "global/geom.h"
 #include "toColor.h"
 #include "toPixmap.h"
 
 #include <QDebug>
-#include <QFontDatabase>
 
 namespace view {
 
     using namespace model;
 
     MainViewPainter::MainViewPainter(const MainView* mainView) : m_mainView(mainView), m_viewPort(&m_mainView->m_viewPort) {
-        const int id = QFontDatabase::addApplicationFont(":/assets/UbuntuMono-Italic.ttf");
-        assert(id >= 0);
-        const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-        m_font               = QFont(family, 12);
     }
 
     void MainViewPainter::paint(QPainter& painter, QPaintEvent* event) {
@@ -114,6 +110,13 @@ namespace view {
         const auto namePosition =
             ScreenXy::fromWorldXy(f(WorldXy(*cluster.gridXy().begin()) + WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}), *m_viewPort);
 
+        painter.setFont(FontManager::font(FONT_ENUM::UBUNTU_ITALIC, 12));
+        QFontMetrics fontMetrics(painter.font());
+        const int    width  = fontMetrics.horizontalAdvance(cluster.name().c_str());
+        const int    height = fontMetrics.height();
+        painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, color::NAME_BACKGROUND);
+        painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
+
 #ifdef DEBUG
         const auto sides = cluster.sides(0);
         for (const auto& side : sides) {
@@ -125,13 +128,6 @@ namespace view {
             painter.restore();
         }
 #endif
-
-//        painter.setFont(m_font);
-//        QFontMetrics fontMetrics(m_font);
-//        const int    width  = fontMetrics.horizontalAdvance(cluster.name().c_str());
-//        const int    height = fontMetrics.height();
-//        painter.fillRect(namePosition.x() - 4, namePosition.y() + 2 - height, width + 8, height + 4, color::NAME_BACKGROUND);
-//        painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
     }
 
     void MainViewPainter::drawConnected(

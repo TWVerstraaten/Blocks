@@ -3,6 +3,7 @@
 #include "../model/command/CommandParser.h"
 #include "CentralWidget.h"
 #include "CommandScrollArea.h"
+#include "FontManager.h"
 #include "MainView.h"
 #include "TextEdit.h"
 #include "TextEditCommentWidget.h"
@@ -12,7 +13,6 @@
 #include <QLabel>
 
 namespace view {
-
     CommandEditWidget::CommandEditWidget(CommandScrollArea* parent, model::Cluster& cluster)
         : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandVector(&cluster.commandVector()), m_commandScrollArea(parent),
           m_lineWidget(new TextEditCommentWidget(this)), m_commentWidget(new TextEditCommentWidget(this)) {
@@ -32,13 +32,8 @@ namespace view {
         m_textEdit = new TextEdit(this, text);
         auto* l    = new QGridLayout(this);
 
-        const int id = QFontDatabase::addApplicationFont(":/assets/UbuntuMono-Bold.ttf");
-        assert(id >= 0);
-        const QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-        QFont         font(family, 11);
-
         auto* label = new QLabel(m_name.c_str(), this);
-        label->setFont(font);
+        label->setFont(FontManager ::font(FONT_ENUM::UBUNTU_BOLD, 11));
 
         l->addWidget(label, 0, 0, 1, 3);
         m_lineWidget->setWidth(30);
