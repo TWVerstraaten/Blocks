@@ -7,9 +7,9 @@
 #include "../model/Cluster.h"
 #include "FontManager.h"
 #include "MainView.h"
+#include "PixmapManager.h"
 #include "global/geom.h"
 #include "toColor.h"
-#include "toPixmap.h"
 
 #include <QDebug>
 
@@ -42,12 +42,12 @@ namespace view {
         for (const auto& [point, type] : m_mainView->m_model->level().dynamicBlocks()) {
             const auto position = ScreenXy::fromGridXy(point, *m_viewPort) + shrinkInScreenXy;
             painter.drawPixmap(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize},
-                               toPixmap(type, QSize{shrunkBlockSize, shrunkBlockSize}));
+                               PixmapManager::pixmap(type, QSize{shrunkBlockSize, shrunkBlockSize}));
         }
         for (const auto& [point, type] : m_mainView->m_model->level().instantBlocks()) {
             const auto position = ScreenXy::fromGridXy(point, *m_viewPort) + shrinkInScreenXy;
             painter.drawPixmap(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize},
-                               toPixmap(type, QSize{shrunkBlockSize, shrunkBlockSize}));
+                               PixmapManager::pixmap(type, QSize{shrunkBlockSize, shrunkBlockSize}));
         }
     }
 
