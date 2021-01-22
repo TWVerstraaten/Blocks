@@ -398,6 +398,7 @@ namespace model {
                 rotateCounterClockWiseAbout(point);
                 break;
         }
+        buildSides();
     }
 
     void Cluster::buildSides() {

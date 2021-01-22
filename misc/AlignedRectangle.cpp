@@ -4,8 +4,9 @@
 
 #include "AlignedRectangle.h"
 
+#include "../app/Application_constants.h"
 #include "../model/Cluster.h"
-#include "app/Application_constants.h"
+#include "defines.h"
 #include "geom.h"
 
 #include <cassert>
@@ -32,8 +33,8 @@ namespace geom {
                 return {minX + worldOffset.x(), maxX + worldOffset.x(), minY + worldOffset.y(), maxY + worldOffset.y()};
             }
             case model::PHASE::ROTATING:
-                assert(false);
-                break;
+                D_NOTE_ONCE("Bounding rectangle for rotating cluster")
+                return {minX, maxX, minY, maxY};
         }
 
         return AlignedRectangle(0, 0, 0, 0);

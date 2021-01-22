@@ -109,7 +109,7 @@ namespace view {
     void MainViewPainter::drawCluster(const Cluster& cluster, QPainter& painter) {
         const auto f = cluster.phaseTransformation();
         if (cluster.phaseTransformation()) {
-            drawConnected(cluster.gridXyVector(), cluster.isAlive() ? color::CLUSTER : color::CLUSTER_DEAD_COLOR, painter, -cluster.angle(), f);
+            drawConnected(cluster.gridXyVector(), cluster.isAlive() ? color::CLUSTER : color::CLUSTER_DEAD_COLOR, painter, cluster.angle(), f);
         }
         const auto namePosition =
             ScreenXy::fromWorldXy(f(WorldXy(*cluster.gridXyVector().begin()) + WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}), *m_viewPort);

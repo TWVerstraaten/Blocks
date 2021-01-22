@@ -23,6 +23,7 @@ namespace model {
         enum class DIRECTION { UP, DOWN, LEFT, RIGHT };
 
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
+        GridXy();
         GridXy(int x, int y);
 
         /****** PUBLIC STATIC FUNCTIONS  ******/

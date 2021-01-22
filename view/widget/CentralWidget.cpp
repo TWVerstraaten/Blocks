@@ -238,6 +238,9 @@ namespace view {
     }
 
     void CentralWidget::interactLoop(size_t elapsed) {
+        auto& model = *m_mainView->model();
+        model.update(1.1 * elapsed / static_cast<double>(m_timeStep));
+
         update();
     }
 
@@ -281,6 +284,27 @@ namespace view {
                     break;
             }
         }
+
+        for (auto& cluster : clusters) {
+            bool                      noPendingAction = true;
+            model::GridXy             p;
+            model::DYNAMIC_BLOCK_TYPE t;
+            for (const auto& [point, type] : level.dynamicBlocks()) {
+                if (cluster.contains(point)) {
+                    if (noPendingAction) {
+                        p               = point;
+                        t               = type;
+                        noPendingAction = false;
+                    } else {
+                        cluster.kill();
+                    }
+                }
+            }
+            if (cluster.isAlive()) {
+                cluster.handleDynamicBlock(p, t);
+            }
+        }
+
         model->clearEmpty();
         model->splitDisconnectedClusters();
         model->clearEmpty();
