@@ -23,13 +23,13 @@ namespace model {
     class Cluster;
     class Level;
 
-    void doAction(const Command_Error& command, Cluster& cluster, Level& level);
-    void doAction(const Command_Simple& command, Cluster& cluster, Level& level);
-    void doAction(const Command_Jump& command, Cluster& cluster, Level& level);
-    void doAction(const Command_Label& command, Cluster& cluster, Level& level);
-    void doAction(const Command_Modified& command, Cluster& cluster, Level& level);
-    void doAction(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
+    void handleCommand(const Command_Error& command, Cluster& cluster, Level& level);
+    void handleCommand(const Command_Simple& command, Cluster& cluster, Level& level);
+    void handleCommand(const Command_Jump& command, Cluster& cluster, Level& level);
+    void handleCommand(const Command_Label& command, Cluster& cluster, Level& level);
+    void handleCommand(const Command_Modified& command, Cluster& cluster, Level& level);
+    void handleCommand(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
 
-} // namespace m_model
+} // namespace model
 
 #endif // BLOCKS_COMMAND_H

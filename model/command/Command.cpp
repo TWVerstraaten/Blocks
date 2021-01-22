@@ -38,16 +38,16 @@ namespace model {
         return std::visit(D_FUNC(command, static_cast<Command>(command)), repeatWrapper.command);
     }
 
-    void doAction([[maybe_unused]] const Command_Error& command, [[maybe_unused]] Cluster& cluster, [[maybe_unused]] Level& level) {
+    void handleCommand([[maybe_unused]] const Command_Error& command, [[maybe_unused]] Cluster& cluster, [[maybe_unused]] Level& level) {
     }
 
-    void doAction([[maybe_unused]] const Command_Label& command, [[maybe_unused]] Cluster& cluster, [[maybe_unused]] Level& level) {
+    void handleCommand([[maybe_unused]] const Command_Label& command, [[maybe_unused]] Cluster& cluster, [[maybe_unused]] Level& level) {
     }
 
-    void doAction([[maybe_unused]] const Command_Jump& command, [[maybe_unused]] Cluster& cluster, [[maybe_unused]] Level& level) {
+    void handleCommand([[maybe_unused]] const Command_Jump& command, [[maybe_unused]] Cluster& cluster, [[maybe_unused]] Level& level) {
     }
 
-    void doAction(const Command_Simple& command, Cluster& cluster, Level& level) {
+    void handleCommand(const Command_Simple& command, Cluster& cluster, Level& level) {
         switch (command.type) {
             case COMMAND_TYPE::FWD:
                 translate(GridXy::DIRECTION::UP, cluster);
@@ -72,11 +72,11 @@ namespace model {
         }
     }
 
-    void doAction(const Command_Modified& command, Cluster& cluster, Level& level) {
-        doAction(Command_Simple{command.type}, cluster, level);
+    void handleCommand(const Command_Modified& command, Cluster& cluster, Level& level) {
+        handleCommand(Command_Simple{command.type}, cluster, level);
     }
 
-    void doAction(const Command_RepeatWrapper& command, Cluster& cluster, Level& level) {
-        std::visit(D_FUNC(command, doAction(command, cluster, level)), command.command);
+    void handleCommand(const Command_RepeatWrapper& command, Cluster& cluster, Level& level) {
+        std::visit(D_FUNC(command, handleCommand(command, cluster, level)), command.command);
     }
 } // namespace model

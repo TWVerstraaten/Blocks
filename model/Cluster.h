@@ -86,9 +86,9 @@ namespace model {
 
         /****** FRIENDS  ******/
         friend std::ostream& operator<<(std::ostream& out, const Cluster& other);
-        friend void          doAction(const Command_Simple& command, Cluster& cluster, Level& level);
-        friend void          doAction(const Command_Modified& command, Cluster& cluster, Level& level);
-        friend void          doAction(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
+        friend void          handleCommand(const Command_Simple& command, Cluster& cluster, Level& level);
+        friend void          handleCommand(const Command_Modified& command, Cluster& cluster, Level& level);
+        friend void          handleCommand(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
 
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/

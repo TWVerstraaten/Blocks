@@ -9,9 +9,6 @@
 
 namespace view {
 
-    std::map<std::pair<FONT_ENUM, size_t>, const QFont> FontManager::s_fonts = {};
-    std::map<FONT_ENUM, int>                            FontManager::s_ids   = {};
-
     const QFont& FontManager::font(FONT_ENUM fontEnum, size_t size) {
         if (s_fonts.find({fontEnum, size}) == s_fonts.end()) {
             build(fontEnum, size);
@@ -21,7 +18,6 @@ namespace view {
 
     static QString fromEnum(FONT_ENUM fontEnum) {
         switch (fontEnum) {
-
             case FONT_ENUM::ANON_PRO_BOLD:
                 return ":/assets/Anonymous_Pro_B.ttf";
             case FONT_ENUM::ANON_PRO_ITALIC:

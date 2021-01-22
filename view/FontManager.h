@@ -22,8 +22,8 @@ namespace view {
 
         static void build(FONT_ENUM fontEnum, size_t size);
 
-        static std::map<FONT_ENUM, int>                            s_ids;
-        static std::map<std::pair<FONT_ENUM, size_t>, const QFont> s_fonts;
+        inline static std::map<FONT_ENUM, int>                            s_ids;
+        inline static std::map<std::pair<FONT_ENUM, size_t>, const QFont> s_fonts;
     };
 
 } // namespace view

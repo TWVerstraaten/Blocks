@@ -4,7 +4,7 @@
 
 #include "CircularBuffer.h"
 
-#include "misc/defines.h"
+#include "../misc/defines.h"
 
 #include <algorithm>
 

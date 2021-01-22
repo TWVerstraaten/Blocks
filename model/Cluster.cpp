@@ -37,7 +37,7 @@ namespace model {
         if (m_commandVector.isEmpty() || m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
-        std::visit(D_FUNC(c, doAction(c, *this, model.level())), m_commandVector.currentCommand());
+        std::visit(D_FUNC(c, handleCommand(c, *this, model.level())), m_commandVector.currentCommand());
     }
 
     void Cluster::rotateClockWiseAbout(const GridXy& pivotGridXy) {
@@ -285,10 +285,6 @@ namespace model {
         }
         if (result.back().isEmpty()) {
             result.pop_back();
-        }
-
-        for (const auto& n : result) {
-            assert(n.commandVector().strings() == m_commandVector.strings());
         }
 
         return result;
