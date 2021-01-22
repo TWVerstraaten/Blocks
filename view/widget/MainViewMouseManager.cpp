@@ -74,15 +74,18 @@ namespace view {
             m_previousGridPosition = currentGridXy;
             mouseLeftPressEvent();
         } else {
+            m_centralWidget->startActionGlob();
+            addBlock(currentGridXy, type);
             auto baseIt      = m_model->clusterContaining(m_previousGridPosition);
             auto extensionIt = m_model->clusterContaining(currentGridXy);
             if (extensionIt != m_model->clusters().end() && baseIt->index() == extensionIt->index()) {
+                m_centralWidget->stopActionGlob();
                 return;
             }
-            m_centralWidget->startActionGlob();
-            addBlock(currentGridXy, type);
             extensionIt = m_model->clusterContaining(currentGridXy);
+            baseIt      = m_model->clusterContaining(m_previousGridPosition);
             if (baseIt->index() != extensionIt->index()) {
+
                 assert(baseIt != m_model->clusters().end());
                 assert(extensionIt != m_model->clusters().end());
                 m_centralWidget->addAction(new MergeClusterAction(m_model, *baseIt, *extensionIt, m_mainView->m_commandScrollArea));

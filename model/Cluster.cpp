@@ -258,13 +258,7 @@ namespace model {
 
     WorldLineVector Cluster::sides(int shrinkInWorld) const {
         assert(isValid());
-        if (not m_gridXyAreSorted) {
-            sortGridXy();
-        }
-        assert(isValid());
-        if (not m_gridXyAreSorted) {
-            buildSides();
-        }
+        buildSides();
         assert(isValid());
         const auto      f = phaseTransformation();
         WorldLineVector result;
@@ -430,8 +424,11 @@ namespace model {
 
     void Cluster::buildSides() const {
         assert(isValid());
-        assert(std::is_sorted(D_CIT(m_gridXyVector)));
-        m_sides = geom::getSidesFromGridXy(m_gridXyVector);
+        sortGridXy();
+        if (not m_sidesAreCorrect) {
+            m_sides           = geom::getSidesFromGridXy(m_gridXyVector);
+            m_sidesAreCorrect = true;
+        }
     }
 
     COMMAND_MODIFIER Cluster::currentModifier() const {
@@ -496,6 +493,7 @@ namespace model {
     void Cluster::appendGridXy(const GridXyVector& other) {
         std::copy(D_IT(other), std::back_inserter(m_gridXyVector));
         m_gridXyAreSorted = false;
+        m_sidesAreCorrect = false;
     }
 
 } // namespace model

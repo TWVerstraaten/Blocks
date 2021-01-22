@@ -68,7 +68,7 @@ namespace model {
         }
         m_sides = geom::getSidesFromGridXy(blocks);
         for (auto& cluster : m_stoppedClusters) {
-            cluster.sortGridXy();
+            cluster.buildSides();
             auto clusterSides = geom::getSidesFromGridXy(cluster.gridXyVector());
             std::copy(D_CIT(clusterSides), std::back_inserter(clusterSides));
         }

@@ -144,13 +144,12 @@ namespace model {
         for (auto& cluster : m_clusters) {
             if (not cluster.isConnected()) {
                 D_NOTE_ONCE("Splice")
-
-                //                newClusters.splice(newClusters.begin(), cluster.collectAllButFirstComponent());
+                const auto& components = cluster.collectAllButFirstComponent();
+                std::copy(D_IT(components), std::back_inserter(newClusters));
                 assert(cluster.isConnected());
             }
         }
-        //        m_clusters.splice(m_clusters.begin(), newClusters);
-
+        std::copy(D_IT(newClusters), std::back_inserter(m_clusters));
         for (const auto& cluster : m_clusters) {
             assert(cluster.isConnected());
         }

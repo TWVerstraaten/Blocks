@@ -54,6 +54,7 @@ namespace model {
         [[nodiscard]] PHASE                 phase() const;
 
         /****** CONST FUNCTIONS  ******/
+        void                              buildSides() const;
         [[nodiscard]] bool                isEmpty() const;
         [[nodiscard]] bool                isAlive() const;
         [[nodiscard]] bool                isConnected() const;
@@ -94,8 +95,6 @@ namespace model {
         friend void          handleCommand(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
 
       private:
-        void buildSides() const;
-
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void rotateClockWiseAbout(const GridXy& pivotGridXy);
         void rotateCounterClockWiseAbout(const GridXy& pivotGridXy);
