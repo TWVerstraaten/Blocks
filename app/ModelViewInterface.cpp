@@ -265,7 +265,7 @@
 //        return nullptr;
 //    }
 //    auto copyOfModel = model;
-//    baseIt->gridXy().merge(extensionIt->gridXy());
+//    baseIt->gridXy().merge(extensionIt->gridXySet());
 //    clusters.erase(extensionIt);
 //    return nullptr;
 //}

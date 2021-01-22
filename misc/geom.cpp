@@ -4,8 +4,10 @@
 
 #include "geom.h"
 
+#include "AlignedRectangle.h"
 #include "defines.h"
 
+#include <QDebug>
 #include <cassert>
 #include <cmath>
 
@@ -13,12 +15,34 @@ namespace geom {
 
     using namespace model;
 
-    bool intersect(const WorldLineSet& lines1, const WorldLineSet& lines2) {
+    bool intersect(const WorldLineVector& lines1, const WorldLineVector& lines2) {
         return std::any_of(D_CIT(lines1), D_FUNC(line1, std::any_of(D_CIT(lines2), D_FUNC(line2, intersect(line1, line2)))));
     }
 
-    WorldLineSet getSidesFromGridXy(const GridXySet& blocks) {
-        WorldLineSet        result;
+    int square(int a) {
+        return a * a;
+    }
+
+    bool intersect(const Cluster& cluster1, const Cluster& cluster2, int shrinkInWorld) {
+        const auto boundingAlignedRectangle1 = AlignedRectangle::boundingAlignedRectangle(cluster1);
+        const auto boundingAlignedRectangle2 = AlignedRectangle::boundingAlignedRectangle(cluster2);
+
+        const auto point1 = *cluster1.gridXySet().begin();
+        const auto point2 = *cluster2.gridXySet().begin();
+
+        if (square(point1.x() - point2.x()) + square(point1.y() - point2.y()) >
+            square(boundingAlignedRectangle1.maxDimension() + boundingAlignedRectangle2.maxDimension())) {
+            return false;
+        }
+
+        if (not boundingAlignedRectangle1.intersects(boundingAlignedRectangle2)) {
+            return false;
+        }
+        return geom::intersect(cluster1.sides(shrinkInWorld), cluster2.sides(shrinkInWorld));
+    }
+
+    WorldLineVector getSidesFromGridXy(const GridXySet& blocks) {
+        WorldLineVector     result;
         std::vector<GridXy> cornerPoints;
         for (const auto& dir : {GridXy::DIRECTION::UP, GridXy::DIRECTION::DOWN}) {
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {
@@ -31,7 +55,7 @@ namespace geom {
                     }
                     const GridXy point1 = start + GridXy{0, dir == GridXy::DIRECTION::UP ? 0 : 1};
                     const GridXy point2 = GridXy{it->x() + 1, start.y() + (dir == GridXy::DIRECTION::UP ? 0 : 1)};
-                    result.emplace(WorldXy(point1), WorldXy(point2));
+                    result.emplace_back(WorldXy(point1), WorldXy(point2));
                     cornerPoints.emplace_back(point1);
                     cornerPoints.emplace_back(point2);
                 }
@@ -40,7 +64,7 @@ namespace geom {
         assert(cornerPoints.size() % 2 == 0);
         std::sort(D_IT(cornerPoints), D_FUNC_2(lhs, rhs, lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x()));
         for (auto it = cornerPoints.begin(); it != cornerPoints.end(); it += 2) {
-            result.emplace(WorldLine{*it, *std::next(it)});
+            result.emplace_back(WorldLine{*it, *std::next(it)});
         }
         return result;
     }

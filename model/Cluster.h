@@ -46,11 +46,12 @@ namespace model {
         [[nodiscard]] WorldXy               approximateCenter() const;
         [[nodiscard]] std::string           string() const;
         [[nodiscard]] WorldXySet            cornerPoints(int shrinkInWorld) const;
-        [[nodiscard]] WorldLineSet          sides(int shrinkInWorld) const;
+        [[nodiscard]] WorldLineVector       sides(int shrinkInWorld) const;
         [[nodiscard]] const GridXy&         rotationPivot() const;
         [[nodiscard]] const std::string&    name() const;
-        [[nodiscard]] const GridXySet&      gridXy() const;
+        [[nodiscard]] const GridXySet&      gridXySet() const;
         [[nodiscard]] const CommandVector&  commandVector() const;
+        [[nodiscard]] PHASE                 phase() const;
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] bool                isEmpty() const;
@@ -108,7 +109,7 @@ namespace model {
         GridXy                m_rotationPivot       = {0, 0};
         CommandVector         m_commandVector;
         GridXySet             m_gridXySet;
-        WorldLineSet          m_sides;
+        WorldLineVector       m_sides;
         std::string           m_name;
     };
 

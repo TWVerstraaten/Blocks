@@ -9,11 +9,12 @@
 #include "WorldLine.h"
 
 #include <set>
+#include <vector>
 
 namespace model {
-    typedef std::set<model::WorldLine> WorldLineSet;
-    typedef std::set<model::GridXy>    GridXySet;
-    typedef std::set<model::WorldXy>   WorldXySet;
+    typedef std::vector<model::WorldLine> WorldLineVector;
+    typedef std::set<model::GridXy>       GridXySet;
+    typedef std::set<model::WorldXy>      WorldXySet;
 } // namespace model
 
 #endif // BLOCKS_MODEL_TYPEDEFS_H

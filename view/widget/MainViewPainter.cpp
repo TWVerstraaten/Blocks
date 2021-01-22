@@ -12,6 +12,7 @@
 #include "MainView.h"
 
 #include <QDebug>
+#include <misc/AlignedRectangle.h>
 
 namespace view {
 
@@ -34,7 +35,7 @@ namespace view {
             painter.drawRect(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize});
         }
         for (const auto& stoppedCluster : m_mainView->m_model->level().stoppedClusters()) {
-            drawConnected(stoppedCluster.gridXy(), color::CLUSTER_STOPPED, painter);
+            drawConnected(stoppedCluster.gridXySet(), color::CLUSTER_STOPPED, painter);
         }
         for (const auto& cluster : m_mainView->m_model->clusters()) {
             drawCluster(cluster, painter);
@@ -105,10 +106,10 @@ namespace view {
     void MainViewPainter::drawCluster(const Cluster& cluster, QPainter& painter) {
         const auto f = cluster.phaseTransformation();
         if (cluster.phaseTransformation()) {
-            drawConnected(cluster.gridXy(), cluster.isAlive() ? color::CLUSTER : color::CLUSTER_DEAD_COLOR, painter, -cluster.angle(), f);
+            drawConnected(cluster.gridXySet(), cluster.isAlive() ? color::CLUSTER : color::CLUSTER_DEAD_COLOR, painter, -cluster.angle(), f);
         }
         const auto namePosition =
-            ScreenXy::fromWorldXy(f(WorldXy(*cluster.gridXy().begin()) + WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}), *m_viewPort);
+            ScreenXy::fromWorldXy(f(WorldXy(*cluster.gridXySet().begin()) + WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}), *m_viewPort);
 
         painter.setFont(FontManager::font(FONT_ENUM::ANON_PRO_ITALIC, 12));
         QFontMetrics fontMetrics(painter.font());
@@ -118,6 +119,19 @@ namespace view {
         painter.drawText(namePosition.x(), namePosition.y(), cluster.name().c_str());
 
 #ifdef DEBUG
+        const auto alignedRectangle = geom::AlignedRectangle::boundingAlignedRectangle(cluster);
+
+        for (size_t i = 0; i != 4; ++i) {
+            const auto wl = alignedRectangle.line(i);
+
+            const auto start = ScreenXy::fromWorldXy(wl.start(), m_mainView->viewPort());
+            const auto end   = ScreenXy::fromWorldXy(wl.end(), m_mainView->viewPort());
+            painter.save();
+            painter.setPen(QPen{Qt::red, 3});
+            painter.drawLine(start.x(), start.y(), end.x(), end.y());
+            painter.restore();
+        }
+
         const auto sides = cluster.sides(0);
         for (const auto& side : sides) {
             const auto start = ScreenXy::fromWorldXy(side.start(), m_mainView->viewPort());

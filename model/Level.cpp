@@ -53,7 +53,7 @@ namespace model {
         return true;
     }
 
-    const WorldLineSet& Level::sides() const {
+    const WorldLineVector& Level::sides() const {
         return m_sides;
     }
 
@@ -68,7 +68,8 @@ namespace model {
         }
         m_sides = geom::getSidesFromGridXy(blocks);
         for (const auto& cluster : m_stoppedClusters) {
-            m_sides.merge(geom::getSidesFromGridXy(cluster.gridXy()));
+            auto clusterSides = geom::getSidesFromGridXy(cluster.gridXySet());
+            std::copy(D_CIT(clusterSides), std::back_inserter(clusterSides));
         }
     }
 

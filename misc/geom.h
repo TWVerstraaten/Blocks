@@ -10,10 +10,12 @@
 #include "../model/WorldLine.h"
 #include "../model/WorldXy.h"
 
+#include <model/Cluster.h>
 #include <set>
 
 namespace geom {
-    bool                         intersect(const model::WorldLineSet& lines1, const model::WorldLineSet& lines2);
+    bool                         intersect(const model::WorldLineVector& lines1, const model::WorldLineVector& lines2);
+    bool                         intersect(const model::Cluster& cluster1, const model::Cluster& cluster2, int shrinkInWorld);
     bool                         intersect(const model::WorldLine& lhs, const model::WorldLine& rhs);
     int                          minX(const model::GridXySet& blocks);
     int                          minY(const model::GridXySet& blocks);
@@ -22,7 +24,7 @@ namespace geom {
     int                          cross(const model::WorldXy& lhs, const model::WorldXy& rhs);
     model::WorldXy               rotateClockWise(const model::WorldXy& point, double angleInDegrees);
     model::WorldXy               rotateAboutPivot(const model::WorldXy& point, const model::WorldXy& pivot, double angleInDegrees);
-    model::WorldLineSet          getSidesFromGridXy(const model::GridXySet& blocks);
+    model::WorldLineVector       getSidesFromGridXy(const model::GridXySet& blocks);
     std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, model::GridXy point);
     std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, const model::Cluster& cluster);
 } // namespace geom

@@ -20,7 +20,7 @@ namespace action {
     void MergeClusterAction::undo() {
         auto targetIt = m_model->clusterWithIndex(m_target.index());
         assert(targetIt != m_model->clusters().end());
-        for (const auto& point : m_second.gridXy()) {
+        for (const auto& point : m_second.gridXySet()) {
             assert(targetIt->contains(point));
             targetIt->removeGridXy(point);
         }

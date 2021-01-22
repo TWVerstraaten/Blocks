@@ -67,7 +67,7 @@ namespace model {
         return m_gridXySet.empty();
     }
 
-    const GridXySet& Cluster::gridXy() const {
+    const GridXySet& Cluster::gridXySet() const {
         return m_gridXySet;
     }
 
@@ -232,17 +232,18 @@ namespace model {
         }
     }
 
-    WorldLineSet Cluster::sides(int shrinkInWorld) const {
-        const auto   f = phaseTransformation();
-        WorldLineSet result;
+    WorldLineVector Cluster::sides(int shrinkInWorld) const {
+        const auto      f = phaseTransformation();
+        WorldLineVector result;
+        result.reserve(m_sides.size());
         for (const auto& line : m_sides) {
             const int d = contains(GridXy::fromWorldXy(line.start())) ? 1 : -1;
             if (line.start().x() == line.end().x()) {
-                result.insert(
-                    {f(line.start() + WorldXy{d * shrinkInWorld, shrinkInWorld}), f(line.end() + WorldXy{d * shrinkInWorld, -shrinkInWorld})});
+                result.emplace_back(WorldLine{f(line.start() + WorldXy{d * shrinkInWorld, shrinkInWorld}),
+                                              f(line.end() + WorldXy{d * shrinkInWorld, -shrinkInWorld})});
             } else {
-                result.insert(
-                    {f(line.start() + WorldXy{shrinkInWorld, d * shrinkInWorld}), f(line.end() + WorldXy{-shrinkInWorld, d * shrinkInWorld})});
+                result.emplace_back(WorldLine{f(line.start() + WorldXy{shrinkInWorld, d * shrinkInWorld}),
+                                              f(line.end() + WorldXy{-shrinkInWorld, d * shrinkInWorld})});
             }
         }
         return result;
@@ -271,7 +272,7 @@ namespace model {
     }
 
     bool Cluster::intersects(const Cluster& other, int shrinkInWorld) const {
-        return geom::intersect(sides(shrinkInWorld), other.sides(shrinkInWorld));
+        return geom::intersect(*this, other, shrinkInWorld);
     }
 
     std::list<Cluster> Cluster::collectAllButFirstComponent() {
@@ -300,10 +301,10 @@ namespace model {
         }
         assert(not cluster.isEmpty());
 
-        const int minX = geom::minX(cluster.gridXy());
-        const int minY = geom::minY(cluster.gridXy());
-        const int maxX = geom::maxX(cluster.gridXy());
-        const int maxY = geom::maxY(cluster.gridXy());
+        const int minX = geom::minX(cluster.gridXySet());
+        const int minY = geom::minY(cluster.gridXySet());
+        const int maxX = geom::maxX(cluster.gridXySet());
+        const int maxY = geom::maxY(cluster.gridXySet());
         assert(minX <= maxX);
         assert(minY <= maxY);
 
@@ -421,6 +422,10 @@ namespace model {
 
     void Cluster::setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves) {
         m_pendingDynamicMoves = pendingDynamicMoves;
+    }
+
+    PHASE Cluster::phase() const {
+        return m_phase;
     }
 
 } // namespace model
