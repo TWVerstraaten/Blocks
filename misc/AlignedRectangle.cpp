@@ -33,8 +33,16 @@ namespace geom {
                 return {minX + worldOffset.x(), maxX + worldOffset.x(), minY + worldOffset.y(), maxY + worldOffset.y()};
             }
             case model::PHASE::ROTATING:
-                D_NOTE_ONCE("Bounding rectangle for rotating cluster")
-                return {minX, maxX, minY, maxY};
+                const auto&          f  = cluster.phaseTransformation();
+                const model::WorldXy p1 = f(model::WorldXy{minX, minY});
+                const model::WorldXy p2 = f(model::WorldXy{maxX, minY});
+                const model::WorldXy p3 = f(model::WorldXy{minX, maxY});
+                const model::WorldXy p4 = f(model::WorldXy{maxX, maxY});
+
+                return {std::min(p1.x(), std::min(p2.x(), std::min(p3.x(), p4.x()))),
+                        std::max(p1.x(), std::max(p2.x(), std::max(p3.x(), p4.x()))),
+                        std::min(p1.y(), std::min(p2.y(), std::min(p3.y(), p4.y()))),
+                        std::max(p1.y(), std::max(p2.y(), std::max(p3.y(), p4.y())))};
         }
 
         return AlignedRectangle(0, 0, 0, 0);

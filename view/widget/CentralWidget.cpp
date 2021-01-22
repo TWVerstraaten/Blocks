@@ -285,6 +285,11 @@ namespace view {
             }
         }
 
+        model->clearEmpty();
+        model->splitDisconnectedClusters();
+        model->clearEmpty();
+        m_commandScrollArea->addNeeded(clusters);
+
         for (auto& cluster : clusters) {
             bool                      noPendingAction = true;
             model::GridXy             p;
@@ -304,11 +309,6 @@ namespace view {
                 cluster.handleDynamicBlock(p, t);
             }
         }
-
-        model->clearEmpty();
-        model->splitDisconnectedClusters();
-        model->clearEmpty();
-        m_commandScrollArea->addNeeded(clusters);
 
         m_commandScrollArea->updateSelection();
         update();
