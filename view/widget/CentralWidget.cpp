@@ -218,7 +218,6 @@ namespace view {
 
         for (auto& cluster : m_mainView->model()->clusters()) {
             cluster.doCommand(*m_mainView->model());
-            cluster.buildSides();
         }
 
         m_mainView->model()->update(0.0001);
@@ -256,7 +255,6 @@ namespace view {
         m_mainView->model()->resetPhase();
         for (auto& cluster : m_mainView->model()->clusters()) {
             cluster.doCommand(*m_mainView->model());
-            cluster.buildSides();
         }
         m_mainView->model()->update(0.0001);
         m_commandScrollArea->updateSelection();
@@ -290,25 +288,25 @@ namespace view {
         model->clearEmpty();
         m_commandScrollArea->addNeeded(clusters);
 
-        for (auto& cluster : clusters) {
-            bool                      noPendingAction = true;
-            model::GridXy             p;
-            model::DYNAMIC_BLOCK_TYPE t;
-            for (const auto& [point, type] : level.dynamicBlocks()) {
-                if (cluster.contains(point)) {
-                    if (noPendingAction) {
-                        p               = point;
-                        t               = type;
-                        noPendingAction = false;
-                    } else {
-                        cluster.kill();
-                    }
-                }
-            }
-            if (cluster.isAlive()) {
-                cluster.handleDynamicBlock(p, t);
-            }
-        }
+//        for (auto& cluster : clusters) {
+//            bool                      noPendingAction = true;
+//            model::GridXy             p;
+//            model::DYNAMIC_BLOCK_TYPE t;
+//            for (const auto& [point, type] : level.dynamicBlocks()) {
+//                if (cluster.contains(point)) {
+//                    if (noPendingAction) {
+//                        p               = point;
+//                        t               = type;
+//                        noPendingAction = false;
+//                    } else {
+//                        cluster.kill();
+//                    }
+//                }
+//            }
+//            if (cluster.isAlive()) {
+//                cluster.handleDynamicBlock(p, t);
+//            }
+//        }
 
         m_commandScrollArea->updateSelection();
         update();

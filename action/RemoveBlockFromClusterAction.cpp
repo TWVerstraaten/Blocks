@@ -19,14 +19,12 @@ namespace action {
         auto it = m_model->clusterWithIndex(m_clusterIndex);
         assert(it != m_model->clusters().end());
         it->addGridXy(m_gridXy);
-        it->buildSides();
     }
 
     void RemoveBlockFromClusterAction::redo() {
         auto it = m_model->clusterWithIndex(m_clusterIndex);
         assert(it != m_model->clusters().end());
         it->removeGridXy(m_gridXy);
-        it->buildSides();
     }
 
     ACTION_TYPE RemoveBlockFromClusterAction::type() const {

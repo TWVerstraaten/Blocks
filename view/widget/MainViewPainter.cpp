@@ -134,7 +134,7 @@ namespace view {
             painter.drawLine(start.x(), start.y(), end.x(), end.y());
             painter.restore();
         }
-
+        cluster.sortGridXy();
         const auto sides = cluster.sides(0);
         for (const auto& side : sides) {
             const auto start = ScreenXy::fromWorldXy(side.start(), m_mainView->viewPort());

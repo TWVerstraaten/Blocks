@@ -65,26 +65,25 @@ namespace model {
         [[nodiscard]] PhaseTransformation phaseTransformation() const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void    addGridXy(const GridXy& gridXy);
-        void    doCommand(Model& model);
-        void    update(double phaseFraction);
-        void    kill();
-        void    buildSides();
-        void    incrementCommandIndex();
-        void    clearCommands();
-        void    collideWithLevel(const Level& level, int shrinkInWorld);
-        void    handleDynamicBlock(const GridXy& point, DYNAMIC_BLOCK_TYPE type);
-        void    setState(CLUSTER_STATE state);
-        void    setWorldOffset(const WorldXy& worldOffset);
-        void    setPhase(PHASE phase);
-        void    resetPhase();
-        void    setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves);
-        void    spliceCluster(Level& level);
-        void    removeGridXy(const GridXy& gridXy);
-        void    sortGridXy();
-        void    swapGridXy(GridXyVector& other);
-        void    appendGridXy(const GridXyVector& other);
-        Cluster grabAllButFirstComponent();
+        void               addGridXy(const GridXy& gridXy);
+        void               doCommand(Model& model);
+        void               update(double phaseFraction);
+        void               kill();
+        void               incrementCommandIndex();
+        void               clearCommands();
+        void               collideWithLevel(const Level& level, int shrinkInWorld);
+        void               handleDynamicBlock(const GridXy& point, DYNAMIC_BLOCK_TYPE type);
+        void               setState(CLUSTER_STATE state);
+        void               setWorldOffset(const WorldXy& worldOffset);
+        void               setPhase(PHASE phase);
+        void               resetPhase();
+        void               setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves);
+        void               spliceCluster(Level& level);
+        void               removeGridXy(const GridXy& gridXy);
+        void               sortGridXy() const;
+        void               swapGridXy(GridXyVector& other);
+        void               appendGridXy(const GridXyVector& other);
+        Cluster            grabAllButFirstComponent();
         CommandVector&     commandVector();
         std::list<Cluster> collectAllButFirstComponent();
 
@@ -95,6 +94,8 @@ namespace model {
         friend void          handleCommand(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
 
       private:
+        void buildSides() const;
+
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void rotateClockWiseAbout(const GridXy& pivotGridXy);
         void rotateCounterClockWiseAbout(const GridXy& pivotGridXy);
@@ -102,19 +103,20 @@ namespace model {
         void grabAdjacentStoppedClusters(Level& level);
 
         /****** DATA MEMBERS  ******/
-        bool                  m_gridXyAreSorted = false;
-        double                m_phaseFraction   = 0.0;
-        double                m_angle           = 0.0;
-        size_t                m_index;
-        PENDING_DYNAMIC_MOVES m_pendingDynamicMoves = PENDING_DYNAMIC_MOVES::ZERO;
-        CLUSTER_STATE         m_state               = CLUSTER_STATE::ALIVE;
-        PHASE                 m_phase               = PHASE::NONE;
-        WorldXy               m_worldOffset         = {0, 0};
-        GridXy                m_rotationPivot       = {0, 0};
-        CommandVector         m_commandVector;
-        GridXyVector          m_gridXyVector;
-        WorldLineVector       m_sides;
-        std::string           m_name;
+        mutable bool            m_gridXyAreSorted = false;
+        mutable bool            m_sidesAreCorrect = false;
+        double                  m_phaseFraction   = 0.0;
+        double                  m_angle           = 0.0;
+        size_t                  m_index;
+        PENDING_DYNAMIC_MOVES   m_pendingDynamicMoves = PENDING_DYNAMIC_MOVES::ZERO;
+        CLUSTER_STATE           m_state               = CLUSTER_STATE::ALIVE;
+        PHASE                   m_phase               = PHASE::NONE;
+        WorldXy                 m_worldOffset         = {0, 0};
+        GridXy                  m_rotationPivot       = {0, 0};
+        CommandVector           m_commandVector;
+        mutable GridXyVector    m_gridXyVector;
+        mutable WorldLineVector m_sides;
+        std::string             m_name;
     };
 
 } // namespace model

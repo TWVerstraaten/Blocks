@@ -16,14 +16,12 @@ namespace action {
 
         auto copy    = m_disconnected;
         m_components = copy.collectAllButFirstComponent();
-        copy.buildSides();
         assert(copy.isConnected());
         m_components.emplace_back(copy);
 
         m_disconnectedCommandEditBox = m_commandScrollArea->removeFromLayout(m_disconnected.index());
         for (auto& it : m_components) {
             m_commandScrollArea->add(it);
-            it.buildSides();
         }
         for (const auto& it : m_components) {
             m_componentCommandEditBoxes.emplace_back(m_commandScrollArea->removeFromLayout(it.index()));

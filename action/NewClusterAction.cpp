@@ -33,7 +33,6 @@ namespace action {
             auto  it    = model->clusterWithIndex(m_cluster.index());
             assert(it == model->clusters().end());
             model->clusters().push_back(m_cluster);
-            model->clusters().back().buildSides();
 
             m_centralWidget->commandScrollArea()->addToLayout(std::move(m_commandEditBox));
             assert(m_commandEditBox == nullptr);

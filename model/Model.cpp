@@ -108,9 +108,6 @@ namespace model {
         if (m_clusters.size() == 1) {
             return;
         }
-        for (auto& cluster : m_clusters) {
-            cluster.sortGridXy();
-        }
         for (auto cluster1 = m_clusters.begin(); cluster1 != m_clusters.end(); ++cluster1) {
             for (auto cluster2 = std::next(cluster1); cluster2 != m_clusters.end(); ++cluster2) {
                 if (cluster1->intersects(*cluster2, app::BLOCK_SHRINK_IN_WORLD)) {
