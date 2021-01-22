@@ -61,6 +61,7 @@ namespace model {
         [[nodiscard]] bool                gridXyIsAdjacent(const GridXy& point) const;
         [[nodiscard]] bool                contains(const GridXy& gridXy) const;
         [[nodiscard]] bool                intersects(const Cluster& other, int shrinkInWorld) const;
+        [[nodiscard]] bool                isValid() const;
         [[nodiscard]] PhaseTransformation phaseTransformation() const;
 
         /****** NON CONST FUNCTIONS  ******/

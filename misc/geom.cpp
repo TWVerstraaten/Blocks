@@ -41,7 +41,7 @@ namespace geom {
         return geom::intersect(cluster1.sides(shrinkInWorld), cluster2.sides(shrinkInWorld));
     }
 
-    WorldLineVector getSidesFromGridXy(GridXyVector blocks) {
+    WorldLineVector getSidesFromGridXy(GridXyVector& blocks) {
         std::sort(D_IT(blocks));
         WorldLineVector     result;
         std::vector<GridXy> cornerPoints;

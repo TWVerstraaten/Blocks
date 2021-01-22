@@ -58,6 +58,7 @@ namespace model {
     }
 
     void Cluster::removeGridXy(const GridXy& gridXy) {
+        assert(isValid());
         const auto it = std::find(D_CIT(m_gridXyVector), gridXy);
         assert(it != m_gridXyVector.end());
         m_gridXyVector.erase(it);
@@ -160,6 +161,7 @@ namespace model {
 
     bool Cluster::isConnected() const {
         D_NOTE_ONCE("Implement proper variant of this function")
+        assert(isValid());
         assert(not isEmpty());
         if (m_gridXyVector.size() == 1) {
             return true;
@@ -169,6 +171,7 @@ namespace model {
     }
 
     Cluster Cluster::grabAllButFirstComponent() {
+        assert(isValid());
         assert(not isEmpty());
         assert(size() > 1);
 
@@ -194,9 +197,13 @@ namespace model {
             copy.emplace_back(queue.front());
             queue.pop();
         }
+        std::sort(copy.begin(), copy.end());
+        copy.erase(std::unique(copy.begin(), copy.end()), copy.end());
+
         assert(not copy.empty());
         Cluster result{std::move(copy), m_commandVector, name() + "_"};
         m_gridXyVector.swap(result.m_gridXyVector);
+        assert(isValid());
         return result;
     }
 
@@ -214,6 +221,7 @@ namespace model {
     }
 
     bool Cluster::contains(const GridXy& gridXy) const {
+        assert(isValid());
         return std::find(D_CIT(m_gridXyVector), gridXy) != m_gridXyVector.end();
     }
 
@@ -221,19 +229,23 @@ namespace model {
         if (not contains(gridXy)) {
             m_gridXyVector.emplace_back(gridXy);
         }
+        assert(isValid());
     }
 
     GridXyVector& Cluster::gridXyVector() {
+        assert(isValid());
         return m_gridXyVector;
     }
 
     void Cluster::collideWithLevel(const Level& level, int shrinkInWorld) {
+        assert(isValid());
         if (geom::intersect(sides(shrinkInWorld), level.sides())) {
             kill();
         }
     }
 
     WorldLineVector Cluster::sides(int shrinkInWorld) const {
+        assert(isValid());
         const auto      f = phaseTransformation();
         WorldLineVector result;
         result.reserve(m_sides.size());
@@ -273,10 +285,13 @@ namespace model {
     }
 
     bool Cluster::intersects(const Cluster& other, int shrinkInWorld) const {
+        assert(isValid());
+        assert(other.isValid());
         return geom::intersect(*this, other, shrinkInWorld);
     }
 
     std::list<Cluster> Cluster::collectAllButFirstComponent() {
+        assert(isValid());
         std::list<Cluster> result;
         result.emplace_back(grabAllButFirstComponent());
         while (not result.back().isEmpty()) {
@@ -288,6 +303,7 @@ namespace model {
         if (result.back().isEmpty()) {
             result.pop_back();
         }
+        assert(isConnected());
 
         return result;
     }
@@ -331,11 +347,13 @@ namespace model {
     }
 
     bool Cluster::isAdjacent(const Cluster& other) const {
+        assert(isValid());
         const auto otherGridXy = other.m_gridXyVector;
         return std::any_of(D_CIT(otherGridXy), D_FUNC(point1, gridXyIsAdjacent(point1)));
     }
 
     void Cluster::grabAdjacentStoppedClusters(Level& level) {
+        assert(isValid());
         auto&        stoppedClusters = level.stoppedClusters();
         GridXyVector newGridXy;
         std::for_each(D_IT(stoppedClusters), [&](auto& cluster) {
@@ -383,6 +401,7 @@ namespace model {
     }
 
     void Cluster::buildSides() {
+        assert(isValid());
         m_sides = geom::getSidesFromGridXy(m_gridXyVector);
     }
 
@@ -424,6 +443,13 @@ namespace model {
 
     PHASE Cluster::phase() const {
         return m_phase;
+    }
+
+    bool Cluster::isValid() const {
+        auto copy = m_gridXyVector;
+        sort(D_IT(copy));
+        auto it = std::unique(D_IT(copy));
+        return it == copy.end();
     }
 
 } // namespace model

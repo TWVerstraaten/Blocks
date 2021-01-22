@@ -11,6 +11,8 @@
 #include <QDebug>
 #include <QTimer>
 #include <QUndoView>
+#include <action/RemoveBlockFromClusterAction.h>
+#include <action/SplitDisconnectedAction.h>
 
 namespace view {
 
@@ -258,11 +260,34 @@ namespace view {
     }
 
     void CentralWidget::startInteractPhase() {
-        m_mainView->model()->resetPhase();
-        for (auto& cluster : m_mainView->model()->clusters()) {
+        auto*       model    = m_mainView->model();
+        auto&       clusters = model->clusters();
+        const auto& level    = model->level();
+        model->resetPhase();
+        for (auto& cluster : model->clusters()) {
             cluster.incrementCommandIndex();
         }
+
+        const auto& instantBlocks = level.instantBlocks();
+        for (const auto& [point, type] : instantBlocks) {
+            switch (type) {
+                case model::INSTANT_BLOCK_TYPE::KILL:
+                    for (auto& cluster : clusters) {
+                        if (cluster.contains(point)) {
+                            action::RemoveBlockFromClusterAction(model, cluster.index(), point).redo();
+                            break;
+                        }
+                    }
+                    break;
+            }
+        }
+        model->clearEmpty();
+        model->splitDisconnectedClusters();
+        model->clearEmpty();
+        m_commandScrollArea->addNeeded(clusters);
+
         m_commandScrollArea->updateSelection();
+        update();
     }
 
     void CentralWidget::paintEvent(QPaintEvent* event) {

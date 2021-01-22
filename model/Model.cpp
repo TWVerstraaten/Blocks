@@ -138,4 +138,20 @@ namespace model {
     void Model::clearEmpty() {
         m_clusters.remove_if(D_FUNC(cluster, cluster.isEmpty()));
     }
+
+    void Model::splitDisconnectedClusters() {
+        std::list<Cluster> newClusters;
+        for (auto& cluster : m_clusters) {
+            if (not cluster.isConnected()) {
+                newClusters.splice(newClusters.begin(), cluster.collectAllButFirstComponent());
+                assert(cluster.isConnected());
+            }
+        }
+        m_clusters.splice(m_clusters.begin(), newClusters);
+
+        for (const auto& cluster : m_clusters) {
+            assert(cluster.isConnected());
+        }
+    }
+
 } // namespace model

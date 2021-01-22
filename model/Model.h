@@ -34,6 +34,7 @@ namespace model {
         void                         resetPhase();
         void                         update(double dPhase);
         void                         clearEmpty();
+        void                         splitDisconnectedClusters();
         Level&                       level();
         std::list<Cluster>&          clusters();
         std::list<Cluster>::iterator clusterWithIndex(size_t index);
