@@ -32,7 +32,7 @@ namespace view {
     }
 
     ScreenXy ScreenXy::fromGridXy(const model::GridXy& gridXy, const ViewPort& viewPort) {
-        return fromWorldXy(gridXy, viewPort);
+        return fromWorldXy(model::WorldXy{gridXy}, viewPort);
     }
 
     ScreenXy::ScreenXy(const QPointF& point) : m_x(static_cast<int>(point.x())), m_y(static_cast<int>(point.y())) {

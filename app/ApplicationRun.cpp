@@ -263,7 +263,7 @@
 //                if (stoppedNeighbors.size() == 1) {
 //                    stoppedNeighbors.front()->addGridXy(add);
 //                } else {
-//                    m_model.level().stoppedClusters().emplace_back(model::GridXySet{add}, "Conway");
+//                    m_model.level().stoppedClusters().emplace_back(model::GridXyVector{add}, "Conway");
 //                }
 //            }
 //        }
