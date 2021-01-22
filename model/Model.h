@@ -8,7 +8,7 @@
 #include "Cluster.h"
 #include "Level.h"
 
-#include <list>
+#include <vector>
 
 namespace model {
 
@@ -22,23 +22,23 @@ namespace model {
         Model& operator=(const Model& other) = default;
 
         /****** CONST GETTERS  ******/
-        [[nodiscard]] const Level&              level() const;
-        [[nodiscard]] const std::list<Cluster>& clusters() const;
+        [[nodiscard]] const Level&                level() const;
+        [[nodiscard]] const std::vector<Cluster>& clusters() const;
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] bool noLiveOrStoppedClusterOnBlock(const GridXy& gridXy) const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void                         init();
-        void                         clear();
-        void                         resetPhase();
-        void                         update(double dPhase);
-        void                         clearEmpty();
-        void                         splitDisconnectedClusters();
-        Level&                       level();
-        std::list<Cluster>&          clusters();
-        std::list<Cluster>::iterator clusterWithIndex(size_t index);
-        std::list<Cluster>::iterator clusterContaining(const GridXy& point);
+        void                           init();
+        void                           clear();
+        void                           resetPhase();
+        void                           update(double dPhase);
+        void                           clearEmpty();
+        void                           splitDisconnectedClusters();
+        Level&                         level();
+        std::vector<Cluster>&          clusters();
+        std::vector<Cluster>::iterator clusterWithIndex(size_t index);
+        std::vector<Cluster>::iterator clusterContaining(const GridXy& point);
 
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/
@@ -47,9 +47,9 @@ namespace model {
         void updateInternal(double dPhase);
 
         /****** DATA MEMBERS  ******/
-        double             m_phaseFraction = 0.0;
-        Level              m_level;
-        std::list<Cluster> m_clusters;
+        double               m_phaseFraction = 0.0;
+        Level                m_level;
+        std::vector<Cluster> m_clusters;
     };
 
 } // namespace model

@@ -65,24 +65,26 @@ namespace model {
         [[nodiscard]] PhaseTransformation phaseTransformation() const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void               addGridXy(const GridXy& gridXy);
-        void               doCommand(Model& model);
-        void               update(double phaseFraction);
-        void               kill();
-        void               buildSides();
-        void               incrementCommandIndex();
-        void               clearCommands();
-        void               collideWithLevel(const Level& level, int shrinkInWorld);
-        void               handleDynamicBlock(const GridXy& point, DYNAMIC_BLOCK_TYPE type);
-        void               setState(CLUSTER_STATE state);
-        void               setWorldOffset(const WorldXy& worldOffset);
-        void               setPhase(PHASE phase);
-        void               resetPhase();
-        void               setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves);
-        void               spliceCluster(Level& level);
-        void               removeGridXy(const GridXy& gridXy);
-        Cluster            grabAllButFirstComponent();
-        GridXyVector&      gridXyVector();
+        void    addGridXy(const GridXy& gridXy);
+        void    doCommand(Model& model);
+        void    update(double phaseFraction);
+        void    kill();
+        void    buildSides();
+        void    incrementCommandIndex();
+        void    clearCommands();
+        void    collideWithLevel(const Level& level, int shrinkInWorld);
+        void    handleDynamicBlock(const GridXy& point, DYNAMIC_BLOCK_TYPE type);
+        void    setState(CLUSTER_STATE state);
+        void    setWorldOffset(const WorldXy& worldOffset);
+        void    setPhase(PHASE phase);
+        void    resetPhase();
+        void    setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves);
+        void    spliceCluster(Level& level);
+        void    removeGridXy(const GridXy& gridXy);
+        void    sortGridXy();
+        void    swapGridXy(GridXyVector& other);
+        void    appendGridXy(const GridXyVector& other);
+        Cluster grabAllButFirstComponent();
         CommandVector&     commandVector();
         std::list<Cluster> collectAllButFirstComponent();
 
@@ -100,8 +102,9 @@ namespace model {
         void grabAdjacentStoppedClusters(Level& level);
 
         /****** DATA MEMBERS  ******/
-        double                m_phaseFraction = 0.0;
-        double                m_angle         = 0.0;
+        bool                  m_gridXyAreSorted = false;
+        double                m_phaseFraction   = 0.0;
+        double                m_angle           = 0.0;
         size_t                m_index;
         PENDING_DYNAMIC_MOVES m_pendingDynamicMoves = PENDING_DYNAMIC_MOVES::ZERO;
         CLUSTER_STATE         m_state               = CLUSTER_STATE::ALIVE;

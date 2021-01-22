@@ -18,7 +18,7 @@ namespace model {
         for (const auto& idx : cluster.gridXyVector()) {
             newGridXyVector.emplace_back(idx.neighbor(direction));
         }
-        cluster.gridXyVector().swap(newGridXyVector);
+        cluster.swapGridXy(newGridXyVector);
         switch (direction) {
             case GridXy::DIRECTION::UP:
                 cluster.setWorldOffset({0, app::BLOCK_SIZE_IN_WORLD});

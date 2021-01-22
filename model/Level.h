@@ -10,7 +10,7 @@
 #include "Level_enums.h"
 #include "WorldLine.h"
 
-#include <list>
+#include <vector>
 #include <map>
 #include <memory>
 #include <set>
@@ -25,10 +25,10 @@ namespace model {
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] bool                                        isFreeStartBlock(const GridXy& gridXy) const;
-        [[nodiscard]] const WorldLineVector&                         sides() const;
+        [[nodiscard]] const WorldLineVector&                      sides() const;
         [[nodiscard]] const std::map<GridXy, DYNAMIC_BLOCK_TYPE>& dynamicBlocks() const;
         [[nodiscard]] const std::map<GridXy, INSTANT_BLOCK_TYPE>& instantBlocks() const;
-        [[nodiscard]] const std::list<Cluster>&                   stoppedClusters() const;
+        [[nodiscard]] const std::vector<Cluster>&                   stoppedClusters() const;
         [[nodiscard]] const std::map<GridXy, FLOOR_BLOCK_TYPE>&   floorBlocks() const;
 
         /****** CONST FUNCTIONS  ******/
@@ -43,7 +43,7 @@ namespace model {
         void                removeBlock(const GridXy& gridXy, DYNAMIC_BLOCK_TYPE blockType);
         void                removeBlock(const GridXy& gridXy, INSTANT_BLOCK_TYPE blockType);
         void                removeBlock(const GridXy& gridXy, FLOOR_BLOCK_TYPE blockType);
-        std::list<Cluster>& stoppedClusters();
+        std::vector<Cluster>& stoppedClusters();
 
       private:
         /****** PRIVATE CONST FUNCTIONS  ******/
@@ -54,7 +54,7 @@ namespace model {
         std::map<GridXy, INSTANT_BLOCK_TYPE> m_instantBLocks;
         std::map<GridXy, FLOOR_BLOCK_TYPE>   m_floorBlocks;
         WorldLineVector                      m_sides;
-        std::list<Cluster>                   m_stoppedClusters;
+        std::vector<Cluster>                 m_stoppedClusters;
     };
 } // namespace model
 

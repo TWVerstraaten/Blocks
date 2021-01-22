@@ -59,7 +59,7 @@ namespace view {
         }
     }
 
-    void CommandScrollArea::addNeeded(std::list<model::Cluster>& clusters) {
+    void CommandScrollArea::addNeeded(std::vector<model::Cluster>& clusters) {
         for (auto& cluster : clusters) {
             if (std::find_if(D_CIT(m_commandEditBoxes), D_FUNC(box, box->index() == cluster.index())) == m_commandEditBoxes.end()) {
                 add(cluster);

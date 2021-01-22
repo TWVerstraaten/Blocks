@@ -36,7 +36,7 @@ namespace action {
         assert(secondIt != m_model->clusters().end());
         auto targetIt = m_model->clusterWithIndex(m_target.index());
         assert(targetIt != m_model->clusters().end());
-        std::copy(D_IT(secondIt->gridXyVector()), std::back_inserter(targetIt->gridXyVector() ));
+        targetIt->appendGridXy(secondIt->gridXyVector());
         m_model->clusters().erase(secondIt);
         targetIt->buildSides();
         m_commandEditBox = m_commandScrollArea->removeFromLayout(m_second.index());

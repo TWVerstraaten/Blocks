@@ -20,11 +20,13 @@ namespace model {
 
     Cluster::Cluster(GridXyVector&& gridXy, std::string name) : m_index(s_maxClusterIndex), m_gridXyVector(gridXy), m_name(std::move(name)) {
         ++s_maxClusterIndex;
+        sortGridXy();
         m_sides = geom::getSidesFromGridXy(m_gridXyVector);
     }
 
     Cluster::Cluster(const GridXy& gridXy, std::string name) : m_index(s_maxClusterIndex), m_gridXyVector({gridXy}), m_name(std::move(name)) {
         ++s_maxClusterIndex;
+        sortGridXy();
         m_sides = geom::getSidesFromGridXy(m_gridXyVector);
     }
 
@@ -38,6 +40,7 @@ namespace model {
             return;
         }
         std::visit(D_FUNC(c, handleCommand(c, *this, model.level())), m_commandVector.currentCommand());
+        m_gridXyAreSorted = false;
     }
 
     void Cluster::rotateClockWiseAbout(const GridXy& pivotGridXy) {
@@ -204,6 +207,7 @@ namespace model {
         Cluster result{std::move(copy), m_commandVector, name() + "_"};
         m_gridXyVector.swap(result.m_gridXyVector);
         assert(isValid());
+        m_gridXyAreSorted = false;
         return result;
     }
 
@@ -229,13 +233,14 @@ namespace model {
         if (not contains(gridXy)) {
             m_gridXyVector.emplace_back(gridXy);
         }
+        m_gridXyAreSorted = false;
         assert(isValid());
     }
 
-    GridXyVector& Cluster::gridXyVector() {
-        assert(isValid());
-        return m_gridXyVector;
-    }
+    //    GridXyVector& Cluster::gridXyVector() {
+    //        assert(isValid());
+    //        return m_gridXyVector;
+    //    }
 
     void Cluster::collideWithLevel(const Level& level, int shrinkInWorld) {
         assert(isValid());
@@ -245,6 +250,7 @@ namespace model {
     }
 
     WorldLineVector Cluster::sides(int shrinkInWorld) const {
+        assert(std::is_sorted(D_CIT(m_gridXyVector)));
         assert(isValid());
         const auto      f = phaseTransformation();
         WorldLineVector result;
@@ -304,6 +310,7 @@ namespace model {
             result.pop_back();
         }
         assert(isConnected());
+        m_gridXyAreSorted = false;
 
         return result;
     }
@@ -363,7 +370,8 @@ namespace model {
             }
         });
         std::copy(D_CIT(newGridXy), std::back_inserter(m_gridXyVector));
-        stoppedClusters.remove_if(D_FUNC(cluster, cluster.isEmpty()));
+        stoppedClusters.erase(std::remove_if(D_IT(stoppedClusters), D_FUNC(cluster, cluster.isEmpty())), stoppedClusters.end());
+        m_gridXyAreSorted = false;
     }
 
     void Cluster::spliceCluster(Level& level) {
@@ -398,11 +406,13 @@ namespace model {
                 rotateCounterClockWiseAbout(point);
                 break;
         }
+        m_gridXyAreSorted = false;
         buildSides();
     }
 
     void Cluster::buildSides() {
         assert(isValid());
+        sortGridXy();
         m_sides = geom::getSidesFromGridXy(m_gridXyVector);
     }
 
@@ -448,9 +458,26 @@ namespace model {
 
     bool Cluster::isValid() const {
         auto copy = m_gridXyVector;
-        sort(D_IT(copy));
+        std::sort(D_IT(copy));
         auto it = std::unique(D_IT(copy));
         return it == copy.end();
+    }
+
+    void Cluster::sortGridXy() {
+        if (not m_gridXyAreSorted) {
+            std::sort(D_IT(m_gridXyVector));
+            m_gridXyAreSorted = true;
+        }
+    }
+
+    void Cluster::swapGridXy(GridXyVector& other) {
+        std::swap(m_gridXyVector, other);
+        m_gridXyAreSorted = false;
+    }
+
+    void Cluster::appendGridXy(const GridXyVector& other) {
+        std::copy(D_IT(other), std::back_inserter(m_gridXyVector));
+        m_gridXyAreSorted = false;
     }
 
 } // namespace model

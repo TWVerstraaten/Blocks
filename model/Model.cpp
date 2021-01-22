@@ -11,11 +11,11 @@
 
 namespace model {
 
-    const std::list<Cluster>& Model::clusters() const {
+    const std::vector<Cluster>& Model::clusters() const {
         return m_clusters;
     }
 
-    std::list<Cluster>& Model::clusters() {
+    std::vector<Cluster>& Model::clusters() {
         return m_clusters;
     }
 
@@ -108,6 +108,9 @@ namespace model {
         if (m_clusters.size() == 1) {
             return;
         }
+        for (auto& cluster : m_clusters) {
+            cluster.sortGridXy();
+        }
         for (auto cluster1 = m_clusters.begin(); cluster1 != m_clusters.end(); ++cluster1) {
             for (auto cluster2 = std::next(cluster1); cluster2 != m_clusters.end(); ++cluster2) {
                 if (cluster1->intersects(*cluster2, app::BLOCK_SHRINK_IN_WORLD)) {
@@ -118,7 +121,7 @@ namespace model {
         }
     }
 
-    std::list<Cluster>::iterator Model::clusterWithIndex(size_t index) {
+    std::vector<Cluster>::iterator Model::clusterWithIndex(size_t index) {
         return std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.index() == index));
     }
 
@@ -131,23 +134,25 @@ namespace model {
                (std::find_if(D_IT(m_level.stoppedClusters()), D_FUNC(cluster, cluster.contains(gridXy))) == m_level.stoppedClusters().end());
     }
 
-    std::list<Cluster>::iterator Model::clusterContaining(const GridXy& point) {
+    std::vector<Cluster>::iterator Model::clusterContaining(const GridXy& point) {
         return std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(point)));
     }
 
     void Model::clearEmpty() {
-        m_clusters.remove_if(D_FUNC(cluster, cluster.isEmpty()));
+        m_clusters.erase(std::remove_if(D_IT(m_clusters), D_FUNC(cluster, cluster.isEmpty())), m_clusters.end());
     }
 
     void Model::splitDisconnectedClusters() {
-        std::list<Cluster> newClusters;
+        std::vector<Cluster> newClusters;
         for (auto& cluster : m_clusters) {
             if (not cluster.isConnected()) {
-                newClusters.splice(newClusters.begin(), cluster.collectAllButFirstComponent());
+                D_NOTE_ONCE("Splice")
+
+                //                newClusters.splice(newClusters.begin(), cluster.collectAllButFirstComponent());
                 assert(cluster.isConnected());
             }
         }
-        m_clusters.splice(m_clusters.begin(), newClusters);
+        //        m_clusters.splice(m_clusters.begin(), newClusters);
 
         for (const auto& cluster : m_clusters) {
             assert(cluster.isConnected());

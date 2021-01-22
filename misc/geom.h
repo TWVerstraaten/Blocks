@@ -23,7 +23,7 @@ namespace geom {
     int                          cross(const model::WorldXy& lhs, const model::WorldXy& rhs);
     model::WorldXy               rotateClockWise(const model::WorldXy& point, double angleInDegrees);
     model::WorldXy               rotateAboutPivot(const model::WorldXy& point, const model::WorldXy& pivot, double angleInDegrees);
-    model::WorldLineVector       getSidesFromGridXy(model::GridXyVector& blocks);
+    model::WorldLineVector       getSidesFromGridXy(const model::GridXyVector& blocks);
     std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, model::GridXy point);
     std::vector<model::Cluster*> neighbors(std::list<model::Cluster>& clusters, const model::Cluster& cluster);
 } // namespace geom

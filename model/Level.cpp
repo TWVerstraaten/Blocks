@@ -68,6 +68,7 @@ namespace model {
         }
         m_sides = geom::getSidesFromGridXy(blocks);
         for (auto& cluster : m_stoppedClusters) {
+            cluster.sortGridXy();
             auto clusterSides = geom::getSidesFromGridXy(cluster.gridXyVector());
             std::copy(D_CIT(clusterSides), std::back_inserter(clusterSides));
         }
@@ -92,11 +93,11 @@ namespace model {
         m_floorBlocks.erase(gridXy);
     }
 
-    std::list<Cluster>& Level::stoppedClusters() {
+    std::vector<Cluster>& Level::stoppedClusters() {
         return m_stoppedClusters;
     }
 
-    const std::list<Cluster>& Level::stoppedClusters() const {
+    const std::vector<Cluster>& Level::stoppedClusters() const {
         return m_stoppedClusters;
     }
 

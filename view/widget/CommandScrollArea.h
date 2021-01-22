@@ -21,7 +21,7 @@ namespace view {
 
         void add(model::Cluster& cluster);
         void addToLayout(std::unique_ptr<CommandEditWidget>&& commandEditBox);
-        void addNeeded(std::list<model::Cluster>& clusters);
+        void addNeeded(std::vector<model::Cluster>& clusters);
         void updateSelection();
         void disable();
 
