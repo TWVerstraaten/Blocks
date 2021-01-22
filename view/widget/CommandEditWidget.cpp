@@ -5,6 +5,7 @@
 #include "../FontManager.h"
 #include "../color.h"
 #include "CentralWidget.h"
+#include "CommandScrollArea.h"
 #include "TextEdit.h"
 #include "TextEditCommentWidget.h"
 
@@ -12,7 +13,7 @@
 
 namespace view {
     CommandEditWidget::CommandEditWidget(CommandScrollArea* parent, model::Cluster& cluster)
-        : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandVector(&cluster.commandVector()), m_commandScrollArea(parent),
+        : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandScrollArea(parent),
           m_lineWidget(new TextEditCommentWidget(this)), m_commentWidget(new TextEditCommentWidget(this)) {
         setContentsMargins(0, 0, 0, 0);
         setMaximumWidth(200);
@@ -79,31 +80,24 @@ namespace view {
         return m_commandScrollArea;
     }
 
-    void CommandEditWidget::setCommandVectorPointer() {
-        auto it =
-            std::find_if(D_IT(m_commandScrollArea->centralWidget()->mainView()->model()->clusters()), D_FUNC(cluster, cluster.index() == m_index));
-        assert(it != m_commandScrollArea->centralWidget()->mainView()->model()->clusters().end());
-        m_commandVector = &it->commandVector();
-    }
-
     void CommandEditWidget::updateCommandVector() {
-        m_commandVector->set(m_textEdit->contents());
+        commandVector().set(m_textEdit->contents());
     }
 
-    model::CommandVector* CommandEditWidget::commandVector() {
-        return m_commandVector;
+    model::CommandVector& CommandEditWidget::commandVector() {
+        return m_commandScrollArea->centralWidget()->mainView()->model()->clusterWithIndex(m_index)->commandVector();
     }
 
     void CommandEditWidget::updateSelection() {
-        if (m_commandVector->isEmpty()) {
+        const auto& cmdVec = commandVector();
+        if (cmdVec.isEmpty()) {
             return;
         }
-        m_textEdit->setSelection(m_commandVector->commandIndex());
+        m_textEdit->setSelection(cmdVec.commandIndex());
         m_commentWidget->clearComments();
         m_commentWidget->update();
-        if (m_commandVector->currentIsRepeat()) {
-            m_commentWidget->addComment(m_textEdit->nThOpaqueLine(m_commandVector->commandIndex()),
-                                        QString("%1").arg(m_commandVector->repeatCount() + 1));
+        if (cmdVec.currentIsRepeat()) {
+            m_commentWidget->addComment(m_textEdit->nThOpaqueLine(cmdVec.commandIndex()), QString("%1").arg(cmdVec.repeatCount() + 1));
         }
         update();
     }

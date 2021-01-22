@@ -23,23 +23,22 @@ namespace view {
         CommandEditWidget(CommandScrollArea* parent, model::Cluster& cluster);
         ~CommandEditWidget() override;
 
-        void setCommandVectorPointer();
         void updateSelection();
         void disconnectCommandVectorUpdate();
 
-        [[nodiscard]] TextEdit*             textEdit();
-        [[nodiscard]] size_t                index() const;
-        [[nodiscard]] CommandScrollArea*    commandScrollArea() const;
-        [[nodiscard]] model::CommandVector* commandVector();
+        [[nodiscard]] TextEdit*          textEdit();
+        [[nodiscard]] size_t             index() const;
+        [[nodiscard]] CommandScrollArea* commandScrollArea() const;
 
       private slots:
         void updateCommandVector();
 
       private:
+        model::CommandVector& commandVector();
+
         size_t                 m_index;
         std::string            m_name;
         TextEdit*              m_textEdit;
-        model::CommandVector*  m_commandVector;
         CommandScrollArea*     m_commandScrollArea;
         TextEditCommentWidget* m_lineWidget;
         TextEditCommentWidget* m_commentWidget;

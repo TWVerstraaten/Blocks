@@ -94,7 +94,6 @@ namespace view {
     void CommandScrollArea::addToLayout(std::unique_ptr<CommandEditWidget>&& commandEditBox) {
         commandEditBox->setParent(this);
         m_layout->insertWidget(m_layout->count() - 1, commandEditBox.get());
-        commandEditBox->setCommandVectorPointer();
         m_commandEditBoxes.emplace_back(std::move(commandEditBox));
         m_commandEditBoxes.back()->show();
     }
