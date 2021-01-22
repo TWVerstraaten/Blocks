@@ -21,7 +21,6 @@ namespace view {
 
     static QString fromEnum(FONT_ENUM fontEnum) {
         switch (fontEnum) {
-
             case FONT_ENUM::ANON_PRO_BOLD:
                 return ":/assets/Anonymous_Pro_B.ttf";
             case FONT_ENUM::ANON_PRO_ITALIC:
