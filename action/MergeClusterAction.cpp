@@ -7,6 +7,8 @@
 #include "../model/Model.h"
 #include "view/widget/CommandScrollArea.h"
 
+#include <misc/defines.h>
+
 namespace action {
 
     MergeClusterAction::MergeClusterAction(model::Model*            model,
@@ -20,7 +22,7 @@ namespace action {
     void MergeClusterAction::undo() {
         auto targetIt = m_model->clusterWithIndex(m_target.index());
         assert(targetIt != m_model->clusters().end());
-        for (const auto& point : m_second.gridXySet()) {
+        for (const auto& point : m_second.gridXyVector()) {
             assert(targetIt->contains(point));
             targetIt->removeGridXy(point);
         }
@@ -34,7 +36,7 @@ namespace action {
         assert(secondIt != m_model->clusters().end());
         auto targetIt = m_model->clusterWithIndex(m_target.index());
         assert(targetIt != m_model->clusters().end());
-        targetIt->gridXy().merge(secondIt->gridXy());
+        std::copy(D_IT(secondIt->gridXyVector()), std::back_inserter(targetIt->gridXyVector() ));
         m_model->clusters().erase(secondIt);
         targetIt->buildSides();
         m_commandEditBox = m_commandScrollArea->removeFromLayout(m_second.index());

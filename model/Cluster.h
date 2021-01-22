@@ -31,9 +31,9 @@ namespace model {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        Cluster(GridXySet&& gridXy, std::string name);
+        Cluster(GridXyVector&& gridXy, std::string name);
         Cluster(const GridXy& gridXy, std::string name);
-        Cluster(GridXySet&& gridXy, CommandVector commandVector, std::string name);
+        Cluster(GridXyVector&& gridXy, CommandVector commandVector, std::string name);
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] double                angle() const;
@@ -45,11 +45,11 @@ namespace model {
         [[nodiscard]] WorldXy               dynamicWorldOffset() const;
         [[nodiscard]] WorldXy               approximateCenter() const;
         [[nodiscard]] std::string           string() const;
-        [[nodiscard]] WorldXySet            cornerPoints(int shrinkInWorld) const;
+        [[nodiscard]] WorldXyVector         cornerPoints(int shrinkInWorld) const;
         [[nodiscard]] WorldLineVector       sides(int shrinkInWorld) const;
         [[nodiscard]] const GridXy&         rotationPivot() const;
         [[nodiscard]] const std::string&    name() const;
-        [[nodiscard]] const GridXySet&      gridXySet() const;
+        [[nodiscard]] const GridXyVector&   gridXyVector() const;
         [[nodiscard]] const CommandVector&  commandVector() const;
         [[nodiscard]] PHASE                 phase() const;
 
@@ -64,26 +64,26 @@ namespace model {
         [[nodiscard]] PhaseTransformation phaseTransformation() const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void                addGridXy(const GridXy& gridXy);
-        void                doCommand(Model& model);
-        void                update(double phaseFraction);
-        void                kill();
-        void                buildSides();
-        void                incrementCommandIndex();
-        void                clearCommands();
-        void                collideWithLevel(const Level& level, int shrinkInWorld);
-        void                handleDynamicBlock(const GridXy& point, DYNAMIC_BLOCK_TYPE type);
-        void                setState(CLUSTER_STATE state);
-        void                setWorldOffset(const WorldXy& worldOffset);
-        void                setPhase(PHASE phase);
-        void                resetPhase();
-        void                setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves);
-        void                spliceCluster(Level& level);
-        Cluster             grabAllButFirstComponent();
-        CommandVector&      commandVector();
-        GridXySet::iterator removeGridXy(const GridXy& gridXy);
-        std::list<Cluster>  collectAllButFirstComponent();
-        GridXySet&          gridXy();
+        void               addGridXy(const GridXy& gridXy);
+        void               doCommand(Model& model);
+        void               update(double phaseFraction);
+        void               kill();
+        void               buildSides();
+        void               incrementCommandIndex();
+        void               clearCommands();
+        void               collideWithLevel(const Level& level, int shrinkInWorld);
+        void               handleDynamicBlock(const GridXy& point, DYNAMIC_BLOCK_TYPE type);
+        void               setState(CLUSTER_STATE state);
+        void               setWorldOffset(const WorldXy& worldOffset);
+        void               setPhase(PHASE phase);
+        void               resetPhase();
+        void               setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves);
+        void               spliceCluster(Level& level);
+        void               removeGridXy(const GridXy& gridXy);
+        Cluster            grabAllButFirstComponent();
+        GridXyVector&      gridXyVector();
+        CommandVector&     commandVector();
+        std::list<Cluster> collectAllButFirstComponent();
 
         /****** FRIENDS  ******/
         friend std::ostream& operator<<(std::ostream& out, const Cluster& other);
@@ -108,7 +108,7 @@ namespace model {
         WorldXy               m_worldOffset         = {0, 0};
         GridXy                m_rotationPivot       = {0, 0};
         CommandVector         m_commandVector;
-        GridXySet             m_gridXySet;
+        GridXyVector          m_gridXyVector;
         WorldLineVector       m_sides;
         std::string           m_name;
     };

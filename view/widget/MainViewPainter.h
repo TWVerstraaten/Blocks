@@ -27,12 +27,12 @@ namespace view {
         explicit MainViewPainter(const MainView* mainView);
 
         void paint(QPainter& painter, QPaintEvent* event);
-        void drawConnected(const model::GridXySet& blocks, const QColor& color, QPainter& painter) const;
+        void drawConnected(const model::GridXyVector& blocks, const QColor& color, QPainter& painter) const;
         void drawConnected(
-            const model::GridXySet& blocks, const QColor& color, QPainter& painter, double angle, const model::PhaseTransformation& f) const;
+            const model::GridXyVector& blocks, const QColor& color, QPainter& painter, double angle, const model::PhaseTransformation& f) const;
         void drawCluster(const model::Cluster& cluster, QPainter& painter);
 
-        [[nodiscard]] QPixmap connectedPixmap(const model::GridXySet& blocks, const QColor& color) const;
+        [[nodiscard]] QPixmap connectedPixmap(const model::GridXyVector& blocks, const QColor& color) const;
 
         const MainView* m_mainView;
         const ViewPort* m_viewPort;

@@ -4,6 +4,8 @@
 
 #include "MainViewPainter.h"
 
+#include "../../misc/AlignedRectangle.h"
+#include "../../misc/defines.h"
 #include "../../misc/geom.h"
 #include "../../model/Model.h"
 #include "../FontManager.h"
@@ -12,7 +14,6 @@
 #include "MainView.h"
 
 #include <QDebug>
-#include <misc/AlignedRectangle.h>
 
 namespace view {
 
@@ -35,7 +36,7 @@ namespace view {
             painter.drawRect(QRect{position.x(), position.y(), shrunkBlockSize, shrunkBlockSize});
         }
         for (const auto& stoppedCluster : m_mainView->m_model->level().stoppedClusters()) {
-            drawConnected(stoppedCluster.gridXySet(), color::CLUSTER_STOPPED, painter);
+            drawConnected(stoppedCluster.gridXyVector(), color::CLUSTER_STOPPED, painter);
         }
         for (const auto& cluster : m_mainView->m_model->clusters()) {
             drawCluster(cluster, painter);
@@ -52,7 +53,7 @@ namespace view {
         }
     }
 
-    QPixmap MainViewPainter::connectedPixmap(const GridXySet& blocks, const QColor& color) const {
+    QPixmap MainViewPainter::connectedPixmap(const GridXyVector& blocks, const QColor& color) const {
         using namespace model;
 
         const auto shrunkSize  = m_viewPort->blockSizeInScreen() - 2 * m_viewPort->worldToScreen(app::BLOCK_SHRINK_IN_WORLD);
@@ -76,13 +77,15 @@ namespace view {
             const auto position        = ScreenXy{m_viewPort->worldToScreen(positionInWorld.x()), m_viewPort->worldToScreen(positionInWorld.y())};
             painter.fillRect(QRect{position.x(), position.y(), shrunkSize, shrunkSize}, QBrush{color});
 
-            const bool leftOccupied = blocks.find(block.neighbor(GridXy::DIRECTION::LEFT)) != blocks.end();
-            const bool upOccupied   = blocks.find(block.neighbor(GridXy::DIRECTION::UP)) != blocks.end();
+            const bool leftOccupied = std::find(D_CIT(blocks), block.neighbor(GridXy::DIRECTION::LEFT)) != blocks.end();
+            const bool upOccupied   = std::find(D_CIT(blocks), block.neighbor(GridXy::DIRECTION::UP)) != blocks.end();
+
             if (upOccupied && leftOccupied) {
                 painter.fillRect(QRect{position.x(), position.y() - twiceShrink - 1, shrunkSize, twiceShrink + 2}, color);
                 painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y(), twiceShrink + 2, shrunkSize}, color);
 
-                const bool upAndLeftOccupied = blocks.find(block.neighbor(GridXy::DIRECTION::UP).neighbor(GridXy::DIRECTION::LEFT)) != blocks.end();
+                const bool upAndLeftOccupied =
+                    std::find(D_CIT(blocks), block.neighbor(GridXy::DIRECTION::UP).neighbor(GridXy::DIRECTION::LEFT)) != blocks.end();
                 if (upAndLeftOccupied) {
                     painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y() - twiceShrink - 1, twiceShrink + 2, twiceShrink + 2}, color);
                 }
@@ -97,7 +100,7 @@ namespace view {
         return result;
     }
 
-    void MainViewPainter::drawConnected(const GridXySet& blocks, const QColor& color, QPainter& painter) const {
+    void MainViewPainter::drawConnected(const GridXyVector& blocks, const QColor& color, QPainter& painter) const {
         const auto topLeft = ScreenXy::fromWorldXy(WorldXy(GridXy{geom::minX(blocks), geom::minY(blocks)}), *m_viewPort);
         const auto pixmap  = connectedPixmap(blocks, color);
         painter.drawPixmap(topLeft.x(), topLeft.y(), pixmap);
@@ -106,10 +109,10 @@ namespace view {
     void MainViewPainter::drawCluster(const Cluster& cluster, QPainter& painter) {
         const auto f = cluster.phaseTransformation();
         if (cluster.phaseTransformation()) {
-            drawConnected(cluster.gridXySet(), cluster.isAlive() ? color::CLUSTER : color::CLUSTER_DEAD_COLOR, painter, -cluster.angle(), f);
+            drawConnected(cluster.gridXyVector(), cluster.isAlive() ? color::CLUSTER : color::CLUSTER_DEAD_COLOR, painter, -cluster.angle(), f);
         }
         const auto namePosition =
-            ScreenXy::fromWorldXy(f(WorldXy(*cluster.gridXySet().begin()) + WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}), *m_viewPort);
+            ScreenXy::fromWorldXy(f(WorldXy(*cluster.gridXyVector().begin()) + WorldXy{5, app::HALF_BLOCK_SIZE_IN_WORLD}), *m_viewPort);
 
         painter.setFont(FontManager::font(FONT_ENUM::ANON_PRO_ITALIC, 12));
         QFontMetrics fontMetrics(painter.font());
@@ -145,7 +148,7 @@ namespace view {
     }
 
     void MainViewPainter::drawConnected(
-        const GridXySet& blocks, const QColor& color, QPainter& painter, double angle, const PhaseTransformation& f) const {
+        const GridXyVector& blocks, const QColor& color, QPainter& painter, double angle, const PhaseTransformation& f) const {
         painter.save();
 
         const auto topLeft = ScreenXy::fromWorldXy(f(WorldXy(GridXy{geom::minX(blocks), geom::minY(blocks)})), *m_viewPort);

@@ -27,8 +27,8 @@ namespace geom {
         const auto boundingAlignedRectangle1 = AlignedRectangle::boundingAlignedRectangle(cluster1);
         const auto boundingAlignedRectangle2 = AlignedRectangle::boundingAlignedRectangle(cluster2);
 
-        const auto point1 = *cluster1.gridXySet().begin();
-        const auto point2 = *cluster2.gridXySet().begin();
+        const auto point1 = *cluster1.gridXyVector().begin();
+        const auto point2 = *cluster2.gridXyVector().begin();
 
         if (square(point1.x() - point2.x()) + square(point1.y() - point2.y()) >
             square(boundingAlignedRectangle1.maxDimension() + boundingAlignedRectangle2.maxDimension())) {
@@ -41,15 +41,16 @@ namespace geom {
         return geom::intersect(cluster1.sides(shrinkInWorld), cluster2.sides(shrinkInWorld));
     }
 
-    WorldLineVector getSidesFromGridXy(const GridXySet& blocks) {
+    WorldLineVector getSidesFromGridXy(GridXyVector blocks) {
+        std::sort(D_IT(blocks));
         WorldLineVector     result;
         std::vector<GridXy> cornerPoints;
         for (const auto& dir : {GridXy::DIRECTION::UP, GridXy::DIRECTION::DOWN}) {
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {
-                if (blocks.find(it->neighbor(dir)) == blocks.end()) {
+                if (std::find(D_CIT(blocks), it->neighbor(dir)) == blocks.end()) {
                     const auto start = *it;
                     auto       next  = std::next(it);
-                    while (next != blocks.end() && *next - *it == GridXy{1, 0} && (blocks.find(next->neighbor(dir)) == blocks.end())) {
+                    while (next != blocks.end() && *next - *it == GridXy{1, 0} && (std::find(D_CIT(blocks), next->neighbor(dir)) == blocks.end())) {
                         ++it;
                         ++next;
                     }
@@ -105,24 +106,24 @@ namespace geom {
         return (containedInClosedInterval(cross(qMinusP, s), 0, rCrossS) && containedInClosedInterval(cross(qMinusP, r), 0, rCrossS));
     }
 
-    int minX(const GridXySet& blocks) {
+    int minX(const GridXyVector& blocks) {
         assert(not blocks.empty());
         return std::min_element(D_CIT(blocks), D_FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
     }
 
-    int minY(const GridXySet& blocks) {
+    int minY(const GridXyVector& blocks) {
         assert(not blocks.empty());
-        return blocks.begin()->y();
+        return std::min_element(D_CIT(blocks), D_FUNC_2(lhs, rhs, lhs.y() < rhs.y()))->y();
     }
 
-    int maxX(const GridXySet& blocks) {
+    int maxX(const GridXyVector& blocks) {
         assert(not blocks.empty());
         return std::max_element(D_CIT(blocks), D_FUNC_2(lhs, rhs, lhs.x() < rhs.x()))->x();
     }
 
-    int maxY(const GridXySet& blocks) {
+    int maxY(const GridXyVector& blocks) {
         assert(not blocks.empty());
-        return blocks.rbegin()->y();
+        return std::max_element(D_CIT(blocks), D_FUNC_2(lhs, rhs, lhs.y() < rhs.y()))->y();
     }
 
     std::vector<Cluster*> neighbors(std::list<Cluster>& clusters, GridXy point) {

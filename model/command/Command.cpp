@@ -12,12 +12,13 @@
 namespace model {
 
     static void translate(GridXy::DIRECTION direction, Cluster& cluster) {
-        GridXySet newGridXySet;
+        GridXyVector newGridXyVector;
+        newGridXyVector.reserve(cluster.gridXyVector().size());
         cluster.setPhase(PHASE::TRANSLATING);
-        for (auto& idx : cluster.gridXy()) {
-            newGridXySet.emplace(idx.neighbor(direction));
+        for (const auto& idx : cluster.gridXyVector()) {
+            newGridXyVector.emplace_back(idx.neighbor(direction));
         }
-        cluster.gridXy().swap(newGridXySet);
+        cluster.gridXyVector().swap(newGridXyVector);
         switch (direction) {
             case GridXy::DIRECTION::UP:
                 cluster.setWorldOffset({0, app::BLOCK_SIZE_IN_WORLD});

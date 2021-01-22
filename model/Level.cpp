@@ -62,13 +62,13 @@ namespace model {
     }
 
     void Level::buildSides() {
-        std::set<GridXy> blocks;
+        GridXyVector blocks;
         for (const auto& [point, _] : m_floorBlocks) {
-            blocks.emplace(point);
+            blocks.emplace_back(point);
         }
         m_sides = geom::getSidesFromGridXy(blocks);
         for (const auto& cluster : m_stoppedClusters) {
-            auto clusterSides = geom::getSidesFromGridXy(cluster.gridXySet());
+            auto clusterSides = geom::getSidesFromGridXy(cluster.gridXyVector());
             std::copy(D_CIT(clusterSides), std::back_inserter(clusterSides));
         }
     }
@@ -104,11 +104,11 @@ namespace model {
         return m_floorBlocks;
     }
 
-    GridXySet Level::blocks(FLOOR_BLOCK_TYPE blockType) const {
-        std::set<GridXy> result;
+    GridXyVector Level::blocks(FLOOR_BLOCK_TYPE blockType) const {
+        GridXyVector result;
         for (const auto& [point, type] : m_floorBlocks) {
             if (type == blockType) {
-                result.emplace(point);
+                result.emplace_back(point);
             }
         }
         return result;

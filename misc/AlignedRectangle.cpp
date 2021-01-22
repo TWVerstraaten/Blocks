@@ -18,7 +18,7 @@ namespace geom {
     }
 
     AlignedRectangle AlignedRectangle::boundingAlignedRectangle(const model::Cluster& cluster) {
-        const auto& gridXySet = cluster.gridXySet();
+        const auto& gridXySet = cluster.gridXyVector();
         int         minX      = app::BLOCK_SIZE_IN_WORLD * geom::minX(gridXySet);
         int         maxX      = app::BLOCK_SIZE_IN_WORLD * (geom::maxX(gridXySet) + 1);
         int         minY      = app::BLOCK_SIZE_IN_WORLD * geom::minY(gridXySet);

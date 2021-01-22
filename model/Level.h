@@ -32,7 +32,7 @@ namespace model {
         [[nodiscard]] const std::map<GridXy, FLOOR_BLOCK_TYPE>&   floorBlocks() const;
 
         /****** CONST FUNCTIONS  ******/
-        [[nodiscard]] GridXySet blocks(FLOOR_BLOCK_TYPE blockType) const;
+        [[nodiscard]] GridXyVector blocks(FLOOR_BLOCK_TYPE blockType) const;
 
         /****** NON CONST FUNCTIONS  ******/
         void                clear();
