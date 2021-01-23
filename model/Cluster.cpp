@@ -28,6 +28,7 @@ namespace model {
 
     Cluster::Cluster(GridXyVector&& gridXy, CommandVector commandVector, std::string name)
         : m_index(s_maxClusterIndex), m_commandVector(std::move(commandVector)), m_gridXyVector(gridXy), m_name(std::move(name)) {
+        ++s_maxClusterIndex;
     }
 
     void Cluster::doCommand(Model& model) {
