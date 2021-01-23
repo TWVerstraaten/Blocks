@@ -39,6 +39,7 @@ namespace view {
     }
 
     TextEdit::~TextEdit() {
+        disconnect();
         delete m_syntaxHighlighter;
     }
 

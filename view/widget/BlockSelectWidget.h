@@ -19,6 +19,8 @@ namespace view {
       public:
         explicit BlockSelectWidget(QWidget* parent);
 
+        ~BlockSelectWidget() override;
+
         [[nodiscard]] BlockType selectedBlockType() const;
 
       private slots:

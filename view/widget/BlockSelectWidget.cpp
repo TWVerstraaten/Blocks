@@ -30,10 +30,13 @@ namespace view {
         setSelectedIndex(0);
     }
 
+    BlockSelectWidget::~BlockSelectWidget() {
+        disconnect();
+    }
+
     BlockType BlockSelectWidget::selectedBlockType() const {
         return m_blocks.at(m_selectedIndex);
     }
-
     void BlockSelectWidget::setSelectedIndex(size_t selectedIndex) {
         assert(selectedIndex < m_blocks.size());
         m_selectedIndex = selectedIndex;

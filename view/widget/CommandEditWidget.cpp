@@ -65,7 +65,7 @@ namespace view {
     }
 
     CommandEditWidget::~CommandEditWidget() {
-        disconnect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
+        disconnect();
     }
 
     TextEdit* CommandEditWidget::textEdit() {

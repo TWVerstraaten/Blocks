@@ -30,6 +30,7 @@ namespace view {
     }
 
     CommandScrollArea::~CommandScrollArea() {
+        disconnect();
         for (auto& commandEditBox : m_commandEditBoxes) {
             m_layout->removeWidget(commandEditBox.get());
         }
