@@ -10,9 +10,12 @@ namespace model {
     class Model;
 }
 
+namespace cont {
+    class MainViewMouseManager;
+}
+
 namespace view {
 
-    class MainViewMouseManager;
     class MainViewPainter;
     class CommandScrollArea;
     class CentralWidget;
@@ -31,10 +34,12 @@ namespace view {
         void setCommandScrollArea(CommandScrollArea* commandScrollArea);
         void setViewPort(const ViewPort& viewPort);
 
-        [[nodiscard]] CommandScrollArea*    commandScrollArea();
-        [[nodiscard]] model::Model*         model() const;
-        [[nodiscard]] MainViewMouseManager& mainViewMouseManager();
-        [[nodiscard]] const ViewPort&       viewPort() const;
+        [[nodiscard]] CommandScrollArea*          commandScrollArea();
+        [[nodiscard]] model::Model*               model() const;
+        [[nodiscard]] cont::MainViewMouseManager& mainViewMouseManager();
+        [[nodiscard]] const ViewPort&             viewPort() const;
+
+        [[nodiscard]] ViewPort& viewPort();
 
       protected:
         void paintEvent(QPaintEvent* event) override;
@@ -44,14 +49,13 @@ namespace view {
 
       private:
         friend class MainViewPainter;
-        friend class MainViewMouseManager;
 
-        CentralWidget*        m_centralWidget;
-        view::ViewPort        m_viewPort;
-        model::Model*         m_model;
-        CommandScrollArea*    m_commandScrollArea;
-        MainViewPainter*      m_mainViewPainter;
-        MainViewMouseManager* m_mainViewMouseManager;
+        CentralWidget*              m_centralWidget;
+        view::ViewPort              m_viewPort;
+        model::Model*               m_model;
+        CommandScrollArea*          m_commandScrollArea;
+        MainViewPainter*            m_mainViewPainter;
+        cont::MainViewMouseManager* m_mainViewMouseManager;
     };
 } // namespace view
 

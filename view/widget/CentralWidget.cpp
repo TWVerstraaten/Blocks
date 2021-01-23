@@ -5,7 +5,7 @@
 #include "../../model/Model.h"
 #include "../View_constants.h"
 #include "BlockSelectWidget.h"
-#include "MainViewMouseManager.h"
+#include "cont/MainViewMouseManager.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -13,6 +13,7 @@
 #include <QUndoView>
 #include <action/RemoveBlockFromClusterAction.h>
 #include <action/SplitDisconnectedAction.h>
+#include <cont/MainInterface.h>
 
 namespace view {
 
@@ -252,63 +253,11 @@ namespace view {
     }
 
     void CentralWidget::startMovePhase() {
-        m_mainView->model()->resetPhase();
-        for (auto& cluster : m_mainView->model()->clusters()) {
-            cluster.doCommand(*m_mainView->model());
-        }
-        m_mainView->model()->update(0.0001);
-        m_commandScrollArea->updateSelection();
+        cont::MainInterface::startMovePhase(*m_mainView->model(), *m_commandScrollArea);
     }
 
     void CentralWidget::startInteractPhase() {
-        auto*       model    = m_mainView->model();
-        auto&       clusters = model->clusters();
-        const auto& level    = model->level();
-        model->resetPhase();
-        for (auto& cluster : model->clusters()) {
-            cluster.incrementCommandIndex();
-        }
-
-        const auto& instantBlocks = level.instantBlocks();
-        for (const auto& [point, type] : instantBlocks) {
-            switch (type) {
-                case model::INSTANT_BLOCK_TYPE::KILL:
-                    for (auto& cluster : clusters) {
-                        if (cluster.contains(point)) {
-                            action::RemoveBlockFromClusterAction(model, cluster.index(), point).redo();
-                            break;
-                        }
-                    }
-                    break;
-            }
-        }
-
-        model->clearEmpty();
-        model->splitDisconnectedClusters();
-        model->clearEmpty();
-        m_commandScrollArea->addNeeded(clusters);
-
-        for (auto& cluster : clusters) {
-            bool                      noPendingAction = true;
-            model::GridXy             p;
-            model::DYNAMIC_BLOCK_TYPE t;
-            for (const auto& [point, type] : level.dynamicBlocks()) {
-                if (cluster.contains(point)) {
-                    if (noPendingAction) {
-                        p               = point;
-                        t               = type;
-                        noPendingAction = false;
-                    } else {
-                        cluster.kill();
-                    }
-                }
-            }
-            if (cluster.isAlive() && (not noPendingAction)) {
-                cluster.handleDynamicBlock(p, t);
-            }
-        }
-
-        m_commandScrollArea->updateSelection();
+        cont::MainInterface::startInteractPhase(*m_mainView->model(), *m_commandScrollArea);
         update();
     }
 

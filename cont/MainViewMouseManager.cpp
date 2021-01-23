@@ -4,33 +4,33 @@
 
 #include "MainViewMouseManager.h"
 
-#include "../../action/AddFloorBlockAction.h"
-#include "../../action/AddLevelBlockAction.h"
-#include "../../action/ChangeFloorBlockAction.h"
-#include "../../action/ChangeLevelBlockAction.h"
-#include "../../action/DeleteClusterAction.h"
-#include "../../action/MergeClusterAction.h"
-#include "../../action/RemoveBlockFromClusterAction.h"
-#include "../../action/RemoveFloorBlockAction.h"
-#include "../../action/RemoveLevelBlockAction.h"
-#include "../../action/SplitDisconnectedAction.h"
-#include "../../model/Model.h"
-#include "BlockSelectWidget.h"
-#include "CentralWidget.h"
+#include "action/AddFloorBlockAction.h"
+#include "action/AddLevelBlockAction.h"
+#include "action/ChangeFloorBlockAction.h"
+#include "action/ChangeLevelBlockAction.h"
+#include "action/DeleteClusterAction.h"
+#include "action/MergeClusterAction.h"
+#include "action/RemoveBlockFromClusterAction.h"
+#include "action/RemoveFloorBlockAction.h"
+#include "action/RemoveLevelBlockAction.h"
+#include "action/SplitDisconnectedAction.h"
+#include "model/Model.h"
+#include "view/widget/BlockSelectWidget.h"
+#include "view/widget/CentralWidget.h"
 
 #include <QApplication>
 
-namespace view {
+namespace cont {
 
     using namespace model;
     using namespace action;
 
-    MainViewMouseManager::MainViewMouseManager(MainView* mainView) : m_mainView(mainView) {
+    MainViewMouseManager::MainViewMouseManager(view::MainView* mainView) : m_mainView(mainView) {
     }
 
     void MainViewMouseManager::mousePressEvent(QMouseEvent* event) {
         m_previousMousePosition = event->pos();
-        m_previousGridPosition  = GridXy::fromScreenXy(m_previousMousePosition, m_mainView->m_viewPort);
+        m_previousGridPosition  = GridXy::fromScreenXy(m_previousMousePosition, m_mainView->viewPort());
         if (not m_blockEditing) {
             if (event->button() == Qt::MouseButton::LeftButton) {
                 mouseLeftPressEvent();
@@ -40,10 +40,10 @@ namespace view {
 
     void MainViewMouseManager::mouseMoveEvent(QMouseEvent* event) {
         const view::ScreenXy currentMousePosition = event->pos();
-        const GridXy         currentGridPosition  = GridXy::fromScreenXy(currentMousePosition, m_mainView->m_viewPort);
+        const GridXy         currentGridPosition  = GridXy::fromScreenXy(currentMousePosition, m_mainView->viewPort());
         switch (event->buttons()) {
             case Qt::RightButton:
-                m_mainView->m_viewPort.translate((event->x() - m_previousMousePosition.x()), event->y() - m_previousMousePosition.y());
+                m_mainView->viewPort().translate((event->x() - m_previousMousePosition.x()), event->y() - m_previousMousePosition.y());
                 m_previousMousePosition = event->pos();
                 break;
             case Qt::LeftButton:
@@ -66,7 +66,7 @@ namespace view {
         }
     }
 
-    void MainViewMouseManager::mouseLeftDragEvent(const GridXy& currentGridXy, CLUSTER_BLOCK type) {
+    void MainViewMouseManager::mouseLeftDragEvent(const GridXy& currentGridXy, view::CLUSTER_BLOCK type) {
         if (not m_model->level().isFreeStartBlock(currentGridXy)) {
             return;
         }
@@ -88,13 +88,13 @@ namespace view {
 
                 assert(baseIt != m_model->clusters().end());
                 assert(extensionIt != m_model->clusters().end());
-                m_centralWidget->addAction(new MergeClusterAction(m_model, *baseIt, *extensionIt, m_mainView->m_commandScrollArea));
+                m_centralWidget->addAction(new MergeClusterAction(m_model, *baseIt, *extensionIt, m_mainView->commandScrollArea()));
             }
             m_centralWidget->stopActionGlob();
         }
     }
 
-    void MainViewMouseManager::removeBlock(const GridXy& gridXy, [[maybe_unused]] CLUSTER_BLOCK type) {
+    void MainViewMouseManager::removeBlock(const GridXy& gridXy, [[maybe_unused]] view::CLUSTER_BLOCK type) {
         auto it = m_model->clusterContaining(gridXy);
         if (it == m_model->clusters().end()) {
             return;
@@ -105,16 +105,16 @@ namespace view {
             m_centralWidget->startActionGlob();
             m_centralWidget->addAction(new RemoveBlockFromClusterAction(m_model, it->index(), gridXy));
             if (not it->isConnected()) {
-                m_centralWidget->addAction(new SplitDisconnectedAction(m_model, *it, m_mainView->m_commandScrollArea));
+                m_centralWidget->addAction(new SplitDisconnectedAction(m_model, *it, m_mainView->commandScrollArea()));
             }
             m_centralWidget->stopActionGlob();
         }
     }
 
-    void MainViewMouseManager::addBlock(const GridXy& gridXy, [[maybe_unused]] CLUSTER_BLOCK type) {
+    void MainViewMouseManager::addBlock(const GridXy& gridXy, [[maybe_unused]] view::CLUSTER_BLOCK type) {
         if (m_model->noLiveOrStoppedClusterOnBlock(gridXy) && m_model->level().isFreeStartBlock(gridXy)) {
             m_model->clusters().emplace_back(gridXy, "CL" + std::to_string(m_model->clusters().size()));
-            m_mainView->m_commandScrollArea->add(m_model->clusters().back());
+            m_mainView->commandScrollArea()->add(m_model->clusters().back());
             m_centralWidget->addAction(new NewClusterAction(m_centralWidget, m_model->clusters().back()));
         }
     }
@@ -217,4 +217,4 @@ namespace view {
         m_blockEditing = blockEditing;
     }
 
-} // namespace view
+} // namespace cont

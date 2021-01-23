@@ -119,4 +119,12 @@ namespace view {
         }
     }
 
+    void CommandScrollArea::removeUnneeded(std::vector<model::Cluster>& clusters) {
+        for (const auto& widget : m_commandEditBoxes) {
+            if (std::find_if(D_CIT(clusters), D_FUNC(cluster, cluster.index() == widget->index())) == clusters.end()) {
+                auto a = removeFromLayout(widget->index());
+            }
+        }
+    }
+
 } // namespace view

@@ -42,6 +42,7 @@ namespace model {
         [[nodiscard]] CLUSTER_STATE         state() const;
         [[nodiscard]] PENDING_DYNAMIC_MOVES pendingDynamicMoves() const;
         [[nodiscard]] COMMAND_MODIFIER      currentModifier() const;
+        [[nodiscard]] COMMAND_TYPE          currentType() const;
         [[nodiscard]] WorldXy               dynamicWorldOffset() const;
         [[nodiscard]] WorldXy               approximateCenter() const;
         [[nodiscard]] std::string           string() const;

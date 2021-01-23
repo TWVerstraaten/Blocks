@@ -1,8 +1,8 @@
 #include "MainView.h"
 
+#include "../../cont/MainViewMouseManager.h"
 #include "../../model/Model.h"
 #include "CentralWidget.h"
-#include "MainViewMouseManager.h"
 #include "MainViewPainter.h"
 
 #include <QDebug>
@@ -11,7 +11,7 @@ namespace view {
 
     MainView::MainView(CentralWidget* centralWidget)
         : QWidget(centralWidget), m_centralWidget(centralWidget), m_model(nullptr), m_commandScrollArea(centralWidget->commandScrollArea()),
-          m_mainViewPainter(new MainViewPainter(this)), m_mainViewMouseManager(new MainViewMouseManager(this)) {
+          m_mainViewPainter(new MainViewPainter(this)), m_mainViewMouseManager(new cont::MainViewMouseManager(this)) {
         setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     }
 
@@ -60,7 +60,7 @@ namespace view {
         return m_model;
     }
 
-    MainViewMouseManager& MainView::mainViewMouseManager() {
+    cont::MainViewMouseManager& MainView::mainViewMouseManager() {
         return *m_mainViewMouseManager;
     }
 
@@ -84,6 +84,10 @@ namespace view {
         delete m_mainViewPainter;
         delete m_mainViewMouseManager;
         delete m_model;
+    }
+
+    ViewPort& MainView::viewPort() {
+        return m_viewPort;
     }
 
 } // namespace view

@@ -497,4 +497,8 @@ namespace model {
         m_sidesAreCorrect = false;
     }
 
+    COMMAND_TYPE Cluster::currentType() const {
+        return m_commandVector.currentType();
+    }
+
 } // namespace model

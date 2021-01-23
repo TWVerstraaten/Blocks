@@ -16,46 +16,48 @@ namespace model {
 }
 
 namespace view {
-
     class MainView;
     class CentralWidget;
+} // namespace view
+
+namespace cont {
 
     class MainViewMouseManager {
+
+        friend class view::MainView;
 
       public:
         void setBlockEditing(bool blockEditing);
 
       private:
-        friend class MainView;
-
-        explicit MainViewMouseManager(MainView* mainView);
+        explicit MainViewMouseManager(view::MainView* mainView);
 
         void mousePressEvent(QMouseEvent* event);
         void mouseMoveEvent(QMouseEvent* event);
         void mouseLeftPressEvent();
 
-        void mouseLeftDragEvent(const model::GridXy& currentGridXy, CLUSTER_BLOCK type);
+        void mouseLeftDragEvent(const model::GridXy& currentGridXy, view::CLUSTER_BLOCK type);
         void mouseLeftDragEvent(const model::GridXy& currentGridXy, model::FLOOR_BLOCK_TYPE type);
         void mouseLeftDragEvent(const model::GridXy& currentGridXy, model::DYNAMIC_BLOCK_TYPE type);
         void mouseLeftDragEvent(const model::GridXy& currentGridXy, model::INSTANT_BLOCK_TYPE type);
-        void removeBlock(const model::GridXy& gridXy, CLUSTER_BLOCK type);
+        void removeBlock(const model::GridXy& gridXy, view::CLUSTER_BLOCK type);
         void removeBlock(const model::GridXy& gridXy, model::FLOOR_BLOCK_TYPE type);
         void removeBlock(const model::GridXy& gridXy, model::DYNAMIC_BLOCK_TYPE type);
         void removeBlock(const model::GridXy& gridXy, model::INSTANT_BLOCK_TYPE type);
         void removeTopBlockFromLevel(const model::GridXy& gridXy);
-        void addBlock(const model::GridXy& gridXy, CLUSTER_BLOCK type);
+        void addBlock(const model::GridXy& gridXy, view::CLUSTER_BLOCK type);
         void addBlock(const model::GridXy& gridXy, model::FLOOR_BLOCK_TYPE type);
         void addBlock(const model::GridXy& gridXy, model::DYNAMIC_BLOCK_TYPE type);
         void addBlock(const model::GridXy& gridXy, model::INSTANT_BLOCK_TYPE type);
 
-        MainView*      m_mainView;
-        bool           m_blockEditing  = false;
-        CentralWidget* m_centralWidget = nullptr;
-        model::Model*  m_model         = nullptr;
-        view::ScreenXy m_previousMousePosition;
-        model::GridXy  m_previousGridPosition{0, 0};
+        bool                 m_blockEditing = false;
+        view::MainView*      m_mainView;
+        view::CentralWidget* m_centralWidget = nullptr;
+        model::Model*        m_model         = nullptr;
+        view::ScreenXy       m_previousMousePosition;
+        model::GridXy        m_previousGridPosition{0, 0};
     };
 
-} // namespace view
+} // namespace cont
 
 #endif // BLOCKS_MAINVIEWMOUSEMANAGER_H
