@@ -7,7 +7,7 @@
 
 #include "../model/Cluster.h"
 #include "Action.h"
-#include "view/widget/CommandScrollArea.h"
+#include "view/widget/CommandScroll.h"
 
 #include <list>
 #include <memory>
@@ -20,17 +20,17 @@ namespace action {
     class SplitDisconnectedAction : public Action {
 
       public:
-        SplitDisconnectedAction(model::Model* model, model::Cluster disconnected, view::CommandScrollArea* commandScrollArea);
+        SplitDisconnectedAction(model::Model* model, model::Cluster disconnected, view::CommandScroll* commandScrollArea);
 
         void                      undo() override;
         void                      redo() override;
         [[nodiscard]] ACTION_TYPE type() const override;
 
       private:
-        model::Model*             m_model;
-        const model::Cluster      m_disconnected;
-        std::list<model::Cluster> m_components;
-        view::CommandScrollArea*  m_commandScrollArea;
+        model::Model*               m_model;
+        const model::Cluster        m_disconnected;
+        std::vector<model::Cluster> m_components;
+        view::CommandScroll*    m_commandScrollArea;
     };
 } // namespace action
 

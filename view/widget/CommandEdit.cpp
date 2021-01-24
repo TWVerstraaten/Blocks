@@ -1,19 +1,16 @@
-#include "CommandEditWidget.h"
+#include "CommandEdit.h"
 
 #include "../../model/Model.h"
 #include "../FontManager.h"
 #include "../color.h"
 #include "CentralWidget.h"
-#include "CommandScrollArea.h"
 #include "TextEdit.h"
-#include "TextEditCommentWidget.h"
-
-#include <QLabel>
+#include "TextEditSideBar.h"
 
 namespace view {
-    CommandEditWidget::CommandEditWidget(CommandScrollArea* parent, model::Cluster& cluster)
+    CommandEdit::CommandEdit(CommandScroll* parent, model::Cluster& cluster)
         : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandScrollArea(parent),
-          m_lineWidget(new TextEditCommentWidget(this)), m_commentWidget(new TextEditCommentWidget(this)) {
+          m_lineWidget(new TextEditSideBar(this)), m_commentWidget(new TextEditSideBar(this)) {
         setContentsMargins(0, 0, 0, 0);
         setMaximumWidth(200);
 
@@ -63,31 +60,31 @@ namespace view {
         connectCommandVector();
     }
 
-    CommandEditWidget::~CommandEditWidget() {
+    CommandEdit::~CommandEdit() {
         disconnect();
     }
 
-    TextEdit* CommandEditWidget::textEdit() {
+    TextEdit* CommandEdit::textEdit() {
         return m_textEdit;
     }
 
-    size_t CommandEditWidget::index() const {
+    size_t CommandEdit::index() const {
         return m_index;
     }
 
-    CommandScrollArea* CommandEditWidget::commandScrollArea() const {
+    CommandScroll* CommandEdit::commandScrollArea() const {
         return m_commandScrollArea;
     }
 
-    void CommandEditWidget::updateCommandVector() {
+    void CommandEdit::updateCommandVector() {
         commandVector().set(m_textEdit->contents());
     }
 
-    model::CommandVector& CommandEditWidget::commandVector() {
+    model::CommandVector& CommandEdit::commandVector() {
         return m_commandScrollArea->centralWidget()->mainView()->model()->clusterWithIndex(m_index)->commandVector();
     }
 
-    void CommandEditWidget::updateSelection() {
+    void CommandEdit::updateSelection() {
         const auto& cmdVec = commandVector();
         if (cmdVec.isEmpty()) {
             return;
@@ -101,12 +98,12 @@ namespace view {
         update();
     }
 
-    void CommandEditWidget::disconnectCommandVectorUpdate() {
+    void CommandEdit::disconnectCommandVectorUpdate() {
         m_textEdit->blockSignals(true);
     }
 
-    void CommandEditWidget::connectCommandVector() {
-        connect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
+    void CommandEdit::connectCommandVector() {
+        connect(m_textEdit, &TextEdit::textChanged, this, &CommandEdit::updateCommandVector);
     }
 
 } // namespace view

@@ -11,14 +11,14 @@
 #include <memory>
 
 namespace view {
-    class CommandScrollArea;
+    class CommandScroll;
 } // namespace view
 
 namespace action {
     class MergeClusterAction : public Action {
 
       public:
-        MergeClusterAction(model::Model* model, model::Cluster target, model::Cluster second, view::CommandScrollArea* commandScrollArea);
+        MergeClusterAction(model::Model* model, model::Cluster target, model::Cluster second, view::CommandScroll* commandScrollArea);
 
         void                      undo() override;
         void                      redo() override;
@@ -28,7 +28,7 @@ namespace action {
         model::Model*            m_model;
         const model::Cluster     m_target;
         const model::Cluster     m_second;
-        view::CommandScrollArea* m_commandScrollArea;
+        view::CommandScroll* m_commandScrollArea;
     };
 } // namespace action
 

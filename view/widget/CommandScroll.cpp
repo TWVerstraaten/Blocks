@@ -1,4 +1,4 @@
-#include "CommandScrollArea.h"
+#include "CommandScroll.h"
 
 #include "CentralWidget.h"
 #include "TextEdit.h"
@@ -11,7 +11,7 @@
 
 namespace view {
 
-    CommandScrollArea::CommandScrollArea(CentralWidget* centralWidget) : QScrollArea(centralWidget), m_centralWidget(centralWidget) {
+    CommandScroll::CommandScroll(CentralWidget* centralWidget) : QScrollArea(centralWidget), m_centralWidget(centralWidget) {
         auto* widget = new QWidget(centralWidget);
         m_layout     = new QVBoxLayout(widget);
         m_layout->addStretch();
@@ -29,14 +29,14 @@ namespace view {
         setPalette(pal);
     }
 
-    CommandScrollArea::~CommandScrollArea() {
+    CommandScroll::~CommandScroll() {
         disconnect();
         for (auto& commandEditBox : m_commandEditBoxes) {
             m_layout->removeWidget(commandEditBox.get());
         }
     }
 
-    void CommandScrollArea::moveFocusToNext() {
+    void CommandScroll::moveFocusToNext() {
         if (m_commandEditBoxes.size() > 1) {
             auto it = std::find_if(D_RIT(m_commandEditBoxes), D_FUNC(commandEditWidget, commandEditWidget->textEdit()->hasFocus()));
             if (it != m_commandEditBoxes.rend() && it != m_commandEditBoxes.rbegin()) {
@@ -45,7 +45,7 @@ namespace view {
         }
     }
 
-    void CommandScrollArea::moveFocusToPrevious() {
+    void CommandScroll::moveFocusToPrevious() {
         if (m_commandEditBoxes.size() > 1) {
             auto it = std::find_if(D_IT(m_commandEditBoxes), D_FUNC(commandEditWidget, commandEditWidget->textEdit()->hasFocus()));
             if (it != m_commandEditBoxes.end() && it != m_commandEditBoxes.begin()) {
@@ -54,7 +54,7 @@ namespace view {
         }
     }
 
-    void CommandScrollArea::addNeeded(std::vector<model::Cluster>& clusters) {
+    void CommandScroll::addNeeded(std::vector<model::Cluster>& clusters) {
         for (auto& cluster : clusters) {
             if (std::find_if(D_CIT(m_commandEditBoxes), D_FUNC(box, box->index() == cluster.index())) == m_commandEditBoxes.end()) {
                 add(cluster);
@@ -62,32 +62,32 @@ namespace view {
         }
     }
 
-    void CommandScrollArea::add(model::Cluster& cluster) {
+    void CommandScroll::add(model::Cluster& cluster) {
         assert(std::find_if(D_CIT(m_commandEditBoxes), D_FUNC(box, box->index() == cluster.index())) == m_commandEditBoxes.cend());
 
         auto it = std::find_if(D_IT(m_stashedCommandEditBoxes), D_FUNC(widget, widget->index() == cluster.index()));
         if (it != m_stashedCommandEditBoxes.end()) {
             m_layout->insertWidget(m_layout->count() - 1, it->get());
             (*it)->show();
-            connect((*it)->textEdit(), &TextEdit::tabPressed, this, &CommandScrollArea::moveFocusToNext);
-            connect((*it)->textEdit(), &TextEdit::backTabPressed, this, &CommandScrollArea::moveFocusToPrevious);
+            connect((*it)->textEdit(), &TextEdit::tabPressed, this, &CommandScroll::moveFocusToNext);
+            connect((*it)->textEdit(), &TextEdit::backTabPressed, this, &CommandScroll::moveFocusToPrevious);
             (*it)->connectCommandVector();
             m_commandEditBoxes.emplace_back(std::move(*it));
             m_stashedCommandEditBoxes.erase(it);
         } else {
-            auto* commandEditBox = new CommandEditWidget(this, cluster);
+            auto* commandEditBox = new CommandEdit(this, cluster);
             m_commandEditBoxes.emplace_back(commandEditBox);
-            connect(commandEditBox->textEdit(), &TextEdit::tabPressed, this, &CommandScrollArea::moveFocusToNext);
-            connect(commandEditBox->textEdit(), &TextEdit::backTabPressed, this, &CommandScrollArea::moveFocusToPrevious);
+            connect(commandEditBox->textEdit(), &TextEdit::tabPressed, this, &CommandScroll::moveFocusToNext);
+            connect(commandEditBox->textEdit(), &TextEdit::backTabPressed, this, &CommandScroll::moveFocusToPrevious);
             m_layout->insertWidget(m_layout->count() - 1, commandEditBox);
         }
     }
 
-    CentralWidget* CommandScrollArea::centralWidget() const {
+    CentralWidget* CommandScroll::centralWidget() const {
         return m_centralWidget;
     }
 
-    void CommandScrollArea::removeFromLayout(size_t index) {
+    void CommandScroll::removeFromLayout(size_t index) {
         auto it = std::find_if(D_IT(m_commandEditBoxes), D_FUNC(box, box->index() == index));
         assert(it != m_commandEditBoxes.end());
         it->get()->textEdit()->disconnect();
@@ -96,29 +96,29 @@ namespace view {
         auto* commandEditBox = it->release();
         m_commandEditBoxes.erase(it);
         update();
-        stash(std::unique_ptr<CommandEditWidget>(commandEditBox));
+        stash(std::unique_ptr<CommandEdit>(commandEditBox));
     }
 
-    void CommandScrollArea::addToLayout(std::unique_ptr<CommandEditWidget>&& commandEditBox) {
+    void CommandScroll::addToLayout(std::unique_ptr<CommandEdit>&& commandEditBox) {
         commandEditBox->setParent(this);
         m_layout->insertWidget(m_layout->count() - 1, commandEditBox.get());
         m_commandEditBoxes.emplace_back(std::move(commandEditBox));
         m_commandEditBoxes.back()->show();
     }
 
-    CommandEditWidget* CommandScrollArea::withIndex(size_t index) {
+    CommandEdit* CommandScroll::withIndex(size_t index) {
         auto it = std::find_if(D_IT(m_commandEditBoxes), D_FUNC(box, box->index() == index));
         assert(it != m_commandEditBoxes.end());
         return it->get();
     }
 
-    void CommandScrollArea::updateSelection() {
+    void CommandScroll::updateSelection() {
         for (auto& box : m_commandEditBoxes) {
             box->updateSelection();
         }
     }
 
-    void CommandScrollArea::disable() {
+    void CommandScroll::disable() {
         for (auto& box : m_commandEditBoxes) {
             box->textEdit()->setReadOnly(true);
             box->setStyleSheet(QString("QTextEdit { background-color: %0 }").arg(QColor(Qt::gray).lighter().name(QColor::HexRgb)));
@@ -126,7 +126,7 @@ namespace view {
         }
     }
 
-    void CommandScrollArea::removeUnneeded(std::vector<model::Cluster>& clusters) {
+    void CommandScroll::removeUnneeded(std::vector<model::Cluster>& clusters) {
         for (const auto& widget : m_commandEditBoxes) {
             if (std::find_if(D_CIT(clusters), D_FUNC(cluster, cluster.index() == widget->index())) == clusters.end()) {
                 removeFromLayout(widget->index());
@@ -134,11 +134,11 @@ namespace view {
         }
     }
 
-    void CommandScrollArea::setShouldStashCommandEditBoxes(bool shouldStashCommandEditBoxes) {
+    void CommandScroll::setShouldStashCommandEditBoxes(bool shouldStashCommandEditBoxes) {
         m_shouldStashCommandEditBoxes = shouldStashCommandEditBoxes;
     }
 
-    void CommandScrollArea::stash(std::unique_ptr<CommandEditWidget>&& commandEditWidget) {
+    void CommandScroll::stash(std::unique_ptr<CommandEdit>&& commandEditWidget) {
         if (m_shouldStashCommandEditBoxes) {
             m_stashedCommandEditBoxes.emplace_back(std::move(commandEditWidget));
         }

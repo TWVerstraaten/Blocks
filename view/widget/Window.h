@@ -1,7 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QDebug>
 #include <QElapsedTimer>
 #include <QMainWindow>
 
@@ -9,11 +8,11 @@ namespace view {
 
     class CentralWidget;
 
-    class MainWindow : public QMainWindow {
+    class Window : public QMainWindow {
         Q_OBJECT
 
       public:
-        explicit MainWindow(QWidget* parent = nullptr);
+        explicit Window(QWidget* parent = nullptr);
 
       private:
         QElapsedTimer  m_elapsedTimer;

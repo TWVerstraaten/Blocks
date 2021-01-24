@@ -17,7 +17,7 @@ namespace cont {
 namespace view {
 
     class MainViewPainter;
-    class CommandScrollArea;
+    class CommandScroll;
     class CentralWidget;
 
     class MainView : public QWidget {
@@ -31,10 +31,10 @@ namespace view {
         void init();
         void init(const model::Model& model);
 
-        void setCommandScrollArea(CommandScrollArea* commandScrollArea);
+        void setCommandScrollArea(CommandScroll* commandScrollArea);
         void setViewPort(const ViewPort& viewPort);
 
-        [[nodiscard]] CommandScrollArea*          commandScrollArea();
+        [[nodiscard]] CommandScroll*          commandScrollArea();
         [[nodiscard]] model::Model*               model() const;
         [[nodiscard]] cont::MainViewMouseManager& mainViewMouseManager();
         [[nodiscard]] const ViewPort&             viewPort() const;
@@ -53,7 +53,7 @@ namespace view {
         CentralWidget*              m_centralWidget;
         view::ViewPort              m_viewPort;
         model::Model*               m_model;
-        CommandScrollArea*          m_commandScrollArea;
+        CommandScroll*          m_commandScrollArea;
         MainViewPainter*            m_mainViewPainter;
         cont::MainViewMouseManager* m_mainViewMouseManager;
     };

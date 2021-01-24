@@ -5,6 +5,7 @@
 #ifndef BLOCKS_CLUSTER_H
 #define BLOCKS_CLUSTER_H
 
+#include "../misc/AlignedRectangle.h"
 #include "Cluster_enums.h"
 #include "GridXy.h"
 #include "Level_enums.h"
@@ -55,45 +56,48 @@ namespace model {
         [[nodiscard]] PHASE                 phase() const;
 
         /****** CONST FUNCTIONS  ******/
-        void                              buildSides() const;
-        [[nodiscard]] bool                isEmpty() const;
-        [[nodiscard]] bool                isAlive() const;
-        [[nodiscard]] bool                isConnected() const;
-        [[nodiscard]] bool                isAdjacent(const Cluster& other) const;
-        [[nodiscard]] bool                gridXyIsAdjacent(const GridXy& point) const;
-        [[nodiscard]] bool                contains(const GridXy& gridXy) const;
-        [[nodiscard]] bool                intersects(const Cluster& other, int shrinkInWorld) const;
-        [[nodiscard]] bool                isValid() const;
-        [[nodiscard]] PhaseTransformation phaseTransformation() const;
+        void                                        buildSides() const;
+        [[nodiscard]] bool                          isEmpty() const;
+        [[nodiscard]] bool                          isAlive() const;
+        [[nodiscard]] bool                          isConnected() const;
+        [[nodiscard]] bool                          isAdjacent(const Cluster& other) const;
+        [[nodiscard]] bool                          gridXyIsAdjacent(const GridXy& point) const;
+        [[nodiscard]] bool                          contains(const GridXy& gridXy) const;
+        [[nodiscard]] bool                          intersects(const Cluster& other, int shrinkInWorld) const;
+        [[nodiscard]] bool                          isValid() const;
+        [[nodiscard]] PhaseTransformation           phaseTransformation() const;
+        [[nodiscard]] const geom::AlignedRectangle& boundingAlignedRectangle() const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void               addGridXy(const GridXy& gridXy);
-        void               doCommand(Model& model);
-        void               update(double phaseFraction);
-        void               kill();
-        void               incrementCommandIndex();
-        void               clearCommands();
-        void               collideWithLevel(const Level& level, int shrinkInWorld);
-        void               handleDynamicBlock(const GridXy& point, DYNAMIC_BLOCK_TYPE type);
-        void               setState(CLUSTER_STATE state);
-        void               setWorldOffset(const WorldXy& worldOffset);
-        void               setPhase(PHASE phase);
-        void               resetPhase();
-        void               setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves);
-        void               spliceCluster(Level& level);
-        void               removeGridXy(const GridXy& gridXy);
-        void               sortGridXy() const;
-        void               swapGridXy(GridXyVector& other);
-        void               appendGridXy(const GridXyVector& other);
-        Cluster            grabAllButFirstComponent();
-        CommandVector&     commandVector();
-        std::list<Cluster> collectAllButFirstComponent();
+        void                 addGridXy(const GridXy& gridXy);
+        void                 doCommand(Model& model);
+        void                 update(double phaseFraction);
+        void                 kill();
+        void                 incrementCommandIndex();
+        void                 clearCommands();
+        void                 collideWithLevel(const Level& level, int shrinkInWorld);
+        void                 handleDynamicBlock(const GridXy& point, DYNAMIC_BLOCK_TYPE type);
+        void                 setState(CLUSTER_STATE state);
+        void                 setWorldOffset(const WorldXy& worldOffset);
+        void                 setPhase(PHASE phase);
+        void                 resetPhase();
+        void                 setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves);
+        void                 spliceCluster(Level& level);
+        void                 removeGridXy(const GridXy& gridXy);
+        void                 sortGridXy() const;
+        void                 swapGridXy(GridXyVector& other);
+        void                 appendGridXy(const GridXyVector& other);
+        Cluster              grabAllButFirstComponent();
+        CommandVector&       commandVector();
+        std::vector<Cluster> collectAllButFirstComponent();
 
         /****** FRIENDS  ******/
         friend std::ostream& operator<<(std::ostream& out, const Cluster& other);
         friend void          handleCommand(const Command_Simple& command, Cluster& cluster, Level& level);
         friend void          handleCommand(const Command_Modified& command, Cluster& cluster, Level& level);
         friend void          handleCommand(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
+
+        void buildBoundingAlignedRectangle();
 
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/
@@ -117,6 +121,7 @@ namespace model {
         mutable GridXyVector    m_gridXyVector;
         mutable WorldLineVector m_sides;
         std::string             m_name;
+        geom::AlignedRectangle  m_boundingAlignedRectangle;
     };
 
 } // namespace model

@@ -7,9 +7,9 @@
 #include "../action/RemoveBlockFromClusterAction.h"
 #include "../misc/defines.h"
 #include "../model/Model.h"
-#include "../view/widget/CommandScrollArea.h"
+#include "../view/widget/CommandScroll.h"
 
-void cont::MainInterface::startInteractPhase(model::Model& model, view::CommandScrollArea& commandScrollArea) {
+void cont::MainInterface::startInteractPhase(model::Model& model, view::CommandScroll& commandScrollArea) {
     auto&       clusters = model.clusters();
     const auto& level    = model.level();
     model.resetPhase();
@@ -29,7 +29,7 @@ void cont::MainInterface::startInteractPhase(model::Model& model, view::CommandS
     commandScrollArea.updateSelection();
 }
 
-void cont::MainInterface::startMovePhase(model::Model& model, view::CommandScrollArea& commandScrollArea) {
+void cont::MainInterface::startMovePhase(model::Model& model, view::CommandScroll& commandScrollArea) {
     auto& clusters = model.clusters();
     auto& level    = model.level();
 

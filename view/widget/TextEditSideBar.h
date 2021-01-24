@@ -2,8 +2,8 @@
 // Created by teunv on 1/20/2021.
 //
 
-#ifndef BLOCKS_TEXTEDITCOMMENTWIDGET_H
-#define BLOCKS_TEXTEDITCOMMENTWIDGET_H
+#ifndef BLOCKS_TEXTEDITSIDEBAR_H
+#define BLOCKS_TEXTEDITSIDEBAR_H
 
 #include <QString>
 #include <QWidget>
@@ -12,10 +12,10 @@
 
 namespace view {
 
-    class TextEditCommentWidget : public QWidget {
+    class TextEditSideBar : public QWidget {
 
       public:
-        explicit TextEditCommentWidget(QWidget* parent);
+        explicit TextEditSideBar(QWidget* parent);
 
         void setWidth(size_t w);
         void setLineHeight(size_t lineHeight);
@@ -39,4 +39,4 @@ namespace view {
 
 } // namespace view
 
-#endif // BLOCKS_TEXTEDITCOMMENTWIDGET_H
+#endif // BLOCKS_TEXTEDITSIDEBAR_H

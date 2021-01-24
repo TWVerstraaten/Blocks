@@ -2,6 +2,7 @@
 
 #include "../../cont/MainViewMouseManager.h"
 #include "../../model/Model.h"
+#include "../../model/Model_enums.h"
 #include "CentralWidget.h"
 #include "MainViewPainter.h"
 
@@ -17,7 +18,8 @@ namespace view {
 
     void MainView::init() {
         m_model = new model::Model{};
-        m_model->init();
+        m_model->init(model::MODEL_PRESET::TEST);
+        m_commandScrollArea->addNeeded(m_model->clusters());
         m_mainViewMouseManager->m_centralWidget = m_centralWidget;
         m_mainViewMouseManager->m_model         = m_model;
         m_model->level().buildSides();
@@ -64,11 +66,11 @@ namespace view {
         return *m_mainViewMouseManager;
     }
 
-    void MainView::setCommandScrollArea(CommandScrollArea* commandScrollArea) {
+    void MainView::setCommandScrollArea(CommandScroll* commandScrollArea) {
         m_commandScrollArea = commandScrollArea;
     }
 
-    CommandScrollArea* MainView::commandScrollArea() {
+    CommandScroll* MainView::commandScrollArea() {
         return m_commandScrollArea;
     }
 

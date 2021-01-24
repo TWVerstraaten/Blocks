@@ -1,4 +1,4 @@
-Set max character count on CommandEditWidget
+Set max character count on CommandEdit
 
 Implement the following commands:
     set var_name value_type

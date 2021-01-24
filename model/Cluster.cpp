@@ -300,9 +300,9 @@ namespace model {
         return geom::intersect(*this, other, shrinkInWorld);
     }
 
-    std::list<Cluster> Cluster::collectAllButFirstComponent() {
+    std::vector<Cluster> Cluster::collectAllButFirstComponent() {
         assert(isValid());
-        std::list<Cluster> result;
+        std::vector<Cluster> result;
         result.emplace_back(grabAllButFirstComponent());
         while (not result.back().isEmpty()) {
             if (result.back().size() == 1) {
@@ -494,6 +494,14 @@ namespace model {
 
     COMMAND_TYPE Cluster::currentType() const {
         return m_commandVector.currentType();
+    }
+
+    const geom::AlignedRectangle& Cluster::boundingAlignedRectangle() const {
+        return m_boundingAlignedRectangle;
+    }
+
+    void Cluster::buildBoundingAlignedRectangle() {
+        m_boundingAlignedRectangle = geom::AlignedRectangle::boundingAlignedRectangle(*this);
     }
 
 } // namespace model

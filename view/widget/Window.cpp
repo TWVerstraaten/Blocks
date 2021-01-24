@@ -1,10 +1,10 @@
-#include "MainWindow.h"
+#include "Window.h"
 
 #include "CentralWidget.h"
 
 namespace view {
 
-    MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
+    Window::Window(QWidget* parent) : QMainWindow(parent) {
         m_centralWidget = new CentralWidget();
         setCentralWidget(m_centralWidget);
         setWindowTitle(tr("Blocks"));

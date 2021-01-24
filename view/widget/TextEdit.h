@@ -6,14 +6,14 @@
 #include <vector>
 
 namespace view {
-    class CommandEditWidget;
+    class CommandEdit;
     class SyntaxHighlighter;
 
     class TextEdit : public QPlainTextEdit {
         Q_OBJECT
 
       public:
-        TextEdit(CommandEditWidget* commandEditBox, const QString& string);
+        TextEdit(CommandEdit* commandEditBox, const QString& string);
         ~TextEdit() override;
 
         void setHeight();
@@ -37,7 +37,7 @@ namespace view {
       private:
         void highlightLine(const QTextCursor& cursor);
 
-        CommandEditWidget* m_commandEditBox;
+        CommandEdit* m_commandEditBox;
         SyntaxHighlighter* m_syntaxHighlighter;
         size_t             m_lineHeight;
     };

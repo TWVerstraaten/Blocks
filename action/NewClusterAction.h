@@ -7,12 +7,11 @@
 
 #include "../model/Cluster.h"
 #include "Action.h"
-#include "view/widget/CommandEditWidget.h"
 
 #include <memory>
 
 namespace view {
-    class CommandScrollArea;
+    class CommandScroll;
     class CentralWidget;
 } // namespace view
 

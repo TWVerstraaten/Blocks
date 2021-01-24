@@ -41,13 +41,9 @@ namespace model {
         updateInternal(dPhase);
     }
 
-    void Model::init() {
+    void Model::init(MODEL_PRESET modelPreset) {
         clear();
-
         for (int i = -2; i != 15; ++i) {
-            if (i > 5) {
-                m_level.addBlock({i, -3}, FLOOR_BLOCK_TYPE::LEVEL);
-            }
             for (int j = -2; j != 11; ++j) {
                 if (i == 11 && j == 3) {
                     continue;
@@ -61,12 +57,28 @@ namespace model {
                 m_level.addBlock({i, j}, FLOOR_BLOCK_TYPE::LEVEL);
             }
         }
-        for (int i = -2; i != 4; ++i) {
-            for (int j = -2; j != 3; ++j) {
-                m_level.addBlock({i, j}, FLOOR_BLOCK_TYPE::START);
-            }
+
+        switch (modelPreset) {
+            case MODEL_PRESET::EMPTY:
+                break;
+            case MODEL_PRESET::TEST:
+                for (int i = -2; i != 15; ++i) {
+                    for (int j = -2; j != 11; ++j) {
+                        if (i == 11 && j == 3) {
+                            continue;
+                        }
+                        if (i == 10 && j == 3) {
+                            continue;
+                        }
+                        if (i == 11 && j == 4) {
+                            continue;
+                        }
+                        m_clusters.emplace_back(model::GridXy{i, j}, std::to_string(m_clusters.size()));
+                    }
+                }
+
+                break;
         }
-        m_level.buildSides();
     }
 
     void Model::clear() {
@@ -107,6 +119,9 @@ namespace model {
     void Model::intersectClusters() {
         if (m_clusters.size() == 1) {
             return;
+        }
+        for (auto& cluster : m_clusters) {
+            cluster.buildBoundingAlignedRectangle();
         }
         for (auto cluster1 = m_clusters.begin(); cluster1 != m_clusters.end(); ++cluster1) {
             for (auto cluster2 = std::next(cluster1); cluster2 != m_clusters.end(); ++cluster2) {

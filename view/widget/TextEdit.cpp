@@ -1,7 +1,6 @@
 #include "TextEdit.h"
 
 #include "CentralWidget.h"
-#include "CommandScrollArea.h"
 #include "SyntaxHighlighter.h"
 #include "action/TextEditAction.h"
 #include "model/command/CommandParser.h"
@@ -9,11 +8,10 @@
 #include "view/color.h"
 
 #include <QApplication>
-#include <QDebug>
 
 namespace view {
 
-    TextEdit::TextEdit(CommandEditWidget* commandEditBox, const QString& string)
+    TextEdit::TextEdit(CommandEdit* commandEditBox, const QString& string)
         : QPlainTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);

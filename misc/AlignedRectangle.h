@@ -16,6 +16,7 @@ namespace geom {
     class AlignedRectangle {
 
       public:
+        AlignedRectangle() = default;
         AlignedRectangle(int mXMin, int mXMax, int mYMin, int mYMax);
 
         static AlignedRectangle boundingAlignedRectangle(const model::Cluster& cluster);
@@ -31,6 +32,7 @@ namespace geom {
         int m_xMax;
         int m_yMin;
         int m_yMax;
+        int m_maxDimension;
     };
 
 } // namespace geom

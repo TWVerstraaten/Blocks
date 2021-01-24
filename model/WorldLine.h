@@ -25,8 +25,9 @@ namespace model {
 
       private:
         /****** DATA MEMBERS  ******/
-        WorldXy m_start;
-        WorldXy m_end;
+        const WorldXy m_start;
+        const WorldXy m_end;
+        const WorldXy m_displacementVector;
     };
 } // namespace model
 

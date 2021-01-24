@@ -7,6 +7,7 @@
 
 #include "Cluster.h"
 #include "Level.h"
+#include "Model_enums.h"
 
 #include <vector>
 
@@ -29,7 +30,7 @@ namespace model {
         [[nodiscard]] bool noLiveOrStoppedClusterOnBlock(const GridXy& gridXy) const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void                           init();
+        void                           init(MODEL_PRESET modelPreset);
         void                           clear();
         void                           resetPhase();
         void                           update(double dPhase);

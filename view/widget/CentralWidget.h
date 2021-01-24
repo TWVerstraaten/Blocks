@@ -5,7 +5,7 @@
 #include "../../datstr/CircularBuffer.h"
 #include "../../datstr/Stash.h"
 #include "CentralWidget_enums.h"
-#include "CommandScrollArea.h"
+#include "CommandScroll.h"
 #include "MainView.h"
 
 #include <QElapsedTimer>
@@ -25,7 +25,7 @@ namespace action {
 }
 
 namespace view {
-    class CommandScrollArea;
+    class CommandScroll;
     class BlockSelectWidget;
 
     class CentralWidget : public QWidget {
@@ -46,7 +46,7 @@ namespace view {
         void redo();
 
         [[nodiscard]] BlockSelectWidget* blockSelectWidget() const;
-        [[nodiscard]] CommandScrollArea* commandScrollArea() const;
+        [[nodiscard]] CommandScroll* commandScrollArea() const;
         [[nodiscard]] MainView*          mainView() const;
 
       protected:
@@ -74,7 +74,7 @@ namespace view {
         size_t m_timeStep = app::TIME_STEP_SLOW;
 
         datstr::Stash<MainView>          m_mainView;
-        datstr::Stash<CommandScrollArea> m_commandScrollArea;
+        datstr::Stash<CommandScroll> m_commandScroll;
         QGridLayout*                     m_layout;
         QUndoStack                       m_qUndoStack;
         QUndoView*                       m_qUndoView;

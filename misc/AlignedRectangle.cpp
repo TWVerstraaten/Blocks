@@ -6,14 +6,14 @@
 
 #include "../app/Application_constants.h"
 #include "../model/Cluster.h"
-#include "defines.h"
 #include "geom.h"
 
 #include <cassert>
 
 namespace geom {
 
-    AlignedRectangle::AlignedRectangle(int mXMin, int mXMax, int mYMin, int mYMax) : m_xMin(mXMin), m_xMax(mXMax), m_yMin(mYMin), m_yMax(mYMax) {
+    AlignedRectangle::AlignedRectangle(int mXMin, int mXMax, int mYMin, int mYMax)
+        : m_xMin(mXMin), m_xMax(mXMax), m_yMin(mYMin), m_yMax(mYMax), m_maxDimension(std::max(width(), height())) {
         assert(m_xMin <= m_xMax);
         assert(m_yMin <= m_yMax);
     }
@@ -81,7 +81,7 @@ namespace geom {
     }
 
     int AlignedRectangle::maxDimension() const {
-        return std::max(width(), height());
+        return m_maxDimension;
     }
 
 } // namespace geom

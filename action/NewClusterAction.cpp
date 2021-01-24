@@ -6,9 +6,6 @@
 
 #include "../model/Model.h"
 #include "view/widget/CentralWidget.h"
-#include "view/widget/MainView.h"
-
-#include <cassert>
 
 namespace action {
 
@@ -28,12 +25,10 @@ namespace action {
     void NewClusterAction::redo() {
         if (not m_blockInitial) {
             auto* model = m_centralWidget->mainView()->model();
-            auto  it    = model->clusterWithIndex(m_cluster.index());
-            assert(it == model->clusters().end());
+            assert(model->clusterWithIndex(m_cluster.index()) == model->clusters().end());
             model->clusters().push_back(m_cluster);
 
             m_centralWidget->commandScrollArea()->addNeeded(model->clusters());
-            assert(m_commandEditBox == nullptr);
         }
         m_blockInitial = false;
     }

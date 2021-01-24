@@ -12,16 +12,16 @@ namespace model {
 
 namespace view {
 
-    class TextEditCommentWidget;
+    class TextEditSideBar;
     class TextEdit;
-    class CommandScrollArea;
+    class CommandScroll;
 
-    class CommandEditWidget : public QWidget {
+    class CommandEdit : public QWidget {
         Q_OBJECT
 
       public:
-        CommandEditWidget(CommandScrollArea* parent, model::Cluster& cluster);
-        ~CommandEditWidget() override;
+        CommandEdit(CommandScroll* parent, model::Cluster& cluster);
+        ~CommandEdit() override;
 
         void updateSelection();
         void disconnectCommandVectorUpdate();
@@ -29,7 +29,7 @@ namespace view {
 
         [[nodiscard]] TextEdit*          textEdit();
         [[nodiscard]] size_t             index() const;
-        [[nodiscard]] CommandScrollArea* commandScrollArea() const;
+        [[nodiscard]] CommandScroll* commandScrollArea() const;
 
       private slots:
         void updateCommandVector();
@@ -40,9 +40,9 @@ namespace view {
         size_t                 m_index;
         std::string            m_name;
         TextEdit*              m_textEdit;
-        CommandScrollArea*     m_commandScrollArea;
-        TextEditCommentWidget* m_lineWidget;
-        TextEditCommentWidget* m_commentWidget;
+        CommandScroll*     m_commandScrollArea;
+        TextEditSideBar* m_lineWidget;
+        TextEditSideBar* m_commentWidget;
     };
 } // namespace view
 #endif // COMMANDEDITBOX_H

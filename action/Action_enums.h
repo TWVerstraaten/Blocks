@@ -16,8 +16,7 @@ namespace action {
         REMOVE_FLOOR_BLOCK,
         TEXT_EDIT_ACTION,
         ADD_LEVEL_BLOCK,
-        REMOVE_LEVEL_BLOCK,
-        CHANGE_LEVEL_BLOCK
+        REMOVE_LEVEL_BLOCK
     };
 }
 

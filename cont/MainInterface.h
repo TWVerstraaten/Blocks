@@ -16,7 +16,7 @@ namespace model {
 }
 
 namespace view {
-    class CommandScrollArea;
+    class CommandScroll;
 }
 
 namespace cont {
@@ -24,8 +24,8 @@ namespace cont {
     class MainInterface {
 
       public:
-        static void startInteractPhase(model::Model& model, view::CommandScrollArea& commandScrollArea);
-        static void startMovePhase(model::Model& model, view::CommandScrollArea& commandScrollArea);
+        static void startInteractPhase(model::Model& model, view::CommandScroll& commandScrollArea);
+        static void startMovePhase(model::Model& model, view::CommandScroll& commandScrollArea);
 
       private:
         static void handleKillBlocks(const std::map<model::GridXy, model::INSTANT_BLOCK_TYPE>& instantBlocks, std::vector<model::Cluster>& clusters);

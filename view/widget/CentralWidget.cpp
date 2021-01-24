@@ -18,8 +18,8 @@
 namespace view {
 
     CentralWidget::CentralWidget()
-        : m_mainView(nullptr), m_commandScrollArea(nullptr), m_qUndoView(new QUndoView(&m_qUndoStack)),
-          m_blockSelectWidget(new BlockSelectWidget(this)), m_frameRateLabel(new QLabel(this)) {
+        : m_mainView(nullptr), m_commandScroll(nullptr), m_qUndoView(new QUndoView(&m_qUndoStack)), m_blockSelectWidget(new BlockSelectWidget(this)),
+          m_frameRateLabel(new QLabel(this)) {
         setGeometry(0, 0, view::INITIAL_SCREEN_WIDTH, view::INITIAL_SCREEN_HEIGHT);
 
         m_layout = new QGridLayout;
@@ -27,15 +27,15 @@ namespace view {
         m_layout->setMargin(0);
         setLayout(m_layout);
 
-        m_commandScrollArea.set(new CommandScrollArea(this));
-        m_commandScrollArea->setShouldStashCommandEditBoxes(true);
+        m_commandScroll.set(new CommandScroll(this));
+        m_commandScroll->setShouldStashCommandEditBoxes(true);
         m_mainView.set(new MainView(this));
         m_mainView->init();
 
         m_layout->addWidget(m_mainView.get(), 0, 0, 2, 2);
         m_mainView->stackUnder(m_blockSelectWidget);
         m_layout->addWidget(m_blockSelectWidget, 1, 0);
-        m_layout->addWidget(m_commandScrollArea.get(), 0, 2, 2, 1);
+        m_layout->addWidget(m_commandScroll.get(), 0, 2, 2, 1);
         m_layout->addWidget(m_frameRateLabel, 2, 0, 1, 3);
         m_frameRateLabel->setFixedHeight(50);
 
@@ -94,8 +94,8 @@ namespace view {
         }
     }
 
-    CommandScrollArea* CentralWidget::commandScrollArea() const {
-        return m_commandScrollArea.get();
+    CommandScroll* CentralWidget::commandScrollArea() const {
+        return m_commandScroll.get();
     }
 
     MainView* CentralWidget::mainView() const {
@@ -178,16 +178,16 @@ namespace view {
         m_blockSelectWidget->show();
         m_mainView.stashedValue()->setViewPort(m_mainView->viewPort());
         m_layout->removeWidget(m_mainView.get());
-        m_layout->removeWidget(m_commandScrollArea.get());
+        m_layout->removeWidget(m_commandScroll.get());
 
         m_mainView.recover();
-        m_commandScrollArea.recover();
+        m_commandScroll.recover();
 
-        m_commandScrollArea->show();
+        m_commandScroll->show();
 
         m_layout->addWidget(m_mainView.get(), 0, 0, 2, 2);
         m_mainView->stackUnder(m_blockSelectWidget);
-        m_layout->addWidget(m_commandScrollArea.get(), 0, 2, 2, 1);
+        m_layout->addWidget(m_commandScroll.get(), 0, 2, 2, 1);
 
         update();
     }
@@ -199,31 +199,31 @@ namespace view {
         m_blockSelectWidget->hide();
 
         m_layout->removeWidget(m_mainView.get());
-        m_layout->removeWidget(m_commandScrollArea.get());
+        m_layout->removeWidget(m_commandScroll.get());
 
         m_mainView.stash();
         m_mainView.set(new MainView(this));
-        m_commandScrollArea.stash();
-        m_commandScrollArea.set(new CommandScrollArea(this));
+        m_commandScroll.stash();
+        m_commandScroll.set(new CommandScroll(this));
 
         m_mainView->setViewPort(m_mainView.stashedValue()->viewPort());
         m_mainView->init(*m_mainView.stashedValue()->model());
         m_mainView->mainViewMouseManager().setBlockEditing(true);
-        m_mainView->setCommandScrollArea(m_commandScrollArea.get());
+        m_mainView->setCommandScrollArea(m_commandScroll.get());
         m_mainView->model()->resetPhase();
-        m_commandScrollArea->addNeeded(m_mainView->model()->clusters());
-        m_commandScrollArea->disable();
+        m_commandScroll->addNeeded(m_mainView->model()->clusters());
+        m_commandScroll->disable();
 
         m_layout->addWidget(m_mainView.get(), 0, 0, 2, 2);
         m_mainView->stackUnder(m_blockSelectWidget);
-        m_layout->addWidget(m_commandScrollArea.get(), 0, 2, 2, 1);
+        m_layout->addWidget(m_commandScroll.get(), 0, 2, 2, 1);
 
         for (auto& cluster : m_mainView->model()->clusters()) {
             cluster.doCommand(*m_mainView->model());
         }
 
         m_mainView->model()->update(0.0001);
-        m_commandScrollArea->updateSelection();
+        m_commandScroll->updateSelection();
 
         m_elapsedTimer.restart();
         m_phaseTimer.restart();
@@ -254,11 +254,11 @@ namespace view {
     }
 
     void CentralWidget::startMovePhase() {
-        cont::MainInterface::startMovePhase(*m_mainView->model(), *m_commandScrollArea);
+        cont::MainInterface::startMovePhase(*m_mainView->model(), *m_commandScroll);
     }
 
     void CentralWidget::startInteractPhase() {
-        cont::MainInterface::startInteractPhase(*m_mainView->model(), *m_commandScrollArea);
+        cont::MainInterface::startInteractPhase(*m_mainView->model(), *m_commandScroll);
         update();
     }
 

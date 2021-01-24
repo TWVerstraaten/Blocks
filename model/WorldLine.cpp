@@ -6,7 +6,7 @@
 
 namespace model {
 
-    WorldLine::WorldLine(const WorldXy& start, const WorldXy& end) : m_start(start), m_end(end) {
+    WorldLine::WorldLine(const WorldXy& start, const WorldXy& end) : m_start(start), m_end(end), m_displacementVector(m_end - m_start) {
     }
 
     const WorldXy& WorldLine::start() const {
@@ -18,7 +18,7 @@ namespace model {
     }
 
     WorldXy WorldLine::displacementVector() const {
-        return m_end - m_start;
+        return m_displacementVector;
     }
 
     bool operator<(const WorldLine& w1, const WorldLine& w2) {

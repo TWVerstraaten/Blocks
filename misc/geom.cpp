@@ -24,8 +24,8 @@ namespace geom {
     }
 
     bool intersect(const Cluster& cluster1, const Cluster& cluster2, int shrinkInWorld) {
-        const auto boundingAlignedRectangle1 = AlignedRectangle::boundingAlignedRectangle(cluster1);
-        const auto boundingAlignedRectangle2 = AlignedRectangle::boundingAlignedRectangle(cluster2);
+        const auto boundingAlignedRectangle1 = cluster1.boundingAlignedRectangle();
+        const auto boundingAlignedRectangle2 = cluster2.boundingAlignedRectangle();
 
         const auto point1 = *cluster1.gridXyVector().begin();
         const auto point2 = *cluster2.gridXyVector().begin();
@@ -74,8 +74,9 @@ namespace geom {
         if (angleInDegrees == 0.0) {
             return point;
         }
-        const double ca = std::cos(-angleInDegrees * 2.0 * M_PI / 360.0);
-        const double sa = std::sin(-angleInDegrees * 2.0 * M_PI / 360.0);
+        static const double DEGREES_TO_RADIANS = 2.0 * M_PI / 360.0;
+        const double        ca                 = std::cos(-angleInDegrees * DEGREES_TO_RADIANS);
+        const double        sa                 = std::sin(-angleInDegrees * DEGREES_TO_RADIANS);
         return {static_cast<int>(ca * point.x() - sa * point.y()), static_cast<int>(sa * point.x() + ca * point.y())};
     }
 
@@ -126,7 +127,7 @@ namespace geom {
         return std::max_element(D_CIT(blocks), D_FUNC_2(lhs, rhs, lhs.y() < rhs.y()))->y();
     }
 
-    std::vector<Cluster*> neighbors(std::list<Cluster>& clusters, GridXy point) {
+    std::vector<Cluster*> neighbors(std::vector<Cluster>& clusters, GridXy point) {
         std::vector<Cluster*> result;
         std::for_each(D_IT(clusters), [&](auto& cluster) {
             if (cluster.gridXyIsAdjacent(point)) {
@@ -136,7 +137,7 @@ namespace geom {
         return result;
     }
 
-    std::vector<Cluster*> neighbors(std::list<Cluster>& clusters, const Cluster& cluster) {
+    std::vector<Cluster*> neighbors(std::vector<Cluster>& clusters, const Cluster& cluster) {
         std::vector<Cluster*> result;
         std::for_each(D_IT(clusters), [&](auto& candidate) {
             if (candidate.isAdjacent(cluster)) {
