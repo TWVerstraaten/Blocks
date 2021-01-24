@@ -25,7 +25,7 @@ namespace view {
         QPalette palette = this->palette();
         palette.setColor(QPalette::Highlight, QColor(view::color::WIDGET_LIGHT.lighter(110)));
         palette.setColor(QPalette::HighlightedText, QColor(Qt::black));
-        QPlainTextEdit::setPalette(palette);
+        setPalette(palette);
 
         document()->adjustSize();
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);

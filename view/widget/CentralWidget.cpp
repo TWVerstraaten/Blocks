@@ -28,6 +28,7 @@ namespace view {
         setLayout(m_layout);
 
         m_commandScrollArea.set(new CommandScrollArea(this));
+        m_commandScrollArea->setShouldStashCommandEditBoxes(true);
         m_mainView.set(new MainView(this));
         m_mainView->init();
 

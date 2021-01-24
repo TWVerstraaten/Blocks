@@ -12,7 +12,8 @@ endif (WIN32)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-add_definitions(-DDEBUG)
+add_definitions(-DNDEBUG)
+#add_definitions(-DDEBUG)
 
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

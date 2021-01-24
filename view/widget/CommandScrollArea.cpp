@@ -37,25 +37,19 @@ namespace view {
     }
 
     void CommandScrollArea::moveFocusToNext() {
-        if (m_commandEditBoxes.size() < 2) {
-            return;
-        }
-        for (auto it = m_commandEditBoxes.begin(); std::next(it) != m_commandEditBoxes.end(); ++it) {
-            if ((*it)->textEdit()->hasFocus()) {
-                (*std::next(it))->textEdit()->setFocus();
-                return;
+        if (m_commandEditBoxes.size() > 1) {
+            auto it = std::find_if(D_RIT(m_commandEditBoxes), D_FUNC(commandEditWidget, commandEditWidget->textEdit()->hasFocus()));
+            if (it != m_commandEditBoxes.rend() && it != m_commandEditBoxes.rbegin()) {
+                (*std::prev(it))->textEdit()->setFocus();
             }
         }
     }
 
     void CommandScrollArea::moveFocusToPrevious() {
-        if (m_commandEditBoxes.size() < 2) {
-            return;
-        }
-        for (auto it = std::next(m_commandEditBoxes.begin()); it != m_commandEditBoxes.end(); ++it) {
-            if ((*it)->textEdit()->hasFocus()) {
+        if (m_commandEditBoxes.size() > 1) {
+            auto it = std::find_if(D_IT(m_commandEditBoxes), D_FUNC(commandEditWidget, commandEditWidget->textEdit()->hasFocus()));
+            if (it != m_commandEditBoxes.end() && it != m_commandEditBoxes.begin()) {
                 (*std::prev(it))->textEdit()->setFocus();
-                return;
             }
         }
     }
@@ -124,6 +118,16 @@ namespace view {
             if (std::find_if(D_CIT(clusters), D_FUNC(cluster, cluster.index() == widget->index())) == clusters.end()) {
                 auto a = removeFromLayout(widget->index());
             }
+        }
+    }
+
+    void CommandScrollArea::setShouldStashCommandEditBoxes(bool shouldStashCommandEditBoxes) {
+        m_shouldStashCommandEditBoxes = shouldStashCommandEditBoxes;
+    }
+
+    void CommandScrollArea::stash(std::unique_ptr<CommandEditWidget>&& commandEditWidget) {
+        if (m_shouldStashCommandEditBoxes) {
+            m_stashedCommandEditBoxes.emplace_back(std::move(commandEditWidget));
         }
     }
 

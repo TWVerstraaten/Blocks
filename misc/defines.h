@@ -22,6 +22,7 @@
 #endif
 
 #define D_IT(x) x.begin(), x.end()
+#define D_RIT(x) x.rbegin(), x.rend()
 #define D_CIT(x) x.cbegin(), x.cend()
 #define D_FUNC(name, f) [&]([[maybe_unused]] const auto& name) { return f; }
 #define D_VOID_FUNC(name, f) [&]([[maybe_unused]] const auto& name) { f }

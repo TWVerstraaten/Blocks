@@ -23,6 +23,7 @@ namespace view {
         void addToLayout(std::unique_ptr<CommandEditWidget>&& commandEditBox);
         void addNeeded(std::vector<model::Cluster>& clusters);
         void removeUnneeded(std::vector<model::Cluster>& clusters);
+        void setShouldStashCommandEditBoxes(bool shouldStashCommandEditBoxes);
         void updateSelection();
         void disable();
 
@@ -36,7 +37,11 @@ namespace view {
         void moveFocusToPrevious();
 
       private:
+        void stash(std::unique_ptr<CommandEditWidget>&& commandEditWidget);
+
+        bool                                            m_shouldStashCommandEditBoxes = false;
         std::vector<std::unique_ptr<CommandEditWidget>> m_commandEditBoxes;
+        std::vector<std::unique_ptr<CommandEditWidget>> m_stashedCommandEditBoxes;
         QVBoxLayout*                                    m_layout;
         CentralWidget*                                  m_centralWidget;
     };

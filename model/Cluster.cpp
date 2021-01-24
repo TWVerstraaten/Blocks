@@ -245,11 +245,6 @@ namespace model {
         assert(isValid());
     }
 
-    //    GridXyVector& Cluster::gridXyVector() {
-    //        assert(isValid());
-    //        return m_gridXyVector;
-    //    }
-
     void Cluster::collideWithLevel(const Level& level, int shrinkInWorld) {
         assert(isValid());
         if (geom::intersect(sides(shrinkInWorld), level.sides())) {
