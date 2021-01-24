@@ -25,6 +25,7 @@ namespace view {
 
         void updateSelection();
         void disconnectCommandVectorUpdate();
+        void connectCommandVector();
 
         [[nodiscard]] TextEdit*          textEdit();
         [[nodiscard]] size_t             index() const;

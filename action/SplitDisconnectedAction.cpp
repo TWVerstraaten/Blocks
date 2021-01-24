@@ -18,15 +18,6 @@ namespace action {
         m_components = copy.collectAllButFirstComponent();
         assert(copy.isConnected());
         m_components.emplace_back(copy);
-
-        m_disconnectedCommandEditBox = m_commandScrollArea->removeFromLayout(m_disconnected.index());
-        for (auto& it : m_components) {
-            m_commandScrollArea->add(it);
-        }
-        for (const auto& it : m_components) {
-            m_componentCommandEditBoxes.emplace_back(m_commandScrollArea->removeFromLayout(it.index()));
-        }
-        m_commandScrollArea->addToLayout(std::move(m_disconnectedCommandEditBox));
     }
 
     void SplitDisconnectedAction::undo() {
@@ -34,26 +25,22 @@ namespace action {
             auto toRemoveIt = m_model->clusterWithIndex(it.index());
             assert(toRemoveIt != m_model->clusters().end());
             m_model->clusters().erase(toRemoveIt);
-            m_componentCommandEditBoxes.emplace_back(m_commandScrollArea->removeFromLayout(it.index()));
+            m_commandScrollArea->removeFromLayout(it.index());
         }
         m_model->clusters().emplace_back(m_disconnected);
-        m_commandScrollArea->addToLayout(std::move(m_disconnectedCommandEditBox));
+        m_commandScrollArea->addNeeded(m_model->clusters());
     }
 
     void SplitDisconnectedAction::redo() {
         auto disconnectedIt = m_model->clusterWithIndex(m_disconnected.index());
         assert(disconnectedIt != m_model->clusters().end());
         m_model->clusters().erase(disconnectedIt);
-        m_disconnectedCommandEditBox = m_commandScrollArea->removeFromLayout(m_disconnected.index());
+        m_commandScrollArea->removeFromLayout(m_disconnected.index());
 
         for (const auto& it : m_components) {
             m_model->clusters().emplace_back(it);
         }
-        for (auto& it : m_componentCommandEditBoxes) {
-            m_commandScrollArea->addToLayout(std::move(it));
-        }
-        assert(std::all_of(D_CIT(m_componentCommandEditBoxes), D_FUNC(box, box == nullptr)));
-        m_componentCommandEditBoxes.clear();
+        m_commandScrollArea->addNeeded(m_model->clusters());
     }
 
     ACTION_TYPE SplitDisconnectedAction::type() const {

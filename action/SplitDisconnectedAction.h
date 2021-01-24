@@ -7,17 +7,13 @@
 
 #include "../model/Cluster.h"
 #include "Action.h"
-#include "view/widget/CommandEditWidget.h"
+#include "view/widget/CommandScrollArea.h"
 
 #include <list>
 #include <memory>
 
 namespace model {
     class Model;
-}
-
-namespace view {
-    class CommandScrollArea;
 }
 
 namespace action {
@@ -31,12 +27,10 @@ namespace action {
         [[nodiscard]] ACTION_TYPE type() const override;
 
       private:
-        model::Model*                                    m_model;
-        const model::Cluster                             m_disconnected;
-        std::unique_ptr<view::CommandEditWidget>            m_disconnectedCommandEditBox;
-        std::list<model::Cluster>                        m_components;
-        std::list<std::unique_ptr<view::CommandEditWidget>> m_componentCommandEditBoxes;
-        view::CommandScrollArea*                         m_commandScrollArea;
+        model::Model*             m_model;
+        const model::Cluster      m_disconnected;
+        std::list<model::Cluster> m_components;
+        view::CommandScrollArea*  m_commandScrollArea;
     };
 } // namespace action
 

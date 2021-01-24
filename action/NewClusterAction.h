@@ -14,7 +14,6 @@
 namespace view {
     class CommandScrollArea;
     class CentralWidget;
-    class CommandEditWidget;
 } // namespace view
 
 namespace action {
@@ -29,8 +28,7 @@ namespace action {
         [[nodiscard]] ACTION_TYPE type() const override;
 
       protected:
-        std::unique_ptr<view::CommandEditWidget> m_commandEditBox;
-        model::Cluster                           m_cluster;
+        model::Cluster m_cluster;
 
       private:
         view::CentralWidget* m_centralWidget;

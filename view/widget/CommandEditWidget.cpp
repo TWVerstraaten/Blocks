@@ -1,6 +1,5 @@
 #include "CommandEditWidget.h"
 
-#include "../../misc/defines.h"
 #include "../../model/Model.h"
 #include "../FontManager.h"
 #include "../color.h"
@@ -61,7 +60,7 @@ namespace view {
         setPalette(pal);
 
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-        connect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
+        connectCommandVector();
     }
 
     CommandEditWidget::~CommandEditWidget() {
@@ -104,6 +103,10 @@ namespace view {
 
     void CommandEditWidget::disconnectCommandVectorUpdate() {
         m_textEdit->blockSignals(true);
+    }
+
+    void CommandEditWidget::connectCommandVector() {
+        connect(m_textEdit, &TextEdit::textChanged, this, &CommandEditWidget::updateCommandVector);
     }
 
 } // namespace view

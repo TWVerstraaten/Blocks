@@ -26,13 +26,12 @@ namespace view {
         void setShouldStashCommandEditBoxes(bool shouldStashCommandEditBoxes);
         void updateSelection();
         void disable();
+        void removeFromLayout(size_t index);
 
-        [[nodiscard]] CommandEditWidget*                 withIndex(size_t index);
-        [[nodiscard]] CentralWidget*                     centralWidget() const;
-        [[nodiscard]] std::unique_ptr<CommandEditWidget> removeFromLayout(size_t index);
+        [[nodiscard]] CommandEditWidget* withIndex(size_t index);
+        [[nodiscard]] CentralWidget*     centralWidget() const;
 
       private slots:
-
         void moveFocusToNext();
         void moveFocusToPrevious();
 

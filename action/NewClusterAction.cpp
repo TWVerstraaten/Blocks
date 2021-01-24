@@ -13,7 +13,7 @@
 namespace action {
 
     NewClusterAction::NewClusterAction(view::CentralWidget* centralWidget, model::Cluster cluster)
-        : m_commandEditBox(nullptr), m_cluster(std::move(cluster)), m_centralWidget(centralWidget) {
+        : m_cluster(std::move(cluster)), m_centralWidget(centralWidget) {
         setText(QString("Creating cluster %1").arg(m_cluster.index()));
     }
 
@@ -22,8 +22,7 @@ namespace action {
         auto  it    = model->clusterWithIndex(m_cluster.index());
         assert(it != model->clusters().end());
         model->clusters().erase(it);
-
-        m_commandEditBox = m_centralWidget->commandScrollArea()->removeFromLayout(m_cluster.index());
+        m_centralWidget->commandScrollArea()->removeFromLayout(m_cluster.index());
     }
 
     void NewClusterAction::redo() {
@@ -33,7 +32,7 @@ namespace action {
             assert(it == model->clusters().end());
             model->clusters().push_back(m_cluster);
 
-            m_centralWidget->commandScrollArea()->addToLayout(std::move(m_commandEditBox));
+            m_centralWidget->commandScrollArea()->addNeeded(model->clusters());
             assert(m_commandEditBox == nullptr);
         }
         m_blockInitial = false;

@@ -7,7 +7,6 @@
 
 #include "../model/Cluster.h"
 #include "Action.h"
-#include "view/widget/CommandEditWidget.h"
 
 #include <memory>
 
@@ -26,11 +25,10 @@ namespace action {
         [[nodiscard]] ACTION_TYPE type() const override;
 
       private:
-        model::Model*                         m_model;
-        const model::Cluster                  m_target;
-        const model::Cluster                  m_second;
-        view::CommandScrollArea*              m_commandScrollArea;
-        std::unique_ptr<view::CommandEditWidget> m_commandEditBox = nullptr;
+        model::Model*            m_model;
+        const model::Cluster     m_target;
+        const model::Cluster     m_second;
+        view::CommandScrollArea* m_commandScrollArea;
     };
 } // namespace action
 

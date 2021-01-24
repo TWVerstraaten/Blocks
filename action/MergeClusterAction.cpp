@@ -27,7 +27,7 @@ namespace action {
             targetIt->removeGridXy(point);
         }
         m_model->clusters().emplace_back(m_second);
-        m_commandScrollArea->addToLayout(std::move(m_commandEditBox));
+        m_commandScrollArea->addNeeded(m_model->clusters());
     }
 
     void MergeClusterAction::redo() {
@@ -37,7 +37,7 @@ namespace action {
         assert(targetIt != m_model->clusters().end());
         targetIt->appendGridXy(secondIt->gridXyVector());
         m_model->clusters().erase(secondIt);
-        m_commandEditBox = m_commandScrollArea->removeFromLayout(m_second.index());
+        m_commandScrollArea->removeFromLayout(m_second.index());
     }
 
     ACTION_TYPE MergeClusterAction::type() const {
