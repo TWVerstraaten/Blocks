@@ -5,6 +5,7 @@
 #include "WorldXy.h"
 
 #include "../app/Application_constants.h"
+#include "../view/ViewPort.h"
 #include "GridXy.h"
 
 namespace model {
@@ -58,6 +59,10 @@ namespace model {
         m_x /= divisor;
         m_y /= divisor;
         return *this;
+    }
+
+    WorldXy WorldXy::fromScreenXy(const view::ScreenXy& screenXy, const view::ViewPort& viewPort) {
+        return {viewPort.screenToWorld(screenXy.x() - viewPort.xOffset()), viewPort.screenToWorld(screenXy.y() - viewPort.yOffset())};
     }
 
 } // namespace model

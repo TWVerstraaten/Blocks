@@ -22,6 +22,7 @@ namespace view {
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] int worldToScreen(int worldLength) const;
+        [[nodiscard]] int screenToWorld(int worldLength) const;
         [[nodiscard]] int blockSeparationInScreenXy() const;
 
         /****** NON CONST FUNCTIONS  ******/

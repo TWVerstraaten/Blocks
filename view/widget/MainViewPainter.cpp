@@ -84,8 +84,7 @@ namespace view {
                 painter.fillRect(QRect{position.x(), position.y() - twiceShrink - 1, shrunkSize, twiceShrink + 2}, color);
                 painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y(), twiceShrink + 2, shrunkSize}, color);
 
-                const bool upAndLeftOccupied =
-                    std::find(D_CIT(blocks), block.neighbor(GridXy::DIRECTION::UP).neighbor(GridXy::DIRECTION::LEFT)) != blocks.end();
+                const bool upAndLeftOccupied = std::find(D_CIT(blocks), block + GridXy{-1, -1}) != blocks.end();
                 if (upAndLeftOccupied) {
                     painter.fillRect(QRect{position.x() - twiceShrink - 1, position.y() - twiceShrink - 1, twiceShrink + 2, twiceShrink + 2}, color);
                 }
@@ -153,8 +152,7 @@ namespace view {
         const auto topLeft = ScreenXy::fromWorldXy(f(WorldXy(GridXy{geom::minX(blocks), geom::minY(blocks)})), *m_viewPort);
         painter.translate(topLeft.x(), topLeft.y());
         painter.rotate(angle);
-        const auto pixmap = connectedPixmap(blocks, color);
-        painter.drawPixmap(0, 0, pixmap);
+        painter.drawPixmap(0, 0, connectedPixmap(blocks, color));
 
         painter.restore();
     }

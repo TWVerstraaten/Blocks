@@ -18,30 +18,21 @@ namespace view {
 
     class ViewPort;
 
-    class ScreenXy {
+    class ScreenXy : public QPoint {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         ScreenXy();
         ScreenXy(int x, int y);
-        ScreenXy(const QPointF& point);
-        ScreenXy(const QPoint& point);
+        explicit ScreenXy(const QPointF& point);
+        explicit ScreenXy(const QPoint& point);
 
         /****** PUBLIC STATIC FUNCTIONS  ******/
         static ScreenXy fromWorldXy(const model::WorldXy& worldXy, const ViewPort& viewPort);
         static ScreenXy fromWorldXyAsVector(const model::WorldXy& worldXy, const ViewPort& viewPort);
         static ScreenXy fromGridXy(const model::GridXy& gridXy, const ViewPort& viewPort);
 
-        /****** CONST GETTERS  ******/
-        [[nodiscard]] int x() const;
-        [[nodiscard]] int y() const;
-
         friend std::ostream& operator<<(std::ostream& out, const ScreenXy& screenXy);
-
-      private:
-        /****** DATA MEMBERS  ******/
-        int m_x;
-        int m_y;
     };
 
 } // namespace view

@@ -221,8 +221,6 @@ namespace view {
         m_layout->addWidget(m_commandScroll.get(), 0, 2, 2, 1);
 
         startMovePhase();
-        m_mainView->model()->update(0.0001);
-        m_commandScroll->updateSelection();
 
         m_elapsedTimer.restart();
         m_phaseTimer.restart();

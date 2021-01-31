@@ -15,9 +15,8 @@ namespace model {
         GridXyVector newGridXyVector;
         newGridXyVector.reserve(cluster.gridXyVector().size());
         cluster.setPhase(PHASE::TRANSLATING);
-        for (const auto& idx : cluster.gridXyVector()) {
-            newGridXyVector.emplace_back(idx.neighbor(direction));
-        }
+
+        std::transform(D_CIT(cluster.gridXyVector()), std::back_inserter(newGridXyVector), D_FUNC(gridXy, gridXy.neighbor(direction)));
         cluster.swapGridXy(newGridXyVector);
         switch (direction) {
             case GridXy::DIRECTION::UP:

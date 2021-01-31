@@ -15,10 +15,12 @@ namespace view {
     }
 
     void ViewPort::zoom(int dZoom, const view::ScreenXy& point) {
-        D_NOTE_ONCE("Zoom into point")
+        const auto worldPointUnderMouse   = model::WorldXy::fromScreenXy(point, *this);
         m_zoom                            = std::clamp(m_zoom + dZoom, -2000, 3000);
         m_scale                           = std::exp(m_zoom / 1000.0);
         m_distanceBetweenBlocksInScreenXy = worldToScreen(2 * app::BLOCK_SHRINK_IN_WORLD);
+        const auto translation            = worldPointUnderMouse - model::WorldXy::fromScreenXy(point, *this);
+        translate(worldToScreen(-translation.x()), worldToScreen(-translation.y()));
     }
 
     void ViewPort::translate(int dx, int dy) {
@@ -40,5 +42,9 @@ namespace view {
 
     int ViewPort::blockSeparationInScreenXy() const {
         return m_distanceBetweenBlocksInScreenXy;
+    }
+
+    int ViewPort::screenToWorld(int worldLength) const {
+        return static_cast<int>(worldLength / m_scale);
     }
 } // namespace view

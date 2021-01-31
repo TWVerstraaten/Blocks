@@ -29,7 +29,7 @@ namespace contr {
     }
 
     void MainViewMouseManager::mousePressEvent(QMouseEvent* event) {
-        m_previousMousePosition = event->pos();
+        m_previousMousePosition = view::ScreenXy{event->pos()};
         m_previousGridPosition  = GridXy::fromScreenXy(m_previousMousePosition, m_mainView->viewPort());
         if (not m_blockEditing) {
             if (event->button() == Qt::MouseButton::LeftButton) {
@@ -39,12 +39,12 @@ namespace contr {
     }
 
     void MainViewMouseManager::mouseMoveEvent(QMouseEvent* event) {
-        const view::ScreenXy currentMousePosition = event->pos();
+        const view::ScreenXy currentMousePosition = view::ScreenXy{event->pos()};
         const GridXy         currentGridPosition  = GridXy::fromScreenXy(currentMousePosition, m_mainView->viewPort());
         switch (event->buttons()) {
             case Qt::RightButton:
                 m_mainView->viewPort().translate((event->x() - m_previousMousePosition.x()), event->y() - m_previousMousePosition.y());
-                m_previousMousePosition = event->pos();
+                m_previousMousePosition = currentMousePosition;
                 break;
             case Qt::LeftButton:
                 if (m_previousGridPosition != currentGridPosition && (not m_blockEditing)) {

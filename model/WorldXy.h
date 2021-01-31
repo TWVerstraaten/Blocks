@@ -9,7 +9,8 @@
 
 namespace view {
     class ViewPort;
-}
+    class ScreenXy;
+} // namespace view
 
 namespace model {
 
@@ -32,6 +33,8 @@ namespace model {
         /****** OPERATORS  ******/
         WorldXy& operator+=(const WorldXy& other);
         WorldXy& operator/=(int divisor);
+
+        static WorldXy fromScreenXy(const view::ScreenXy& screenXy, const view::ViewPort& viewPort);
 
         /****** FRIENDS  ******/
         friend bool    operator<(const WorldXy& lhs, const WorldXy& rhs);

@@ -9,18 +9,10 @@
 #include "ViewPort.h"
 
 namespace view {
-    ScreenXy::ScreenXy() : m_x(0), m_y(0) {
+    ScreenXy::ScreenXy() : QPoint() {
     }
 
-    ScreenXy::ScreenXy(int x, int y) : m_x(x), m_y(y) {
-    }
-
-    int ScreenXy::x() const {
-        return m_x;
-    }
-
-    int ScreenXy::y() const {
-        return m_y;
+    ScreenXy::ScreenXy(int x, int y) : QPoint(x, y) {
     }
 
     ScreenXy ScreenXy::fromWorldXy(const model::WorldXy& worldXy, const ViewPort& viewPort) {
@@ -35,14 +27,14 @@ namespace view {
         return fromWorldXy(model::WorldXy{gridXy}, viewPort);
     }
 
-    ScreenXy::ScreenXy(const QPointF& point) : m_x(static_cast<int>(point.x())), m_y(static_cast<int>(point.y())) {
+    ScreenXy::ScreenXy(const QPointF& point) : QPoint(point.x(), point.y()) {
     }
 
-    ScreenXy::ScreenXy(const QPoint& point) : m_x(point.x()), m_y(point.y()) {
+    ScreenXy::ScreenXy(const QPoint& point) : QPoint(point) {
     }
 
     std::ostream& operator<<(std::ostream& out, const ScreenXy& screenXy) {
-        out << "ScreenXy(" << screenXy.m_x << ", " << screenXy.m_y << ")";
+        out << "ScreenXy(" << screenXy.x() << ", " << screenXy.x() << ")";
         return out;
     }
 

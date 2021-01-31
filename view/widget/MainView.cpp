@@ -39,9 +39,9 @@ namespace view {
 
     void MainView::wheelEvent(QWheelEvent* event) {
 #ifdef Q_OS_LINUX
-        m_viewPort.zoom(event->angleDelta().y(), event->pos());
+        m_viewPort.zoom(event->angleDelta().y(), view::ScreenXy{event->pos()});
 #else
-        m_viewPort.zoom(event->angleDelta().y(), event->position());
+        m_viewPort.zoom(event->angleDelta().y(), view::ScreenXy{event->position()});
 #endif
         update();
     }

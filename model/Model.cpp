@@ -107,10 +107,13 @@ namespace model {
         if (m_phaseFraction <= 0.0) {
             m_phaseFraction = 0.0;
         } else {
+            //            const auto smoothStep = m_phaseFraction * m_phaseFraction * m_phaseFraction * (m_phaseFraction * (m_phaseFraction * 6 - 15)
+            //            + 10);
+            const auto smoothStep = m_phaseFraction * m_phaseFraction * (3 - 2 * m_phaseFraction);
+            //            const auto smoothStep = m_phaseFraction;
             for (auto& cluster : m_clusters) {
                 assert(m_phaseFraction <= 1.0);
-                // SmoothStep(x) = 3x^2 - 2x^2 : [0,1] -> [0,1]
-                cluster.update(m_phaseFraction * m_phaseFraction * (3 - 2 * m_phaseFraction));
+                cluster.update(smoothStep);
             }
             intersectWithLevel();
             intersectClusters();
@@ -175,5 +178,4 @@ namespace model {
         clearStopped();
         splitDisconnectedClusters();
     }
-
 } // namespace model
