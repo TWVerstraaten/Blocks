@@ -4,7 +4,6 @@
 
 #include "geom.h"
 
-#include "AlignedRectangle.h"
 #include "defines.h"
 
 #include <QDebug>

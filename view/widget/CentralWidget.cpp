@@ -271,7 +271,7 @@ namespace view {
         m_frameRateLabel->setText(QString("Ave:\t %1\n"
                                           "Max:\t %2\n"
                                           "Min:\t %3\n")
-                                      .arg(1000.0 / static_cast<double>(m_circularBuffer.average()))
+                                      .arg(1000.0 / m_circularBuffer.average())
                                       .arg(1000.0 / static_cast<double>(m_circularBuffer.min()))
                                       .arg(1000.0 / static_cast<double>(m_circularBuffer.max())));
         m_frameRateTimer.restart();

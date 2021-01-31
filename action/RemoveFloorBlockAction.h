@@ -16,7 +16,7 @@ namespace action {
 
         void        undo() override;
         void        redo() override;
-        ACTION_TYPE type() const override;
+        [[nodiscard]] ACTION_TYPE type() const override;
     };
 } // namespace action
 

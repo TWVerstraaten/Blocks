@@ -20,7 +20,6 @@ namespace view {
         ~CommandScroll() override;
 
         void add(model::Cluster& cluster);
-        void addToLayout(std::unique_ptr<CommandEdit>&& commandEditBox);
         void addNeeded(std::vector<model::Cluster>& clusters);
         void removeUnneeded(std::vector<model::Cluster>& clusters);
         void setShouldStashCommandEditBoxes(bool shouldStashCommandEditBoxes);
@@ -28,7 +27,6 @@ namespace view {
         void disable();
         void removeFromLayout(size_t index);
 
-        [[nodiscard]] CommandEdit*   withIndex(size_t index);
         [[nodiscard]] CentralWidget* centralWidget() const;
 
       private slots:

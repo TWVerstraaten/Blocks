@@ -38,10 +38,6 @@ namespace contr {
         handleStopAndSplice(model);
         handleGrabs(model);
 
-        std::copy_if(D_CIT(clusters), std::back_inserter(level.stoppedClusters()), D_FUNC(cluster, cluster.state() == CLUSTER_STATE::STOPPED));
-        model.clearEmpty();
-        model.clearStopped();
-        model.splitDisconnectedClusters();
         commandScrollArea.removeUnneeded(clusters);
         commandScrollArea.addNeeded(clusters);
 
@@ -97,25 +93,16 @@ namespace contr {
 
         for (const auto& conwayBlock : conwayBlocks) {
             size_t liveNeighbors = 0;
-            for (int i = -1; i <= 1; ++i) {
-                for (int j = -1; j <= 1; ++j) {
-                    if (j == 0 && i == 0) {
-                        continue;
-                    }
-                    if ((model.clusterContaining(conwayBlock + GridXy{i, j}) != clusters.end()) ||
-                        (model.stoppedClusterContaining(conwayBlock + GridXy{i, j})) != model.level().stoppedClusters().end()) {
-                        ++liveNeighbors;
-                    }
+            for (const auto [i, j] : std::vector<std::pair<int, int>>{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}) {
+                if (not model.noLiveOrStoppedClusterOnBlock(conwayBlock + GridXy{i, j})) {
+                    ++liveNeighbors;
                 }
             }
-            if ((model.clusterContaining(conwayBlock) != model.clusters().end()) ||
-                (model.stoppedClusterContaining(conwayBlock)) != model.level().stoppedClusters().end()) {
+            if (model.noLiveOrStoppedClusterOnBlock(conwayBlock) && liveNeighbors == 3) {
+                newCluster.addGridXy(conwayBlock);
+            } else {
                 if (liveNeighbors != 2 && liveNeighbors != 3) {
                     toRemove.emplace_back(conwayBlock);
-                }
-            } else {
-                if (liveNeighbors == 3) {
-                    newCluster.addGridXy(conwayBlock);
                 }
             }
         }
@@ -166,48 +153,43 @@ namespace contr {
                     break;
             }
         }
-
-        std::copy_if(D_CIT(clusters), std::back_inserter(level.stoppedClusters()), D_FUNC(cluster, cluster.state() == CLUSTER_STATE::STOPPED));
-        model.clearEmpty();
-        model.clearStopped();
-        model.splitDisconnectedClusters();
+        model.handleStoppedAndSplitClusters();
     }
 
     void MainInterface::handleGrabs(Model& model) {
-        auto& clusters = model.clusters();
-        auto& level    = model.level();
-
-        std::map<Cluster*, std::vector<Cluster*>> grabberMap;
-        for (auto& cluster : clusters) {
-            switch (cluster.currentType()) {
-                case COMMAND_TYPE::GRB: {
-                    const auto neighbors = geom::neighbors(model.level().stoppedClusters(), cluster);
-                    for (auto* it : neighbors) {
-                        if (grabberMap.find(it) == grabberMap.end()) {
-                            grabberMap[it] = {&cluster};
-                        } else {
-                            grabberMap[it].emplace_back(&cluster);
-                        }
-                    }
-                }
-                default:
-                    break;
-            }
-        }
-
-        for (auto& [grabbee, grabbers] : grabberMap) {
+        const auto grabberMap = buildGrabberMap(model);
+        for (auto& [_, grabbers] : grabberMap) {
             if (grabbers.size() > 1) {
                 std::for_each(D_IT(grabbers), D_VOID_FUNC(grabber, grabber->setState(CLUSTER_STATE::STOPPED);));
             }
         }
 
-        for (auto& [grabbee, grabbers] : grabberMap) {
+        for (auto& [target, grabbers] : grabberMap) {
             if (grabbers.size() == 1) {
-                grabbers.front()->copyGridXy(*grabbee);
-                grabbee->clearGridXy();
+                grabbers.front()->copyGridXy(*target);
+                target->clearGridXy();
             }
         }
         model.clearEmpty();
+    }
+
+    std::map<model::Cluster*, std::vector<model::Cluster*>> MainInterface::buildGrabberMap(Model& model) {
+        auto& clusters = model.clusters();
+
+        std::map<Cluster*, std::vector<Cluster*>> grabberMap;
+        for (auto& cluster : clusters) {
+            if (cluster.currentType() == model::COMMAND_TYPE::GRB) {
+                const auto neighbors = geom::neighbors(model.level().stoppedClusters(), cluster);
+                for (auto* it : neighbors) {
+                    if (grabberMap.find(it) == grabberMap.end()) {
+                        grabberMap[it] = {&cluster};
+                    } else {
+                        grabberMap[it].emplace_back(&cluster);
+                    }
+                }
+            }
+        }
+        return grabberMap;
     }
 
 } // namespace contr

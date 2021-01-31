@@ -169,4 +169,11 @@ namespace model {
         m_clusters.erase(std::remove_if(D_IT(m_clusters), D_FUNC(cluster, cluster.state() == CLUSTER_STATE::STOPPED)), m_clusters.end());
     }
 
+    void Model::handleStoppedAndSplitClusters() {
+        std::copy_if(D_CIT(m_clusters), std::back_inserter(m_level.stoppedClusters()), D_FUNC(cluster, cluster.state() == CLUSTER_STATE::STOPPED));
+        clearEmpty();
+        clearStopped();
+        splitDisconnectedClusters();
+    }
+
 } // namespace model

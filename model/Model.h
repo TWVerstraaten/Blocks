@@ -36,6 +36,7 @@ namespace model {
         void                           update(double dPhase);
         void                           clearEmpty();
         void                           clearStopped();
+        void                           handleStoppedAndSplitClusters();
         void                           splitDisconnectedClusters();
         Level&                         level();
         std::vector<Cluster>&          clusters();

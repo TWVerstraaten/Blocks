@@ -30,10 +30,12 @@ namespace contr {
       private:
         static void handleStopAndSplice(model::Model& model);
         static void handleGrabs(model::Model& model);
+
         static void handleKillBlocks(const std::map<model::GridXy, model::INSTANT_BLOCK_TYPE>& instantBlocks, std::vector<model::Cluster>& clusters);
         static void handleConwayFloorBlocks(model::Model& model);
         static void handleDynamicBlocks(const std::map<model::GridXy, model::DYNAMIC_BLOCK_TYPE>& dynamicBlocks,
                                         std::vector<model::Cluster>&                              clusters);
+        static std::map<model::Cluster*, std::vector<model::Cluster*>> buildGrabberMap(model::Model& model);
     };
 
 } // namespace contr

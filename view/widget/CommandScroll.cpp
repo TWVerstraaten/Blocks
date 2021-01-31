@@ -99,19 +99,6 @@ namespace view {
         stash(std::unique_ptr<CommandEdit>(commandEditBox));
     }
 
-    void CommandScroll::addToLayout(std::unique_ptr<CommandEdit>&& commandEditBox) {
-        commandEditBox->setParent(this);
-        m_layout->insertWidget(m_layout->count() - 1, commandEditBox.get());
-        m_commandEditBoxes.emplace_back(std::move(commandEditBox));
-        m_commandEditBoxes.back()->show();
-    }
-
-    CommandEdit* CommandScroll::withIndex(size_t index) {
-        auto it = std::find_if(D_IT(m_commandEditBoxes), D_FUNC(box, box->index() == index));
-        assert(it != m_commandEditBoxes.end());
-        return it->get();
-    }
-
     void CommandScroll::updateSelection() {
         for (auto& box : m_commandEditBoxes) {
             box->updateSelection();
