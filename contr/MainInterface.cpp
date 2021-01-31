@@ -32,7 +32,6 @@ namespace contr {
 
     void MainInterface::startMovePhase(Model& model, view::CommandScroll& commandScrollArea) {
         auto& clusters = model.clusters();
-        auto& level    = model.level();
 
         model.resetPhase();
         handleStopAndSplice(model);
@@ -87,7 +86,6 @@ namespace contr {
 
     void MainInterface::handleConwayFloorBlocks(Model& model) {
         const auto          conwayBlocks = model.level().blocks(FLOOR_BLOCK_TYPE::CONWAY);
-        auto&               clusters     = model.clusters();
         std::vector<GridXy> toRemove;
         Cluster             newCluster;
 
@@ -98,8 +96,10 @@ namespace contr {
                     ++liveNeighbors;
                 }
             }
-            if (model.noLiveOrStoppedClusterOnBlock(conwayBlock) && liveNeighbors == 3) {
-                newCluster.addGridXy(conwayBlock);
+            if (model.noLiveOrStoppedClusterOnBlock(conwayBlock)) {
+                if (liveNeighbors == 3) {
+                    newCluster.addGridXy(conwayBlock);
+                }
             } else {
                 if (liveNeighbors != 2 && liveNeighbors != 3) {
                     toRemove.emplace_back(conwayBlock);

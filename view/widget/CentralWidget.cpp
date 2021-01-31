@@ -2,6 +2,7 @@
 
 #include "../../action/RemoveBlockFromClusterAction.h"
 #include "../../action/SplitDisconnectedAction.h"
+#include "../../audio/AudioManager.h"
 #include "../../contr/MainInterface.h"
 #include "../../contr/MainViewMouseManager.h"
 #include "../../misc/defines.h"
@@ -55,6 +56,7 @@ namespace view {
             }
             return;
         }
+
         switch (event->key()) {
             case Qt::Key_Space:
                 tryStart();
@@ -254,10 +256,12 @@ namespace view {
     }
 
     void CentralWidget::startMovePhase() {
+        audio::AudioManager::play(audio::SOUNDS::CLICK);
         contr::MainInterface::startMovePhase(*m_mainView->model(), *m_commandScroll);
     }
 
     void CentralWidget::startInteractPhase() {
+        audio::AudioManager::play(audio::SOUNDS::CLICK);
         contr::MainInterface::startInteractPhase(*m_mainView->model(), *m_commandScroll);
         update();
     }

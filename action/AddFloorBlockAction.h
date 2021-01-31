@@ -5,9 +5,9 @@
 #ifndef BLOCKS_ADDFLOORBLOCKACTION_H
 #define BLOCKS_ADDFLOORBLOCKACTION_H
 
+#include "../model/GridXy.h"
 #include "../model/Level_enums.h"
 #include "Action.h"
-#include "../model/GridXy.h"
 
 namespace model {
     class Model;

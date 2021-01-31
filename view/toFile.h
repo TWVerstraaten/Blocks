@@ -13,7 +13,7 @@ namespace view {
 
     QString toFile(model::DYNAMIC_BLOCK_TYPE type);
 
-     QString toFile(model::INSTANT_BLOCK_TYPE type);
+    QString toFile(model::INSTANT_BLOCK_TYPE type);
 } // namespace view
 
 #endif // BLOCKS_TOFILE_H

@@ -34,10 +34,10 @@ namespace view {
         void setCommandScrollArea(CommandScroll* commandScrollArea);
         void setViewPort(const ViewPort& viewPort);
 
-        [[nodiscard]] CommandScroll*          commandScrollArea();
-        [[nodiscard]] model::Model*               model() const;
+        [[nodiscard]] CommandScroll*               commandScrollArea();
+        [[nodiscard]] model::Model*                model() const;
         [[nodiscard]] contr::MainViewMouseManager& mainViewMouseManager();
-        [[nodiscard]] const ViewPort&             viewPort() const;
+        [[nodiscard]] const ViewPort&              viewPort() const;
 
         [[nodiscard]] ViewPort& viewPort();
 
@@ -50,11 +50,11 @@ namespace view {
       private:
         friend class MainViewPainter;
 
-        CentralWidget*              m_centralWidget;
-        view::ViewPort              m_viewPort;
-        model::Model*               m_model;
-        CommandScroll*          m_commandScrollArea;
-        MainViewPainter*            m_mainViewPainter;
+        CentralWidget*               m_centralWidget;
+        view::ViewPort               m_viewPort;
+        model::Model*                m_model;
+        CommandScroll*               m_commandScrollArea;
+        MainViewPainter*             m_mainViewPainter;
         contr::MainViewMouseManager* m_mainViewMouseManager;
     };
 } // namespace view
