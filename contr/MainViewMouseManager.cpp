@@ -39,6 +39,7 @@ namespace contr {
     }
 
     void MainViewMouseManager::mouseMoveEvent(QMouseEvent* event) {
+
         const view::ScreenXy currentMousePosition = view::ScreenXy{event->pos()};
         const GridXy         currentGridPosition  = GridXy::fromScreenXy(currentMousePosition, m_mainView->viewPort());
         switch (event->buttons()) {
@@ -74,23 +75,19 @@ namespace contr {
             m_previousGridPosition = currentGridXy;
             mouseLeftPressEvent();
         } else {
-            m_centralWidget->startActionGlob();
             addBlock(currentGridXy, type);
             auto baseIt      = m_model->clusterContaining(m_previousGridPosition);
             auto extensionIt = m_model->clusterContaining(currentGridXy);
             if (extensionIt != m_model->clusters().end() && baseIt->index() == extensionIt->index()) {
-                m_centralWidget->stopActionGlob();
                 return;
             }
             extensionIt = m_model->clusterContaining(currentGridXy);
             baseIt      = m_model->clusterContaining(m_previousGridPosition);
             if (baseIt->index() != extensionIt->index()) {
-
                 assert(baseIt != m_model->clusters().end());
                 assert(extensionIt != m_model->clusters().end());
                 m_centralWidget->addAction(new MergeClusterAction(m_model, *baseIt, *extensionIt, m_mainView->commandScrollArea()));
             }
-            m_centralWidget->stopActionGlob();
         }
     }
 
@@ -102,12 +99,10 @@ namespace contr {
         if (it->size() == 1) {
             m_centralWidget->addAction(new DeleteClusterAction(m_centralWidget, *it));
         } else {
-            m_centralWidget->startActionGlob();
             m_centralWidget->addAction(new RemoveBlockFromClusterAction(m_model, it->index(), gridXy));
             if (not it->isConnected()) {
                 m_centralWidget->addAction(new SplitDisconnectedAction(m_model, *it, m_mainView->commandScrollArea()));
             }
-            m_centralWidget->stopActionGlob();
         }
     }
 
@@ -133,7 +128,6 @@ namespace contr {
         const auto& instantBlocks = level.instantBlocks();
         bool        shouldGlob    = level.floorBlocks().find(gridXy) == level.floorBlocks().end();
         if (shouldGlob) {
-            m_centralWidget->startActionGlob();
             addBlock(gridXy, FLOOR_BLOCK_TYPE::LEVEL);
         }
         if (dynamicBlocks.find(gridXy) == dynamicBlocks.end() && instantBlocks.find(gridXy) == instantBlocks.end()) {
@@ -145,9 +139,7 @@ namespace contr {
                 m_centralWidget->addAction(new ChangeLevelBlockAction(m_model, type, instantBlocks.at(gridXy), gridXy));
             }
         }
-        if (shouldGlob) {
-            m_centralWidget->stopActionGlob();
-        }
+        if (shouldGlob) {}
     }
 
     void MainViewMouseManager::addBlock(const GridXy& gridXy, INSTANT_BLOCK_TYPE type) {
@@ -156,7 +148,6 @@ namespace contr {
         const auto& instantBlocks = level.instantBlocks();
         bool        shouldGlob    = level.floorBlocks().find(gridXy) == level.floorBlocks().end();
         if (shouldGlob) {
-            m_centralWidget->startActionGlob();
             addBlock(gridXy, FLOOR_BLOCK_TYPE::LEVEL);
         }
         if (dynamicBlocks.find(gridXy) == dynamicBlocks.end() && instantBlocks.find(gridXy) == instantBlocks.end()) {
@@ -168,9 +159,7 @@ namespace contr {
                 m_centralWidget->addAction(new ChangeLevelBlockAction(m_model, type, instantBlocks.at(gridXy), gridXy));
             }
         }
-        if (shouldGlob) {
-            m_centralWidget->stopActionGlob();
-        }
+        if (shouldGlob) {}
     }
 
     void MainViewMouseManager::removeBlock(const GridXy& gridXy, [[maybe_unused]] FLOOR_BLOCK_TYPE type) {
@@ -215,6 +204,14 @@ namespace contr {
 
     void MainViewMouseManager::setBlockEditing(bool blockEditing) {
         m_blockEditing = blockEditing;
+    }
+
+    void MainViewMouseManager::setCentralWidget(view::CentralWidget* centralWidget) {
+        m_centralWidget = centralWidget;
+    }
+
+    void MainViewMouseManager::setModel(Model* model) {
+        m_model = model;
     }
 
 } // namespace contr

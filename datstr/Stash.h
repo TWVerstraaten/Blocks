@@ -12,14 +12,12 @@ namespace datstr {
     template <typename T>
     class Stash {
 
-        enum HAS_STASH { TRUE, FALSE };
-
       public:
         explicit Stash(T* value) : m_value(value), m_stash(nullptr) {
         }
 
         ~Stash() {
-            if (m_hasStash == TRUE) {
+            if (m_hasStash == true) {
                 assert(m_stash != nullptr);
                 delete m_stash;
                 m_stash = nullptr;
@@ -29,8 +27,8 @@ namespace datstr {
         }
 
         void stash() {
-            assert(m_hasStash == FALSE);
-            m_hasStash = TRUE;
+            assert(m_hasStash == false);
+            m_hasStash = true;
             std::swap(m_value, m_stash);
         }
 
@@ -47,8 +45,8 @@ namespace datstr {
         }
 
         void recover() {
-            assert(m_hasStash == TRUE);
-            m_hasStash = FALSE;
+            assert(m_hasStash == true);
+            m_hasStash = false;
             std::swap(m_value, m_stash);
             delete m_stash;
             m_stash = nullptr;
@@ -67,12 +65,12 @@ namespace datstr {
         }
 
         T* stashedValue() {
-            assert(m_hasStash == TRUE);
+            assert(m_hasStash == true);
             return m_stash;
         }
 
       private:
-        HAS_STASH m_hasStash = FALSE;
+        bool m_hasStash = false;
 
         T* m_value;
         T* m_stash;

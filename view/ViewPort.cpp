@@ -19,8 +19,8 @@ namespace view {
         m_zoom                            = std::clamp(m_zoom + dZoom, -2000, 3000);
         m_scale                           = std::exp(m_zoom / 1000.0);
         m_distanceBetweenBlocksInScreenXy = worldToScreen(2 * app::BLOCK_SHRINK_IN_WORLD);
-        const auto translation            = worldPointUnderMouse - model::WorldXy::fromScreenXy(point, *this);
-        translate(worldToScreen(-translation.x()), worldToScreen(-translation.y()));
+        const auto translation            = ScreenXy::fromWorldXyAsVector(model::WorldXy::fromScreenXy(point, *this) - worldPointUnderMouse, *this);
+        translate(translation.x(), translation.y());
     }
 
     void ViewPort::translate(int dx, int dy) {

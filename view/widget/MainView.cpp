@@ -19,15 +19,15 @@ namespace view {
         m_model = new model::Model{};
         m_model->init(model::MODEL_PRESET::EMPTY);
         m_commandScrollArea->addNeeded(m_model->clusters());
-        m_mainViewMouseManager->m_centralWidget = m_centralWidget;
-        m_mainViewMouseManager->m_model         = m_model;
+        m_mainViewMouseManager->setCentralWidget(m_centralWidget);
+        m_mainViewMouseManager->setModel(m_model);
         m_model->level().buildSides();
     }
 
     void MainView::init(const model::Model& model) {
-        m_model                                 = new model::Model{model};
-        m_mainViewMouseManager->m_centralWidget = m_centralWidget;
-        m_mainViewMouseManager->m_model         = m_model;
+        m_model = new model::Model{model};
+        m_mainViewMouseManager->setCentralWidget(m_centralWidget);
+        m_mainViewMouseManager->setModel(m_model);
     }
 
     void MainView::paintEvent(QPaintEvent* event) {

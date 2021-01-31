@@ -24,16 +24,17 @@ namespace contr {
 
     class MainViewMouseManager {
 
-        friend class view::MainView;
-
       public:
         void setBlockEditing(bool blockEditing);
 
-      private:
         explicit MainViewMouseManager(view::MainView* mainView);
 
         void mousePressEvent(QMouseEvent* event);
         void mouseMoveEvent(QMouseEvent* event);
+        void setCentralWidget(view::CentralWidget* centralWidget);
+        void setModel(model::Model* model);
+
+      private:
         void mouseLeftPressEvent();
 
         void mouseLeftDragEvent(const model::GridXy& currentGridXy, view::CLUSTER_BLOCK type);
