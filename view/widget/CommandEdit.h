@@ -25,10 +25,10 @@ namespace view {
 
         void updateSelection();
         void disconnectCommandVectorUpdate();
-        void connectCommandVector();
+        void connectSignals();
 
-        [[nodiscard]] TextEdit*          textEdit();
-        [[nodiscard]] size_t             index() const;
+        [[nodiscard]] TextEdit*      textEdit();
+        [[nodiscard]] size_t         index() const;
         [[nodiscard]] CommandScroll* commandScrollArea() const;
 
       private slots:
@@ -37,10 +37,10 @@ namespace view {
       private:
         model::CommandVector& commandVector();
 
-        size_t                 m_index;
-        std::string            m_name;
-        TextEdit*              m_textEdit;
-        CommandScroll*     m_commandScrollArea;
+        size_t           m_index;
+        std::string      m_name;
+        TextEdit*        m_textEdit;
+        CommandScroll*   m_commandScrollArea;
         TextEditSideBar* m_lineWidget;
         TextEditSideBar* m_commentWidget;
     };

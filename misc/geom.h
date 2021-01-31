@@ -26,6 +26,7 @@ namespace geom {
     model::WorldLineVector       getSidesFromGridXy(const model::GridXyVector& blocks);
     std::vector<model::Cluster*> neighbors(std::vector<model::Cluster>& clusters, model::GridXy point);
     std::vector<model::Cluster*> neighbors(std::vector<model::Cluster>& clusters, const model::Cluster& cluster);
+    void                         splitDisconnectedClusters(std::vector<model::Cluster>& clusters);
 } // namespace geom
 
 #endif // BLOCKS_GEOM_H

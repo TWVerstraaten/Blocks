@@ -19,6 +19,7 @@ namespace view {
         void setHeight();
         void keyPressEvent(QKeyEvent* event) override;
         void sendUndo();
+        void connectSignals();
         void setSelection(size_t actionIndex);
 
         [[nodiscard]] size_t                   lineHeight() const;
@@ -37,7 +38,7 @@ namespace view {
       private:
         void highlightLine(const QTextCursor& cursor);
 
-        CommandEdit* m_commandEditBox;
+        CommandEdit*       m_commandEditBox;
         SyntaxHighlighter* m_syntaxHighlighter;
         size_t             m_lineHeight;
     };

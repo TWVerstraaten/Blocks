@@ -40,6 +40,7 @@ namespace model {
         std::vector<Cluster>&          clusters();
         std::vector<Cluster>::iterator clusterWithIndex(size_t index);
         std::vector<Cluster>::iterator clusterContaining(const GridXy& point);
+        std::vector<Cluster>::iterator stoppedClusterContaining(const GridXy& point);
 
       private:
         /****** PRIVATE NON CONST FUNCTIONS  ******/

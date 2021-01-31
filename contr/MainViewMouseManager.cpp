@@ -4,23 +4,23 @@
 
 #include "MainViewMouseManager.h"
 
-#include "action/AddFloorBlockAction.h"
-#include "action/AddLevelBlockAction.h"
-#include "action/ChangeFloorBlockAction.h"
-#include "action/ChangeLevelBlockAction.h"
-#include "action/DeleteClusterAction.h"
-#include "action/MergeClusterAction.h"
-#include "action/RemoveBlockFromClusterAction.h"
-#include "action/RemoveFloorBlockAction.h"
-#include "action/RemoveLevelBlockAction.h"
-#include "action/SplitDisconnectedAction.h"
-#include "model/Model.h"
-#include "view/widget/BlockSelectWidget.h"
-#include "view/widget/CentralWidget.h"
+#include "../action/AddFloorBlockAction.h"
+#include "../action/AddLevelBlockAction.h"
+#include "../action/ChangeFloorBlockAction.h"
+#include "../action/ChangeLevelBlockAction.h"
+#include "../action/DeleteClusterAction.h"
+#include "../action/MergeClusterAction.h"
+#include "../action/RemoveBlockFromClusterAction.h"
+#include "../action/RemoveFloorBlockAction.h"
+#include "../action/RemoveLevelBlockAction.h"
+#include "../action/SplitDisconnectedAction.h"
+#include "../model/Model.h"
+#include "../view/widget/BlockSelectWidget.h"
+#include "../view/widget/CentralWidget.h"
 
 #include <QApplication>
 
-namespace cont {
+namespace contr {
 
     using namespace model;
     using namespace action;
@@ -217,4 +217,4 @@ namespace cont {
         m_blockEditing = blockEditing;
     }
 
-} // namespace cont
+} // namespace contr

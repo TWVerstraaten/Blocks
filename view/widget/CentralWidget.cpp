@@ -1,19 +1,18 @@
 #include "CentralWidget.h"
 
-#include "../../action/Action.h"
+#include "../../action/RemoveBlockFromClusterAction.h"
+#include "../../action/SplitDisconnectedAction.h"
+#include "../../contr/MainInterface.h"
+#include "../../contr/MainViewMouseManager.h"
 #include "../../misc/defines.h"
 #include "../../model/Model.h"
 #include "../View_constants.h"
 #include "BlockSelectWidget.h"
-#include "cont/MainViewMouseManager.h"
 
 #include <QApplication>
 #include <QDebug>
 #include <QTimer>
 #include <QUndoView>
-#include <action/RemoveBlockFromClusterAction.h>
-#include <action/SplitDisconnectedAction.h>
-#include <cont/MainInterface.h>
 
 namespace view {
 
@@ -41,6 +40,10 @@ namespace view {
 
         //        m_layout->addWidget(m_qUndoView, 0, 3, 2, 1);
         //        m_qUndoView->setMaximumWidth(250);
+    }
+
+    CentralWidget::~CentralWidget() {
+        delete m_qUndoView;
     }
 
     void CentralWidget::keyPressEvent(QKeyEvent* event) {
@@ -254,11 +257,11 @@ namespace view {
     }
 
     void CentralWidget::startMovePhase() {
-        cont::MainInterface::startMovePhase(*m_mainView->model(), *m_commandScroll);
+        contr::MainInterface::startMovePhase(*m_mainView->model(), *m_commandScroll);
     }
 
     void CentralWidget::startInteractPhase() {
-        cont::MainInterface::startInteractPhase(*m_mainView->model(), *m_commandScroll);
+        contr::MainInterface::startInteractPhase(*m_mainView->model(), *m_commandScroll);
         update();
     }
 

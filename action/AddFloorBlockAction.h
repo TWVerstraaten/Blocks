@@ -7,7 +7,7 @@
 
 #include "../model/Level_enums.h"
 #include "Action.h"
-#include "model/GridXy.h"
+#include "../model/GridXy.h"
 
 namespace model {
     class Model;

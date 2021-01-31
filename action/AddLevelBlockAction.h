@@ -5,9 +5,9 @@
 #ifndef BLOCKS_ADDLEVELBLOCKACTION_H
 #define BLOCKS_ADDLEVELBLOCKACTION_H
 
+#include "../model/GridXy.h"
 #include "../model/Level_enums.h"
 #include "Action.h"
-#include "model/GridXy.h"
 
 #include <variant>
 

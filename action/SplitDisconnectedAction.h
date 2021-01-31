@@ -7,7 +7,7 @@
 
 #include "../model/Cluster.h"
 #include "Action.h"
-#include "view/widget/CommandScroll.h"
+#include "../view/widget/CommandScroll.h"
 
 #include <list>
 #include <memory>

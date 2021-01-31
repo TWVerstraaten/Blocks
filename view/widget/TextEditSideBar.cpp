@@ -4,7 +4,7 @@
 
 #include "TextEditSideBar.h"
 
-#include "view/FontManager.h"
+#include "../FontManager.h"
 
 #include <QPainter>
 

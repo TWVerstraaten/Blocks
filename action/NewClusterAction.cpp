@@ -5,7 +5,7 @@
 #include "NewClusterAction.h"
 
 #include "../model/Model.h"
-#include "view/widget/CentralWidget.h"
+#include "../view/widget/CentralWidget.h"
 
 namespace action {
 

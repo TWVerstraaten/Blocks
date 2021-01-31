@@ -33,6 +33,7 @@ namespace view {
 
       public:
         CentralWidget();
+        ~CentralWidget() override;
 
         void keyPressEvent(QKeyEvent* event) override;
 
@@ -46,7 +47,7 @@ namespace view {
         void redo();
 
         [[nodiscard]] BlockSelectWidget* blockSelectWidget() const;
-        [[nodiscard]] CommandScroll* commandScrollArea() const;
+        [[nodiscard]] CommandScroll*     commandScrollArea() const;
         [[nodiscard]] MainView*          mainView() const;
 
       protected:
@@ -73,17 +74,17 @@ namespace view {
 
         size_t m_timeStep = app::TIME_STEP_SLOW;
 
-        datstr::Stash<MainView>          m_mainView;
+        datstr::Stash<MainView>      m_mainView;
         datstr::Stash<CommandScroll> m_commandScroll;
-        QGridLayout*                     m_layout;
-        QUndoStack                       m_qUndoStack;
-        QUndoView*                       m_qUndoView;
-        BlockSelectWidget*               m_blockSelectWidget;
-        QElapsedTimer                    m_phaseTimer;
-        QElapsedTimer                    m_elapsedTimer;
-        QElapsedTimer                    m_frameRateTimer;
-        QLabel*                          m_frameRateLabel;
-        datstr::CircularBuffer           m_circularBuffer{50};
+        QGridLayout*                 m_layout;
+        QUndoStack                   m_qUndoStack;
+        QUndoView*                   m_qUndoView;
+        BlockSelectWidget*           m_blockSelectWidget;
+        QElapsedTimer                m_phaseTimer;
+        QElapsedTimer                m_elapsedTimer;
+        QElapsedTimer                m_frameRateTimer;
+        QLabel*                      m_frameRateLabel;
+        datstr::CircularBuffer       m_circularBuffer{50};
     };
 
 } // namespace view

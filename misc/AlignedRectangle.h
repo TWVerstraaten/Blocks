@@ -5,7 +5,7 @@
 #ifndef BLOCKS_ALIGNEDRECTANGLE_H
 #define BLOCKS_ALIGNEDRECTANGLE_H
 
-#include <model/WorldLine.h>
+#include "../model/WorldLine.h"
 
 namespace model {
     class Cluster;

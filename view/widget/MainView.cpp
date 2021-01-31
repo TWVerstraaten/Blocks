@@ -1,8 +1,7 @@
 #include "MainView.h"
 
-#include "../../cont/MainViewMouseManager.h"
+#include "../../contr/MainViewMouseManager.h"
 #include "../../model/Model.h"
-#include "../../model/Model_enums.h"
 #include "CentralWidget.h"
 #include "MainViewPainter.h"
 
@@ -12,13 +11,13 @@ namespace view {
 
     MainView::MainView(CentralWidget* centralWidget)
         : QWidget(centralWidget), m_centralWidget(centralWidget), m_model(nullptr), m_commandScrollArea(centralWidget->commandScrollArea()),
-          m_mainViewPainter(new MainViewPainter(this)), m_mainViewMouseManager(new cont::MainViewMouseManager(this)) {
+          m_mainViewPainter(new MainViewPainter(this)), m_mainViewMouseManager(new contr::MainViewMouseManager(this)) {
         setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     }
 
     void MainView::init() {
         m_model = new model::Model{};
-        m_model->init(model::MODEL_PRESET::TEST);
+        m_model->init(model::MODEL_PRESET::EMPTY);
         m_commandScrollArea->addNeeded(m_model->clusters());
         m_mainViewMouseManager->m_centralWidget = m_centralWidget;
         m_mainViewMouseManager->m_model         = m_model;
@@ -62,7 +61,7 @@ namespace view {
         return m_model;
     }
 
-    cont::MainViewMouseManager& MainView::mainViewMouseManager() {
+    contr::MainViewMouseManager& MainView::mainViewMouseManager() {
         return *m_mainViewMouseManager;
     }
 

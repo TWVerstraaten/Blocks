@@ -4,7 +4,7 @@
 
 #include "SyntaxHighlighter.h"
 
-#include "model/command/CommandParser.h"
+#include "../../model/command/CommandParser.h"
 
 namespace view {
 

@@ -1,7 +1,7 @@
 #ifndef MAINVIEW_H
 #define MAINVIEW_H
 
-#include "view/ViewPort.h"
+#include "../../view/ViewPort.h"
 
 #include <QWidget>
 #include <memory>
@@ -10,7 +10,7 @@ namespace model {
     class Model;
 }
 
-namespace cont {
+namespace contr {
     class MainViewMouseManager;
 }
 
@@ -36,7 +36,7 @@ namespace view {
 
         [[nodiscard]] CommandScroll*          commandScrollArea();
         [[nodiscard]] model::Model*               model() const;
-        [[nodiscard]] cont::MainViewMouseManager& mainViewMouseManager();
+        [[nodiscard]] contr::MainViewMouseManager& mainViewMouseManager();
         [[nodiscard]] const ViewPort&             viewPort() const;
 
         [[nodiscard]] ViewPort& viewPort();
@@ -55,7 +55,7 @@ namespace view {
         model::Model*               m_model;
         CommandScroll*          m_commandScrollArea;
         MainViewPainter*            m_mainViewPainter;
-        cont::MainViewMouseManager* m_mainViewMouseManager;
+        contr::MainViewMouseManager* m_mainViewMouseManager;
     };
 } // namespace view
 

@@ -6,6 +6,7 @@
 
 #include "../app/Application_constants.h"
 #include "../misc/defines.h"
+#include "../misc/geom.h"
 
 #include <cassert>
 
@@ -150,24 +151,18 @@ namespace model {
         return std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(point)));
     }
 
+    std::vector<Cluster>::iterator Model::stoppedClusterContaining(const GridXy& point) {
+        return std::find_if(D_IT(m_level.stoppedClusters()), D_FUNC(cluster, cluster.contains(point)));
+    }
+
     void Model::clearEmpty() {
         m_clusters.erase(std::remove_if(D_IT(m_clusters), D_FUNC(cluster, cluster.isEmpty())), m_clusters.end());
+        m_level.stoppedClusters().erase(std::remove_if(D_IT(m_level.stoppedClusters()), D_FUNC(cluster, cluster.isEmpty())),
+                                        m_level.stoppedClusters().end());
     }
 
     void Model::splitDisconnectedClusters() {
-        std::vector<Cluster> newClusters;
-        for (auto& cluster : m_clusters) {
-            if (not cluster.isConnected()) {
-                D_NOTE_ONCE("Splice")
-                const auto& components = cluster.collectAllButFirstComponent();
-                std::copy(D_IT(components), std::back_inserter(newClusters));
-                assert(cluster.isConnected());
-            }
-        }
-        std::copy(D_IT(newClusters), std::back_inserter(m_clusters));
-        for (const auto& cluster : m_clusters) {
-            assert(cluster.isConnected());
-        }
+        geom::splitDisconnectedClusters(m_clusters);
     }
 
 } // namespace model

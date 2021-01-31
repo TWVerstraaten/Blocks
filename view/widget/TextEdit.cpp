@@ -1,11 +1,11 @@
 #include "TextEdit.h"
 
+#include "../../action/TextEditAction.h"
+#include "../../model/command/CommandParser.h"
+#include "../../view/FontManager.h"
+#include "../../view/color.h"
 #include "CentralWidget.h"
 #include "SyntaxHighlighter.h"
-#include "action/TextEditAction.h"
-#include "model/command/CommandParser.h"
-#include "view/FontManager.h"
-#include "view/color.h"
 
 #include <QApplication>
 
@@ -29,9 +29,7 @@ namespace view {
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
         setMinimumHeight(100);
 
-        connect(this, &TextEdit::textChanged, this, &TextEdit::setHeight);
-        connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
-        connect(this, &TextEdit::cursorPositionChanged, [this]() { highlightLine(textCursor()); });
+        connectSignals();
 
         appendPlainText(string);
     }
@@ -140,6 +138,12 @@ namespace view {
 
     size_t TextEdit::topMargin() const {
         return document()->documentMargin();
+    }
+
+    void TextEdit::connectSignals() {
+        connect(this, &TextEdit::textChanged, this, &TextEdit::setHeight);
+        connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
+        connect(this, &TextEdit::cursorPositionChanged, [this]() { highlightLine(textCursor()); });
     }
 
 } // namespace view

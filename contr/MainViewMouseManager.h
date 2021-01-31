@@ -5,9 +5,9 @@
 #ifndef BLOCKS_MAINVIEWMOUSEMANAGER_H
 #define BLOCKS_MAINVIEWMOUSEMANAGER_H
 
-#include "model/GridXy.h"
-#include "view/BlockType.h"
-#include "view/ScreenXy.h"
+#include "../model/GridXy.h"
+#include "../view/BlockType.h"
+#include "../view/ScreenXy.h"
 
 #include <QMouseEvent>
 
@@ -20,7 +20,7 @@ namespace view {
     class CentralWidget;
 } // namespace view
 
-namespace cont {
+namespace contr {
 
     class MainViewMouseManager {
 
@@ -58,6 +58,6 @@ namespace cont {
         model::GridXy        m_previousGridPosition{0, 0};
     };
 
-} // namespace cont
+} // namespace contr
 
 #endif // BLOCKS_MAINVIEWMOUSEMANAGER_H

@@ -23,8 +23,8 @@ namespace view::color {
     static const QColor EDIT_BOX_HIGHLIGHT_HARD_COLOR      = {255, 200, 250, 255};
     static const QColor EDIT_BOX_HIGHLIGHT_SOFT_COLOR      = {220, 200, 250, 255};
     static const QColor WIDGET_DARK                        = {140, 140, 180, 255};
-    static const QColor CLUSTER                            = {250, 235, 65, 70};
-//    static const QColor CLUSTER                            = {250, 235, 65, 255};
+//    static const QColor CLUSTER                            = {250, 235, 65, 70};
+    static const QColor CLUSTER                            = {250, 235, 65, 155};
     static const QColor CLUSTER_DEAD_COLOR                 = {255, 0, 0, 255};
 
 } // namespace view::color

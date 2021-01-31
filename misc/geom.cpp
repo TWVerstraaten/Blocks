@@ -146,4 +146,19 @@ namespace geom {
         });
         return result;
     }
+
+    void splitDisconnectedClusters(std::vector<Cluster>& clusters) {
+        std::vector<Cluster> newClusters;
+        for (auto& cluster : clusters) {
+            if (not cluster.isConnected()) {
+                const auto& components = cluster.collectAllButFirstComponent();
+                std::copy(D_IT(components), std::back_inserter(newClusters));
+                assert(cluster.isConnected());
+            }
+        }
+        std::copy(D_IT(newClusters), std::back_inserter(clusters));
+        for (const auto& cluster : clusters) {
+            assert(cluster.isConnected());
+        }
+    }
 } // namespace geom

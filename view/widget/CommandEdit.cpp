@@ -9,8 +9,8 @@
 
 namespace view {
     CommandEdit::CommandEdit(CommandScroll* parent, model::Cluster& cluster)
-        : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandScrollArea(parent),
-          m_lineWidget(new TextEditSideBar(this)), m_commentWidget(new TextEditSideBar(this)) {
+        : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandScrollArea(parent), m_lineWidget(new TextEditSideBar(this)),
+          m_commentWidget(new TextEditSideBar(this)) {
         setContentsMargins(0, 0, 0, 0);
         setMaximumWidth(200);
 
@@ -37,7 +37,7 @@ namespace view {
         m_lineWidget->setTopMargin(m_textEdit->topMargin());
         m_lineWidget->fillLineNumbers(m_textEdit->document()->blockCount());
 
-        connect(m_textEdit, &TextEdit::textChanged, [this]() { m_lineWidget->fillLineNumbers(m_textEdit->document()->blockCount()); });
+        connectSignals();
 
         m_commentWidget->setWidth(30);
         m_commentWidget->setLineHeight(m_textEdit->lineHeight());
@@ -57,7 +57,6 @@ namespace view {
         setPalette(pal);
 
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-        connectCommandVector();
     }
 
     CommandEdit::~CommandEdit() {
@@ -102,7 +101,9 @@ namespace view {
         m_textEdit->blockSignals(true);
     }
 
-    void CommandEdit::connectCommandVector() {
+    void CommandEdit::connectSignals() {
+        connect(m_textEdit, &TextEdit::textChanged, [this]() { m_lineWidget->fillLineNumbers(m_textEdit->document()->blockCount()); });
+        m_textEdit->connectSignals();
         connect(m_textEdit, &TextEdit::textChanged, this, &CommandEdit::updateCommandVector);
     }
 

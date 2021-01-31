@@ -18,6 +18,10 @@ size_t model::Cluster::s_maxClusterIndex = 0;
 
 namespace model {
 
+    Cluster::Cluster() : m_index(s_maxClusterIndex), m_gridXyVector(), m_name("dummy") {
+        ++s_maxClusterIndex;
+    }
+
     Cluster::Cluster(GridXyVector&& gridXy, std::string name) : m_index(s_maxClusterIndex), m_gridXyVector(gridXy), m_name(std::move(name)) {
         ++s_maxClusterIndex;
     }
@@ -249,6 +253,13 @@ namespace model {
         assert(isValid());
         if (geom::intersect(sides(shrinkInWorld), level.sides())) {
             kill();
+        } else {
+            for (const auto& stoppedCluster : level.stoppedClusters()) {
+                if (geom::intersect(sides(shrinkInWorld), stoppedCluster.sides(shrinkInWorld))) {
+                    kill();
+                    return;
+                }
+            }
         }
     }
 
@@ -297,6 +308,8 @@ namespace model {
     bool Cluster::intersects(const Cluster& other, int shrinkInWorld) const {
         assert(isValid());
         assert(other.isValid());
+        buildSides();
+        other.buildSides();
         return geom::intersect(*this, other, shrinkInWorld);
     }
 

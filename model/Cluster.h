@@ -32,6 +32,7 @@ namespace model {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
+        Cluster();
         Cluster(GridXyVector&& gridXy, std::string name);
         Cluster(const GridXy& gridXy, std::string name);
         Cluster(GridXyVector&& gridXy, CommandVector commandVector, std::string name);

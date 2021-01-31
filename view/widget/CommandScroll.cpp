@@ -1,10 +1,10 @@
 #include "CommandScroll.h"
 
+#include "../../misc/defines.h"
+#include "../../model/Cluster.h"
+#include "../../view/color.h"
 #include "CentralWidget.h"
 #include "TextEdit.h"
-#include "misc/defines.h"
-#include "model/Cluster.h"
-#include "view/color.h"
 
 #include <QDebug>
 #include <QScrollBar>
@@ -71,7 +71,7 @@ namespace view {
             (*it)->show();
             connect((*it)->textEdit(), &TextEdit::tabPressed, this, &CommandScroll::moveFocusToNext);
             connect((*it)->textEdit(), &TextEdit::backTabPressed, this, &CommandScroll::moveFocusToPrevious);
-            (*it)->connectCommandVector();
+            (*it)->connectSignals();
             m_commandEditBoxes.emplace_back(std::move(*it));
             m_stashedCommandEditBoxes.erase(it);
         } else {
@@ -127,9 +127,11 @@ namespace view {
     }
 
     void CommandScroll::removeUnneeded(std::vector<model::Cluster>& clusters) {
-        for (const auto& widget : m_commandEditBoxes) {
-            if (std::find_if(D_CIT(clusters), D_FUNC(cluster, cluster.index() == widget->index())) == clusters.end()) {
-                removeFromLayout(widget->index());
+        for (size_t i = 0; i != m_commandEditBoxes.size();) {
+            if (std::find_if(D_CIT(clusters), D_FUNC(cluster, cluster.index() == m_commandEditBoxes.at(i)->index())) == clusters.end()) {
+                removeFromLayout(m_commandEditBoxes.at(i)->index());
+            } else {
+                ++i;
             }
         }
     }
