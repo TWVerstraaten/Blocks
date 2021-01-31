@@ -165,4 +165,8 @@ namespace model {
         geom::splitDisconnectedClusters(m_clusters);
     }
 
+    void Model::clearStopped() {
+        m_clusters.erase(std::remove_if(D_IT(m_clusters), D_FUNC(cluster, cluster.state() == CLUSTER_STATE::STOPPED)), m_clusters.end());
+    }
+
 } // namespace model

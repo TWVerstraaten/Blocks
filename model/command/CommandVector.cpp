@@ -163,4 +163,5 @@ namespace model {
             --m_repeatCount;
         }
     }
+
 } // namespace model

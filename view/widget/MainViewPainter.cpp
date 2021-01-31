@@ -125,7 +125,7 @@ namespace view {
         const auto alignedRectangle = geom::AlignedRectangle::boundingAlignedRectangle(cluster);
 
         for (size_t i = 0; i != 4; ++i) {
-            const auto wl = alignedRectangle.line(i);
+            const auto wl = alignedRectangle.sideAt(i);
 
             const auto start = ScreenXy::fromWorldXy(wl.start(), m_mainView->viewPort());
             const auto end   = ScreenXy::fromWorldXy(wl.end(), m_mainView->viewPort());

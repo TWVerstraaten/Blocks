@@ -12,8 +12,8 @@
 
 namespace geom {
 
-    AlignedRectangle::AlignedRectangle(int mXMin, int mXMax, int mYMin, int mYMax)
-        : m_xMin(mXMin), m_xMax(mXMax), m_yMin(mYMin), m_yMax(mYMax), m_maxDimension(std::max(width(), height())) {
+    AlignedRectangle::AlignedRectangle(int xMin, int xMax, int yMin, int yMax)
+        : m_xMin(xMin), m_xMax(xMax), m_yMin(yMin), m_yMax(yMax), m_maxDimension(std::max(width(), height())) {
         assert(m_xMin <= m_xMax);
         assert(m_yMin <= m_yMax);
     }
@@ -48,7 +48,7 @@ namespace geom {
         return AlignedRectangle(0, 0, 0, 0);
     }
 
-    model::WorldLine AlignedRectangle::line(size_t index) const {
+    model::WorldLine AlignedRectangle::sideAt(size_t index) const {
         assert(index < 4);
 
         switch (index) {

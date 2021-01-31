@@ -142,7 +142,6 @@ namespace view {
 
         const auto elapsed = m_elapsedTimer.elapsed();
         m_elapsedTimer.restart();
-        //        qDebug() << elapsed;
 
         if (m_phase == PHASE::MOVE) {
             moveLoop(elapsed);
@@ -221,10 +220,7 @@ namespace view {
         m_mainView->stackUnder(m_blockSelectWidget);
         m_layout->addWidget(m_commandScroll.get(), 0, 2, 2, 1);
 
-        for (auto& cluster : m_mainView->model()->clusters()) {
-            cluster.doCommand(*m_mainView->model());
-        }
-
+        startMovePhase();
         m_mainView->model()->update(0.0001);
         m_commandScroll->updateSelection();
 
@@ -249,6 +245,9 @@ namespace view {
     }
 
     void CentralWidget::endMovePhase() {
+        for (auto& cluster : m_mainView->model()->clusters()) {
+            cluster.incrementCommandIndex();
+        }
         startInteractPhase();
     }
 

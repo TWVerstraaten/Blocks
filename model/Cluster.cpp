@@ -517,4 +517,15 @@ namespace model {
         m_boundingAlignedRectangle = geom::AlignedRectangle::boundingAlignedRectangle(*this);
     }
 
+    void Cluster::copyGridXy(Cluster& other) {
+        m_gridXyVector.reserve(m_gridXyVector.size() + other.m_gridXyVector.size());
+        std::copy(D_CIT(other.m_gridXyVector), std::back_inserter(m_gridXyVector));
+        m_gridXyAreSorted = false;
+        m_sidesAreCorrect = false;
+    }
+
+    void Cluster::clearGridXy() {
+        m_gridXyVector.clear();
+    }
+
 } // namespace model
