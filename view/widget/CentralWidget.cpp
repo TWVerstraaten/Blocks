@@ -78,7 +78,7 @@ namespace view {
                 tryStart();
                 break;
             case Qt::Key_Escape:
-                tryStop();
+                handleEscape();
                 break;
         }
     }
@@ -173,10 +173,12 @@ namespace view {
         }
     }
 
-    void CentralWidget::tryStop() {
+    void CentralWidget::handleEscape() {
         if (m_mode == MODE::RUNNING) {
             m_mode = MODE::EDITING;
             stopRunning();
+        } else {
+            emit quit();
         }
     }
 

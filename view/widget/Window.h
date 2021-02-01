@@ -14,6 +14,9 @@ namespace view {
       public:
         explicit Window(QWidget* parent = nullptr);
 
+      public slots:
+        void toMainMenu();
+
       private:
         QElapsedTimer  m_elapsedTimer;
         CentralWidget* m_centralWidget;

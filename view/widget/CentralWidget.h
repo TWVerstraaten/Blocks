@@ -50,12 +50,15 @@ namespace view {
         [[nodiscard]] CommandScroll*     commandScrollArea() const;
         [[nodiscard]] MainView*          mainView() const;
 
+      signals:
+        void quit();
+
       protected:
         void paintEvent(QPaintEvent* event) override;
 
       private:
         void tryStart();
-        void tryStop();
+        void handleEscape();
         void startRunning();
         void stopRunning();
         void mainLoop();
