@@ -29,7 +29,7 @@ namespace view {
 
         ~MainView() override;
 
-        void init(model::MODEL_PRESET modelPreset);
+        void init(const std::string& path);
         void init(const model::Model& model);
 
         void setCommandScrollArea(CommandScroll* commandScrollArea);

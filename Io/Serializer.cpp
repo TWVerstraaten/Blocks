@@ -35,6 +35,7 @@ namespace Io {
             }
         }
         assert(false);
+        return INSTANT_BLOCK_TYPE::KILL;
     }
 
     std::ostream& operator<<(std::ostream& out, const model::Model& model) {

@@ -15,9 +15,9 @@ namespace view {
         setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     }
 
-    void MainView::init(model::MODEL_PRESET modelPreset) {
+    void MainView::init(const std::string& path) {
         m_model = new model::Model{};
-        m_model->init(modelPreset);
+        m_model->init(path);
         m_commandScrollArea->addNeeded(m_model->clusters());
         m_mainViewMouseManager->setCentralWidget(m_centralWidget);
         m_mainViewMouseManager->setModel(m_model);

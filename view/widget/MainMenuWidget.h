@@ -5,14 +5,20 @@
 #ifndef BLOCKS_MAINMENUWIDGET_H
 #define BLOCKS_MAINMENUWIDGET_H
 
-#include <QTabWidget>
+#include "LevelSelectWidget.h"
 
+#include <QTabWidget>
 
 namespace view::widget {
 
     class MainMenuWidget : public QTabWidget {
       public:
         explicit MainMenuWidget(QWidget* parent);
+
+        LevelSelectWidget* levelSelectWidget() const;
+
+      private:
+        LevelSelectWidget* m_levelSelectWidget = nullptr;
     };
 
 } // namespace view::widget

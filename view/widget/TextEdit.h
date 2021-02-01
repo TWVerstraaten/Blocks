@@ -6,6 +6,7 @@
 #include <vector>
 
 namespace view {
+
     class CommandEdit;
     class SyntaxHighlighter;
 
@@ -31,7 +32,6 @@ namespace view {
         [[nodiscard]] QSize sizeHint() const override;
 
       signals:
-
         void tabPressed();
         void backTabPressed();
 

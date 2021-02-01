@@ -6,7 +6,6 @@
 
 #include "../FontManager.h"
 #include "../color.h"
-#include "LevelSelectWidget.h"
 
 #include <QLabel>
 
@@ -18,9 +17,14 @@ view::widget::MainMenuWidget::MainMenuWidget(QWidget* parent) : QTabWidget(paren
 
     setFont(FontManager::font(FONT_ENUM::ANON_PRO_BOLD, 15));
 
-    auto* q = new LevelSelectWidget(this);
-    auto* p = new QLabel("Haoi", this);
+    m_levelSelectWidget = new LevelSelectWidget(this);
+    auto* p             = new QLabel("Temp", this);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    addTab(p, "sdss");
-    addTab(q, "AAASs");
+    addTab(m_levelSelectWidget, "Level Select");
+    addTab(p, "Settings");
+}
+
+view::widget::LevelSelectWidget* view::widget::MainMenuWidget::levelSelectWidget() const {
+    assert(m_levelSelectWidget != nullptr);
+    return m_levelSelectWidget;
 }

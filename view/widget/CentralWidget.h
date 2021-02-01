@@ -32,7 +32,7 @@ namespace view {
         Q_OBJECT
 
       public:
-        CentralWidget();
+        CentralWidget(const std::string& path);
         ~CentralWidget() override;
 
         void keyPressEvent(QKeyEvent* event) override;

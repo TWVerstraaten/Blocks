@@ -9,9 +9,17 @@
 
 namespace view::widget {
 
-    class LevelSelectWidget : public QScrollArea {
+    class LevelSelectWidget : public QWidget {
+        Q_OBJECT
+
       public:
         explicit LevelSelectWidget(QWidget* parent);
+
+      signals:
+        void levelSelected(const std::string& path);
+
+      private slots:
+        void populatePreviewWidget(const QString& path);
     };
 
 } // namespace view::widget

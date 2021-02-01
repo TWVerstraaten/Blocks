@@ -34,7 +34,7 @@ namespace model {
         [[nodiscard]] bool noLiveOrStoppedClusterOnBlock(const GridXy& gridXy) const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void                           init(MODEL_PRESET modelPreset);
+        void                           init(const std::string& path);
         void                           clear();
         void                           resetPhase();
         void                           update(double dPhase);

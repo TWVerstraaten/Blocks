@@ -17,7 +17,7 @@
 
 namespace view {
 
-    CentralWidget::CentralWidget()
+    CentralWidget::CentralWidget(const std::string& path)
         : m_mainView(nullptr), m_commandScroll(nullptr), m_qUndoView(new QUndoView(&m_qUndoStack)), m_blockSelectWidget(new BlockSelectWidget(this)),
           m_frameRateLabel(new QLabel(this)) {
         setGeometry(0, 0, view::INITIAL_SCREEN_WIDTH, view::INITIAL_SCREEN_HEIGHT);
@@ -30,7 +30,7 @@ namespace view {
         m_commandScroll.set(new CommandScroll(this));
         m_commandScroll->setShouldStashCommandEditBoxes(true);
         m_mainView.set(new MainView(this));
-        m_mainView->init(model::MODEL_PRESET::EMPTY);
+        m_mainView->init(path);
         m_commandScroll->addNeeded(m_mainView->model()->clusters());
 
         m_layout->addWidget(m_mainView.get(), 0, 0, 2, 2);

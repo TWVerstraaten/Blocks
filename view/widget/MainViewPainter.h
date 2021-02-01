@@ -26,6 +26,8 @@ namespace view {
 
         explicit MainViewPainter(const MainView* mainView);
 
+        static void paint(QPainter& painter, const QRect& rect, const model::Model& model, const view::ViewPort& viewPort);
+
         void paint(QPainter& painter, QPaintEvent* event);
         void drawConnected(const model::GridXyVector& blocks, const QColor& color, QPainter& painter) const;
         void drawConnected(

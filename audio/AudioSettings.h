@@ -19,8 +19,8 @@ namespace audio {
         void setMusicVolume(int musicVolume);
 
       private:
-        float m_soundEffectVolume = 0.0f;
-        int   m_musicVolume       = 0;
+        float m_soundEffectVolume = 0.3f;
+        int   m_musicVolume       = 40;
     };
 
 } // namespace audio

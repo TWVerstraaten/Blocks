@@ -46,9 +46,9 @@ namespace model {
         }
     }
 
-    void Model::init(MODEL_PRESET modelPreset) {
+    void Model::init(const std::string& path) {
         using namespace Io;
-        std::ifstream levelFile("levels/level1.dat");
+        std::ifstream levelFile(path);
         if (levelFile.is_open()) {
             try {
                 levelFile >> *this;

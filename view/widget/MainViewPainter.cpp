@@ -156,4 +156,8 @@ namespace view {
 
         painter.restore();
     }
+
+    void MainViewPainter::paint(QPainter& painter, const QRect& rect, const Model& model, const ViewPort& viewPort) {
+
+    }
 } // namespace view
