@@ -32,7 +32,6 @@ namespace contr {
 
     void MainInterface::startMovePhase(Model& model, view::CommandScroll& commandScrollArea) {
         auto& clusters = model.clusters();
-
         model.resetPhase();
         handleStopAndSplice(model);
         handleGrabs(model);

@@ -137,24 +137,25 @@ namespace view {
     }
 
     void CentralWidget::mainLoop() {
+        const auto elapsed = m_elapsedTimer.elapsed();
+        m_elapsedTimer.restart();
+
         if (m_mode == MODE::EDITING) {
             stopRunning();
             return;
         }
-
-        const auto elapsed = m_elapsedTimer.elapsed();
-        m_elapsedTimer.restart();
 
         if (m_phase == PHASE::MOVE) {
             moveLoop(elapsed);
         } else if (m_phase == PHASE::INTERACT) {
             interactLoop(elapsed);
         }
-
         if (m_phaseTimer.elapsed() > m_timeStep) {
-            togglePhase();
+            qDebug() << m_phaseTimer.elapsed();
             m_elapsedTimer.restart();
             m_phaseTimer.restart();
+
+            togglePhase();
         }
         QTimer::singleShot(0, this, &CentralWidget::mainLoop);
     }
@@ -167,7 +168,6 @@ namespace view {
             endInteractPhase();
             m_phase = PHASE::MOVE;
         }
-        qDebug() << (m_phase == PHASE::MOVE ? "Move" : "Interact");
     }
 
     void CentralWidget::tryStop() {
@@ -222,10 +222,9 @@ namespace view {
         m_mainView->stackUnder(m_blockSelectWidget);
         m_layout->addWidget(m_commandScroll.get(), 0, 2, 2, 1);
 
-        startMovePhase();
-
         m_elapsedTimer.restart();
         m_phaseTimer.restart();
+        endInteractPhase();
 
         mainLoop();
     }
@@ -245,6 +244,9 @@ namespace view {
     }
 
     void CentralWidget::endMovePhase() {
+        //        if (m_timeStep != app::TIME_STEP_FAST) {
+        //            audio::AudioManager::play(audio::SOUNDS::CLICK);
+        //        }
         for (auto& cluster : m_mainView->model()->clusters()) {
             cluster.incrementCommandIndex();
         }
@@ -252,20 +254,18 @@ namespace view {
     }
 
     void CentralWidget::endInteractPhase() {
+        //        if (m_timeStep != app::TIME_STEP_FAST) {
+        //            audio::AudioManager::play(audio::SOUNDS::CLICK);
+        //        }
         startMovePhase();
     }
 
     void CentralWidget::startMovePhase() {
-        if (m_timeStep != app::TIME_STEP_FAST) {
-            audio::AudioManager::play(audio::SOUNDS::CLICK);
-        }
         contr::MainInterface::startMovePhase(*m_mainView->model(), *m_commandScroll);
+        m_mainView->model()->update(0.00001);
     }
 
     void CentralWidget::startInteractPhase() {
-        if (m_timeStep != app::TIME_STEP_FAST) {
-            audio::AudioManager::play(audio::SOUNDS::CLICK);
-        }
         contr::MainInterface::startInteractPhase(*m_mainView->model(), *m_commandScroll);
         update();
     }

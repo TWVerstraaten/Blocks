@@ -84,7 +84,7 @@ namespace view {
         QElapsedTimer                m_elapsedTimer;
         QElapsedTimer                m_frameRateTimer;
         QLabel*                      m_frameRateLabel;
-        datstr::CircularBuffer       m_circularBuffer{50};
+        datstr::CircularBuffer       m_circularBuffer{90};
     };
 
 } // namespace view

@@ -155,6 +155,7 @@ namespace model {
     void Cluster::setRotation(double angle, const GridXy& pivot) {
         assert(angle != 0.0);
         resetPhase();
+        m_phaseFraction = 1.0;
         m_phase         = PHASE::ROTATING;
         m_angle         = angle;
         m_rotationPivot = pivot;
