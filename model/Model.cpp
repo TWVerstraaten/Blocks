@@ -52,14 +52,10 @@ namespace model {
         if (levelFile.is_open()) {
             try {
                 levelFile >> *this;
-            } catch (...) {}
+            } catch (...) { initEmpty(); }
             levelFile.close();
         } else {
-            for (int i = 0; i != 10; ++i) {
-                for (int j = 0; j != 10; ++j) {
-                    m_level.addBlock(GridXy{i, j}, FLOOR_BLOCK_TYPE::LEVEL);
-                }
-            }
+            initEmpty();
         }
     }
 
@@ -158,5 +154,14 @@ namespace model {
         clearEmpty();
         clearStopped();
         splitDisconnectedClusters();
+    }
+
+    void Model::initEmpty() {
+        clear();
+        for (int i = 0; i != 10; ++i) {
+            for (int j = 0; j != 10; ++j) {
+                m_level.addBlock(GridXy{i, j}, FLOOR_BLOCK_TYPE::LEVEL);
+            }
+        }
     }
 } // namespace model

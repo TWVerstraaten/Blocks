@@ -54,6 +54,7 @@ namespace model {
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void intersectWithLevel();
         void intersectClusters();
+        void initEmpty();
         void updateInternal(double dPhase);
 
         /****** DATA MEMBERS  ******/

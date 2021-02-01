@@ -96,7 +96,6 @@ namespace Io {
             }
             out << '\n';
         }
-
         return out;
     }
 
