@@ -66,6 +66,7 @@ namespace view {
         void startInteractPhase();
         void moveLoop(size_t elapsed);
         void interactLoop(size_t elapsed);
+        void saveLevel();
 
         enum class MODE { EDITING, RUNNING };
 

@@ -42,7 +42,6 @@ namespace contr {
         for (auto& cluster : clusters) {
             cluster.doCommand(model);
         }
-        model.update(0.00001);
         commandScrollArea.updateSelection();
     }
 

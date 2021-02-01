@@ -1,5 +1,6 @@
 #include "CentralWidget.h"
 
+#include "../../Io/Serializer.h"
 #include "../../action/RemoveBlockFromClusterAction.h"
 #include "../../action/SplitDisconnectedAction.h"
 #include "../../audio/AudioManager.h"
@@ -11,7 +12,6 @@
 #include "BlockSelectWidget.h"
 
 #include <QApplication>
-#include <QDebug>
 #include <QTimer>
 #include <QUndoView>
 
@@ -30,7 +30,8 @@ namespace view {
         m_commandScroll.set(new CommandScroll(this));
         m_commandScroll->setShouldStashCommandEditBoxes(true);
         m_mainView.set(new MainView(this));
-        m_mainView->init();
+        m_mainView->init(model::MODEL_PRESET::EMPTY);
+        m_commandScroll->addNeeded(m_mainView->model()->clusters());
 
         m_layout->addWidget(m_mainView.get(), 0, 0, 2, 2);
         m_mainView->stackUnder(m_blockSelectWidget);
@@ -55,6 +56,9 @@ namespace view {
                 undo();
             }
             return;
+        }
+        if ((QApplication::keyboardModifiers() & Qt::ControlModifier) && event->key() == Qt::Key_S) {
+            saveLevel();
         }
 
         switch (event->key()) {
@@ -141,7 +145,6 @@ namespace view {
         m_elapsedTimer.restart();
 
         if (m_mode == MODE::EDITING) {
-            stopRunning();
             return;
         }
 
@@ -173,6 +176,7 @@ namespace view {
     void CentralWidget::tryStop() {
         if (m_mode == MODE::RUNNING) {
             m_mode = MODE::EDITING;
+            stopRunning();
         }
     }
 
@@ -244,9 +248,9 @@ namespace view {
     }
 
     void CentralWidget::endMovePhase() {
-        //        if (m_timeStep != app::TIME_STEP_FAST) {
-        //            audio::AudioManager::play(audio::SOUNDS::CLICK);
-        //        }
+        if (m_timeStep != app::TIME_STEP_FAST) {
+            audio::AudioManager::play(audio::SOUNDS::CLICK);
+        }
         for (auto& cluster : m_mainView->model()->clusters()) {
             cluster.incrementCommandIndex();
         }
@@ -254,15 +258,14 @@ namespace view {
     }
 
     void CentralWidget::endInteractPhase() {
-        //        if (m_timeStep != app::TIME_STEP_FAST) {
-        //            audio::AudioManager::play(audio::SOUNDS::CLICK);
-        //        }
+        if (m_timeStep != app::TIME_STEP_FAST) {
+            audio::AudioManager::play(audio::SOUNDS::CLICK);
+        }
         startMovePhase();
     }
 
     void CentralWidget::startMovePhase() {
         contr::MainInterface::startMovePhase(*m_mainView->model(), *m_commandScroll);
-        m_mainView->model()->update(0.00001);
     }
 
     void CentralWidget::startInteractPhase() {
@@ -278,9 +281,18 @@ namespace view {
                                           "Max:\t %2\n"
                                           "Min:\t %3\n")
                                       .arg(1000.0 / m_circularBuffer.average())
-                                      .arg(1000.0 / static_cast<double>(m_circularBuffer.min()))
-                                      .arg(1000.0 / static_cast<double>(m_circularBuffer.max())));
+                                      .arg(1000.0 / m_circularBuffer.min())
+                                      .arg(1000.0 / m_circularBuffer.max()));
         m_frameRateTimer.restart();
+    }
+
+    void CentralWidget::saveLevel() {
+        using namespace Io;
+
+        std::ofstream levelFile;
+        levelFile.open("levels/level1.dat", std::fstream::trunc);
+        levelFile << *mainView()->model();
+        levelFile.close();
     }
 
 } // namespace view

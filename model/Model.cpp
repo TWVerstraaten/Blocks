@@ -4,11 +4,13 @@
 
 #include "Model.h"
 
+#include "../Io/Serializer.h"
 #include "../app/Application_constants.h"
 #include "../misc/defines.h"
 #include "../misc/geom.h"
 
 #include <cassert>
+#include <fstream>
 
 namespace model {
 
@@ -35,50 +37,29 @@ namespace model {
     void Model::update(double dPhase) {
         assert(dPhase >= 0);
         dPhase = std::clamp(dPhase, 0.0, 1.0);
-        while (dPhase > app::MAX_D_PHASE) {
+        while (dPhase > app::MAX_D_PHASE && m_phaseFraction > 0.0f) {
             updateInternal(app::MAX_D_PHASE);
             dPhase -= app::MAX_D_PHASE;
         }
-        updateInternal(dPhase);
+        if (m_phaseFraction > 0.0f) {
+            updateInternal(dPhase);
+        }
     }
 
     void Model::init(MODEL_PRESET modelPreset) {
-        clear();
-        for (int i = -2; i != 15; ++i) {
-            for (int j = -2; j != 11; ++j) {
-                if (i == 11 && j == 3) {
-                    continue;
+        using namespace Io;
+        std::ifstream levelFile("levels/level1.dat");
+        if (levelFile.is_open()) {
+            try {
+                levelFile >> *this;
+            } catch (...) {}
+            levelFile.close();
+        } else {
+            for (int i = 0; i != 10; ++i) {
+                for (int j = 0; j != 10; ++j) {
+                    m_level.addBlock(GridXy{i, j}, FLOOR_BLOCK_TYPE::LEVEL);
                 }
-                if (i == 10 && j == 3) {
-                    continue;
-                }
-                if (i == 11 && j == 4) {
-                    continue;
-                }
-                m_level.addBlock({i, j}, FLOOR_BLOCK_TYPE::LEVEL);
             }
-        }
-
-        switch (modelPreset) {
-            case MODEL_PRESET::EMPTY:
-                break;
-            case MODEL_PRESET::TEST:
-                for (int i = -2; i != 15; ++i) {
-                    for (int j = -2; j != 11; ++j) {
-                        if (i == 11 && j == 3) {
-                            continue;
-                        }
-                        if (i == 10 && j == 3) {
-                            continue;
-                        }
-                        if (i == 11 && j == 4) {
-                            continue;
-                        }
-                        m_clusters.emplace_back(model::GridXy{i, j}, std::to_string(m_clusters.size()));
-                    }
-                }
-
-                break;
         }
     }
 

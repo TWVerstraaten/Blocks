@@ -334,34 +334,6 @@ namespace model {
         return result;
     }
 
-    std::ostream& operator<<(std::ostream& out, const Cluster& cluster) {
-        if (cluster.isEmpty()) {
-            return out;
-        }
-        assert(not cluster.isEmpty());
-
-        const int minX = geom::minX(cluster.gridXyVector());
-        const int minY = geom::minY(cluster.gridXyVector());
-        const int maxX = geom::maxX(cluster.gridXyVector());
-        const int maxY = geom::maxY(cluster.gridXyVector());
-        assert(minX <= maxX);
-        assert(minY <= maxY);
-
-        out << "Cluster " << cluster.m_index << '\n';
-        for (int j = minY; j <= maxY; ++j) {
-            for (int i = minX; i <= maxX; ++i) {
-                if (cluster.contains(GridXy{i, j})) {
-                    out << "o";
-                } else {
-                    out << " ";
-                }
-            }
-            out << "\n";
-        }
-
-        return out;
-    }
-
     WorldXy Cluster::approximateCenter() const {
         assert(not m_gridXyVector.empty());
         const auto f = phaseTransformation();
@@ -527,6 +499,18 @@ namespace model {
 
     void Cluster::clearGridXy() {
         m_gridXyVector.clear();
+    }
+
+    void Cluster::setPhaseFraction(double phaseFraction) {
+        m_phaseFraction = phaseFraction;
+    }
+
+    size_t Cluster::maxClusterIndex() {
+        return s_maxClusterIndex;
+    }
+
+    void Cluster::setMaxClusterIndex(size_t maxClusterIndex) {
+        s_maxClusterIndex = maxClusterIndex;
     }
 
 } // namespace model

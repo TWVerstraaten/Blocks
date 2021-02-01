@@ -11,6 +11,10 @@
 
 #include <vector>
 
+namespace Io {
+    std::istream& operator>>(std::istream& in, model::Model& model);
+}
+
 namespace model {
 
     class Model {
@@ -45,6 +49,8 @@ namespace model {
         std::vector<Cluster>::iterator stoppedClusterContaining(const GridXy& point);
 
       private:
+        friend std::istream& Io::operator>>(std::istream& in, model::Model& model);
+
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void intersectWithLevel();
         void intersectClusters();

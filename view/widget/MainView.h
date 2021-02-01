@@ -1,6 +1,7 @@
 #ifndef MAINVIEW_H
 #define MAINVIEW_H
 
+#include "../../model/Model.h"
 #include "../../view/ViewPort.h"
 
 #include <QWidget>
@@ -28,7 +29,7 @@ namespace view {
 
         ~MainView() override;
 
-        void init();
+        void init(model::MODEL_PRESET modelPreset);
         void init(const model::Model& model);
 
         void setCommandScrollArea(CommandScroll* commandScrollArea);

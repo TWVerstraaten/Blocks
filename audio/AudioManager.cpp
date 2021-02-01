@@ -10,13 +10,19 @@
 
 namespace audio {
     bool                            AudioManager::s_isInitialized = false;
-    QMediaPlayer*                   AudioManager::s_mediaPlayer   = nullptr;
+    AudioSettings                   AudioManager::s_audioSettings;
+    QMediaPlayer*                   AudioManager::s_musicPlayer = nullptr;
     std::map<SOUNDS, QSoundEffect*> AudioManager::s_soundEffects;
 
     void AudioManager::init(QObject* parent) {
         assert(not s_isInitialized);
-        s_mediaPlayer   = new QMediaPlayer(parent);
+        s_musicPlayer   = new QMediaPlayer(parent);
         s_isInitialized = true;
+
+        addSoundEffect(SOUNDS::CLICK);
+        s_musicPlayer->setMedia(QUrl("qrc:/assets/song2.mp3"));
+        s_musicPlayer->setVolume(s_audioSettings.musicVolume());
+        s_musicPlayer->play();
     }
 
     void AudioManager::play(SOUNDS sound) {
@@ -37,9 +43,21 @@ namespace audio {
                 break;
         }
 
-        s_soundEffects[sound] = new QSoundEffect{s_mediaPlayer->parent()};
+        s_soundEffects[sound] = new QSoundEffect{s_musicPlayer->parent()};
         s_soundEffects[sound]->setSource(url);
-        s_soundEffects[sound]->setVolume(0.5f);
+        s_soundEffects[sound]->setVolume(s_audioSettings.soundEffectsVolume());
         s_soundEffects[sound]->setLoopCount(1);
+    }
+
+    void AudioManager::setSoundEffectVolume(float soundEffectVolume) {
+        assert(s_isInitialized);
+        for (auto& [_, soundEffect] : s_soundEffects) {
+            soundEffect->setVolume(soundEffectVolume);
+        }
+    }
+
+    void AudioManager::setMusicVolume(int musicVolume) {
+        assert(s_isInitialized);
+        s_musicPlayer->setVolume(musicVolume);
     }
 } // namespace audio

@@ -17,9 +17,12 @@
 #include "command/CommandVector.h"
 
 #include <functional>
-#include <iostream>
 #include <list>
 #include <set>
+
+namespace Io {
+    std::istream& operator>>(std::istream& in, model::Cluster& cluster);
+} // namespace Io
 
 namespace model {
 
@@ -90,19 +93,24 @@ namespace model {
         void                 sortGridXy() const;
         void                 swapGridXy(GridXyVector& other);
         void                 appendGridXy(const GridXyVector& other);
+        void                 setPhaseFraction(double phaseFraction);
         Cluster              grabAllButFirstComponent();
         CommandVector&       commandVector();
         std::vector<Cluster> collectAllButFirstComponent();
 
+        static size_t maxClusterIndex();
+        static void   setMaxClusterIndex(size_t maxClusterIndex);
+
         /****** FRIENDS  ******/
-        friend std::ostream& operator<<(std::ostream& out, const Cluster& other);
-        friend void          handleCommand(const Command_Simple& command, Cluster& cluster, Level& level);
-        friend void          handleCommand(const Command_Modified& command, Cluster& cluster, Level& level);
-        friend void          handleCommand(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
+        friend void handleCommand(const Command_Simple& command, Cluster& cluster, Level& level);
+        friend void handleCommand(const Command_Modified& command, Cluster& cluster, Level& level);
+        friend void handleCommand(const Command_RepeatWrapper& command, Cluster& cluster, Level& level);
 
         void buildBoundingAlignedRectangle();
 
       private:
+        friend std::istream& Io::operator>>(std::istream& in, model::Cluster& cluster);
+
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void rotateClockWiseAbout(const GridXy& pivotGridXy);
         void rotateCounterClockWiseAbout(const GridXy& pivotGridXy);

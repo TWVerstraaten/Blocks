@@ -10,10 +10,14 @@
 #include "Level_enums.h"
 #include "WorldLine.h"
 
-#include <vector>
 #include <map>
 #include <memory>
 #include <set>
+#include <vector>
+
+namespace Io {
+    std::istream& operator>>(std::istream& in, model::Level& level);
+}
 
 namespace model {
 
@@ -28,24 +32,26 @@ namespace model {
         [[nodiscard]] const WorldLineVector&                      sides() const;
         [[nodiscard]] const std::map<GridXy, DYNAMIC_BLOCK_TYPE>& dynamicBlocks() const;
         [[nodiscard]] const std::map<GridXy, INSTANT_BLOCK_TYPE>& instantBlocks() const;
-        [[nodiscard]] const std::vector<Cluster>&                   stoppedClusters() const;
+        [[nodiscard]] const std::vector<Cluster>&                 stoppedClusters() const;
         [[nodiscard]] const std::map<GridXy, FLOOR_BLOCK_TYPE>&   floorBlocks() const;
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] GridXyVector blocks(FLOOR_BLOCK_TYPE blockType) const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void                clear();
-        void                buildSides();
-        void                addBlock(const GridXy& gridXy, DYNAMIC_BLOCK_TYPE blockType);
-        void                addBlock(const GridXy& gridXy, INSTANT_BLOCK_TYPE blockType);
-        void                addBlock(const GridXy& gridXy, FLOOR_BLOCK_TYPE blockType);
-        void                removeBlock(const GridXy& gridXy, DYNAMIC_BLOCK_TYPE blockType);
-        void                removeBlock(const GridXy& gridXy, INSTANT_BLOCK_TYPE blockType);
-        void                removeBlock(const GridXy& gridXy, FLOOR_BLOCK_TYPE blockType);
+        void                  clear();
+        void                  buildSides();
+        void                  addBlock(const GridXy& gridXy, DYNAMIC_BLOCK_TYPE blockType);
+        void                  addBlock(const GridXy& gridXy, INSTANT_BLOCK_TYPE blockType);
+        void                  addBlock(const GridXy& gridXy, FLOOR_BLOCK_TYPE blockType);
+        void                  removeBlock(const GridXy& gridXy, DYNAMIC_BLOCK_TYPE blockType);
+        void                  removeBlock(const GridXy& gridXy, INSTANT_BLOCK_TYPE blockType);
+        void                  removeBlock(const GridXy& gridXy, FLOOR_BLOCK_TYPE blockType);
         std::vector<Cluster>& stoppedClusters();
 
       private:
+        friend std::istream& Io::operator>>(std::istream& in, model::Level& level);
+
         /****** PRIVATE CONST FUNCTIONS  ******/
         [[nodiscard]] bool contains(const GridXy& gridXy) const;
 

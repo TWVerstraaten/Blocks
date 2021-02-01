@@ -34,6 +34,8 @@ namespace model {
         m_floorBlocks.clear();
         m_instantBLocks.clear();
         m_dynamicBLocks.clear();
+        m_sides.clear();
+        m_stoppedClusters.clear();
     }
 
     bool Level::isFreeStartBlock(const GridXy& gridXy) const {

@@ -68,6 +68,7 @@ namespace model {
         m_commandIndex = 0;
         m_repeatCount  = 0;
         m_commands.clear();
+        m_strings.clear();
     }
 
     size_t CommandVector::commandIndex() const {

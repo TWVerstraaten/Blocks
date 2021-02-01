@@ -5,6 +5,7 @@
 #ifndef BLOCKS_AUDIOMANAGER_H
 #define BLOCKS_AUDIOMANAGER_H
 
+#include "AudioSettings.h"
 #include "Audio_enums.h"
 
 #include <QMediaPlayer>
@@ -20,10 +21,16 @@ namespace audio {
         static void play(SOUNDS sound);
 
       private:
+        friend class AudioSettings;
+
+        static void setSoundEffectVolume(float soundEffectVolume);
+        static void setMusicVolume(int musicVolume);
+
         static void addSoundEffect(SOUNDS sound);
 
         static bool                            s_isInitialized;
-        static QMediaPlayer*                   s_mediaPlayer;
+        static AudioSettings                   s_audioSettings;
+        static QMediaPlayer*                   s_musicPlayer;
         static std::map<SOUNDS, QSoundEffect*> s_soundEffects;
     };
 } // namespace audio
