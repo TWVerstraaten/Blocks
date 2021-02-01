@@ -12,11 +12,12 @@ endif (WIN32)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-#add_definitions(-DNDEBUG)
 add_definitions(-DDEBUG)
+add_definitions(-DQT_DEBUG_PLUGINS)
 
 if (WIN32)
     set(QT_QPA_PLATFORM_PLUGIN_PATH "C:\\Projects\\Qt\\5.15.2\\mingw81_64\\plugins\\platforms")
+    set(CMAKE_PREFIX_PATH "C:\\Projects\\Qt\\5.15.2\\mingw81_64\\lib\\cmake")
 endif (WIN32)
 
 find_package(Qt5 COMPONENTS Core Widgets Multimedia REQUIRED)

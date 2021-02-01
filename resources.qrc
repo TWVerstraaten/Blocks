@@ -12,8 +12,6 @@
         <file>assets/Anonymous_Pro_B.ttf</file>
         <file>assets/Anonymous_Pro_BI.ttf</file>
         <file>assets/Anonymous_Pro_I.ttf</file>
-        <file>assets/song.wav</file>
-        <file>assets/song2.mp3</file>
         <file>assets/click.wav</file>
     </qresource>
 </RCC>
