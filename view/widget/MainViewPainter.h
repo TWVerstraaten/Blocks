@@ -22,19 +22,24 @@ namespace view {
 
     class MainViewPainter {
 
+      public:
+        static void paint(QPainter& painter, const QRect& rect, const model::Model& model, const view::ViewPort& viewPort, bool paintNames = true);
+
+      private:
         friend class MainView;
 
         explicit MainViewPainter(const MainView* mainView);
 
-        static void paint(QPainter& painter, const QRect& rect, const model::Model& model, const view::ViewPort& viewPort);
-
-        void paint(QPainter& painter, QPaintEvent* event);
-        void drawConnected(const model::GridXyVector& blocks, const QColor& color, QPainter& painter) const;
-        void drawConnected(
-            const model::GridXyVector& blocks, const QColor& color, QPainter& painter, double angle, const model::PhaseTransformation& f) const;
-        void drawCluster(const model::Cluster& cluster, QPainter& painter);
-
-        [[nodiscard]] QPixmap connectedPixmap(const model::GridXyVector& blocks, const QColor& color) const;
+        void        paint(QPainter& painter, QPaintEvent* event);
+        static void drawConnected(const model::GridXyVector& blocks, const QColor& color, QPainter& painter, const view::ViewPort& viewPort);
+        static void drawConnected(const model::GridXyVector&        blocks,
+                                  const QColor&                     color,
+                                  QPainter&                         painter,
+                                  double                            angle,
+                                  const model::PhaseTransformation& f,
+                                  const view::ViewPort&             viewPort);
+        static void drawCluster(const model::Cluster& cluster, QPainter& painter, const view::ViewPort& viewPort, bool paintNames);
+        [[nodiscard]] static QPixmap connectedPixmap(const model::GridXyVector& blocks, const QColor& color, const view::ViewPort& viewPort);
 
         const MainView* m_mainView;
         const ViewPort* m_viewPort;

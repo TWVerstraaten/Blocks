@@ -16,10 +16,10 @@ namespace view {
         ViewPort() = default;
 
         /****** CONST GETTERS  ******/
-        [[nodiscard]] int blockSizeInScreen() const;
-        [[nodiscard]] int xOffset() const;
-        [[nodiscard]] int yOffset() const;
-
+        [[nodiscard]] int    blockSizeInScreen() const;
+        [[nodiscard]] int    xOffset() const;
+        [[nodiscard]] int    yOffset() const;
+        [[nodiscard]] double scale() const;
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] int worldToScreen(int worldLength) const;
         [[nodiscard]] int screenToWorld(int worldLength) const;
@@ -28,6 +28,8 @@ namespace view {
         /****** NON CONST FUNCTIONS  ******/
         void zoom(int dZoom, const view::ScreenXy& point);
         void translate(int dx, int dy);
+        void setScale(double scale);
+        void setOffset(int xOffset, int yOffset);
 
       private:
         /****** DATA MEMBERS  ******/

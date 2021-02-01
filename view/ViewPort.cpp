@@ -47,4 +47,17 @@ namespace view {
     int ViewPort::screenToWorld(int worldLength) const {
         return static_cast<int>(worldLength / m_scale);
     }
+
+    void ViewPort::setScale(double scale) {
+        m_scale = scale;
+    }
+
+    void ViewPort::setOffset(int xOffset, int yOffset) {
+        m_xOffset = xOffset;
+        m_yOffset = yOffset;
+    }
+
+    double ViewPort::scale() const {
+        return m_scale;
+    }
 } // namespace view

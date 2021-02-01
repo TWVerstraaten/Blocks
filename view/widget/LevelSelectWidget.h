@@ -5,6 +5,9 @@
 #ifndef BLOCKS_LEVELSELECTWIDGET_H
 #define BLOCKS_LEVELSELECTWIDGET_H
 
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QPushButton>
 #include <QScrollArea>
 
 namespace view::widget {
@@ -20,6 +23,11 @@ namespace view::widget {
 
       private slots:
         void populatePreviewWidget(const QString& path);
+
+      private:
+        QHBoxLayout* m_hBoxLayout;
+        QWidget*     m_rightWidget;
+        QLabel*      m_qPushButton;
     };
 
 } // namespace view::widget
