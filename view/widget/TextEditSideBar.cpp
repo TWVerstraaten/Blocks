@@ -8,7 +8,7 @@
 
 #include <QPainter>
 
-namespace view {
+namespace view::widget {
 
     TextEditSideBar::TextEditSideBar(QWidget* parent) : QWidget(parent) {
         setFont(FontManager::font(FONT_ENUM::UBUNTU_MONO, 9));

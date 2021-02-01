@@ -15,7 +15,7 @@ namespace view::widget {
       public:
         explicit MainMenuWidget(QWidget* parent);
 
-        LevelSelectWidget* levelSelectWidget() const;
+        [[nodiscard]] LevelSelectWidget* levelSelectWidget() const;
 
       private:
         LevelSelectWidget* m_levelSelectWidget = nullptr;

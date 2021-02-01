@@ -2,12 +2,10 @@
 
 #include "../../Io/Serializer.h"
 #include "../../action/RemoveBlockFromClusterAction.h"
-#include "../../action/SplitDisconnectedAction.h"
 #include "../../audio/AudioManager.h"
 #include "../../contr/MainInterface.h"
 #include "../../contr/MainViewMouseManager.h"
 #include "../../misc/defines.h"
-#include "../../model/Model.h"
 #include "../View_constants.h"
 #include "BlockSelectWidget.h"
 
@@ -15,7 +13,7 @@
 #include <QTimer>
 #include <QUndoView>
 
-namespace view {
+namespace view::widget {
 
     CentralWidget::CentralWidget(const std::string& path)
         : m_mainView(nullptr), m_commandScroll(nullptr), m_qUndoView(new QUndoView(&m_qUndoStack)), m_blockSelectWidget(new BlockSelectWidget(this)),
@@ -297,4 +295,4 @@ namespace view {
         levelFile.close();
     }
 
-} // namespace view
+} // namespace view::widget

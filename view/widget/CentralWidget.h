@@ -24,7 +24,7 @@ namespace action {
     class Action;
 }
 
-namespace view {
+namespace view::widget {
     class CommandScroll;
     class BlockSelectWidget;
 
@@ -32,7 +32,7 @@ namespace view {
         Q_OBJECT
 
       public:
-        CentralWidget(const std::string& path);
+        explicit CentralWidget(const std::string& path);
         ~CentralWidget() override;
 
         void keyPressEvent(QKeyEvent* event) override;
@@ -91,6 +91,6 @@ namespace view {
         datstr::CircularBuffer       m_circularBuffer{90};
     };
 
-} // namespace view
+} // namespace view::widget
 
 #endif

@@ -10,7 +10,7 @@ namespace model {
     class CommandVector;
 } // namespace model
 
-namespace view {
+namespace view::widget {
 
     class TextEditSideBar;
     class TextEdit;

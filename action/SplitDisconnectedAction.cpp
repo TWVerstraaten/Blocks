@@ -8,7 +8,7 @@
 
 namespace action {
 
-    SplitDisconnectedAction::SplitDisconnectedAction(model::Model* model, model::Cluster disconnected, view::CommandScroll* commandScrollArea)
+    SplitDisconnectedAction::SplitDisconnectedAction(model::Model* model, model::Cluster disconnected, view::widget::CommandScroll* commandScrollArea)
         : m_model(model), m_disconnected(std::move(disconnected)), m_commandScrollArea(commandScrollArea) {
         setText(QString("Splitting cluster %1").arg(m_disconnected.index()));
 

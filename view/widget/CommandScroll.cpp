@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <QScrollBar>
 
-namespace view {
+namespace view::widget {
 
     CommandScroll::CommandScroll(CentralWidget* centralWidget) : QScrollArea(centralWidget), m_centralWidget(centralWidget) {
         auto* widget = new QWidget(centralWidget);
@@ -133,4 +133,4 @@ namespace view {
         }
     }
 
-} // namespace view
+} // namespace view::widget

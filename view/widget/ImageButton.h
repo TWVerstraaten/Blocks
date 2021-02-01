@@ -5,11 +5,11 @@
 #ifndef BLOCKS_IMAGEBUTTON_H
 #define BLOCKS_IMAGEBUTTON_H
 
-#include "BlockType.h"
+#include "../BlockType.h"
 
 #include <QPushButton>
 
-namespace view {
+namespace view::widget {
 
     class ImageButton : public QPushButton {
 

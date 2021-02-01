@@ -7,7 +7,7 @@
 #include "../view/widget/TextEdit.h"
 
 namespace action {
-    TextEditAction::TextEditAction(view::TextEdit* textEdit) : m_textEdit(textEdit) {
+    TextEditAction::TextEditAction(view::widget::TextEdit* textEdit) : m_textEdit(textEdit) {
         setText(QString("Text edit action"));
     }
 

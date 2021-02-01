@@ -4,13 +4,13 @@
 
 #include "BlockSelectWidget.h"
 
-#include "../ImageButton.h"
 #include "../color.h"
+#include "ImageButton.h"
 
 #include <QDebug>
 #include <QGridLayout>
 
-namespace view {
+namespace view::widget {
 
     BlockSelectWidget::BlockSelectWidget(QWidget* parent) : QWidget(parent) {
         auto* l = new QGridLayout(this);
@@ -48,4 +48,4 @@ namespace view {
         m_imageButtons[selectedIndex]->setSelected();
     }
 
-} // namespace view
+} // namespace view::widget

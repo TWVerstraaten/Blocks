@@ -25,7 +25,7 @@ namespace contr {
     using namespace model;
     using namespace action;
 
-    MainViewMouseManager::MainViewMouseManager(view::MainView* mainView) : m_mainView(mainView) {
+    MainViewMouseManager::MainViewMouseManager(view::widget::MainView* mainView) : m_mainView(mainView) {
     }
 
     void MainViewMouseManager::mousePressEvent(QMouseEvent* event) {
@@ -206,7 +206,7 @@ namespace contr {
         m_blockEditing = blockEditing;
     }
 
-    void MainViewMouseManager::setCentralWidget(view::CentralWidget* centralWidget) {
+    void MainViewMouseManager::setCentralWidget(view::widget::CentralWidget* centralWidget) {
         m_centralWidget = centralWidget;
     }
 

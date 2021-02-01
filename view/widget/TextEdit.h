@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace view {
+namespace view::widget {
 
     class CommandEdit;
     class SyntaxHighlighter;

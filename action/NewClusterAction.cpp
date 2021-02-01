@@ -9,7 +9,7 @@
 
 namespace action {
 
-    NewClusterAction::NewClusterAction(view::CentralWidget* centralWidget, model::Cluster cluster)
+    NewClusterAction::NewClusterAction(view::widget::CentralWidget* centralWidget, model::Cluster cluster)
         : m_cluster(std::move(cluster)), m_centralWidget(centralWidget) {
         setText(QString("Creating cluster %1").arg(m_cluster.index()));
     }

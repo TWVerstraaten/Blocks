@@ -10,7 +10,7 @@
 #include <QWidget>
 #include <vector>
 
-namespace view {
+namespace view::widget {
 
     class ImageButton;
 

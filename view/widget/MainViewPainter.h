@@ -16,7 +16,7 @@ namespace model {
     class Cluster;
 } // namespace model
 
-namespace view {
+namespace view::widget {
 
     class MainView;
 

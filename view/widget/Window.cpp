@@ -4,7 +4,7 @@
 #include "CentralWidget.h"
 #include "MainMenuWidget.h"
 
-namespace view {
+namespace view::widget {
 
     Window::Window(QWidget* parent) : QMainWindow(parent) {
         audio::AudioManager::init(this);
@@ -29,4 +29,4 @@ namespace view {
         setCentralWidget(c);
     }
 
-} // namespace view
+} // namespace view::widget

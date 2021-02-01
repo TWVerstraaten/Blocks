@@ -15,7 +15,7 @@ namespace contr {
     class MainViewMouseManager;
 }
 
-namespace view {
+namespace view::widget {
 
     class MainViewPainter;
     class CommandScroll;

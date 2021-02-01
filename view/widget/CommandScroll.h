@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-namespace view {
+namespace view::widget {
     class CentralWidget;
 
     class CommandScroll : public QScrollArea {

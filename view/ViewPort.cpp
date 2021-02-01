@@ -4,8 +4,6 @@
 
 #include "ViewPort.h"
 
-#include "../misc/defines.h"
-
 #include <cmath>
 
 namespace view {
@@ -40,10 +38,6 @@ namespace view {
         return static_cast<int>(m_scale * worldLength);
     }
 
-    int ViewPort::blockSeparationInScreenXy() const {
-        return m_distanceBetweenBlocksInScreenXy;
-    }
-
     int ViewPort::screenToWorld(int worldLength) const {
         return static_cast<int>(worldLength / m_scale);
     }
@@ -57,7 +51,4 @@ namespace view {
         m_yOffset = yOffset;
     }
 
-    double ViewPort::scale() const {
-        return m_scale;
-    }
 } // namespace view

@@ -10,17 +10,17 @@
 
 #include <memory>
 
-namespace view {
+namespace view::widget {
     class CommandScroll;
     class CentralWidget;
-} // namespace view
+} // namespace view::widget
 
 namespace action {
 
     class NewClusterAction : public Action {
 
       public:
-        NewClusterAction(view::CentralWidget* centralWidget, model::Cluster cluster);
+        NewClusterAction(view::widget::CentralWidget* centralWidget, model::Cluster cluster);
 
         void                      undo() override;
         void                      redo() override;
@@ -30,7 +30,7 @@ namespace action {
         model::Cluster m_cluster;
 
       private:
-        view::CentralWidget* m_centralWidget;
+        view::widget::CentralWidget* m_centralWidget;
     };
 } // namespace action
 

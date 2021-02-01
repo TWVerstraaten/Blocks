@@ -6,7 +6,7 @@
 
 #include "../../model/command/CommandParser.h"
 
-namespace view {
+namespace view::widget {
 
     SyntaxHighlighter::SyntaxHighlighter(QTextDocument* textDocument) : QSyntaxHighlighter(textDocument) {
         m_errorFormat.setFontUnderline(true);

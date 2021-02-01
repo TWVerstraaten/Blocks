@@ -15,7 +15,7 @@ namespace model {
     class Model;
 }
 
-namespace view {
+namespace view::widget {
     class CommandScroll;
 }
 
@@ -24,8 +24,8 @@ namespace contr {
     class MainInterface {
 
       public:
-        static void startInteractPhase(model::Model& model, view::CommandScroll& commandScrollArea);
-        static void startMovePhase(model::Model& model, view::CommandScroll& commandScrollArea);
+        static void startInteractPhase(model::Model& model, view::widget::CommandScroll& commandScrollArea);
+        static void startMovePhase(model::Model& model, view::widget::CommandScroll& commandScrollArea);
 
       private:
         static void handleStopAndSplice(model::Model& model);

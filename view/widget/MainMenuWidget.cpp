@@ -7,8 +7,6 @@
 #include "../FontManager.h"
 #include "../color.h"
 
-#include <QLabel>
-
 view::widget::MainMenuWidget::MainMenuWidget(QWidget* parent) : QTabWidget(parent) {
     QPalette palette = this->palette();
     palette.setColor(QPalette::Window, QColor(view::color::BACKGROUND));

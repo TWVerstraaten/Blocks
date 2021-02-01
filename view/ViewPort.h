@@ -19,11 +19,10 @@ namespace view {
         [[nodiscard]] int    blockSizeInScreen() const;
         [[nodiscard]] int    xOffset() const;
         [[nodiscard]] int    yOffset() const;
-        [[nodiscard]] double scale() const;
+
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] int worldToScreen(int worldLength) const;
         [[nodiscard]] int screenToWorld(int worldLength) const;
-        [[nodiscard]] int blockSeparationInScreenXy() const;
 
         /****** NON CONST FUNCTIONS  ******/
         void zoom(int dZoom, const view::ScreenXy& point);

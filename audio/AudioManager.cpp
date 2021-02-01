@@ -4,10 +4,6 @@
 
 #include "AudioManager.h"
 
-#include <QMediaPlayer>
-#include <QSoundEffect>
-#include <memory>
-
 namespace audio {
     bool                            AudioManager::s_isInitialized = false;
     AudioSettings                   AudioManager::s_audioSettings;

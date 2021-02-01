@@ -10,25 +10,25 @@
 
 #include <memory>
 
-namespace view {
+namespace view::widget {
     class CommandScroll;
-} // namespace view
+} // namespace view::widget
 
 namespace action {
     class MergeClusterAction : public Action {
 
       public:
-        MergeClusterAction(model::Model* model, model::Cluster target, model::Cluster second, view::CommandScroll* commandScrollArea);
+        MergeClusterAction(model::Model* model, model::Cluster target, model::Cluster second, view::widget::CommandScroll* commandScrollArea);
 
         void                      undo() override;
         void                      redo() override;
         [[nodiscard]] ACTION_TYPE type() const override;
 
       private:
-        model::Model*            m_model;
-        const model::Cluster     m_target;
-        const model::Cluster     m_second;
-        view::CommandScroll* m_commandScrollArea;
+        model::Model*                m_model;
+        const model::Cluster         m_target;
+        const model::Cluster         m_second;
+        view::widget::CommandScroll* m_commandScrollArea;
     };
 } // namespace action
 

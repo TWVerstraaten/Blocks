@@ -4,9 +4,7 @@
 
 #include "LevelSelectWidget.h"
 
-#include "../../app/Application_constants.h"
 #include "../../misc/geom.h"
-#include "../../model/Model.h"
 #include "../ModelToPixmap.h"
 #include "../ViewPort.h"
 #include "../color.h"
@@ -14,9 +12,6 @@
 
 #include <QDebug>
 #include <QDirIterator>
-#include <QHBoxLayout>
-#include <QPainter>
-#include <QPushButton>
 
 view::widget::LevelSelectWidget::LevelSelectWidget(QWidget* parent) : QWidget(parent) {
     m_hBoxLayout     = new QHBoxLayout(this);

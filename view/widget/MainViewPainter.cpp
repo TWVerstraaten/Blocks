@@ -15,7 +15,7 @@
 
 #include <QDebug>
 
-namespace view {
+namespace view::widget {
 
     using namespace model;
 

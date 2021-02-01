@@ -7,7 +7,7 @@
 #include "TextEdit.h"
 #include "TextEditSideBar.h"
 
-namespace view {
+namespace view::widget {
     CommandEdit::CommandEdit(CommandScroll* parent, model::Cluster& cluster)
         : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandScrollArea(parent), m_lineWidget(new TextEditSideBar(this)),
           m_commentWidget(new TextEditSideBar(this)) {

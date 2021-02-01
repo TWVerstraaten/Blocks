@@ -15,10 +15,10 @@ namespace model {
     class Model;
 }
 
-namespace view {
+namespace view::widget {
     class MainView;
     class CentralWidget;
-} // namespace view
+} // namespace view::widget
 
 namespace contr {
 
@@ -27,11 +27,11 @@ namespace contr {
       public:
         void setBlockEditing(bool blockEditing);
 
-        explicit MainViewMouseManager(view::MainView* mainView);
+        explicit MainViewMouseManager(view::widget::MainView* mainView);
 
         void mousePressEvent(QMouseEvent* event);
         void mouseMoveEvent(QMouseEvent* event);
-        void setCentralWidget(view::CentralWidget* centralWidget);
+        void setCentralWidget(view::widget::CentralWidget* centralWidget);
         void setModel(model::Model* model);
 
       private:
@@ -51,12 +51,12 @@ namespace contr {
         void addBlock(const model::GridXy& gridXy, model::DYNAMIC_BLOCK_TYPE type);
         void addBlock(const model::GridXy& gridXy, model::INSTANT_BLOCK_TYPE type);
 
-        bool                 m_blockEditing = false;
-        view::MainView*      m_mainView;
-        view::CentralWidget* m_centralWidget = nullptr;
-        model::Model*        m_model         = nullptr;
-        view::ScreenXy       m_previousMousePosition;
-        model::GridXy        m_previousGridPosition{0, 0};
+        bool                         m_blockEditing = false;
+        view::widget::MainView*      m_mainView;
+        view::widget::CentralWidget* m_centralWidget = nullptr;
+        model::Model*                m_model         = nullptr;
+        view::ScreenXy               m_previousMousePosition;
+        model::GridXy                m_previousGridPosition{0, 0};
     };
 
 } // namespace contr

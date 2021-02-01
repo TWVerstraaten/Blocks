@@ -1,13 +1,12 @@
 #include "MainView.h"
 
 #include "../../contr/MainViewMouseManager.h"
-#include "../../model/Model.h"
 #include "CentralWidget.h"
 #include "MainViewPainter.h"
 
 #include <QDebug>
 
-namespace view {
+namespace view::widget {
 
     MainView::MainView(CentralWidget* centralWidget)
         : QWidget(centralWidget), m_centralWidget(centralWidget), m_model(nullptr), m_commandScrollArea(centralWidget->commandScrollArea()),

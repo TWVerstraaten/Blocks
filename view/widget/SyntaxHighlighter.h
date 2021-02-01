@@ -7,7 +7,7 @@
 
 #include <QSyntaxHighlighter>
 
-namespace view {
+namespace view::widget {
 
     class SyntaxHighlighter : public QSyntaxHighlighter {
 

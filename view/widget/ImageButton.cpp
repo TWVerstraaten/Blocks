@@ -4,11 +4,11 @@
 
 #include "ImageButton.h"
 
-#include "toPixmap.h"
+#include "../toPixmap.h"
 
 #include <QDebug>
 
-namespace view {
+namespace view::widget {
 
     ImageButton::ImageButton(QWidget* parent, const BlockType& type, const QSize& size) : QPushButton(parent), m_pixmap(toPixmapVariant(type, size)) {
         setIconSize(size - QSize{6, 6});
@@ -30,7 +30,8 @@ namespace view {
                               "}\n"
                               "QPushButton:hover {\n"
                               "    background-color: %2;\n"
-                              "}\n")                          .arg(color::WIDGET_DARK.name(QColor::HexRgb))
+                              "}\n")
+                          .arg(color::WIDGET_DARK.name(QColor::HexRgb))
                           .arg(color::WIDGET_LIGHT.name(QColor::HexRgb)));
     }
-} // namespace view
+} // namespace view::widget

@@ -10,7 +10,7 @@
 #include <tuple>
 #include <vector>
 
-namespace view {
+namespace view::widget {
 
     class TextEditSideBar : public QWidget {
 

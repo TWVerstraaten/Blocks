@@ -27,7 +27,6 @@ namespace view::widget {
       private:
         QHBoxLayout* m_hBoxLayout;
         QWidget*     m_rightWidget;
-        QLabel*      m_qPushButton;
     };
 
 } // namespace view::widget

@@ -4,7 +4,7 @@
 #include <QElapsedTimer>
 #include <QMainWindow>
 
-namespace view {
+namespace view::widget {
 
     class CentralWidget;
 
@@ -20,7 +20,6 @@ namespace view {
 
       private:
         QElapsedTimer  m_elapsedTimer;
-        CentralWidget* m_centralWidget;
     };
 } // namespace view
 

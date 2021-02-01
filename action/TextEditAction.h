@@ -7,7 +7,7 @@
 
 #include "Action.h"
 
-namespace view {
+namespace view::widget {
     class TextEdit;
 }
 
@@ -16,7 +16,7 @@ namespace action {
     class TextEditAction : public Action {
 
       public:
-        explicit TextEditAction(view::TextEdit* textEdit);
+        explicit TextEditAction(view::widget::TextEdit* textEdit);
 
         void undo() override;
         void redo() override;
@@ -24,7 +24,7 @@ namespace action {
         [[nodiscard]] ACTION_TYPE type() const override;
 
       private:
-        view::TextEdit* m_textEdit;
+        view::widget::TextEdit* m_textEdit;
     };
 } // namespace action
 #endif // BLOCKS_TEXTEDITACTION_H

@@ -14,7 +14,7 @@ namespace contr {
 
     using namespace model;
 
-    void MainInterface::startInteractPhase(Model& model, view::CommandScroll& commandScrollArea) {
+    void MainInterface::startInteractPhase(Model& model, view::widget::CommandScroll& commandScrollArea) {
         auto&       clusters = model.clusters();
         const auto& level    = model.level();
         model.resetPhase();
@@ -30,7 +30,7 @@ namespace contr {
         commandScrollArea.updateSelection();
     }
 
-    void MainInterface::startMovePhase(Model& model, view::CommandScroll& commandScrollArea) {
+    void MainInterface::startMovePhase(Model& model, view::widget::CommandScroll& commandScrollArea) {
         auto& clusters = model.clusters();
         model.resetPhase();
         handleStopAndSplice(model);

@@ -9,7 +9,7 @@
 
 #include <QApplication>
 
-namespace view {
+namespace view::widget {
 
     TextEdit::TextEdit(CommandEdit* commandEditBox, const QString& string)
         : QPlainTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
