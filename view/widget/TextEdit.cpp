@@ -1,7 +1,7 @@
 #include "TextEdit.h"
 
 #include "../../action/TextEditAction.h"
-#include "../../model/command/CommandParser.h"
+#include "../../model/cmd/CommandParser.h"
 #include "../../view/FontManager.h"
 #include "../../view/color.h"
 #include "CentralWidget.h"
@@ -146,4 +146,4 @@ namespace view::widget {
         connect(this, &TextEdit::cursorPositionChanged, [this]() { highlightLine(textCursor()); });
     }
 
-} // namespace view
+} // namespace view::widget

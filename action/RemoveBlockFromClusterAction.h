@@ -5,8 +5,8 @@
 #ifndef BLOCKS_REMOVEBLOCKFROMCLUSTERACTION_H
 #define BLOCKS_REMOVEBLOCKFROMCLUSTERACTION_H
 
-#include "Action.h"
 #include "../model/GridXy.h"
+#include "Action.h"
 
 namespace model {
     class Model;

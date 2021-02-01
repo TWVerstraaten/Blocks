@@ -39,7 +39,7 @@ namespace model {
         if (m_commandVector.isEmpty() || m_state != CLUSTER_STATE::ALIVE) {
             return;
         }
-        std::visit(D_FUNC(c, handleCommand(c, *this, model.level())), m_commandVector.currentCommand());
+        std::visit(D_FUNC(c, model::handleCommand(c, *this, model.level())), m_commandVector.currentCommand());
         m_gridXyAreSorted = false;
         m_sidesAreCorrect = false;
     }

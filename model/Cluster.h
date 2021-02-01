@@ -13,8 +13,8 @@
 #include "PhaseTransformation.h"
 #include "WorldLine.h"
 #include "WorldXy.h"
-#include "command/Command.h"
-#include "command/CommandVector.h"
+#include "cmd/Command.h"
+#include "cmd/CommandVector.h"
 
 #include <functional>
 #include <list>

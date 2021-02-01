@@ -4,7 +4,7 @@
 
 #include "SyntaxHighlighter.h"
 
-#include "../../model/command/CommandParser.h"
+#include "../../model/cmd/CommandParser.h"
 
 namespace view::widget {
 
@@ -25,4 +25,4 @@ namespace view::widget {
             setFormat(0, text.length(), m_noteFormat);
         }
     }
-} // namespace view
+} // namespace view::widget

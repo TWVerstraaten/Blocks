@@ -6,11 +6,13 @@
 #define BLOCKS_SPLITDISCONNECTEDACTION_H
 
 #include "../model/Cluster.h"
-#include "../view/widget/CommandScroll.h"
 #include "Action.h"
 
-#include <list>
 #include <memory>
+
+namespace view::widget {
+    class CommandScroll;
+}
 
 namespace model {
     class Model;

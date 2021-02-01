@@ -8,6 +8,7 @@
 #include <QColor>
 
 namespace view::color {
+    static const QColor WHITE                              = {0, 0, 0, 255};
     static const QColor CLUSTER_STOPPED                    = {120, 120, 124, 255};
     static const QColor NAME_BACKGROUND                    = {220, 227, 221, 255};
     static const QColor RED                                = {255, 0, 0, 255};
@@ -23,7 +24,6 @@ namespace view::color {
     static const QColor EDIT_BOX_HIGHLIGHT_HARD_COLOR      = {255, 200, 250, 255};
     static const QColor EDIT_BOX_HIGHLIGHT_SOFT_COLOR      = {220, 200, 250, 255};
     static const QColor WIDGET_DARK                        = {140, 140, 180, 255};
-//    static const QColor CLUSTER                            = {250, 235, 65, 70};
     static const QColor CLUSTER                            = {250, 235, 65, 155};
     static const QColor CLUSTER_DEAD_COLOR                 = {255, 0, 0, 255};
 

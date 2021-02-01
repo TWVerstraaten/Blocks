@@ -23,8 +23,7 @@ namespace view::widget {
     }
 
     void Window::startLevel(const std::string& path) {
-        qDebug() << "asdsadsadsadsadsadsadsadads";
-        auto* c = new CentralWidget("levels/level1.dat");
+        auto* c = new CentralWidget(path);
         connect(c, &CentralWidget::quit, this, &Window::toMainMenu);
         setCentralWidget(c);
     }

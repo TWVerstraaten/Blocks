@@ -26,14 +26,14 @@ view::widget::LevelSelectWidget::LevelSelectWidget(QWidget* parent) : QWidget(pa
     dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
     const auto e = dir.entryList();
-    for (const auto& l : e) {
-        auto*    p = new QPushButton(l, scrollWidget);
+    for (const auto& path : e) {
+        auto*    p = new QPushButton(path, scrollWidget);
         QPalette pal;
         pal.setColor(QPalette::Base, view::color::WIDGET_LIGHT);
         p->setAutoFillBackground(true);
         p->setPalette(pal);
-        connect(p, &QPushButton::pressed, [this, l] { populatePreviewWidget(l); });
-        //        connect(p, &QPushButton::pressed, [this, l] { emit levelSelected(l.toStdString()); });
+        connect(p, &QPushButton::pressed, [this, path] { populatePreviewWidget(path); });
+        //        connect(p, &QPushButton::pressed, [this, path] { emit levelSelected("levels/" + path.toStdString() + "/level1.lev"); });
         scrollLayout->addWidget(p);
     }
 
@@ -47,10 +47,16 @@ view::widget::LevelSelectWidget::LevelSelectWidget(QWidget* parent) : QWidget(pa
 }
 
 void view::widget::LevelSelectWidget::populatePreviewWidget(const QString& path) {
-    qDebug() << path;
-    QDir dir("levels");
+    const auto prefix = "levels/" + path;
+
+    QDir dir(prefix);
     dir.setFilter(QDir::Files);
+    QStringList filters;
+    filters << "*.lev";
+    dir.setNameFilters(filters);
+
     const auto e = dir.entryList();
+
     for (const auto& l : e) {
         qDebug() << l;
     }
@@ -60,8 +66,9 @@ void view::widget::LevelSelectWidget::populatePreviewWidget(const QString& path)
 
     auto* g = new QGridLayout(m_rightWidget);
     auto* l = new QLabel(m_rightWidget);
-    l->setFixedSize(350, 350);
-    l->setPixmap(view::modelToPixmap("levels/" + path.toStdString() + "/level1.dat", QSize(350, 350)));
+    QSize previewSize(500, 500);
+    l->setFixedSize(previewSize);
+    l->setPixmap(view::modelToPixmap("levels/" + path.toStdString() + "/level1.lev", previewSize));
     g->addWidget(l);
     m_hBoxLayout->addWidget(m_rightWidget);
     update();

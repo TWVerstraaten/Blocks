@@ -290,7 +290,7 @@ namespace view::widget {
         using namespace Io;
 
         std::ofstream levelFile;
-        levelFile.open("levels/level1.dat", std::fstream::trunc);
+        levelFile.open("levels/level1.lev", std::fstream::trunc);
         levelFile << *mainView()->model();
         levelFile.close();
     }
