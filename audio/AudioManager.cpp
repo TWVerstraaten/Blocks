@@ -9,9 +9,9 @@
 #include <memory>
 
 namespace audio {
-    QMediaPlayer*                   AudioManager::s_mediaPlayer = nullptr;
-    std::map<SOUNDS, QSoundEffect*> AudioManager::s_soundEffects;
     bool                            AudioManager::s_isInitialized = false;
+    QMediaPlayer*                   AudioManager::s_mediaPlayer   = nullptr;
+    std::map<SOUNDS, QSoundEffect*> AudioManager::s_soundEffects;
 
     void AudioManager::init(QObject* parent) {
         assert(not s_isInitialized);
