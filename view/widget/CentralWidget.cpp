@@ -256,12 +256,16 @@ namespace view {
     }
 
     void CentralWidget::startMovePhase() {
-        audio::AudioManager::play(audio::SOUNDS::CLICK);
+        if (m_timeStep != app::TIME_STEP_FAST) {
+            audio::AudioManager::play(audio::SOUNDS::CLICK);
+        }
         contr::MainInterface::startMovePhase(*m_mainView->model(), *m_commandScroll);
     }
 
     void CentralWidget::startInteractPhase() {
-        audio::AudioManager::play(audio::SOUNDS::CLICK);
+        if (m_timeStep != app::TIME_STEP_FAST) {
+            audio::AudioManager::play(audio::SOUNDS::CLICK);
+        }
         contr::MainInterface::startInteractPhase(*m_mainView->model(), *m_commandScroll);
         update();
     }
