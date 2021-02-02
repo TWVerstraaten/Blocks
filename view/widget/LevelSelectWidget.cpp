@@ -28,12 +28,8 @@ view::widget::LevelSelectWidget::LevelSelectWidget(QWidget* parent) : QWidget(pa
     const auto e = dir.entryList();
     for (const auto& path : e) {
         auto*    p = new QPushButton(path, scrollWidget);
-        QPalette pal;
-        pal.setColor(QPalette::Base, view::color::WIDGET_LIGHT);
-        p->setAutoFillBackground(true);
-        p->setPalette(pal);
-        connect(p, &QPushButton::pressed, [this, path] { populatePreviewWidget(path); });
-        //        connect(p, &QPushButton::pressed, [this, path] { emit levelSelected("levels/" + path.toStdString() + "/level1.lev"); });
+        //        connect(p, &QPushButton::pressed, [this, path] { populatePreviewWidget(path); });
+        connect(p, &QPushButton::pressed, [this, path] { emit levelSelected("levels/" + path.toStdString() + "/level1.lev"); });
         scrollLayout->addWidget(p);
     }
 

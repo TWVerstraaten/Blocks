@@ -32,7 +32,7 @@ namespace view::widget {
 
         l->addWidget(label, 0, 0, 1, 3);
         m_lineWidget->setWidth(30);
-        m_lineWidget->setBackgroundColor(view::color::WIDGET_LIGHT.lighter(115));
+//        m_lineWidget->setBackgroundColor(view::color::WIDGET_LIGHT.lighter(115));
         m_lineWidget->setLineHeight(m_textEdit->lineHeight());
         m_lineWidget->setTopMargin(m_textEdit->topMargin());
         m_lineWidget->fillLineNumbers(m_textEdit->document()->blockCount());
@@ -41,7 +41,7 @@ namespace view::widget {
 
         m_commentWidget->setWidth(30);
         m_commentWidget->setLineHeight(m_textEdit->lineHeight());
-        m_commentWidget->setBackgroundColor(view::color::WIDGET_LIGHT.lighter(115));
+//        m_commentWidget->setBackgroundColor(view::color::WIDGET_LIGHT.lighter(115));
         m_commentWidget->setTopMargin(m_textEdit->topMargin());
 
         l->addWidget(m_lineWidget, 1, 0);
@@ -50,11 +50,6 @@ namespace view::widget {
         l->setMargin(4);
 
         l->setHorizontalSpacing(0);
-
-        QPalette pal = palette();
-        pal.setColor(QPalette::Window, view::color::WIDGET_LIGHT);
-        setAutoFillBackground(true);
-        setPalette(pal);
 
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     }

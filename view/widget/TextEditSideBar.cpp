@@ -12,10 +12,6 @@ namespace view::widget {
 
     TextEditSideBar::TextEditSideBar(QWidget* parent) : QWidget(parent) {
         setFont(FontManager::font(FONT_ENUM::UBUNTU_MONO, 9));
-
-        QPalette palette = this->palette();
-        palette.setColor(QPalette::Text, Qt::black);
-        setPalette(palette);
     }
 
     void TextEditSideBar::setWidth(size_t w) {
@@ -27,10 +23,6 @@ namespace view::widget {
     }
 
     void TextEditSideBar::setBackgroundColor(const QColor& color) {
-        QPalette pal = palette();
-        pal.setColor(QPalette::Window, color);
-        setAutoFillBackground(true);
-        setPalette(pal);
     }
 
     void TextEditSideBar::paintEvent(QPaintEvent* event) {

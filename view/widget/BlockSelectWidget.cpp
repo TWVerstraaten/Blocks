@@ -23,10 +23,6 @@ namespace view::widget {
 
         l->setSpacing(16);
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-        QPalette pal = palette();
-        pal.setColor(QPalette::Window, view::color::WIDGET_DARK);
-        setAutoFillBackground(true);
-        setPalette(pal);
         setSelectedIndex(0);
     }
 

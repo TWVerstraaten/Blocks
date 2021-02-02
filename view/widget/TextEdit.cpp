@@ -20,11 +20,6 @@ namespace view::widget {
         setFont(font);
         m_lineHeight = QFontMetrics(font).height();
 
-        QPalette palette = this->palette();
-        palette.setColor(QPalette::Highlight, QColor(view::color::WIDGET_LIGHT.lighter(110)));
-        palette.setColor(QPalette::HighlightedText, QColor(Qt::black));
-        setPalette(palette);
-
         document()->adjustSize();
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
         setMinimumHeight(100);

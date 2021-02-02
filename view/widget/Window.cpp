@@ -4,14 +4,22 @@
 #include "CentralWidget.h"
 #include "MainMenuWidget.h"
 
+#include <QFile>
+
 namespace view::widget {
 
     Window::Window(QWidget* parent) : QMainWindow(parent) {
-        audio::AudioManager::init(this);
+
+        QFile file(":/assets/stylesheet.qss");
+        file.open(QFile::ReadOnly);
+        assert(file.isOpen());
+        setStyleSheet(QLatin1String(file.readAll()));
+
         toMainMenu();
+
+        audio::AudioManager::init(this);
         setWindowTitle(tr("Blocks"));
         resize(1000, 800);
-        m_elapsedTimer.start();
     }
 
     void Window::toMainMenu() {

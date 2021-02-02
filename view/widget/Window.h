@@ -17,9 +17,6 @@ namespace view::widget {
       public slots:
         void toMainMenu();
         void startLevel(const std::string& path);
-
-      private:
-        QElapsedTimer  m_elapsedTimer;
     };
 } // namespace view
 

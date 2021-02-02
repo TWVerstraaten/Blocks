@@ -22,11 +22,6 @@ namespace view::widget {
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
         setWidgetResizable(true);
-
-        QPalette pal = palette();
-        pal.setColor(QPalette::Window, view::color::WIDGET_DARK);
-        setAutoFillBackground(true);
-        setPalette(pal);
     }
 
     CommandScroll::~CommandScroll() {
@@ -108,7 +103,7 @@ namespace view::widget {
     void CommandScroll::disable() {
         for (auto& box : m_commandEditBoxes) {
             box->textEdit()->setReadOnly(true);
-            box->setStyleSheet(QString("QTextEdit { background-color: %0 }").arg(QColor(Qt::gray).lighter().name(QColor::HexRgb)));
+//            box->setStyleSheet(QString("QTextEdit { background-color: %0 }").arg(QColor(Qt::gray).lighter().name(QColor::HexRgb)));
             box->disconnectCommandVectorUpdate();
         }
     }

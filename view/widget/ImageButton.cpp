@@ -17,21 +17,21 @@ namespace view::widget {
     }
 
     void ImageButton::setSelected() {
-        setStyleSheet(QString("QPushButton {\n"
-                              "    background-color: %1;\n"
-                              "border: 3px solid red;"
-                              "}\n")
-                          .arg(color::WIDGET_LIGHT.name(QColor::HexRgb)));
+        //        setStyleSheet(QString("QPushButton {\n"
+        //                              "    background-color: %1;\n"
+        //                              "border: 3px solid red;"
+        //                              "}\n")
+        //                          .arg(color::WIDGET_LIGHT.name(QColor::HexRgb)));
     }
 
     void ImageButton::setUnselected() {
-        setStyleSheet(QString("QPushButton {\n"
-                              "    background-color: %1;\n"
-                              "}\n"
-                              "QPushButton:hover {\n"
-                              "    background-color: %2;\n"
-                              "}\n")
-                          .arg(color::WIDGET_DARK.name(QColor::HexRgb))
-                          .arg(color::WIDGET_LIGHT.name(QColor::HexRgb)));
+        //        setStyleSheet(QString("QPushButton {\n"
+        //                              "    background-color: %1;\n"
+        //                              "}\n"
+        //                              "QPushButton:hover {\n"
+        //                              "    background-color: %2;\n"
+        //                              "}\n")
+        //                          .arg(color::WIDGET_DARK.name(QColor::HexRgb))
+        //                          .arg(color::WIDGET_LIGHT.name(QColor::HexRgb)));
     }
 } // namespace view::widget

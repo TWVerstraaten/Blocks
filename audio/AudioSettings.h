@@ -20,7 +20,7 @@ namespace audio {
 
       private:
         float m_soundEffectVolume = 0.3f;
-        int   m_musicVolume       = 40;
+        int   m_musicVolume       = 50;
     };
 
 } // namespace audio

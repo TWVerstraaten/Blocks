@@ -5,15 +5,9 @@
 #include "MainMenuWidget.h"
 
 #include "../FontManager.h"
-#include "../color.h"
 
 view::widget::MainMenuWidget::MainMenuWidget(QWidget* parent) : QTabWidget(parent) {
     setFont(FontManager::font(FONT_ENUM::ANON_PRO_BOLD, 15));
-
-    QPalette palette = this->palette();
-    palette.setColor(QPalette::Window, QColor(view::color::BACKGROUND));
-    setPalette(palette);
-    setAutoFillBackground(true);
 
     m_levelSelectWidget = new LevelSelectWidget(this);
     auto* p             = new QLabel("Temp", this);
