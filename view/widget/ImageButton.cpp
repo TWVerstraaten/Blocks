@@ -18,12 +18,12 @@ namespace view::widget {
     }
 
     void ImageButton::setSelected() {
-        setProperty("current", true);
+        setProperty("selected", true);
         style()->polish(this);
     }
 
     void ImageButton::setUnSelected() {
-        setProperty("current", false);
+        setProperty("selected", false);
         style()->polish(this);
     }
 

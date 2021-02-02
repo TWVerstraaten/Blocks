@@ -16,6 +16,8 @@ namespace view::widget {
 
     class BlockSelectWidget : public QWidget {
 
+        Q_OBJECT
+
       public:
         explicit BlockSelectWidget(QWidget* parent);
 
@@ -39,6 +41,6 @@ namespace view::widget {
                                            model::DYNAMIC_BLOCK_TYPE::ROTATE_CW,
                                            model::INSTANT_BLOCK_TYPE::KILL};
     };
-} // namespace view
+} // namespace view::widget
 
 #endif // BLOCKS_BLOCKSELECTWIDGET_H

@@ -7,8 +7,7 @@
 #include "../../misc/geom.h"
 #include "../FontManager.h"
 #include "../ModelToPixmap.h"
-#include "../ViewPort.h"
-#include "../color.h"
+#include "LevelPreviewWidget.h"
 #include "MainViewPainter.h"
 
 #include <QDebug>
@@ -30,8 +29,8 @@ view::widget::LevelSelectWidget::LevelSelectWidget(QWidget* parent) : QWidget(pa
     for (const auto& path : e) {
         auto* p = new QPushButton(path, scrollWidget);
         p->setFont(FontManager::font(FONT_ENUM::ANON_PRO_BOLD, 12));
-        //        connect(p, &QPushButton::pressed, [this, path] { populatePreviewWidget(path); });
-        connect(p, &QPushButton::pressed, [this, path] { emit levelSelected("levels/" + path.toStdString() + "/level1.lev"); });
+        connect(p, &QPushButton::pressed, [this, path] { populatePreviewWidget(path); });
+        //        connect(p, &QPushButton::pressed, [this, m_path] { emit levelSelected("levels/" + m_path.toStdString() + "/level1.lev"); });
         scrollLayout->addWidget(p);
     }
 
@@ -47,26 +46,12 @@ view::widget::LevelSelectWidget::LevelSelectWidget(QWidget* parent) : QWidget(pa
 void view::widget::LevelSelectWidget::populatePreviewWidget(const QString& path) {
     const auto prefix = "levels/" + path;
 
-    QDir dir(prefix);
-    dir.setFilter(QDir::Files);
-    QStringList filters;
-    filters << "*.lev";
-    dir.setNameFilters(filters);
-
-    const auto e = dir.entryList();
-    for (const auto& l : e) {
-        qDebug() << l;
-    }
-
     m_hBoxLayout->removeWidget(m_rightWidget);
-    m_rightWidget = new QWidget(this);
-
-    auto* g = new QGridLayout(m_rightWidget);
-    auto* l = new QLabel(m_rightWidget);
-    QSize previewSize(500, 500);
-    l->setFixedSize(previewSize);
-    l->setPixmap(view::modelToPixmap("levels/" + path.toStdString() + "/level1.lev", previewSize));
-    g->addWidget(l);
+    delete m_rightWidget;
+    m_rightWidget = new LevelPreviewWidget(this, prefix);
     m_hBoxLayout->addWidget(m_rightWidget);
-    update();
+
+    connect(qobject_cast<LevelPreviewWidget*>(m_rightWidget), &LevelPreviewWidget::levelSelected, [this](const std::string& path) {
+        emit levelSelected(path);
+    });
 }

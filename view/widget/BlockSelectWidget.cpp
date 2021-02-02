@@ -4,10 +4,8 @@
 
 #include "BlockSelectWidget.h"
 
-#include "../color.h"
 #include "ImageButton.h"
 
-#include <QDebug>
 #include <QGridLayout>
 
 namespace view::widget {
@@ -24,6 +22,7 @@ namespace view::widget {
         l->setSpacing(16);
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         setSelectedIndex(0);
+        setAttribute(Qt::WA_StyledBackground, true);
     }
 
     BlockSelectWidget::~BlockSelectWidget() {

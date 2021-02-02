@@ -8,13 +8,18 @@ view--widget--TextEditSideBar {
     color: black;
 }
 
-view--widget--ImageButton {
-    background: rgb(210, 210, 255);
+view--widget--BlockSelectWidget {
+    background: rgb(172, 172, 172);
+    color: black;
 }
 
-view--widget--ImageButton[current="true"], view--widget--ImageButton:hover {
+view--widget--ImageButton {
+    background: transparent;
+}
+
+view--widget--ImageButton[selected="true"], view--widget--ImageButton:hover {
     border-style: outset;
-    border-width: 4px;
+    border-width: 3px;
     border-color: red;
 }
 

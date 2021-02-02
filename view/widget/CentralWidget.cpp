@@ -32,11 +32,11 @@ namespace view::widget {
         m_commandScrollStash->addNeeded(m_mainViewStash->model()->clusters());
 
         m_layout->addWidget(m_mainViewStash.get(), 0, 0, 2, 2);
-        m_mainViewStash->stackUnder(m_blockSelectWidget);
         m_layout->addWidget(m_blockSelectWidget, 1, 0);
         m_layout->addWidget(m_commandScrollStash.get(), 0, 2, 2, 1);
         m_layout->addWidget(m_frameRateLabel, 2, 0, 1, 3);
         m_frameRateLabel->setFixedHeight(50);
+        m_blockSelectWidget->raise();
 
         m_qUndoStack.clear();
 
@@ -220,8 +220,8 @@ namespace view::widget {
         m_commandScrollStash->disable();
 
         m_layout->addWidget(m_mainViewStash.get(), 0, 0, 2, 2);
-        m_mainViewStash->stackUnder(m_blockSelectWidget);
         m_layout->addWidget(m_commandScrollStash.get(), 0, 2, 2, 1);
+        m_blockSelectWidget->raise();
 
         m_elapsedTimer.restart();
         m_phaseTimer.restart();
