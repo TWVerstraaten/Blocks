@@ -11,6 +11,7 @@
 namespace view::widget {
 
     TextEditSideBar::TextEditSideBar(QWidget* parent) : QWidget(parent) {
+        setObjectName("TextEditSideBar");
         setFont(FontManager::font(FONT_ENUM::UBUNTU_MONO, 9));
     }
 
@@ -28,7 +29,7 @@ namespace view::widget {
     void TextEditSideBar::paintEvent(QPaintEvent* event) {
         QWidget::paintEvent(event);
         QPainter painter(this);
-        painter.setPen(Qt::darkGray);
+//        painter.setPen(Qt::darkGray);
         for (const auto& [index, comment] : m_comments) {
             painter.drawText(2, m_topMargin + m_lineHeight * (index + 1), comment);
         }
@@ -57,4 +58,4 @@ namespace view::widget {
     void TextEditSideBar::clearComments() {
         m_comments = {};
     }
-} // namespace view
+} // namespace view::widget

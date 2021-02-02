@@ -12,8 +12,10 @@
 namespace view::widget {
 
     CommandScroll::CommandScroll(CentralWidget* centralWidget) : QScrollArea(centralWidget), m_centralWidget(centralWidget) {
+
         auto* widget = new QWidget(centralWidget);
-        m_layout     = new QVBoxLayout(widget);
+        widget->setObjectName("CommandScroll");
+        m_layout = new QVBoxLayout(widget);
         m_layout->addStretch();
         setWidget(widget);
 
@@ -22,6 +24,7 @@ namespace view::widget {
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
         setWidgetResizable(true);
+        setAttribute(Qt::WA_StyledBackground);
     }
 
     CommandScroll::~CommandScroll() {
@@ -103,7 +106,7 @@ namespace view::widget {
     void CommandScroll::disable() {
         for (auto& box : m_commandEditBoxes) {
             box->textEdit()->setReadOnly(true);
-//            box->setStyleSheet(QString("QTextEdit { background-color: %0 }").arg(QColor(Qt::gray).lighter().name(QColor::HexRgb)));
+            //            box->setStyleSheet(QString("QTextEdit { background-color: %0 }").arg(QColor(Qt::gray).lighter().name(QColor::HexRgb)));
             box->disconnectCommandVectorUpdate();
         }
     }

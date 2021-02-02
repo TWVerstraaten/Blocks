@@ -1,4 +1,18 @@
 
-QPushButton {
+QWidget#CommandScroll {
+    background: rgb(210, 210, 255);
+}
 
+QWidget#CommandEdit {
+    background: rgb(230, 230, 255);
+}
+
+QWidget#TextEditSideBar {
+    background: rgb(172, 172, 172);
+    color: black;
+}
+
+QPlainTextEdit#TextEdit {
+   selection-color: white;
+   selection-background-color: rgb(220, 200, 250);
 }

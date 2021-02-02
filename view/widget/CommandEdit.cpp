@@ -11,6 +11,8 @@ namespace view::widget {
     CommandEdit::CommandEdit(CommandScroll* parent, model::Cluster& cluster)
         : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandScrollArea(parent), m_lineWidget(new TextEditSideBar(this)),
           m_commentWidget(new TextEditSideBar(this)) {
+        setObjectName("CommandEdit");
+
         setContentsMargins(0, 0, 0, 0);
         setMaximumWidth(200);
 
@@ -32,7 +34,6 @@ namespace view::widget {
 
         l->addWidget(label, 0, 0, 1, 3);
         m_lineWidget->setWidth(30);
-//        m_lineWidget->setBackgroundColor(view::color::WIDGET_LIGHT.lighter(115));
         m_lineWidget->setLineHeight(m_textEdit->lineHeight());
         m_lineWidget->setTopMargin(m_textEdit->topMargin());
         m_lineWidget->fillLineNumbers(m_textEdit->document()->blockCount());
@@ -41,7 +42,7 @@ namespace view::widget {
 
         m_commentWidget->setWidth(30);
         m_commentWidget->setLineHeight(m_textEdit->lineHeight());
-//        m_commentWidget->setBackgroundColor(view::color::WIDGET_LIGHT.lighter(115));
+        //        m_commentWidget->setBackgroundColor(view::color::WIDGET_LIGHT.lighter(115));
         m_commentWidget->setTopMargin(m_textEdit->topMargin());
 
         l->addWidget(m_lineWidget, 1, 0);
@@ -102,4 +103,4 @@ namespace view::widget {
         connect(m_textEdit, &TextEdit::textChanged, this, &CommandEdit::updateCommandVector);
     }
 
-} // namespace view
+} // namespace view::widget

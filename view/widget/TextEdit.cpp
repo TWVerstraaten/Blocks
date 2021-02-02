@@ -8,24 +8,25 @@
 #include "SyntaxHighlighter.h"
 
 #include <QApplication>
+#include <QDebug>
 
 namespace view::widget {
 
     TextEdit::TextEdit(CommandEdit* commandEditBox, const QString& string)
         : QPlainTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
+        setObjectName("TextEdit");
+
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
-        const QFont& font = FontManager::font(FONT_ENUM::UBUNTU_MONO_BOLD, 10);
-        setFont(font);
-        m_lineHeight = QFontMetrics(font).height();
+        const int fontSize = 12;
+        setFont(FontManager::font(FONT_ENUM::UBUNTU_MONO_BOLD, fontSize));
+        m_lineHeight = fontMetrics().height();
 
         document()->adjustSize();
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-        setMinimumHeight(100);
 
         connectSignals();
-
         appendPlainText(string);
     }
 
@@ -63,7 +64,7 @@ namespace view::widget {
     void TextEdit::setHeight() {
         updateGeometry();
         QSize size = document()->size().toSize();
-        setFixedHeight(size.height() * (m_lineHeight + 1) + 10);
+        setFixedHeight((size.height() + 1) * m_lineHeight + 1);
     }
 
     std::vector<std::string> TextEdit::contents() const {
@@ -132,13 +133,16 @@ namespace view::widget {
     }
 
     size_t TextEdit::topMargin() const {
-        return document()->documentMargin();
+        return contentsMargins().top();
     }
 
     void TextEdit::connectSignals() {
         connect(this, &TextEdit::textChanged, this, &TextEdit::setHeight);
         connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
         connect(this, &TextEdit::cursorPositionChanged, [this]() { highlightLine(textCursor()); });
+    }
+
+    void TextEdit::showEvent(QShowEvent* event) {
     }
 
 } // namespace view::widget

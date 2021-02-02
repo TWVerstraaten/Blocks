@@ -30,6 +30,7 @@ namespace view::widget {
 
       protected:
         [[nodiscard]] QSize sizeHint() const override;
+        void                showEvent(QShowEvent* event) override;
 
       signals:
         void tabPressed();
