@@ -8,13 +8,6 @@
 #include <QDebug>
 #include <map>
 
-const static QColor BACKGROUND_LIGHT          = {210, 210, 255, 255};
-const static QColor BACKGROUND_MEDIUM         = {210, 210, 255, 255};
-const static QColor BACKGROUND_DARK           = {210, 210, 255, 255};
-const QColor        GRAY_DARK                 = {172, 172, 172, 255};
-const QColor        TEXT_EDIT_BACKGROUND      = {24, 24, 24, 255};
-const QColor        TEXT_SELECTION_BACKGROUND = {220, 200, 250, 255};
-
 static std::map<QString, QColor> s_replacementMap{};
 
 const QString view::style::Style::s_stylesheet = buildStyleSheet();
@@ -22,11 +15,6 @@ const QString view::style::Style::s_stylesheet = buildStyleSheet();
 #define ADD_COLOR(name, r, g, b) s_replacementMap.insert({#name, QColor{r, g, b, 255}})
 
 static void setColors() {
-    //    ADD_COLOR(_COLOR_ONE, 0, 175, 145);
-    //    ADD_COLOR(_COLOR_TWO, 0, 121, 101);
-    //    ADD_COLOR(_COLOR_THREE, 245, 134, 52);
-    //    ADD_COLOR(_COLOR_FOUR, 255, 204, 41);
-
     ADD_COLOR(_COLOR_ONE, 140, 140, 180);
     ADD_COLOR(_COLOR_TWO, 210, 210, 255);
     ADD_COLOR(_COLOR_THREE, 47, 85, 183);
