@@ -23,8 +23,6 @@ namespace view::widget {
     }
 
     void Window::toMainMenu() {
-        qDebug() << "toMainMenu";
-
         auto* w = new widget::MainMenuWidget(this);
         connect(w->levelSelectWidget(), &widget::LevelSelectWidget::levelSelected, this, &Window::startLevel);
         setCentralWidget(w);

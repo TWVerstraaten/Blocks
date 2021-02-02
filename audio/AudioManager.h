@@ -17,7 +17,6 @@ namespace audio {
 
       public:
         static void init(QObject* parent);
-
         static void play(SOUNDS sound);
 
       private:
@@ -25,7 +24,6 @@ namespace audio {
 
         static void setSoundEffectVolume(float soundEffectVolume);
         static void setMusicVolume(int musicVolume);
-
         static void addSoundEffect(SOUNDS sound);
 
         static bool                            s_isInitialized;

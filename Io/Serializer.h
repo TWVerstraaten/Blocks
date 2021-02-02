@@ -19,6 +19,7 @@ namespace Io {
     std::ostream& operator<<(std::ostream& out, const model::Model& model);
     std::ostream& operator<<(std::ostream& out, const model::Cluster& cluster);
     std::ostream& operator<<(std::ostream& out, const model::Level& level);
+
     std::istream& operator>>(std::istream& in, model::Level& level);
     std::istream& operator>>(std::istream& in, model::Cluster& cluster);
     std::istream& operator>>(std::istream& in, model::Model& model);

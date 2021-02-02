@@ -13,6 +13,7 @@
 #include <set>
 
 namespace geom {
+    void                         splitDisconnectedClusters(std::vector<model::Cluster>& clusters);
     bool                         intersect(const model::WorldLineVector& lines1, const model::WorldLineVector& lines2);
     bool                         intersect(const model::Cluster& cluster1, const model::Cluster& cluster2, int shrinkInWorld);
     bool                         intersect(const model::WorldLine& lhs, const model::WorldLine& rhs);
@@ -26,7 +27,6 @@ namespace geom {
     model::WorldLineVector       getSidesFromGridXy(const model::GridXyVector& blocks);
     std::vector<model::Cluster*> neighbors(std::vector<model::Cluster>& clusters, model::GridXy point);
     std::vector<model::Cluster*> neighbors(std::vector<model::Cluster>& clusters, const model::Cluster& cluster);
-    void                         splitDisconnectedClusters(std::vector<model::Cluster>& clusters);
 } // namespace geom
 
 #endif // BLOCKS_GEOM_H
