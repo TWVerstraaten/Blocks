@@ -11,7 +11,6 @@ namespace view::widget {
     CommandEdit::CommandEdit(CommandScroll* parent, model::Cluster& cluster)
         : QWidget(parent), m_index(cluster.index()), m_name(cluster.name()), m_commandScrollArea(parent), m_lineWidget(new TextEditSideBar(this)),
           m_commentWidget(new TextEditSideBar(this)) {
-        setObjectName("CommandEdit");
 
         setContentsMargins(0, 0, 0, 0);
         setMaximumWidth(200);
@@ -30,7 +29,6 @@ namespace view::widget {
         auto* l    = new QGridLayout(this);
 
         auto* label = new QLabel(m_name.c_str(), this);
-        label->setObjectName("CommandEditLabel");
         label->setFont(FontManager ::font(FONT_ENUM::ANON_PRO_BOLD, 11));
 
         l->addWidget(label, 0, 0, 1, 3);

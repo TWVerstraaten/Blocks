@@ -1,7 +1,6 @@
 #include "Window.h"
 
 #include "../../audio/AudioManager.h"
-#include "../style/Style.h"
 #include "CentralWidget.h"
 #include "MainMenuWidget.h"
 
@@ -13,7 +12,10 @@ namespace view::widget {
 
     Window::Window(QWidget* parent) : QMainWindow(parent) {
 
-        setStyleSheet(style::Style::s_stylesheet);
+        QFile file(":/assets/stylesheet.qss");
+        file.open(QFile::ReadOnly);
+        assert(file.isOpen());
+        setStyleSheet(QLatin1String(file.readAll()));
 
         toMainMenu();
 
@@ -38,7 +40,7 @@ namespace view::widget {
         setCentralWidget(centralWidget);
     }
 
-    bool Window::eventFilter(QObject* watched, QEvent* event) {
+    bool Window::eventFilter([[maybe_unused]] QObject* watched, QEvent* event) {
         if (event->type() != QEvent::KeyPress) {
             return false;
         }

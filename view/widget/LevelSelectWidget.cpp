@@ -20,7 +20,6 @@ view::widget::LevelSelectWidget::LevelSelectWidget(QWidget* parent) : QWidget(pa
     scrollArea->setWidgetResizable(true);
 
     auto* scrollWidget = new QWidget(this);
-    scrollWidget->setObjectName("LevelSelectScroll");
     scrollArea->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::MinimumExpanding);
     auto* scrollLayout = new QVBoxLayout(scrollWidget);
 

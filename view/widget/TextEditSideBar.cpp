@@ -7,11 +7,11 @@
 #include "../FontManager.h"
 
 #include <QPainter>
+#include <QStyleOption>
 
 namespace view::widget {
 
     TextEditSideBar::TextEditSideBar(QWidget* parent) : QWidget(parent) {
-        setObjectName("TextEditSideBar");
         setFont(FontManager::font(FONT_ENUM::UBUNTU_MONO, 9));
     }
 
@@ -23,13 +23,14 @@ namespace view::widget {
         m_lineHeight = lineHeight;
     }
 
-    void TextEditSideBar::setBackgroundColor(const QColor& color) {
-    }
-
     void TextEditSideBar::paintEvent(QPaintEvent* event) {
+        QStyleOption opt;
+        opt.init(this);
+        QPainter p(this);
+        style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
         QWidget::paintEvent(event);
         QPainter painter(this);
-//        painter.setPen(Qt::darkGray);
         for (const auto& [index, comment] : m_comments) {
             painter.drawText(2, m_topMargin + m_lineHeight * (index + 1), comment);
         }

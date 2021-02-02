@@ -33,15 +33,16 @@ namespace view::widget {
     BlockType BlockSelectWidget::selectedBlockType() const {
         return m_blocks.at(m_selectedIndex);
     }
+
     void BlockSelectWidget::setSelectedIndex(size_t selectedIndex) {
         assert(selectedIndex < m_blocks.size());
         m_selectedIndex = selectedIndex;
         for (size_t i = 0; i != m_blocks.size(); ++i) {
             if (i != selectedIndex) {
-                m_imageButtons[i]->setUnselected();
+                m_imageButtons[i]->setUnSelected();
             }
         }
-        m_imageButtons[selectedIndex]->setSelected();
+        m_imageButtons[m_selectedIndex]->setSelected();
     }
 
 } // namespace view::widget

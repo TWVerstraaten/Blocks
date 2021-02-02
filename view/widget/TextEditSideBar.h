@@ -13,6 +13,7 @@
 namespace view::widget {
 
     class TextEditSideBar : public QWidget {
+        Q_OBJECT
 
       public:
         explicit TextEditSideBar(QWidget* parent);
@@ -20,7 +21,6 @@ namespace view::widget {
         void setWidth(size_t w);
         void setLineHeight(size_t lineHeight);
         void setTopMargin(size_t topMargin);
-        void setBackgroundColor(const QColor& color);
         void addComment(size_t index, const QString& string);
         void setComments(std::vector<std::pair<size_t, QString>>&& comments);
         void clearComments();
@@ -37,6 +37,6 @@ namespace view::widget {
         size_t                                  m_topMargin;
     };
 
-} // namespace view
+} // namespace view::widget
 
 #endif // BLOCKS_TEXTEDITSIDEBAR_H

@@ -25,8 +25,8 @@ namespace view::widget {
 
         [[nodiscard]] size_t                   lineHeight() const;
         [[nodiscard]] size_t                   topMargin() const;
-        [[nodiscard]] std::vector<std::string> contents() const;
         [[nodiscard]] size_t                   nThOpaqueLine(size_t n) const;
+        [[nodiscard]] std::vector<std::string> contents() const;
 
       protected:
         [[nodiscard]] QSize sizeHint() const override;

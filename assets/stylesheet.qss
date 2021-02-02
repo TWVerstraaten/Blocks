@@ -1,18 +1,33 @@
 
-QWidget#CommandScroll {
+QPushButton {
     background: rgb(210, 210, 255);
 }
 
-QWidget#CommandEdit {
-    background: rgb(230, 230, 255);
-}
-
-QWidget#TextEditSideBar {
+view--widget--TextEditSideBar {
     background: rgb(172, 172, 172);
     color: black;
 }
 
-QPlainTextEdit#TextEdit {
+view--widget--ImageButton {
+    background: rgb(210, 210, 255);
+}
+
+view--widget--ImageButton[current="true"], view--widget--ImageButton:hover {
+    border-style: outset;
+    border-width: 4px;
+    border-color: red;
+}
+
+view--widget--CommandEdit {
+    background: rgb(230, 230, 255);
+}
+
+view--widget--CommandEdit QLabel {
+    background-color: rgb(210, 210, 255);
+    padding: 3px;
+}
+
+view--widget--TextEdit {
    selection-color: white;
    selection-background-color: rgb(220, 200, 250);
 }

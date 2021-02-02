@@ -7,22 +7,26 @@
 
 #include "../BlockType.h"
 
+#include <QCheckBox>
 #include <QPushButton>
 
 namespace view::widget {
 
     class ImageButton : public QPushButton {
 
+        Q_OBJECT
+
       public:
         ImageButton(QWidget* parent, const view::BlockType& type, const QSize& size);
 
         void setSelected();
-        void setUnselected();
+        void setUnSelected();
+
 
       private:
         QPixmap m_pixmap;
     };
 
-} // namespace view
+} // namespace view::widget
 
 #endif // BLOCKS_IMAGEBUTTON_H

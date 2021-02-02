@@ -2,21 +2,20 @@
 
 #include "../../misc/defines.h"
 #include "../../model/Cluster.h"
-#include "../../view/color.h"
 #include "CentralWidget.h"
 #include "TextEdit.h"
 #include "Window.h"
 
 #include <QDebug>
+#include <QPainter>
 #include <QScrollBar>
+#include <QStyleOption>
 
 namespace view::widget {
 
     CommandScroll::CommandScroll(CentralWidget* centralWidget) : QScrollArea(centralWidget), m_centralWidget(centralWidget) {
-
         auto* widget = new QWidget(centralWidget);
-        widget->setObjectName("CommandScroll");
-        m_layout = new QVBoxLayout(widget);
+        m_layout     = new QVBoxLayout(widget);
         m_layout->addStretch();
         setWidget(widget);
 
@@ -25,7 +24,6 @@ namespace view::widget {
         setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
         setWidgetResizable(true);
-        setAttribute(Qt::WA_StyledBackground);
     }
 
     CommandScroll::~CommandScroll() {

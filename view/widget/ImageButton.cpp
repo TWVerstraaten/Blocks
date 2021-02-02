@@ -6,7 +6,8 @@
 
 #include "../toPixmap.h"
 
-#include <QDebug>
+#include <QStyle>
+#include <QVariant>
 
 namespace view::widget {
 
@@ -17,21 +18,13 @@ namespace view::widget {
     }
 
     void ImageButton::setSelected() {
-        //        setStyleSheet(QString("QPushButton {\n"
-        //                              "    background-color: %1;\n"
-        //                              "border: 3px solid red;"
-        //                              "}\n")
-        //                          .arg(color::WIDGET_LIGHT.name(QColor::HexRgb)));
+        setProperty("current", true);
+        style()->polish(this);
     }
 
-    void ImageButton::setUnselected() {
-        //        setStyleSheet(QString("QPushButton {\n"
-        //                              "    background-color: %1;\n"
-        //                              "}\n"
-        //                              "QPushButton:hover {\n"
-        //                              "    background-color: %2;\n"
-        //                              "}\n")
-        //                          .arg(color::WIDGET_DARK.name(QColor::HexRgb))
-        //                          .arg(color::WIDGET_LIGHT.name(QColor::HexRgb)));
+    void ImageButton::setUnSelected() {
+        setProperty("current", false);
+        style()->polish(this);
     }
+
 } // namespace view::widget

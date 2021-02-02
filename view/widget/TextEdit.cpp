@@ -15,7 +15,6 @@ namespace view::widget {
 
     TextEdit::TextEdit(CommandEdit* commandEditBox, const QString& string)
         : QPlainTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
-        setObjectName("TextEdit");
         setContextMenuPolicy(Qt::NoContextMenu);
 
         installEventFilter(m_commandEditBox->commandScrollArea()->centralWidget()->mainWindow());
