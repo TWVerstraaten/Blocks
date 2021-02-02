@@ -1,5 +1,5 @@
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef CENTRALWIDGET_H
+#define CENTRALWIDGET_H
 
 #include "../../app/Application_constants.h"
 #include "../../datstr/CircularBuffer.h"
@@ -25,6 +25,7 @@ namespace action {
 }
 
 namespace view::widget {
+    class Window;
     class CommandScroll;
     class BlockSelectWidget;
 
@@ -32,7 +33,7 @@ namespace view::widget {
         Q_OBJECT
 
       public:
-        explicit CentralWidget(const std::string& path);
+        CentralWidget(const std::string& path, Window* window);
         ~CentralWidget() override;
 
         void keyPressEvent(QKeyEvent* event) override;
@@ -43,12 +44,17 @@ namespace view::widget {
         void addAction(action::Action* action);
         void startActionGlob();
         void stopActionGlob();
-        void undo();
-        void redo();
+
+        void setWindow(Window* window);
 
         [[nodiscard]] BlockSelectWidget* blockSelectWidget() const;
         [[nodiscard]] CommandScroll*     commandScrollArea() const;
         [[nodiscard]] MainView*          mainView() const;
+        [[nodiscard]] Window*            mainWindow() const;
+
+      public slots:
+        void undo();
+        void redo();
 
       signals:
         void quit();
@@ -78,8 +84,9 @@ namespace view::widget {
 
         size_t m_timeStep = app::TIME_STEP_SLOW;
 
-        datstr::Stash<MainView>      m_mainView;
-        datstr::Stash<CommandScroll> m_commandScroll;
+        Window*                      m_window = nullptr;
+        datstr::Stash<MainView>      m_mainViewStash;
+        datstr::Stash<CommandScroll> m_commandScrollStash;
         QGridLayout*                 m_layout;
         QUndoStack                   m_qUndoStack;
         QUndoView*                   m_qUndoView;
@@ -93,4 +100,4 @@ namespace view::widget {
 
 } // namespace view::widget
 
-#endif
+#endif //  CENTRALWIDGET_H

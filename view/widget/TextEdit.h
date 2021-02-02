@@ -39,10 +39,10 @@ namespace view::widget {
       private:
         void highlightLine(const QTextCursor& cursor);
 
-        CommandEdit*       m_commandEditBox;
-        SyntaxHighlighter* m_syntaxHighlighter;
+        CommandEdit*       m_commandEditBox    = nullptr;
+        SyntaxHighlighter* m_syntaxHighlighter = nullptr;
         size_t             m_lineHeight;
     };
-} // namespace view
+} // namespace view::widget
 
 #endif // TEXTEDIT_H

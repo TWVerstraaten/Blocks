@@ -40,8 +40,8 @@ namespace view::widget {
         std::vector<std::unique_ptr<CommandEdit>> m_commandEditBoxes;
         std::vector<std::unique_ptr<CommandEdit>> m_stashedCommandEditBoxes;
         QVBoxLayout*                              m_layout;
-        CentralWidget*                            m_centralWidget;
+        CentralWidget*                            m_centralWidget = nullptr;
     };
-} // namespace view
+} // namespace view::widget
 
 #endif // COMMANDSCROLLAREA_H

@@ -5,6 +5,7 @@
 #include "LevelSelectWidget.h"
 
 #include "../../misc/geom.h"
+#include "../FontManager.h"
 #include "../ModelToPixmap.h"
 #include "../ViewPort.h"
 #include "../color.h"
@@ -19,6 +20,7 @@ view::widget::LevelSelectWidget::LevelSelectWidget(QWidget* parent) : QWidget(pa
     scrollArea->setWidgetResizable(true);
 
     auto* scrollWidget = new QWidget(this);
+    scrollWidget->setObjectName("LevelSelectScroll");
     scrollArea->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::MinimumExpanding);
     auto* scrollLayout = new QVBoxLayout(scrollWidget);
 
@@ -27,7 +29,8 @@ view::widget::LevelSelectWidget::LevelSelectWidget(QWidget* parent) : QWidget(pa
 
     const auto e = dir.entryList();
     for (const auto& path : e) {
-        auto*    p = new QPushButton(path, scrollWidget);
+        auto* p = new QPushButton(path, scrollWidget);
+        p->setFont(FontManager::font(FONT_ENUM::ANON_PRO_BOLD, 12));
         //        connect(p, &QPushButton::pressed, [this, path] { populatePreviewWidget(path); });
         connect(p, &QPushButton::pressed, [this, path] { emit levelSelected("levels/" + path.toStdString() + "/level1.lev"); });
         scrollLayout->addWidget(p);
@@ -52,7 +55,6 @@ void view::widget::LevelSelectWidget::populatePreviewWidget(const QString& path)
     dir.setNameFilters(filters);
 
     const auto e = dir.entryList();
-
     for (const auto& l : e) {
         qDebug() << l;
     }

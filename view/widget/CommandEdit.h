@@ -39,10 +39,10 @@ namespace view::widget {
 
         size_t           m_index;
         std::string      m_name;
-        TextEdit*        m_textEdit;
-        CommandScroll*   m_commandScrollArea;
-        TextEditSideBar* m_lineWidget;
-        TextEditSideBar* m_commentWidget;
+        TextEdit*        m_textEdit          = nullptr;
+        CommandScroll*   m_commandScrollArea = nullptr;
+        TextEditSideBar* m_lineWidget        = nullptr;
+        TextEditSideBar* m_commentWidget     = nullptr;
     };
-} // namespace view
+} // namespace view::widget
 #endif // COMMANDEDITBOX_H

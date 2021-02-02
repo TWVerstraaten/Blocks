@@ -30,6 +30,7 @@ namespace view::widget {
         auto* l    = new QGridLayout(this);
 
         auto* label = new QLabel(m_name.c_str(), this);
+        label->setObjectName("CommandEditLabel");
         label->setFont(FontManager ::font(FONT_ENUM::ANON_PRO_BOLD, 11));
 
         l->addWidget(label, 0, 0, 1, 3);
@@ -51,6 +52,7 @@ namespace view::widget {
         l->setMargin(4);
 
         l->setHorizontalSpacing(0);
+        l->setVerticalSpacing(0);
 
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     }

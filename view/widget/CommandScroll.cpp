@@ -5,6 +5,7 @@
 #include "../../view/color.h"
 #include "CentralWidget.h"
 #include "TextEdit.h"
+#include "Window.h"
 
 #include <QDebug>
 #include <QScrollBar>
@@ -70,6 +71,7 @@ namespace view::widget {
             connect((*it)->textEdit(), &TextEdit::tabPressed, this, &CommandScroll::moveFocusToNext);
             connect((*it)->textEdit(), &TextEdit::backTabPressed, this, &CommandScroll::moveFocusToPrevious);
             (*it)->connectSignals();
+            (*it)->textEdit()->installEventFilter(m_centralWidget->mainWindow());
             m_commandEditBoxes.emplace_back(std::move(*it));
             m_stashedCommandEditBoxes.erase(it);
         } else {

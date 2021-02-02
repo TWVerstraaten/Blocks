@@ -51,13 +51,13 @@ namespace view::widget {
       private:
         friend class MainViewPainter;
 
-        CentralWidget*               m_centralWidget;
+        CentralWidget*               m_centralWidget = nullptr;
         view::ViewPort               m_viewPort;
         model::Model*                m_model;
-        CommandScroll*               m_commandScrollArea;
-        MainViewPainter*             m_mainViewPainter;
+        CommandScroll*               m_commandScrollArea = nullptr;
+        MainViewPainter*             m_mainViewPainter   = nullptr;
         contr::MainViewMouseManager* m_mainViewMouseManager;
     };
-} // namespace view
+} // namespace view::widget
 
 #endif // MAINVIEW_H

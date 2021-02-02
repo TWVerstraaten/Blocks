@@ -15,9 +15,9 @@
 
 namespace view::widget {
 
-    CentralWidget::CentralWidget(const std::string& path)
-        : m_mainView(nullptr), m_commandScroll(nullptr), m_qUndoView(new QUndoView(&m_qUndoStack)), m_blockSelectWidget(new BlockSelectWidget(this)),
-          m_frameRateLabel(new QLabel(this)) {
+    CentralWidget::CentralWidget(const std::string& path, Window* window)
+        : m_window(window), m_mainViewStash(nullptr), m_commandScrollStash(nullptr), m_qUndoView(new QUndoView(&m_qUndoStack)),
+          m_blockSelectWidget(new BlockSelectWidget(this)), m_frameRateLabel(new QLabel(this)) {
         setGeometry(0, 0, view::INITIAL_SCREEN_WIDTH, view::INITIAL_SCREEN_HEIGHT);
 
         m_layout = new QGridLayout;
@@ -25,18 +25,20 @@ namespace view::widget {
         m_layout->setMargin(0);
         setLayout(m_layout);
 
-        m_commandScroll.set(new CommandScroll(this));
-        m_commandScroll->setShouldStashCommandEditBoxes(true);
-        m_mainView.set(new MainView(this));
-        m_mainView->init(path);
-        m_commandScroll->addNeeded(m_mainView->model()->clusters());
+        m_commandScrollStash.set(new CommandScroll(this));
+        m_commandScrollStash->setShouldStashCommandEditBoxes(true);
+        m_mainViewStash.set(new MainView(this));
+        m_mainViewStash->init(path);
+        m_commandScrollStash->addNeeded(m_mainViewStash->model()->clusters());
 
-        m_layout->addWidget(m_mainView.get(), 0, 0, 2, 2);
-        m_mainView->stackUnder(m_blockSelectWidget);
+        m_layout->addWidget(m_mainViewStash.get(), 0, 0, 2, 2);
+        m_mainViewStash->stackUnder(m_blockSelectWidget);
         m_layout->addWidget(m_blockSelectWidget, 1, 0);
-        m_layout->addWidget(m_commandScroll.get(), 0, 2, 2, 1);
+        m_layout->addWidget(m_commandScrollStash.get(), 0, 2, 2, 1);
         m_layout->addWidget(m_frameRateLabel, 2, 0, 1, 3);
         m_frameRateLabel->setFixedHeight(50);
+
+        m_qUndoStack.clear();
 
         //        m_layout->addWidget(m_qUndoView, 0, 3, 2, 1);
         //        m_qUndoView->setMaximumWidth(250);
@@ -47,16 +49,11 @@ namespace view::widget {
     }
 
     void CentralWidget::keyPressEvent(QKeyEvent* event) {
-        if ((QApplication::keyboardModifiers() & Qt::ControlModifier) && event->key() == Qt::Key_Z) {
-            if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
-                redo();
-            } else {
-                undo();
-            }
-            return;
-        }
-        if ((QApplication::keyboardModifiers() & Qt::ControlModifier) && event->key() == Qt::Key_S) {
-            saveLevel();
+        if ((QApplication::keyboardModifiers() & Qt::ControlModifier) && event->key() == Qt::Key_E) {
+            using namespace Io;
+            std::cout << "===========================================================\n";
+            std::cout << *m_mainViewStash->model() << '\n';
+            std::cout << "===========================================================\n";
         }
 
         switch (event->key()) {
@@ -102,11 +99,11 @@ namespace view::widget {
     }
 
     CommandScroll* CentralWidget::commandScrollArea() const {
-        return m_commandScroll.get();
+        return m_commandScrollStash.get();
     }
 
     MainView* CentralWidget::mainView() const {
-        return m_mainView.get();
+        return m_mainViewStash.get();
     }
 
     void CentralWidget::mousePressEvent([[maybe_unused]] QMouseEvent* event) {
@@ -133,7 +130,7 @@ namespace view::widget {
         if (m_mode == MODE::RUNNING) {
             return;
         }
-        if (std::all_of(D_CIT(m_mainView->model()->clusters()), D_FUNC(cluster, cluster.commandVector().wellFormed()))) {
+        if (std::all_of(D_CIT(m_mainViewStash->model()->clusters()), D_FUNC(cluster, cluster.commandVector().wellFormed()))) {
             startRunning();
         }
     }
@@ -184,18 +181,18 @@ namespace view::widget {
         m_mode = MODE::EDITING;
 
         m_blockSelectWidget->show();
-        m_mainView.stashedValue()->setViewPort(m_mainView->viewPort());
-        m_layout->removeWidget(m_mainView.get());
-        m_layout->removeWidget(m_commandScroll.get());
+        m_mainViewStash.stashedValue()->setViewPort(m_mainViewStash->viewPort());
+        m_layout->removeWidget(m_mainViewStash.get());
+        m_layout->removeWidget(m_commandScrollStash.get());
 
-        m_mainView.recover();
-        m_commandScroll.recover();
+        m_mainViewStash.recover();
+        m_commandScrollStash.recover();
 
-        m_commandScroll->show();
+        m_commandScrollStash->show();
 
-        m_layout->addWidget(m_mainView.get(), 0, 0, 2, 2);
-        m_mainView->stackUnder(m_blockSelectWidget);
-        m_layout->addWidget(m_commandScroll.get(), 0, 2, 2, 1);
+        m_layout->addWidget(m_mainViewStash.get(), 0, 0, 2, 2);
+        m_mainViewStash->stackUnder(m_blockSelectWidget);
+        m_layout->addWidget(m_commandScrollStash.get(), 0, 2, 2, 1);
 
         update();
     }
@@ -206,25 +203,25 @@ namespace view::widget {
 
         m_blockSelectWidget->hide();
 
-        m_layout->removeWidget(m_mainView.get());
-        m_layout->removeWidget(m_commandScroll.get());
+        m_layout->removeWidget(m_mainViewStash.get());
+        m_layout->removeWidget(m_commandScrollStash.get());
 
-        m_mainView.stash();
-        m_mainView.set(new MainView(this));
-        m_commandScroll.stash();
-        m_commandScroll.set(new CommandScroll(this));
+        m_mainViewStash.stash();
+        m_mainViewStash.set(new MainView(this));
+        m_commandScrollStash.stash();
+        m_commandScrollStash.set(new CommandScroll(this));
 
-        m_mainView->setViewPort(m_mainView.stashedValue()->viewPort());
-        m_mainView->init(*m_mainView.stashedValue()->model());
-        m_mainView->mainViewMouseManager().setBlockEditing(true);
-        m_mainView->setCommandScrollArea(m_commandScroll.get());
-        m_mainView->model()->resetPhase();
-        m_commandScroll->addNeeded(m_mainView->model()->clusters());
-        m_commandScroll->disable();
+        m_mainViewStash->setViewPort(m_mainViewStash.stashedValue()->viewPort());
+        m_mainViewStash->init(*m_mainViewStash.stashedValue()->model());
+        m_mainViewStash->mainViewMouseManager().setBlockEditing(true);
+        m_mainViewStash->setCommandScrollArea(m_commandScrollStash.get());
+        m_mainViewStash->model()->resetPhase();
+        m_commandScrollStash->addNeeded(m_mainViewStash->model()->clusters());
+        m_commandScrollStash->disable();
 
-        m_layout->addWidget(m_mainView.get(), 0, 0, 2, 2);
-        m_mainView->stackUnder(m_blockSelectWidget);
-        m_layout->addWidget(m_commandScroll.get(), 0, 2, 2, 1);
+        m_layout->addWidget(m_mainViewStash.get(), 0, 0, 2, 2);
+        m_mainViewStash->stackUnder(m_blockSelectWidget);
+        m_layout->addWidget(m_commandScrollStash.get(), 0, 2, 2, 1);
 
         m_elapsedTimer.restart();
         m_phaseTimer.restart();
@@ -234,14 +231,14 @@ namespace view::widget {
     }
 
     void CentralWidget::moveLoop(size_t elapsed) {
-        auto& model = *m_mainView->model();
+        auto& model = *m_mainViewStash->model();
         model.update(1.1 * elapsed / static_cast<double>(m_timeStep));
 
         update();
     }
 
     void CentralWidget::interactLoop(size_t elapsed) {
-        auto& model = *m_mainView->model();
+        auto& model = *m_mainViewStash->model();
         model.update(1.1 * elapsed / static_cast<double>(m_timeStep));
 
         update();
@@ -251,7 +248,7 @@ namespace view::widget {
         if (m_timeStep != app::TIME_STEP_FAST) {
             audio::AudioManager::play(audio::SOUNDS::CLICK);
         }
-        for (auto& cluster : m_mainView->model()->clusters()) {
+        for (auto& cluster : m_mainViewStash->model()->clusters()) {
             cluster.incrementCommandIndex();
         }
         startInteractPhase();
@@ -265,11 +262,11 @@ namespace view::widget {
     }
 
     void CentralWidget::startMovePhase() {
-        contr::MainInterface::startMovePhase(*m_mainView->model(), *m_commandScroll);
+        contr::MainInterface::startMovePhase(*m_mainViewStash->model(), *m_commandScrollStash);
     }
 
     void CentralWidget::startInteractPhase() {
-        contr::MainInterface::startInteractPhase(*m_mainView->model(), *m_commandScroll);
+        contr::MainInterface::startInteractPhase(*m_mainViewStash->model(), *m_commandScrollStash);
         update();
     }
 
@@ -293,6 +290,14 @@ namespace view::widget {
         levelFile.open("levels/level1.lev", std::fstream::trunc);
         levelFile << *mainView()->model();
         levelFile.close();
+    }
+
+    Window* CentralWidget::mainWindow() const {
+        return m_window;
+    }
+
+    void CentralWidget::setWindow(Window* window) {
+        m_window = window;
     }
 
 } // namespace view::widget

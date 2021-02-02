@@ -1,7 +1,6 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef WINDOW_H
+#define WINDOW_H
 
-#include <QElapsedTimer>
 #include <QMainWindow>
 
 namespace view::widget {
@@ -14,10 +13,16 @@ namespace view::widget {
       public:
         explicit Window(QWidget* parent = nullptr);
 
+        bool eventFilter(QObject* watched, QEvent* event) override;
+
+      signals:
+        void undo();
+        void redo();
+
       public slots:
         void toMainMenu();
         void startLevel(const std::string& path);
     };
-} // namespace view
+} // namespace view::widget
 
-#endif // MAINWINDOW_H
+#endif // WINDOW_H

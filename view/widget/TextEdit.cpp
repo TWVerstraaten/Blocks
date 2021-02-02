@@ -6,6 +6,7 @@
 #include "../../view/color.h"
 #include "CentralWidget.h"
 #include "SyntaxHighlighter.h"
+#include "Window.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -15,6 +16,9 @@ namespace view::widget {
     TextEdit::TextEdit(CommandEdit* commandEditBox, const QString& string)
         : QPlainTextEdit(commandEditBox), m_commandEditBox(commandEditBox), m_syntaxHighlighter(new SyntaxHighlighter(document())) {
         setObjectName("TextEdit");
+        setContextMenuPolicy(Qt::NoContextMenu);
+
+        installEventFilter(m_commandEditBox->commandScrollArea()->centralWidget()->mainWindow());
 
         setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
@@ -26,8 +30,8 @@ namespace view::widget {
         document()->adjustSize();
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
-        connectSignals();
         appendPlainText(string);
+        setHeight();
     }
 
     TextEdit::~TextEdit() {
@@ -36,15 +40,6 @@ namespace view::widget {
     }
 
     void TextEdit::keyPressEvent(QKeyEvent* event) {
-        if ((QApplication::keyboardModifiers() & Qt::ControlModifier) && event->key() == Qt::Key_Z) {
-            if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
-                m_commandEditBox->commandScrollArea()->centralWidget()->redo();
-            } else {
-                m_commandEditBox->commandScrollArea()->centralWidget()->undo();
-            }
-            return;
-        }
-
         switch (event->key()) {
             case Qt::Key_Escape:
                 clearFocus();
@@ -87,9 +82,6 @@ namespace view::widget {
     }
 
     void TextEdit::sendUndo() {
-        assert(m_commandEditBox);
-        assert(m_commandEditBox->commandScrollArea());
-        assert(m_commandEditBox->commandScrollArea()->centralWidget());
         m_commandEditBox->commandScrollArea()->centralWidget()->addAction(new action::TextEditAction(this));
     }
 
