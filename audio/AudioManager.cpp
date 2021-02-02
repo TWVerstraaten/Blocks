@@ -11,12 +11,13 @@ namespace audio {
     std::map<SOUNDS, QSoundEffect*> AudioManager::s_soundEffects;
 
     void AudioManager::init(QObject* parent) {
+        assert(not s_isInitialized);
         s_musicPlayer   = new QMediaPlayer(parent);
         s_isInitialized = true;
 
         addSoundEffect(SOUNDS::CLICK);
-        s_musicPlayer->setMedia(QUrl("../assets/song2.mp3"));
-        s_musicPlayer->setVolume(50);
+        s_musicPlayer->setMedia(QUrl("qrc:/assets/song2.mp3"));
+        s_musicPlayer->setVolume(s_audioSettings.musicVolume());
         s_musicPlayer->play();
     }
 
@@ -40,7 +41,7 @@ namespace audio {
 
         s_soundEffects[sound] = new QSoundEffect{s_musicPlayer->parent()};
         s_soundEffects[sound]->setSource(url);
-        s_soundEffects[sound]->setVolume(0);
+        s_soundEffects[sound]->setVolume(s_audioSettings.soundEffectsVolume());
         s_soundEffects[sound]->setLoopCount(1);
     }
 
