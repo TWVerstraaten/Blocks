@@ -1,5 +1,5 @@
-#ifndef COMMANDSCROLLAREA_H
-#define COMMANDSCROLLAREA_H
+#ifndef BLOCKS_COMMANDSCROLL_H
+#define BLOCKS_COMMANDSCROLL_H
 
 #include "CentralWidget_enums.h"
 #include "CommandEdit.h"
@@ -44,4 +44,4 @@ namespace view::widget {
     };
 } // namespace view::widget
 
-#endif // COMMANDSCROLLAREA_H
+#endif // BLOCKS_COMMANDSCROLL_H

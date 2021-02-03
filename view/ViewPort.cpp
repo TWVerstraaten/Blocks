@@ -13,11 +13,10 @@ namespace view {
     }
 
     void ViewPort::zoom(int dZoom, const view::ScreenXy& point) {
-        const auto worldPointUnderMouse   = model::WorldXy::fromScreenXy(point, *this);
-        m_zoom                            = std::clamp(m_zoom + dZoom, -2000, 3000);
-        m_scale                           = std::exp(m_zoom / 1000.0);
-        m_distanceBetweenBlocksInScreenXy = worldToScreen(2 * app::BLOCK_SHRINK_IN_WORLD);
-        const auto translation            = ScreenXy::fromWorldXyAsVector(model::WorldXy::fromScreenXy(point, *this) - worldPointUnderMouse, *this);
+        const auto worldPointUnderMouse = model::WorldXy::fromScreenXy(point, *this);
+        m_zoom                          = std::clamp(m_zoom + dZoom, -2000, 3000);
+        m_scale                         = std::exp(m_zoom / 1000.0);
+        const auto translation          = ScreenXy::fromWorldXyAsVector(model::WorldXy::fromScreenXy(point, *this) - worldPointUnderMouse, *this);
         translate(translation.x(), translation.y());
     }
 

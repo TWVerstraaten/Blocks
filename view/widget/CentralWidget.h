@@ -1,5 +1,5 @@
-#ifndef CENTRALWIDGET_H
-#define CENTRALWIDGET_H
+#ifndef BLOCKS_CENTRALWIDGET_H
+#define BLOCKS_CENTRALWIDGET_H
 
 #include "../../app/Application_constants.h"
 #include "../../datstr/CircularBuffer.h"
@@ -43,7 +43,6 @@ namespace view::widget {
         void addAction(action::Action* action);
         void startActionGlob();
         void stopActionGlob();
-        void setWindow(Window* window);
 
         [[nodiscard]] BlockSelectWidget* blockSelectWidget() const;
         [[nodiscard]] CommandScroll*     commandScrollArea() const;
@@ -98,4 +97,4 @@ namespace view::widget {
 
 } // namespace view::widget
 
-#endif //  CENTRALWIDGET_H
+#endif //  BLOCKS_CENTRALWIDGET_H

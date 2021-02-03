@@ -1,5 +1,5 @@
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef BLOCKS_WINDOW_H
+#define BLOCKS_WINDOW_H
 
 #include "Window_enums.h"
 
@@ -32,4 +32,4 @@ namespace view::widget {
     };
 } // namespace view::widget
 
-#endif // WINDOW_H
+#endif // BLOCKS_WINDOW_H

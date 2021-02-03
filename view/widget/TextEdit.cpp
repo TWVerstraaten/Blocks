@@ -24,7 +24,7 @@ namespace view::widget {
 
         const int fontSize = 12;
         setFont(FontManager::font(FONT_ENUM::UBUNTU_MONO_BOLD, fontSize));
-        m_lineHeight = fontMetrics().height();
+        m_lineHeight = static_cast<size_t>(fontMetrics().height());
 
         document()->adjustSize();
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
@@ -58,7 +58,7 @@ namespace view::widget {
     void TextEdit::setHeight() {
         updateGeometry();
         QSize size = document()->size().toSize();
-        setFixedHeight((size.height() + 1) * m_lineHeight + 1);
+        setFixedHeight(static_cast<int>((size.height() + 1) * m_lineHeight + 1));
     }
 
     std::vector<std::string> TextEdit::contents() const {
@@ -105,7 +105,7 @@ namespace view::widget {
     }
 
     size_t TextEdit::nThOpaqueLine(size_t n) const {
-        size_t i = 0;
+        int i = 0;
         while (model::CommandParser::isCommentOrEmpty(document()->findBlockByLineNumber(i).text().toStdString())) {
             ++i;
         }
@@ -116,7 +116,7 @@ namespace view::widget {
                 ++i;
             }
         }
-        return i;
+        return static_cast<size_t>(i);
     }
 
     size_t TextEdit::lineHeight() const {
@@ -124,16 +124,13 @@ namespace view::widget {
     }
 
     size_t TextEdit::topMargin() const {
-        return contentsMargins().top();
+        return static_cast<size_t>(contentsMargins().top());
     }
 
     void TextEdit::connectSignals() {
         connect(this, &TextEdit::textChanged, this, &TextEdit::setHeight);
         connect(document(), &QTextDocument::undoCommandAdded, this, &TextEdit::sendUndo);
         connect(this, &TextEdit::cursorPositionChanged, [this]() { highlightLine(textCursor()); });
-    }
-
-    void TextEdit::showEvent(QShowEvent* event) {
     }
 
 } // namespace view::widget

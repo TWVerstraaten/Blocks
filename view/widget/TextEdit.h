@@ -1,5 +1,5 @@
-#ifndef TEXTEDIT_H
-#define TEXTEDIT_H
+#ifndef BLOCKS_TEXTEDIT_H
+#define BLOCKS_TEXTEDIT_H
 
 #include <QPlainTextEdit>
 #include <string>
@@ -30,7 +30,6 @@ namespace view::widget {
 
       protected:
         [[nodiscard]] QSize sizeHint() const override;
-        void                showEvent(QShowEvent* event) override;
 
       signals:
         void tabPressed();
@@ -45,4 +44,4 @@ namespace view::widget {
     };
 } // namespace view::widget
 
-#endif // TEXTEDIT_H
+#endif // BLOCKS_TEXTEDIT_H

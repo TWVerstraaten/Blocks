@@ -20,9 +20,9 @@
 #include <list>
 #include <set>
 
-namespace Io {
+namespace io {
     std::istream& operator>>(std::istream& in, model::Cluster& cluster);
-} // namespace Io
+} // namespace io
 
 namespace model {
 
@@ -41,23 +41,21 @@ namespace model {
         Cluster(GridXyVector&& gridXy, CommandVector commandVector, std::string name);
 
         /****** CONST GETTERS  ******/
-        [[nodiscard]] double                angle() const;
-        [[nodiscard]] size_t                index() const;
-        [[nodiscard]] size_t                size() const;
-        [[nodiscard]] CLUSTER_STATE         state() const;
-        [[nodiscard]] PENDING_DYNAMIC_MOVES pendingDynamicMoves() const;
-        [[nodiscard]] COMMAND_MODIFIER      currentModifier() const;
-        [[nodiscard]] COMMAND_TYPE          currentType() const;
-        [[nodiscard]] WorldXy               dynamicWorldOffset() const;
-        [[nodiscard]] WorldXy               approximateCenter() const;
-        [[nodiscard]] std::string           string() const;
-        [[nodiscard]] WorldXyVector         cornerPoints(int shrinkInWorld) const;
-        [[nodiscard]] WorldLineVector       sides(int shrinkInWorld) const;
-        [[nodiscard]] const GridXy&         rotationPivot() const;
-        [[nodiscard]] const std::string&    name() const;
-        [[nodiscard]] const GridXyVector&   gridXyVector() const;
-        [[nodiscard]] const CommandVector&  commandVector() const;
-        [[nodiscard]] PHASE                 phase() const;
+        [[nodiscard]] double               angle() const;
+        [[nodiscard]] size_t               index() const;
+        [[nodiscard]] size_t               size() const;
+        [[nodiscard]] CLUSTER_STATE        state() const;
+        [[nodiscard]] COMMAND_MODIFIER     currentModifier() const;
+        [[nodiscard]] COMMAND_TYPE         currentType() const;
+        [[nodiscard]] WorldXy              dynamicWorldOffset() const;
+        [[nodiscard]] WorldXy              approximateCenter() const;
+        [[nodiscard]] std::string          string() const;
+        [[nodiscard]] WorldXyVector        cornerPoints(int shrinkInWorld) const;
+        [[nodiscard]] WorldLineVector      sides(int shrinkInWorld) const;
+        [[nodiscard]] const std::string&   name() const;
+        [[nodiscard]] const GridXyVector&  gridXyVector() const;
+        [[nodiscard]] const CommandVector& commandVector() const;
+        [[nodiscard]] PHASE                phase() const;
 
         /****** CONST FUNCTIONS  ******/
         void                                        buildSides() const;
@@ -80,14 +78,12 @@ namespace model {
         void                 update(double phaseFraction);
         void                 kill();
         void                 incrementCommandIndex();
-        void                 clearCommands();
         void                 collideWithLevel(const Level& level, int shrinkInWorld);
         void                 handleDynamicBlock(const GridXy& point, DYNAMIC_BLOCK_TYPE type);
         void                 setState(CLUSTER_STATE state);
         void                 setWorldOffset(const WorldXy& worldOffset);
         void                 setPhase(PHASE phase);
         void                 resetPhase();
-        void                 setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves);
         void                 spliceCluster(Level& level);
         void                 removeGridXy(const GridXy& gridXy);
         void                 sortGridXy() const;
@@ -109,7 +105,7 @@ namespace model {
         void buildBoundingAlignedRectangle();
 
       private:
-        friend std::istream& Io::operator>>(std::istream& in, model::Cluster& cluster);
+        friend std::istream& io::operator>>(std::istream& in, model::Cluster& cluster);
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void rotateClockWiseAbout(const GridXy& pivotGridXy);
@@ -123,11 +119,10 @@ namespace model {
         double                  m_phaseFraction   = 0.0;
         double                  m_angle           = 0.0;
         size_t                  m_index;
-        PENDING_DYNAMIC_MOVES   m_pendingDynamicMoves = PENDING_DYNAMIC_MOVES::ZERO;
-        CLUSTER_STATE           m_state               = CLUSTER_STATE::ALIVE;
-        PHASE                   m_phase               = PHASE::NONE;
-        WorldXy                 m_worldOffset         = {0, 0};
-        GridXy                  m_rotationPivot       = {0, 0};
+        CLUSTER_STATE           m_state         = CLUSTER_STATE::ALIVE;
+        PHASE                   m_phase         = PHASE::NONE;
+        WorldXy                 m_worldOffset   = {0, 0};
+        GridXy                  m_rotationPivot = {0, 0};
         CommandVector           m_commandVector;
         mutable GridXyVector    m_gridXyVector;
         mutable WorldLineVector m_sides;

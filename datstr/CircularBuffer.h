@@ -17,7 +17,6 @@ namespace datstr {
         void add(size_t value);
 
         [[nodiscard]] size_t size() const;
-        [[nodiscard]] size_t sum() const;
         [[nodiscard]] size_t max() const;
         [[nodiscard]] size_t min() const;
         [[nodiscard]] double average() const;

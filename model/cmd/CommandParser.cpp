@@ -4,8 +4,8 @@
 
 #include "CommandParser.h"
 
+#include "../../misc/Overloaded.h"
 #include "../../misc/defines.h"
-#include "../../misc/overloaded.h"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
@@ -87,7 +87,7 @@ namespace model {
     }
 
     std::string CommandParser::toString(const Token& token) {
-        return std::visit(overloaded{[](int i) { return i == std::numeric_limits<int>::max() ? "INF" : std::to_string(i); },
+        return std::visit(Overloaded{[](int i) { return i == std::numeric_limits<int>::max() ? "INF" : std::to_string(i); },
                                      [](const std::string& str) { return std::all_of(D_CIT(str), D_FUNC(c, std::isalnum(c) != 0)) ? str : "Error"; },
                                      [&](auto) {
                                          const auto it = std::find_if(D_CIT(s_allTokens), D_FUNC(t, t.second == token));
@@ -120,7 +120,7 @@ namespace model {
     }
 
     std::string CommandParser::toString(const Command& command) {
-        return std::visit(overloaded{D_FUNC(, std::string("Error")),
+        return std::visit(Overloaded{D_FUNC(, std::string("Error")),
                                      [](const Command_Label& e) { return "LBL " + e.label; },
                                      [](const Command_Jump& e) { return "JMP " + e.label; },
                                      [](const Command_Simple& e) { return toString(e.type); },

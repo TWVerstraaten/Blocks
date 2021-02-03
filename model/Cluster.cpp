@@ -96,10 +96,6 @@ namespace model {
         return m_phaseFraction * m_angle;
     }
 
-    const GridXy& Cluster::rotationPivot() const {
-        return m_rotationPivot;
-    }
-
     WorldXy Cluster::dynamicWorldOffset() const {
         return {static_cast<int>(m_worldOffset.x() * m_phaseFraction), static_cast<int>(m_worldOffset.y() * m_phaseFraction)};
     }
@@ -159,10 +155,6 @@ namespace model {
         m_phase         = PHASE::ROTATING;
         m_angle         = angle;
         m_rotationPivot = pivot;
-    }
-
-    void Cluster::clearCommands() {
-        m_commandVector.clear();
     }
 
     void Cluster::incrementCommandIndex() {
@@ -439,14 +431,6 @@ namespace model {
 
     bool Cluster::gridXyIsAdjacent(const GridXy& point) const {
         return std::any_of(D_CIT(m_gridXyVector), D_FUNC(point2, point.isAdjacent(point2)));
-    }
-
-    PENDING_DYNAMIC_MOVES Cluster::pendingDynamicMoves() const {
-        return m_pendingDynamicMoves;
-    }
-
-    void Cluster::setPendingDynamicMoves(PENDING_DYNAMIC_MOVES pendingDynamicMoves) {
-        m_pendingDynamicMoves = pendingDynamicMoves;
     }
 
     PHASE Cluster::phase() const {

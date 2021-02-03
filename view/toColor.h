@@ -2,8 +2,8 @@
 // Created by teunv on 1/12/2021.
 //
 
-#ifndef BLOCKS_ENUM_H
-#define BLOCKS_ENUM_H
+#ifndef BLOCKS_TOCOLOR_H
+#define BLOCKS_TOCOLOR_H
 
 #include "../model/Level_enums.h"
 #include "BlockType.h"
@@ -35,4 +35,4 @@ namespace view {
 
 } // namespace view
 
-#endif // BLOCKS_ENUM_H
+#endif // BLOCKS_TOCOLOR_H

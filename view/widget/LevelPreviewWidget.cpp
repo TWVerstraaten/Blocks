@@ -28,7 +28,6 @@ bool view::widget::LevelPreviewWidget::eventFilter(QObject* watched, QEvent* eve
     if (event->type() == QEvent::Enter) {
         QSize previewSize(250, 250);
         m_label->setPixmap(view::modelToPixmap(m_path.toStdString() + "/" + qobject_cast<QPushButton*>(watched)->text().toStdString(), previewSize));
-        qDebug() << "Hovered " << qobject_cast<QPushButton*>(watched)->text();
     } else if (event->type() == QEvent::MouseButtonDblClick) {
         emit levelSelected(m_path.toStdString() + "/" + qobject_cast<QPushButton*>(watched)->text().toStdString());
     }

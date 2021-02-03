@@ -4,8 +4,8 @@
 
 #include "CommandVector.h"
 
+#include "../../misc/Overloaded.h"
 #include "../../misc/defines.h"
-#include "../../misc/overloaded.h"
 #include "CommandParser.h"
 
 #include <algorithm>
@@ -61,7 +61,7 @@ namespace model {
             return;
         }
         m_repeatCount =
-            std::visit(overloaded{[](Command_RepeatWrapper c) { return c.repeatCount - 1; }, [](auto) { return 0; }}, m_commands[m_commandIndex]);
+            std::visit(Overloaded{[](Command_RepeatWrapper c) { return c.repeatCount - 1; }, [](auto) { return 0; }}, m_commands[m_commandIndex]);
     }
 
     void CommandVector::clear() {
@@ -88,7 +88,7 @@ namespace model {
     }
 
     COMMAND_TYPE CommandVector::getType(const Command& c) {
-        return std::visit(overloaded{[](const Command_RepeatWrapper& e) { return getType(toCommand(e)); },
+        return std::visit(Overloaded{[](const Command_RepeatWrapper& e) { return getType(toCommand(e)); },
                                      [](const Command_Simple e) { return e.type; },
                                      [](const Command_Modified e) { return e.type; },
                                      [](const auto&) { return COMMAND_TYPE::NONE; }},
@@ -96,7 +96,7 @@ namespace model {
     }
 
     COMMAND_MODIFIER CommandVector::getModifier(const Command& c) {
-        return std::visit(overloaded{[](const Command_RepeatWrapper& e) { return getModifier(toCommand(e)); },
+        return std::visit(Overloaded{[](const Command_RepeatWrapper& e) { return getModifier(toCommand(e)); },
                                      [](const Command_Modified e) { return e.modifier; },
                                      [](auto) { return COMMAND_MODIFIER::NONE; }},
                           c);
@@ -135,7 +135,7 @@ namespace model {
     }
 
     size_t CommandVector::getCurrentRepeatCount() const {
-        return std::visit(overloaded{[](const Command_RepeatWrapper& c) { return c.repeatCount - 1; }, [](auto) { return 0; }},
+        return std::visit(Overloaded{[](const Command_RepeatWrapper& c) { return c.repeatCount - 1; }, [](auto) { return 0; }},
                           m_commands.at(m_commandIndex));
     }
 
@@ -143,7 +143,7 @@ namespace model {
         const auto& jumpLabel = commandJump.label;
         const auto  it        = std::find_if(
             D_CIT(m_commands),
-            D_FUNC(command, std::visit(overloaded{[&](const Command_Label& l) { return l.label == jumpLabel; }, D_FUNC(, false)}, command)));
+            D_FUNC(command, std::visit(Overloaded{[&](const Command_Label& l) { return l.label == jumpLabel; }, D_FUNC(, false)}, command)));
         assert(it != m_commands.end());
         m_commandIndex = static_cast<size_t>(std::distance(m_commands.cbegin(), it));
         m_repeatCount  = getCurrentRepeatCount();

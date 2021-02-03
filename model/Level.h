@@ -15,7 +15,7 @@
 #include <set>
 #include <vector>
 
-namespace Io {
+namespace io {
     std::istream& operator>>(std::istream& in, model::Level& level);
 }
 
@@ -50,7 +50,7 @@ namespace model {
         std::vector<Cluster>& stoppedClusters();
 
       private:
-        friend std::istream& Io::operator>>(std::istream& in, model::Level& level);
+        friend std::istream& io::operator>>(std::istream& in, model::Level& level);
 
         /****** PRIVATE CONST FUNCTIONS  ******/
         [[nodiscard]] bool contains(const GridXy& gridXy) const;

@@ -27,7 +27,7 @@ namespace view {
         return fromWorldXy(model::WorldXy{gridXy}, viewPort);
     }
 
-    ScreenXy::ScreenXy(const QPointF& point) : QPoint(point.x(), point.y()) {
+    ScreenXy::ScreenXy(const QPointF& point) : QPoint(static_cast<int>(point.x()), static_cast<int>(point.y())) {
     }
 
     ScreenXy::ScreenXy(const QPoint& point) : QPoint(point) {

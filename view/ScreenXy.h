@@ -2,8 +2,8 @@
 // Created by pc on 21-12-20.
 //
 
-#ifndef BLOCKS_SCREENXy_H
-#define BLOCKS_SCREENXy_H
+#ifndef BLOCKS_SCREENXY_H
+#define BLOCKS_SCREENXY_H
 
 #include <QPoint>
 #include <QPointF>
@@ -40,4 +40,4 @@ namespace view {
 view::ScreenXy operator+(const view::ScreenXy& lhs, const view::ScreenXy& rhs);
 view::ScreenXy operator-(const view::ScreenXy& lhs, const view::ScreenXy& rhs);
 
-#endif // BLOCKS_SCREENXy_H
+#endif // BLOCKS_SCREENXY_H

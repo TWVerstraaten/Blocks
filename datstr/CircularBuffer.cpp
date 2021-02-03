@@ -25,10 +25,6 @@ namespace datstr {
         return m_size;
     }
 
-    size_t CircularBuffer::sum() const {
-        return m_sum;
-    }
-
     double CircularBuffer::average() const {
         return m_sum / static_cast<double>(m_size);
     }

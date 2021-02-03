@@ -39,7 +39,7 @@ namespace view {
         return "";
     }
 
-    void FontManager::build(FONT_ENUM fontEnum, size_t size) {
+    void FontManager::build(FONT_ENUM fontEnum, int size) {
         if (s_ids.find(fontEnum) == s_ids.end()) {
             int id = QFontDatabase::addApplicationFont(fromEnum(fontEnum));
             assert(id >= 0);

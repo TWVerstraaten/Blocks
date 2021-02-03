@@ -15,7 +15,7 @@ namespace view::widget {
         setFont(FontManager::font(FONT_ENUM::UBUNTU_MONO, 9));
     }
 
-    void TextEditSideBar::setWidth(size_t w) {
+    void TextEditSideBar::setWidth(int w) {
         setFixedWidth(w);
     }
 

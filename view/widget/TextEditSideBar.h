@@ -18,7 +18,7 @@ namespace view::widget {
       public:
         explicit TextEditSideBar(QWidget* parent);
 
-        void setWidth(size_t w);
+        void setWidth(int w);
         void setLineHeight(size_t lineHeight);
         void setTopMargin(size_t topMargin);
         void addComment(size_t index, const QString& string);

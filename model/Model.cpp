@@ -10,7 +10,6 @@
 #include "../misc/geom.h"
 
 #include <cassert>
-#include <fstream>
 
 namespace model {
 
@@ -47,7 +46,7 @@ namespace model {
     }
 
     void Model::init(const std::string& path) {
-        using namespace Io;
+        using namespace io;
         std::ifstream levelFile(path);
         if (levelFile.is_open()) {
             try {
@@ -69,7 +68,6 @@ namespace model {
         for (auto& cluster : m_clusters) {
             if (cluster.isAlive()) {
                 cluster.resetPhase();
-                cluster.setPendingDynamicMoves(PENDING_DYNAMIC_MOVES::ZERO);
             }
         }
     }

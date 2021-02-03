@@ -2,8 +2,8 @@
 // Created by pc on 21-12-20.
 //
 
-#ifndef BLOCKS_WORLDXy_H
-#define BLOCKS_WORLDXy_H
+#ifndef BLOCKS_WORLDXY_H
+#define BLOCKS_WORLDXY_H
 
 #include <cstddef>
 
@@ -53,4 +53,4 @@ namespace model {
     };
 } // namespace model
 
-#endif // BLOCKS_WORLDXy_H
+#endif // BLOCKS_WORLDXY_H

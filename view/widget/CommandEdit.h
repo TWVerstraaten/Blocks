@@ -1,5 +1,5 @@
-#ifndef COMMANDEDITBOX_H
-#define COMMANDEDITBOX_H
+#ifndef BLOCKS_COMMANDEDIT_H
+#define BLOCKS_COMMANDEDIT_H
 
 #include "CentralWidget_enums.h"
 
@@ -45,4 +45,4 @@ namespace view::widget {
         TextEditSideBar* m_commentWidget     = nullptr;
     };
 } // namespace view::widget
-#endif // COMMANDEDITBOX_H
+#endif // BLOCKS_COMMANDEDIT_H

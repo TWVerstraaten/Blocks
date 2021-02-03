@@ -4,7 +4,7 @@
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
     QApplication app(argc, argv);
-    auto Window = view::widget::Window();
-    Window.show();
+    auto         window = view::widget::Window();
+    window.show();
     return app.exec();
 }

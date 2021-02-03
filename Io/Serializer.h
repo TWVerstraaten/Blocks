@@ -14,7 +14,7 @@ namespace model {
     class Level;
 } // namespace model
 
-namespace Io {
+namespace io {
 
     std::ostream& operator<<(std::ostream& out, const model::Model& model);
     std::ostream& operator<<(std::ostream& out, const model::Cluster& cluster);
@@ -24,6 +24,6 @@ namespace Io {
     std::istream& operator>>(std::istream& in, model::Cluster& cluster);
     std::istream& operator>>(std::istream& in, model::Model& model);
 
-} // namespace Io
+} // namespace io
 
 #endif // BLOCKS_SERIALIZER_H

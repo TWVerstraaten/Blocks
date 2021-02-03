@@ -7,7 +7,7 @@
 
 #include <QSettings>
 
-namespace Io {
+namespace io {
 
     class SettingsManager {
 
@@ -18,6 +18,6 @@ namespace Io {
         inline static QSettings m_settings{"dat/settings/settings.ini", QSettings::IniFormat};
     };
 
-} // namespace Io
+} // namespace io
 
 #endif // BLOCKS_SETTINGSMANAGER_H

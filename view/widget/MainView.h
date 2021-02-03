@@ -1,5 +1,5 @@
-#ifndef MAINVIEW_H
-#define MAINVIEW_H
+#ifndef BLOCKS_MAINVIEW_H
+#define BLOCKS_MAINVIEW_H
 
 #include "../../model/Model.h"
 #include "../../view/ViewPort.h"
@@ -60,4 +60,4 @@ namespace view::widget {
     };
 } // namespace view::widget
 
-#endif // MAINVIEW_H
+#endif // BLOCKS_MAINVIEW_H

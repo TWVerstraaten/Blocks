@@ -7,11 +7,10 @@
 
 #include "Cluster.h"
 #include "Level.h"
-#include "Model_enums.h"
 
 #include <vector>
 
-namespace Io {
+namespace io {
     std::istream& operator>>(std::istream& in, model::Model& model);
 }
 
@@ -49,7 +48,7 @@ namespace model {
         std::vector<Cluster>::iterator stoppedClusterContaining(const GridXy& point);
 
       private:
-        friend std::istream& Io::operator>>(std::istream& in, model::Model& model);
+        friend std::istream& io::operator>>(std::istream& in, model::Model& model);
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void intersectWithLevel();

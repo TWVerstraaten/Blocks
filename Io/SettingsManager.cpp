@@ -4,6 +4,6 @@
 
 #include "SettingsManager.h"
 
-QSettings& Io::SettingsManager::settings() {
+QSettings& io::SettingsManager::settings() {
     return m_settings;
 }

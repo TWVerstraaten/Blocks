@@ -46,7 +46,7 @@ namespace view::widget {
         centralWidget->setFocus();
     }
 
-    bool Window::eventFilter(QObject* watched, QEvent* event) {
+    bool Window::eventFilter([[maybe_unused]] QObject* watched, QEvent* event) {
         if (event->type() != QEvent::KeyPress) {
             return false;
         }

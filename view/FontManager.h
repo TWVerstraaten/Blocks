@@ -20,7 +20,7 @@ namespace view {
       private:
         FontManager() = default;
 
-        static void build(FONT_ENUM fontEnum, size_t size);
+        static void build(FONT_ENUM fontEnum, int size);
 
         inline static std::map<FONT_ENUM, int>                            s_ids;
         inline static std::map<std::pair<FONT_ENUM, size_t>, const QFont> s_fonts;

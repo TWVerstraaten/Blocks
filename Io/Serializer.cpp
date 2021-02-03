@@ -9,7 +9,7 @@
 
 #include <cassert>
 
-namespace Io {
+namespace io {
 
     using namespace model;
 
@@ -184,4 +184,4 @@ namespace Io {
         cluster.m_commandVector.set(commandStrings);
         return in;
     }
-} // namespace Io
+} // namespace io

@@ -2,8 +2,8 @@
 // Created by pc on 15-12-20.
 //
 
-#ifndef BLOCKS_GRIDXy_H
-#define BLOCKS_GRIDXy_H
+#ifndef BLOCKS_GRIDXY_H
+#define BLOCKS_GRIDXY_H
 
 #include <iostream>
 
@@ -58,4 +58,4 @@ namespace model {
     };
 } // namespace model
 
-#endif // BLOCKS_GRIDXy_H
+#endif // BLOCKS_GRIDXY_H

@@ -50,7 +50,7 @@ namespace view::widget {
 
     void CentralWidget::keyPressEvent(QKeyEvent* event) {
         if ((QApplication::keyboardModifiers() & Qt::ControlModifier) && event->key() == Qt::Key_E) {
-            using namespace Io;
+            using namespace io;
             std::cout << "===========================================================\n";
             std::cout << *m_mainViewStash->model() << '\n';
             std::cout << "===========================================================\n";
@@ -74,6 +74,8 @@ namespace view::widget {
                 break;
             case Qt::Key_Escape:
                 handleEscape();
+                break;
+            default:
                 break;
         }
     }
@@ -144,11 +146,11 @@ namespace view::widget {
         }
 
         if (m_phase == PHASE::MOVE) {
-            moveLoop(elapsed);
+            moveLoop(static_cast<size_t>(elapsed));
         } else if (m_phase == PHASE::INTERACT) {
-            interactLoop(elapsed);
+            interactLoop(static_cast<size_t>(elapsed));
         }
-        if (m_phaseTimer.elapsed() > m_timeStep) {
+        if (static_cast<quint64>(m_phaseTimer.elapsed()) > m_timeStep) {
             qDebug() << m_phaseTimer.elapsed();
             m_elapsedTimer.restart();
             m_phaseTimer.restart();
@@ -273,7 +275,7 @@ namespace view::widget {
     void CentralWidget::paintEvent(QPaintEvent* event) {
         QWidget::paintEvent(event);
 
-        m_circularBuffer.add(m_frameRateTimer.elapsed());
+        m_circularBuffer.add(static_cast<size_t>(m_frameRateTimer.elapsed()));
         m_frameRateLabel->setText(QString("Ave:\t %1\n"
                                           "Max:\t %2\n"
                                           "Min:\t %3\n")
@@ -284,7 +286,7 @@ namespace view::widget {
     }
 
     void CentralWidget::saveLevel() {
-        using namespace Io;
+        using namespace io;
 
         std::ofstream levelFile;
         levelFile.open("levels/level1.lev", std::fstream::trunc);
@@ -294,10 +296,6 @@ namespace view::widget {
 
     Window* CentralWidget::mainWindow() const {
         return m_window;
-    }
-
-    void CentralWidget::setWindow(Window* window) {
-        m_window = window;
     }
 
 } // namespace view::widget

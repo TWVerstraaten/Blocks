@@ -8,32 +8,29 @@
 #include "../../audio/AudioSettings.h"
 #include "../../misc/defines.h"
 #include "../FontManager.h"
-#include "Window.h"
 
 #include <QComboBox>
 #include <QDebug>
-#include <QFormLayout>
 #include <QLabel>
-#include <QSlider>
 
 namespace view::widget {
 
     template <typename T>
     static void set(const T& value, const QString& nameInIni) {
-        Io::SettingsManager::settings().setValue(nameInIni, value);
+        io::SettingsManager::settings().setValue(nameInIni, value);
     }
 
     double getValue(const QString& name) {
-        return Io::SettingsManager::settings().value(name).toFloat();
+        return io::SettingsManager::settings().value(name).toFloat();
     }
 
     template <typename T>
     void readOrWrite(const QString& name, const T fallBack, void (*f)(T)) {
-        if (Io::SettingsManager::settings().contains(name)) {
+        if (io::SettingsManager::settings().contains(name)) {
             f(getValue(name));
         } else {
             set(fallBack, name);
-            assert(Io::SettingsManager::settings().contains(name));
+            assert(io::SettingsManager::settings().contains(name));
         }
     }
 
@@ -56,7 +53,7 @@ namespace view::widget {
         m_layout->addRow(label, slider);
     }
 
-    void addSettingWithComboBox(QFormLayout*                                            m_layout,
+    void addSettingWithComboBox(QFormLayout*                                            layout,
                                 QWidget*                                                parent,
                                 const QString&                                          name,
                                 const QList<QPair<QString, std::function<void(void)>>>& entries) {
@@ -64,26 +61,27 @@ namespace view::widget {
         auto* label = new QLabel(name, parent);
         label->setFont(FontManager::font(FONT_ENUM::ANON_PRO_ITALIC, 13));
 
-        if (not Io::SettingsManager::settings().contains(name)) {
-            Io::SettingsManager::settings().setValue(name, 0);
+        if (not io::SettingsManager::settings().contains(name)) {
+            io::SettingsManager::settings().setValue(name, 0);
         }
 
-        assert(Io::SettingsManager::settings().contains(name));
-        const quint32 value = Io::SettingsManager::settings().value(name).toUInt();
-        assert(value < entries.size());
+        assert(io::SettingsManager::settings().contains(name));
+        const quint32 value = io::SettingsManager::settings().value(name).toUInt();
+        assert(value < static_cast<quint32>(entries.size()));
         (entries.at(value).second)();
 
         auto* comboBox = new QComboBox(parent);
-        for (const auto& [name, func] : entries) {
-            comboBox->addItem(name);
+        for (const auto& [entry, func] : entries) {
+            comboBox->addItem(entry);
         }
         comboBox->setCurrentIndex(value);
 
         QWidget::connect(comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
             assert(index < entries.size());
             (entries.at(index).second)();
+            set(index, name);
         });
-        m_layout->addRow(label, comboBox);
+        layout->addRow(label, comboBox);
     }
 
     SettingsWidget::SettingsWidget(QWidget* parent, Window* window) : QWidget(parent) {

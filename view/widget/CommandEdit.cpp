@@ -2,7 +2,6 @@
 
 #include "../../model/Model.h"
 #include "../FontManager.h"
-#include "../color.h"
 #include "CentralWidget.h"
 #include "TextEdit.h"
 #include "TextEditSideBar.h"
@@ -35,7 +34,7 @@ namespace view::widget {
         m_lineWidget->setWidth(30);
         m_lineWidget->setLineHeight(m_textEdit->lineHeight());
         m_lineWidget->setTopMargin(m_textEdit->topMargin());
-        m_lineWidget->fillLineNumbers(m_textEdit->document()->blockCount());
+        m_lineWidget->fillLineNumbers(static_cast<size_t>(m_textEdit->document()->blockCount()));
 
         connectSignals();
 
@@ -98,7 +97,7 @@ namespace view::widget {
     }
 
     void CommandEdit::connectSignals() {
-        connect(m_textEdit, &TextEdit::textChanged, [this]() { m_lineWidget->fillLineNumbers(m_textEdit->document()->blockCount()); });
+        connect(m_textEdit, &TextEdit::textChanged, [this]() { m_lineWidget->fillLineNumbers(static_cast<size_t>(m_textEdit->document()->blockCount())); });
         m_textEdit->connectSignals();
         connect(m_textEdit, &TextEdit::textChanged, this, &CommandEdit::updateCommandVector);
     }
