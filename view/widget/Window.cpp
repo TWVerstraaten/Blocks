@@ -64,23 +64,22 @@ namespace view::widget {
     }
 
     void Window::setWindowMode(WINDOW_MODE mode) {
-        hide();
         switch (mode) {
             case WINDOW_MODE::FULL_SCREEN:
                 showFullScreen();
                 setWindowFlags(windowFlags() & (~Qt::FramelessWindowHint));
                 break;
             case WINDOW_MODE::BORDERLESS:
+                hide();
                 showMaximized();
                 setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
+                show();
                 break;
             case WINDOW_MODE::MAXIMIZED:
-                showMaximized();
                 setWindowFlags(windowFlags() & (~Qt::FramelessWindowHint));
+                showMaximized();
                 break;
         }
-        show();
-        assert((~Qt::FramelessWindowHint) + Qt::FramelessWindowHint + 1 == 0);
     }
 
 } // namespace view::widget

@@ -22,4 +22,5 @@ namespace model {
                                                    FLOOR_BLOCK_TYPE::START,
                                                    FLOOR_BLOCK_TYPE::SPLICE};
 } // namespace model
+
 #endif // BLOCKS_BLOCKTYPE_TYPEDEF_H

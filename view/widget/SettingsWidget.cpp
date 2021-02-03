@@ -87,7 +87,6 @@ namespace view::widget {
     SettingsWidget::SettingsWidget(QWidget* parent, Window* window) : QWidget(parent) {
         connect(this, &SettingsWidget::windowModeChanged, window, &Window::setWindowMode);
         setMaximumWidth(500);
-        setFont(FontManager::font(FONT_ENUM::ANON_PRO_BOLD, 13));
         m_formLayout = new QFormLayout(this);
 
         addDivider("Audio Settings");
@@ -112,7 +111,7 @@ namespace view::widget {
 
     void SettingsWidget::addDivider(const QString& string) {
         auto* l = new QLabel(string, this);
-        l->setFont(FontManager::font(FONT_ENUM::ANON_PRO_BOLD, 15));
+        l->setFont(FontManager::font(FONT_ENUM::ANON_PRO_ITALIC, 17));
         m_formLayout->addRow(l, new QWidget(this));
     }
 
