@@ -37,14 +37,12 @@ namespace view::widget {
         ~CentralWidget() override;
 
         void keyPressEvent(QKeyEvent* event) override;
-
         void mousePressEvent(QMouseEvent* event) override;
         void mouseReleaseEvent(QMouseEvent* event) override;
 
         void addAction(action::Action* action);
         void startActionGlob();
         void stopActionGlob();
-
         void setWindow(Window* window);
 
         [[nodiscard]] BlockSelectWidget* blockSelectWidget() const;
@@ -57,7 +55,7 @@ namespace view::widget {
         void redo();
 
       signals:
-        void quit();
+        void stopLevel();
 
       protected:
         void paintEvent(QPaintEvent* event) override;

@@ -1,5 +1,6 @@
 #include "Window.h"
 
+#include "../../Io/SettingsManager.h"
 #include "../../audio/AudioManager.h"
 #include "CentralWidget.h"
 #include "MainMenuWidget.h"
@@ -7,44 +8,48 @@
 #include <QEvent>
 #include <QFile>
 #include <QKeyEvent>
-
 namespace view::widget {
 
     Window::Window(QWidget* parent) : QMainWindow(parent) {
+        setMinimumWidth(600);
+        setMinimumHeight(600);
+        resize(1000, 800);
 
         QFile file(":/assets/stylesheet.qss");
         file.open(QFile::ReadOnly);
         assert(file.isOpen());
         setStyleSheet(QLatin1String(file.readAll()));
 
+        audio::AudioManager::init(this);
+
+        m_mainMenuWidget = new MainMenuWidget(this);
+        m_mainMenuWidget->installEventFilter(this);
         toMainMenu();
 
-        audio::AudioManager::init(this);
         setWindowTitle(tr("Blocks"));
-        resize(1000, 800);
     }
 
     void Window::toMainMenu() {
-        auto* mainMenuWidget = new widget::MainMenuWidget(this);
-        mainMenuWidget->installEventFilter(this);
-        connect(mainMenuWidget->levelSelectWidget(), &widget::LevelSelectWidget::levelSelected, this, &Window::startLevel);
-        setCentralWidget(mainMenuWidget);
+        m_mainMenuWidget->setParent(this);
+        connect(m_mainMenuWidget->levelSelectWidget(), &widget::LevelSelectWidget::levelSelected, this, &Window::startLevel);
+        setCentralWidget(m_mainMenuWidget);
     }
 
     void Window::startLevel(const std::string& path) {
+        m_mainMenuWidget->setParent(nullptr);
         auto* centralWidget = new CentralWidget(path, this);
         connect(this, &Window::undo, centralWidget, &CentralWidget::undo);
         connect(this, &Window::redo, centralWidget, &CentralWidget::redo);
         centralWidget->installEventFilter(this);
-        connect(centralWidget, &CentralWidget::quit, this, &Window::toMainMenu);
+        connect(centralWidget, &CentralWidget::stopLevel, this, &Window::toMainMenu);
         setCentralWidget(centralWidget);
+        centralWidget->setFocus();
     }
 
-    bool Window::eventFilter([[maybe_unused]] QObject* watched, QEvent* event) {
+    bool Window::eventFilter(QObject* watched, QEvent* event) {
         if (event->type() != QEvent::KeyPress) {
             return false;
         }
-
         auto*        keyEvent = dynamic_cast<QKeyEvent*>(event);
         QKeySequence keySequence{static_cast<int>(keyEvent->modifiers()) + keyEvent->key()};
 
@@ -56,6 +61,26 @@ namespace view::widget {
             return true;
         }
         return false;
+    }
+
+    void Window::setWindowMode(WINDOW_MODE mode) {
+        hide();
+        switch (mode) {
+            case WINDOW_MODE::FULL_SCREEN:
+                showFullScreen();
+                setWindowFlags(windowFlags() & (~Qt::FramelessWindowHint));
+                break;
+            case WINDOW_MODE::BORDERLESS:
+                showMaximized();
+                setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
+                break;
+            case WINDOW_MODE::MAXIMIZED:
+                showMaximized();
+                setWindowFlags(windowFlags() & (~Qt::FramelessWindowHint));
+                break;
+        }
+        show();
+        assert((~Qt::FramelessWindowHint) + Qt::FramelessWindowHint + 1 == 0);
     }
 
 } // namespace view::widget

@@ -7,23 +7,22 @@
 #include "AudioManager.h"
 
 namespace audio {
-    AudioSettings::AudioSettings() = default;
 
-    float AudioSettings::soundEffectsVolume() const {
-        return m_soundEffectVolume;
+    double AudioSettings::soundEffectsVolume() {
+        return s_soundEffectVolume;
     }
 
-    int AudioSettings::musicVolume() const {
-        return m_musicVolume;
+    int AudioSettings::musicVolume() {
+        return s_musicVolume;
     }
 
-    void AudioSettings::setSoundEffectVolume(float soundEffectVolume) {
-        m_soundEffectVolume = soundEffectVolume;
-        AudioManager::setSoundEffectVolume(m_soundEffectVolume);
+    void AudioSettings::setSoundEffectVolume(double soundEffectVolume) {
+        s_soundEffectVolume = soundEffectVolume;
+        AudioManager::setSoundEffectVolume(s_soundEffectVolume);
     }
 
     void AudioSettings::setMusicVolume(int musicVolume) {
         AudioManager::setMusicVolume(musicVolume);
-        m_musicVolume = musicVolume;
+        s_musicVolume = musicVolume;
     }
 } // namespace audio

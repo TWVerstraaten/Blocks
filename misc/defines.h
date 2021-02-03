@@ -26,6 +26,7 @@
 #define D_CIT(x) x.cbegin(), x.cend()
 #define D_FUNC(name, f) [&]([[maybe_unused]] const auto& name) { return f; }
 #define D_VOID_FUNC(name, f) [&]([[maybe_unused]] const auto& name) { f }
+#define D_THIS_FUNC(f) [this]() { f }
 #define D_FUNC_2(name1, name2, f) [&]([[maybe_unused]] const auto& name1, [[maybe_unused]] const auto& name2) { return f; }
 
 #endif // BLOCKS_DEFINES_H

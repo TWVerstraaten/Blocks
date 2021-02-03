@@ -22,7 +22,7 @@ namespace audio {
       private:
         friend class AudioSettings;
 
-        static void setSoundEffectVolume(float soundEffectVolume);
+        static void setSoundEffectVolume(double soundEffectVolume);
         static void setMusicVolume(int musicVolume);
         static void addSoundEffect(SOUNDS sound);
 

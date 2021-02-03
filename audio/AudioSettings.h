@@ -10,17 +10,15 @@ namespace audio {
     class AudioSettings {
 
       public:
-        AudioSettings();
+        [[nodiscard]] static double soundEffectsVolume();
+        [[nodiscard]] static int    musicVolume();
 
-        [[nodiscard]] float soundEffectsVolume() const;
-        [[nodiscard]] int   musicVolume() const;
-
-        void setSoundEffectVolume(float soundEffectVolume);
-        void setMusicVolume(int musicVolume);
+        static void setSoundEffectVolume(double soundEffectVolume);
+        static void setMusicVolume(int musicVolume);
 
       private:
-        float m_soundEffectVolume = 0.3f;
-        int   m_musicVolume       = 0;
+        inline static double s_soundEffectVolume = 0.3f;
+        inline static int    s_musicVolume       = 40;
     };
 
 } // namespace audio

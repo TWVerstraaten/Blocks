@@ -173,7 +173,7 @@ namespace view::widget {
             m_mode = MODE::EDITING;
             stopRunning();
         } else {
-            emit quit();
+            emit stopLevel();
         }
     }
 

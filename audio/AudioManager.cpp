@@ -45,7 +45,7 @@ namespace audio {
         s_soundEffects[sound]->setLoopCount(1);
     }
 
-    void AudioManager::setSoundEffectVolume(float soundEffectVolume) {
+    void AudioManager::setSoundEffectVolume(double soundEffectVolume) {
         assert(s_isInitialized);
         for (auto& [_, soundEffect] : s_soundEffects) {
             soundEffect->setVolume(soundEffectVolume);

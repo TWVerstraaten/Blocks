@@ -11,9 +11,11 @@
 
 namespace view::widget {
 
+    class Window;
+
     class MainMenuWidget : public QTabWidget {
       public:
-        explicit MainMenuWidget(QWidget* parent);
+        explicit MainMenuWidget(Window* parent);
 
         [[nodiscard]] LevelSelectWidget* levelSelectWidget() const;
 

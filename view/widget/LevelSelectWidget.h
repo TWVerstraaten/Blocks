@@ -25,6 +25,8 @@ namespace view::widget {
         void populatePreviewWidget(const QString& path);
 
       private:
+        void buildScrollArea();
+
         QHBoxLayout* m_hBoxLayout;
         QWidget*     m_rightWidget;
     };

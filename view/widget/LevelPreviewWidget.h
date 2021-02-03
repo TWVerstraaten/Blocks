@@ -5,6 +5,7 @@
 #ifndef BLOCKS_LEVELPREVIEWWIDGET_H
 #define BLOCKS_LEVELPREVIEWWIDGET_H
 
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QWidget>
 
@@ -21,15 +22,15 @@ namespace view::widget {
 
         void levelSelected(const std::string& path);
 
-      private slots:
-
-        void populatePreview(const QString& string);
-
       private:
+        void buildScrollArea();
+        void buildPreviewLabel();
+
         bool eventFilter(QObject* watched, QEvent* event) override;
 
         const QString m_path;
-        QLabel*       m_label = nullptr;
+        QLabel*       m_label  = nullptr;
+        QHBoxLayout*  m_layout = nullptr;
     };
 
 } // namespace view::widget
