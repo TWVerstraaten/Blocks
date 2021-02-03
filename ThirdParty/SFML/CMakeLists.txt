@@ -71,10 +71,10 @@ else()
 endif()
 
 # add options to select which modules to build
-sfml_set_option(SFML_BUILD_WINDOW TRUE BOOL "TRUE to build SFML's Window module. This setting is ignored, if the graphics module is built.")
-sfml_set_option(SFML_BUILD_GRAPHICS TRUE BOOL "TRUE to build SFML's Graphics module.")
+sfml_set_option(SFML_BUILD_WINDOW FALSE BOOL "TRUE to build SFML's Window module. This setting is ignored, if the graphics module is built.")
+sfml_set_option(SFML_BUILD_GRAPHICS FALSE BOOL "TRUE to build SFML's Graphics module.")
 sfml_set_option(SFML_BUILD_AUDIO TRUE BOOL "TRUE to build SFML's Audio module.")
-sfml_set_option(SFML_BUILD_NETWORK TRUE BOOL "TRUE to build SFML's Network module.")
+sfml_set_option(SFML_BUILD_NETWORK FALSE BOOL "TRUE to build SFML's Network module.")
 
 # add an option for building the API documentation
 sfml_set_option(SFML_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation, FALSE to ignore it")

@@ -33,6 +33,7 @@ namespace model {
         [[nodiscard]] bool noLiveOrStoppedClusterOnBlock(const GridXy& gridXy) const;
 
         /****** NON CONST FUNCTIONS  ******/
+        void                           initEmpty();
         void                           init(const std::string& path);
         void                           clear();
         void                           resetPhase();
@@ -53,7 +54,6 @@ namespace model {
         /****** PRIVATE NON CONST FUNCTIONS  ******/
         void intersectWithLevel();
         void intersectClusters();
-        void initEmpty();
         void updateInternal(double dPhase);
 
         /****** DATA MEMBERS  ******/

@@ -11,6 +11,7 @@
 
 #include <QComboBox>
 #include <QDebug>
+#include <QFormLayout>
 #include <QLabel>
 
 namespace view::widget {
@@ -25,29 +26,30 @@ namespace view::widget {
     }
 
     template <typename T>
-    void readOrWrite(const QString& name, const T fallBack, void (*f)(T)) {
+    T readOrWrite(const QString& name, const T fallBack, void (*f)(T)) {
         if (io::SettingsManager::settings().contains(name)) {
-            f(getValue(name));
+            const T t = getValue(name);
+            f(t);
+            return t;
         } else {
             set(fallBack, name);
             assert(io::SettingsManager::settings().contains(name));
+            return fallBack;
         }
     }
 
     template <typename T>
-    static void addSettingWithSlider(QFormLayout* m_layout, QWidget* parent, const QString& name, const T fallBack, T min, T max, void (*f)(T)) {
+    static void addSettingWithSlider(QFormLayout* m_layout, QWidget* parent, const QString& name, const T fallBack, T min, T max, void (*setter)(T)) {
         auto* label = new QLabel(name, parent);
         label->setFont(FontManager::font(FONT_ENUM::ANON_PRO_ITALIC, 13));
         auto* slider = new QSlider(Qt::Horizontal, parent);
         assert(slider->minimum() == 0);
         slider->setMaximum(100);
 
-        readOrWrite(name, fallBack, f);
-
-        slider->setValue(100.0 * (min + fallBack) / (max - min));
-        QWidget::connect(slider, &QSlider::valueChanged, [min, max, name, f, slider](int value) {
+        slider->setValue(100.0 * (min + readOrWrite(name, fallBack, setter)) / (max - min));
+        QWidget::connect(slider, &QSlider::valueChanged, [min, max, name, setter](int value) {
             T newValue = static_cast<T>(min + (value / 100.0) * (max - min));
-            (*f)(newValue);
+            (*setter)(newValue);
             set(newValue, name);
         });
         m_layout->addRow(label, slider);
@@ -84,35 +86,29 @@ namespace view::widget {
         layout->addRow(label, comboBox);
     }
 
+    static void addDivider(QFormLayout* layout, QWidget* parent, const QString& string) {
+        auto* l = new QLabel(string, parent);
+        l->setFont(FontManager::font(FONT_ENUM::ANON_PRO_ITALIC, 17));
+        layout->addRow(l, new QWidget(parent));
+    }
+
     SettingsWidget::SettingsWidget(QWidget* parent, Window* window) : QWidget(parent) {
         connect(this, &SettingsWidget::windowModeChanged, window, &Window::setWindowMode);
         setMaximumWidth(500);
-        m_formLayout = new QFormLayout(this);
+        auto* layout = new QFormLayout(this);
 
-        addDivider("Audio Settings");
+        addDivider(layout, this, "Audio Settings");
         addSettingWithSlider(
-            m_formLayout, this, "Sound fx volume", audio::AudioSettings::soundEffectsVolume(), 0, 100, &audio::AudioSettings::setSoundEffectVolume);
-        addSettingWithSlider(m_formLayout, this, "Music volume", audio::AudioSettings::musicVolume(), 0, 100, &audio::AudioSettings::setMusicVolume);
+            layout, this, "Sound fx volume", audio::AudioSettings::soundEffectsVolume(), 0, 100, &audio::AudioSettings::setSoundEffectVolume);
+        addSettingWithSlider(layout, this, "Music volume", audio::AudioSettings::musicVolume(), 0, 100, &audio::AudioSettings::setMusicVolume);
 
-        addDivider("window Settings");
-        addSettingWithComboBox(m_formLayout,
+        addDivider(layout, this, "window Settings");
+        addSettingWithComboBox(layout,
                                this,
                                "Window mode",
-                               {
-
-                                   {"Maximized", D_THIS_FUNC(emit windowModeChanged(WINDOW_MODE::MAXIMIZED);)},
-                                   {"Fullscreen", D_THIS_FUNC(emit windowModeChanged(WINDOW_MODE::FULL_SCREEN);)},
-                                   {"Borderless", D_THIS_FUNC(emit windowModeChanged(WINDOW_MODE::BORDERLESS);)}
-
-                               });
-
-        setLayout(m_formLayout);
-    }
-
-    void SettingsWidget::addDivider(const QString& string) {
-        auto* l = new QLabel(string, this);
-        l->setFont(FontManager::font(FONT_ENUM::ANON_PRO_ITALIC, 17));
-        m_formLayout->addRow(l, new QWidget(this));
+                               {{"Maximized", D_THIS_FUNC(emit windowModeChanged(WINDOW_MODE::MAXIMIZED);)},
+                                {"Fullscreen", D_THIS_FUNC(emit windowModeChanged(WINDOW_MODE::FULL_SCREEN);)},
+                                {"Borderless", D_THIS_FUNC(emit windowModeChanged(WINDOW_MODE::BORDERLESS);)}});
     }
 
 } // namespace view::widget

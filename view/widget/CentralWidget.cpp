@@ -201,6 +201,7 @@ namespace view::widget {
     }
 
     void CentralWidget::startRunning() {
+        m_mainViewStash->model()->level().buildSides();
         m_mode  = MODE::RUNNING;
         m_phase = PHASE::MOVE;
 

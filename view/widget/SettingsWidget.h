@@ -8,13 +8,11 @@
 #include "Window.h"
 #include "Window_enums.h"
 
-#include <QFormLayout>
 #include <QWidget>
 
 namespace view::widget {
 
     class SettingsWidget : public QWidget {
-
         Q_OBJECT
 
       public:
@@ -22,10 +20,6 @@ namespace view::widget {
 
       signals:
         void windowModeChanged(WINDOW_MODE mode);
-
-      private:
-        void         addDivider(const QString& string);
-        QFormLayout* m_formLayout;
     };
 
 } // namespace view::widget

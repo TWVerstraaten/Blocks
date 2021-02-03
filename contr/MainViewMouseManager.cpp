@@ -48,7 +48,13 @@ namespace contr {
                 m_previousMousePosition = currentMousePosition;
                 break;
             case Qt::LeftButton:
-                if (m_previousGridPosition != currentGridPosition && (not m_blockEditing)) {
+                if (m_blockEditing) {
+                    return;
+                }
+                if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+                    std::visit([this](const auto& a) { removeBlock(m_previousGridPosition, a); },
+                               m_centralWidget->blockSelectWidget()->selectedBlockType());
+                } else if (m_previousGridPosition != currentGridPosition) {
                     std::visit([this, currentGridPosition](const auto& a) { mouseLeftDragEvent(currentGridPosition, a); },
                                m_centralWidget->blockSelectWidget()->selectedBlockType());
                 }

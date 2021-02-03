@@ -15,7 +15,7 @@ namespace audio {
 
       public:
         SoundEffect() = default;
-        SoundEffect(const std::string& path);
+        explicit SoundEffect(const std::string& path);
 
         void play();
 

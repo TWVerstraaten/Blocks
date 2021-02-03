@@ -8,16 +8,17 @@
 
 namespace audio {
     bool                          AudioManager::s_isInitialized = false;
-    AudioSettings                 AudioManager::s_audioSettings;
     std::map<SOUNDS, SoundEffect> AudioManager::s_soundEffects;
+    std::unique_ptr<Music>        AudioManager::s_music;
 
     void AudioManager::init() {
         assert(not s_isInitialized);
         s_isInitialized = true;
 
         addSoundEffect(SOUNDS::CLICK);
-
-        //        s_musicPlayer->setVolume(s_audioSettings.musicVolume());
+        s_music = std::make_unique<Music>("dat/audio/music/song2.wav");
+        s_music->setVolume(AudioSettings::musicVolume());
+        s_music->play();
     }
 
     void AudioManager::play(SOUNDS sound) {
@@ -38,7 +39,7 @@ namespace audio {
                 break;
         }
         s_soundEffects.insert({sound, SoundEffect(url)});
-        s_soundEffects[sound].setVolume(s_audioSettings.soundEffectsVolume());
+        s_soundEffects[sound].setVolume(AudioSettings::soundEffectsVolume());
     }
 
     void AudioManager::setSoundEffectVolume(double soundEffectVolume) {
@@ -50,6 +51,6 @@ namespace audio {
 
     void AudioManager::setMusicVolume(int musicVolume) {
         assert(s_isInitialized);
-//        s_musicPlayer->setVolume(musicVolume);
+        s_music->setVolume(musicVolume);
     }
 } // namespace audio

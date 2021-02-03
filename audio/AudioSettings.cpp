@@ -25,4 +25,5 @@ namespace audio {
         AudioManager::setMusicVolume(musicVolume);
         s_musicVolume = musicVolume;
     }
+
 } // namespace audio

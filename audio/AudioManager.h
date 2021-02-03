@@ -7,9 +7,11 @@
 
 #include "AudioSettings.h"
 #include "Audio_enums.h"
+#include "Music.h"
 #include "SoundEffect.h"
 
 #include <map>
+#include <memory>
 
 namespace audio {
 
@@ -27,8 +29,8 @@ namespace audio {
         static void addSoundEffect(SOUNDS sound);
 
         static bool                          s_isInitialized;
-        static AudioSettings                 s_audioSettings;
         static std::map<SOUNDS, SoundEffect> s_soundEffects;
+        static std::unique_ptr<Music>        s_music;
     };
 } // namespace audio
 

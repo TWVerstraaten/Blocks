@@ -10,8 +10,8 @@ namespace audio {
     class AudioSettings {
 
       public:
-        [[nodiscard]] static int    soundEffectsVolume();
-        [[nodiscard]] static int    musicVolume();
+        [[nodiscard]] static int soundEffectsVolume();
+        [[nodiscard]] static int musicVolume();
 
         static void setSoundEffectVolume(int soundEffectVolume);
         static void setMusicVolume(int musicVolume);
