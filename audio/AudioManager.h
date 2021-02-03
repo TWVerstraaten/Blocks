@@ -7,16 +7,16 @@
 
 #include "AudioSettings.h"
 #include "Audio_enums.h"
+#include "SoundEffect.h"
 
-#include <QMediaPlayer>
-#include <QSoundEffect>
+#include <map>
 
 namespace audio {
 
     class AudioManager {
 
       public:
-        static void init(QObject* parent);
+        static void init();
         static void play(SOUNDS sound);
 
       private:
@@ -26,10 +26,9 @@ namespace audio {
         static void setMusicVolume(int musicVolume);
         static void addSoundEffect(SOUNDS sound);
 
-        static bool                            s_isInitialized;
-        static AudioSettings                   s_audioSettings;
-        static QMediaPlayer*                   s_musicPlayer;
-        static std::map<SOUNDS, QSoundEffect*> s_soundEffects;
+        static bool                          s_isInitialized;
+        static AudioSettings                 s_audioSettings;
+        static std::map<SOUNDS, SoundEffect> s_soundEffects;
     };
 } // namespace audio
 

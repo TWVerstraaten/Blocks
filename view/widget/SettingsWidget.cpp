@@ -91,7 +91,7 @@ namespace view::widget {
 
         addDivider("Audio Settings");
         addSettingWithSlider(
-            m_formLayout, this, "Sound fx volume", audio::AudioSettings::soundEffectsVolume(), 0.0, 1.0, &audio::AudioSettings::setSoundEffectVolume);
+            m_formLayout, this, "Sound fx volume", audio::AudioSettings::soundEffectsVolume(), 0, 100, &audio::AudioSettings::setSoundEffectVolume);
         addSettingWithSlider(m_formLayout, this, "Music volume", audio::AudioSettings::musicVolume(), 0, 100, &audio::AudioSettings::setMusicVolume);
 
         addDivider("window Settings");

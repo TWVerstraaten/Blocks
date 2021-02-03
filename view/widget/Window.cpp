@@ -20,7 +20,7 @@ namespace view::widget {
         assert(file.isOpen());
         setStyleSheet(QLatin1String(file.readAll()));
 
-        audio::AudioManager::init(this);
+        audio::AudioManager::init();
 
         m_mainMenuWidget = new MainMenuWidget(this);
         m_mainMenuWidget->installEventFilter(this);

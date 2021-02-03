@@ -8,7 +8,7 @@
 
 namespace audio {
 
-    double AudioSettings::soundEffectsVolume() {
+    int AudioSettings::soundEffectsVolume() {
         return s_soundEffectVolume;
     }
 
@@ -16,7 +16,7 @@ namespace audio {
         return s_musicVolume;
     }
 
-    void AudioSettings::setSoundEffectVolume(double soundEffectVolume) {
+    void AudioSettings::setSoundEffectVolume(int soundEffectVolume) {
         s_soundEffectVolume = soundEffectVolume;
         AudioManager::setSoundEffectVolume(s_soundEffectVolume);
     }

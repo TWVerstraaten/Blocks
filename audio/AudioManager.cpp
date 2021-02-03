@@ -4,56 +4,52 @@
 
 #include "AudioManager.h"
 
-namespace audio {
-    bool                            AudioManager::s_isInitialized = false;
-    AudioSettings                   AudioManager::s_audioSettings;
-    QMediaPlayer*                   AudioManager::s_musicPlayer = nullptr;
-    std::map<SOUNDS, QSoundEffect*> AudioManager::s_soundEffects;
+#include <cassert>
 
-    void AudioManager::init(QObject* parent) {
+namespace audio {
+    bool                          AudioManager::s_isInitialized = false;
+    AudioSettings                 AudioManager::s_audioSettings;
+    std::map<SOUNDS, SoundEffect> AudioManager::s_soundEffects;
+
+    void AudioManager::init() {
         assert(not s_isInitialized);
-        s_musicPlayer   = new QMediaPlayer(parent);
         s_isInitialized = true;
 
         addSoundEffect(SOUNDS::CLICK);
-        s_musicPlayer->setMedia(QUrl("qrc:/assets/song2.mp3"));
-        s_musicPlayer->setVolume(s_audioSettings.musicVolume());
-        s_musicPlayer->play();
+
+        //        s_musicPlayer->setVolume(s_audioSettings.musicVolume());
     }
 
     void AudioManager::play(SOUNDS sound) {
         if (s_soundEffects.find(sound) == s_soundEffects.end()) {
             addSoundEffect(sound);
         }
-        s_soundEffects[sound]->play();
+        s_soundEffects[sound].play();
     }
 
     void AudioManager::addSoundEffect(SOUNDS sound) {
         assert(s_isInitialized);
         assert(s_soundEffects.find(sound) == s_soundEffects.end());
 
-        QUrl url;
+        std::string url;
         switch (sound) {
             case SOUNDS::CLICK:
-                url = QUrl("qrc:/assets/click.wav");
+                url = "dat/audio/fx/click.wav";
                 break;
         }
-
-        s_soundEffects[sound] = new QSoundEffect{s_musicPlayer->parent()};
-        s_soundEffects[sound]->setSource(url);
-        s_soundEffects[sound]->setVolume(s_audioSettings.soundEffectsVolume());
-        s_soundEffects[sound]->setLoopCount(1);
+        s_soundEffects.insert({sound, SoundEffect(url)});
+        s_soundEffects[sound].setVolume(s_audioSettings.soundEffectsVolume());
     }
 
     void AudioManager::setSoundEffectVolume(double soundEffectVolume) {
         assert(s_isInitialized);
         for (auto& [_, soundEffect] : s_soundEffects) {
-            soundEffect->setVolume(soundEffectVolume);
+            soundEffect.setVolume(soundEffectVolume);
         }
     }
 
     void AudioManager::setMusicVolume(int musicVolume) {
         assert(s_isInitialized);
-        s_musicPlayer->setVolume(musicVolume);
+//        s_musicPlayer->setVolume(musicVolume);
     }
 } // namespace audio

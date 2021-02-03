@@ -10,6 +10,7 @@
 #include "BlockSelectWidget.h"
 
 #include <QApplication>
+#include <QDebug>
 #include <QTimer>
 #include <QUndoView>
 
@@ -247,9 +248,9 @@ namespace view::widget {
     }
 
     void CentralWidget::endMovePhase() {
-        if (m_timeStep != app::TIME_STEP_FAST) {
-            audio::AudioManager::play(audio::SOUNDS::CLICK);
-        }
+        //        if (m_timeStep != app::TIME_STEP_FAST) {
+        audio::AudioManager::play(audio::SOUNDS::CLICK);
+        //        }
         for (auto& cluster : m_mainViewStash->model()->clusters()) {
             cluster.incrementCommandIndex();
         }
@@ -257,9 +258,9 @@ namespace view::widget {
     }
 
     void CentralWidget::endInteractPhase() {
-        if (m_timeStep != app::TIME_STEP_FAST) {
-            audio::AudioManager::play(audio::SOUNDS::CLICK);
-        }
+        //        if (m_timeStep != app::TIME_STEP_FAST) {
+        audio::AudioManager::play(audio::SOUNDS::CLICK);
+        //        }
         startMovePhase();
     }
 
