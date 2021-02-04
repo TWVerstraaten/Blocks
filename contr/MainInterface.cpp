@@ -112,6 +112,12 @@ namespace contr {
                 model.stoppedClusterContaining(r)->removeGridXy(r);
             }
         }
+
+        for (auto& stopped : model.level().stoppedClusters()) {
+            newCluster.copyGridXy(stopped);
+        }
+        model.level().stoppedClusters().clear();
+
         if (not newCluster.isEmpty()) {
             std::vector<Cluster> newClusters;
             newClusters.emplace_back(std::move(newCluster));
@@ -120,13 +126,13 @@ namespace contr {
                 assert(not it.isEmpty());
                 assert(it.isConnected());
             }
-            for (auto& it : newClusters) {
-                const auto& neighbors = geom::neighbors(model.clusters(), it);
-                if (neighbors.size() == 1) {
-                    neighbors.front()->copyGridXy(it);
-                    it.clearGridXy();
-                }
-            }
+            //            for (auto& it : newClusters) {
+            //                const auto& neighbors = geom::neighbors(model.clusters(), it);
+            //                if (neighbors.size() == 1) {
+            //                    neighbors.front()->copyGridXy(it);
+            //                    it.clearGridXy();
+            //                }
+            //            }
             auto& stoppedClusters = model.level().stoppedClusters();
             stoppedClusters.reserve(stoppedClusters.size() + std::count_if(D_CIT(newClusters), D_FUNC(cluster, not cluster.isEmpty())));
 

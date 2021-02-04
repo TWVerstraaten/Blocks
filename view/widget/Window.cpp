@@ -1,13 +1,14 @@
 #include "Window.h"
 
-#include "../../Io/SettingsManager.h"
 #include "../../audio/AudioManager.h"
 #include "CentralWidget.h"
 #include "MainMenuWidget.h"
+#include "SettingsWidget.h"
 
 #include <QEvent>
 #include <QFile>
 #include <QKeyEvent>
+
 namespace view::widget {
 
     Window::Window(QWidget* parent) : QMainWindow(parent) {

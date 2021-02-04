@@ -72,7 +72,7 @@ namespace model {
 
         /****** NON CONST FUNCTIONS  ******/
         void                 addGridXy(const GridXy& gridXy);
-        void                 copyGridXy(model::Cluster& other);
+        void                 copyGridXy(const Cluster& other);
         void                 clearGridXy();
         void                 doCommand(Model& model);
         void                 update(double phaseFraction);
