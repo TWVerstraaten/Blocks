@@ -14,13 +14,17 @@
 
 namespace view {
 
-    class PixmapManager {
+    class PixmapManager : public QObject {
+        Q_OBJECT
 
       public:
         static const QPixmap& pixmap(BlockType type, const QSize& size);
 
+      public slots:
+        static void clear();
+
       private:
-        inline static std::map<std::tuple<BlockType, size_t, size_t>, QPixmap> m_pixmaps;
+        inline static std::map<std::tuple<BlockType, size_t, size_t>, QPixmap> s_pixmaps;
     };
 
 } // namespace view

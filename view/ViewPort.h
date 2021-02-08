@@ -11,14 +11,15 @@
 namespace view {
 
     class ViewPort {
+
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         ViewPort() = default;
 
         /****** CONST GETTERS  ******/
-        [[nodiscard]] int    blockSizeInScreen() const;
-        [[nodiscard]] int    xOffset() const;
-        [[nodiscard]] int    yOffset() const;
+        [[nodiscard]] int blockSizeInScreen() const;
+        [[nodiscard]] int xOffset() const;
+        [[nodiscard]] int yOffset() const;
 
         /****** CONST FUNCTIONS  ******/
         [[nodiscard]] int worldToScreen(int worldLength) const;
@@ -32,11 +33,10 @@ namespace view {
 
       private:
         /****** DATA MEMBERS  ******/
-        double m_scale                           = 1.0;
-        int    m_zoom                            = 0;
-        int    m_xOffset                         = 0;
-        int    m_yOffset                         = 0;
-        int    m_distanceBetweenBlocksInScreenXy = 2 * app::BLOCK_SHRINK_IN_WORLD;
+        double m_scale   = 1.0;
+        int    m_zoom    = 0;
+        int    m_xOffset = 0;
+        int    m_yOffset = 0;
     };
 } // namespace view
 #endif // BLOCKS_VIEWPORT_H

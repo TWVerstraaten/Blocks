@@ -6,6 +6,8 @@
 
 #include "AudioManager.h"
 
+#include <cassert>
+
 namespace audio {
 
     int AudioSettings::soundEffectsVolume() {
@@ -17,11 +19,13 @@ namespace audio {
     }
 
     void AudioSettings::setSoundEffectVolume(int soundEffectVolume) {
+        assert(soundEffectVolume <= 100 && soundEffectVolume >= 0);
         s_soundEffectVolume = soundEffectVolume;
         AudioManager::setSoundEffectVolume(s_soundEffectVolume);
     }
 
     void AudioSettings::setMusicVolume(int musicVolume) {
+        assert(musicVolume <= 100 && musicVolume >= 0);
         AudioManager::setMusicVolume(musicVolume);
         s_musicVolume = musicVolume;
     }

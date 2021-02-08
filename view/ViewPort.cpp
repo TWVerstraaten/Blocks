@@ -4,6 +4,9 @@
 
 #include "ViewPort.h"
 
+#include "../misc/defines.h"
+#include "PixmapManager.h"
+
 #include <cmath>
 
 namespace view {
@@ -18,6 +21,7 @@ namespace view {
         m_scale                         = std::exp(m_zoom / 1000.0);
         const auto translation          = ScreenXy::fromWorldXyAsVector(model::WorldXy::fromScreenXy(point, *this) - worldPointUnderMouse, *this);
         translate(translation.x(), translation.y());
+        PixmapManager::clear();
     }
 
     void ViewPort::translate(int dx, int dy) {
@@ -42,7 +46,10 @@ namespace view {
     }
 
     void ViewPort::setScale(double scale) {
-        m_scale = scale;
+        if (scale != m_scale) {
+            m_scale = scale;
+            PixmapManager::clear();
+        }
     }
 
     void ViewPort::setOffset(int xOffset, int yOffset) {

@@ -6,12 +6,18 @@
 
 #include "toPixmap.h"
 
+#include <QDebug>
+
 namespace view {
 
     const QPixmap& PixmapManager::pixmap(view::BlockType type, const QSize& size) {
-        if (m_pixmaps.find({type, size.width(), size.height()}) == m_pixmaps.end()) {
-            m_pixmaps[{type, size.width(), size.height()}] = toPixmapVariant(type, size);
+        if (s_pixmaps.find({type, size.width(), size.height()}) == s_pixmaps.end()) {
+            s_pixmaps[{type, size.width(), size.height()}] = toPixmapVariant(type, size);
         }
-        return m_pixmaps.at({type, size.width(), size.height()});
+        return s_pixmaps.at({type, size.width(), size.height()});
+    }
+
+    void PixmapManager::clear() {
+        s_pixmaps.clear();
     }
 } // namespace view
