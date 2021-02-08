@@ -48,7 +48,7 @@ namespace view::widget {
         for (const auto& stoppedCluster : model.level().stoppedClusters()) {
             drawConnected(stoppedCluster.gridXyVector(), color::CLUSTER_STOPPED, painter, viewPort);
         }
-        for (const auto& cluster : model.clusters()) {
+        for (auto& cluster : model.clusters()) {
             drawCluster(cluster, painter, viewPort, paintNames);
         }
         for (const auto& [point, type] : model.level().dynamicBlocks()) {
@@ -161,4 +161,4 @@ namespace view::widget {
 
         painter.restore();
     }
-} // namespace view
+} // namespace view::widget

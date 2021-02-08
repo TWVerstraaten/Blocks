@@ -12,9 +12,9 @@
 namespace view {
 
     QPixmap modelToPixmap(const std::string& path, const QSize& size) {
-        model::Model m;
-        m.init(path);
-        const auto& blocks = m.level().blocks(model::FLOOR_BLOCK_TYPE::LEVEL);
+        model::Model model;
+        model.init(path);
+        const auto& blocks = model.level().blocks(model::FLOOR_BLOCK_TYPE::LEVEL);
         const auto  minX   = geom::minX(blocks);
         const auto  minY   = geom::minY(blocks);
         const int   width  = 1 + geom::maxX(blocks) - minX;
@@ -33,7 +33,8 @@ namespace view {
         QPixmap     pixmap(size);
         const QRect rect{0, 0, size.width(), size.height()};
         QPainter    painter(&pixmap);
-        widget::MainViewPainter::paint(painter, rect, m, viewPort, false);
+        model.buildClusterSides();
+        widget::MainViewPainter::paint(painter, rect, model, viewPort, false);
         return pixmap;
     }
 } // namespace view

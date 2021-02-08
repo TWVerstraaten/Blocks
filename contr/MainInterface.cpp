@@ -177,10 +177,10 @@ namespace contr {
         model.clearEmpty();
     }
 
-    std::map<model::Cluster*, std::vector<model::Cluster*>> MainInterface::buildGrabberMap(Model& model) {
+    std::map<model::GridXyContainer*, std::vector<model::Cluster*>> MainInterface::buildGrabberMap(Model& model) {
         auto& clusters = model.clusters();
 
-        std::map<Cluster*, std::vector<Cluster*>> grabberMap;
+        std::map<GridXyContainer*, std::vector<Cluster*>> grabberMap;
         for (auto& cluster : clusters) {
             if (cluster.currentType() == model::COMMAND_TYPE::GRB) {
                 const auto neighbors = geom::neighbors(model.level().stoppedClusters(), cluster);

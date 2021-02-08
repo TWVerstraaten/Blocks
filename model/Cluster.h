@@ -8,6 +8,7 @@
 #include "../misc/AlignedRectangle.h"
 #include "Cluster_enums.h"
 #include "GridXy.h"
+#include "GridXyContainer.h"
 #include "Level_enums.h"
 #include "Model_typedefs.h"
 #include "PhaseTransformation.h"
@@ -15,10 +16,6 @@
 #include "WorldXy.h"
 #include "cmd/Command.h"
 #include "cmd/CommandVector.h"
-
-#include <functional>
-#include <list>
-#include <set>
 
 namespace io {
     std::istream& operator>>(std::istream& in, model::Cluster& cluster);
@@ -29,51 +26,36 @@ namespace model {
     class Level;
     class Model;
 
-    class Cluster {
+    class Cluster : public GridXyContainer {
+
         /****** PRIVATE STATIC DATA MEMBERS  ******/
         static size_t s_maxClusterIndex;
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         Cluster();
-        Cluster(GridXyVector&& gridXy, std::string name);
-        Cluster(const GridXy& gridXy, std::string name);
-        Cluster(GridXyVector&& gridXy, CommandVector commandVector, std::string name);
+        Cluster(GridXyContainer&& gridXyContainer, std::string name);
+        Cluster(GridXyContainer&& gridXyContainer, CommandVector commandVector, std::string name);
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] double               angle() const;
         [[nodiscard]] size_t               index() const;
-        [[nodiscard]] size_t               size() const;
         [[nodiscard]] CLUSTER_STATE        state() const;
-        [[nodiscard]] COMMAND_MODIFIER     currentModifier() const;
         [[nodiscard]] COMMAND_TYPE         currentType() const;
         [[nodiscard]] WorldXy              dynamicWorldOffset() const;
-        [[nodiscard]] WorldXy              approximateCenter() const;
         [[nodiscard]] std::string          string() const;
-        [[nodiscard]] WorldXyVector        cornerPoints(int shrinkInWorld) const;
-        [[nodiscard]] WorldLineVector      sides(int shrinkInWorld) const;
         [[nodiscard]] const std::string&   name() const;
-        [[nodiscard]] const GridXyVector&  gridXyVector() const;
         [[nodiscard]] const CommandVector& commandVector() const;
         [[nodiscard]] PHASE                phase() const;
 
         /****** CONST FUNCTIONS  ******/
-        void                                        buildSides() const;
-        [[nodiscard]] bool                          isEmpty() const;
         [[nodiscard]] bool                          isAlive() const;
-        [[nodiscard]] bool                          isConnected() const;
-        [[nodiscard]] bool                          isAdjacent(const Cluster& other) const;
-        [[nodiscard]] bool                          gridXyIsAdjacent(const GridXy& point) const;
-        [[nodiscard]] bool                          contains(const GridXy& gridXy) const;
         [[nodiscard]] bool                          intersects(const Cluster& other, int shrinkInWorld) const;
-        [[nodiscard]] bool                          isValid() const;
         [[nodiscard]] PhaseTransformation           phaseTransformation() const;
         [[nodiscard]] const geom::AlignedRectangle& boundingAlignedRectangle() const;
+        [[nodiscard]] WorldLineVector               sides(int shrinkInWorld) const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void                 addGridXy(const GridXy& gridXy);
-        void                 copyGridXy(const Cluster& other);
-        void                 clearGridXy();
         void                 doCommand(Model& model);
         void                 update(double phaseFraction);
         void                 kill();
@@ -85,12 +67,7 @@ namespace model {
         void                 setPhase(PHASE phase);
         void                 resetPhase();
         void                 spliceCluster(Level& level);
-        void                 removeGridXy(const GridXy& gridXy);
-        void                 sortGridXy() const;
-        void                 swapGridXy(GridXyVector& other);
-        void                 appendGridXy(const GridXyVector& other);
         void                 setPhaseFraction(double phaseFraction);
-        Cluster              grabAllButFirstComponent();
         CommandVector&       commandVector();
         std::vector<Cluster> collectAllButFirstComponent();
 
@@ -108,26 +85,19 @@ namespace model {
         friend std::istream& io::operator>>(std::istream& in, model::Cluster& cluster);
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
-        void rotateClockWiseAbout(const GridXy& pivotGridXy);
-        void rotateCounterClockWiseAbout(const GridXy& pivotGridXy);
         void setRotation(double angle, const GridXy& pivot);
-        void grabAdjacentStoppedClusters(Level& level);
 
         /****** DATA MEMBERS  ******/
-        mutable bool            m_gridXyAreSorted = false;
-        mutable bool            m_sidesAreCorrect = false;
-        double                  m_phaseFraction   = 0.0;
-        double                  m_angle           = 0.0;
-        size_t                  m_index;
-        CLUSTER_STATE           m_state         = CLUSTER_STATE::ALIVE;
-        PHASE                   m_phase         = PHASE::NONE;
-        WorldXy                 m_worldOffset   = {0, 0};
-        GridXy                  m_rotationPivot = {0, 0};
-        CommandVector           m_commandVector;
-        mutable GridXyVector    m_gridXyVector;
-        mutable WorldLineVector m_sides;
-        std::string             m_name;
-        geom::AlignedRectangle  m_boundingAlignedRectangle;
+        double                 m_phaseFraction = 0.0;
+        double                 m_angle         = 0.0;
+        size_t                 m_index;
+        CLUSTER_STATE          m_state         = CLUSTER_STATE::ALIVE;
+        PHASE                  m_phase         = PHASE::NONE;
+        WorldXy                m_worldOffset   = {0, 0};
+        GridXy                 m_rotationPivot = {0, 0};
+        CommandVector          m_commandVector;
+        std::string            m_name;
+        geom::AlignedRectangle m_boundingAlignedRectangle;
     };
 
 } // namespace model

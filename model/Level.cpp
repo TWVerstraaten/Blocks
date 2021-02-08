@@ -95,11 +95,11 @@ namespace model {
         m_floorBlocks.erase(gridXy);
     }
 
-    std::vector<Cluster>& Level::stoppedClusters() {
+    std::vector<GridXyContainer>& Level::stoppedClusters() {
         return m_stoppedClusters;
     }
 
-    const std::vector<Cluster>& Level::stoppedClusters() const {
+    const std::vector<GridXyContainer>& Level::stoppedClusters() const {
         return m_stoppedClusters;
     }
 

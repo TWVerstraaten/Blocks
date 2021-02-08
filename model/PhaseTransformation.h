@@ -13,6 +13,8 @@ namespace model {
 
     typedef std::function<WorldXy(const WorldXy&)> PhaseTransformation;
 
-}
+    inline static PhaseTransformation idTransformation = [](const auto& a) { return a; };
+
+} // namespace model
 
 #endif // BLOCKS_PHASETRANSFORMATION_H

@@ -33,7 +33,6 @@ namespace geom {
             square(boundingAlignedRectangle1.maxDimension() + boundingAlignedRectangle2.maxDimension())) {
             return false;
         }
-
         if (not boundingAlignedRectangle1.intersects(boundingAlignedRectangle2)) {
             return false;
         }
@@ -159,5 +158,25 @@ namespace geom {
         for (const auto& cluster : clusters) {
             assert(cluster.isConnected());
         }
+    }
+
+    std::vector<GridXyContainer*> neighbors(std::vector<GridXyContainer>& clusters, GridXy point) {
+        std::vector<GridXyContainer*> result;
+        std::for_each(D_IT(clusters), [&](auto& cluster) {
+            if (cluster.gridXyIsAdjacent(point)) {
+                result.push_back(&cluster);
+            }
+        });
+        return result;
+    }
+
+    std::vector<model::GridXyContainer*> neighbors(std::vector<model::GridXyContainer>& clusters, const GridXyContainer& cluster) {
+        std::vector<GridXyContainer*> result;
+        std::for_each(D_IT(clusters), [&](auto& candidate) {
+            if (candidate.isAdjacent(cluster)) {
+                result.push_back(&candidate);
+            }
+        });
+        return result;
     }
 } // namespace geom

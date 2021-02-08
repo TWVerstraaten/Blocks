@@ -4,6 +4,7 @@
 
 #include "Serializer.h"
 
+#include "../misc/defines.h"
 #include "../model/Level.h"
 #include "../model/Model.h"
 
@@ -93,7 +94,8 @@ namespace io {
             const auto& stoppedClusters = level.stoppedClusters();
             out << stoppedClusters.size() << " ";
             for (const auto& cluster : stoppedClusters) {
-                out << cluster << "\n";
+                D_NOTE("Operator << for GridXyVector")
+                //                out << cluster << "\n";
             }
             out << '\n';
         }

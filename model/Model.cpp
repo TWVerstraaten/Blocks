@@ -90,6 +90,12 @@ namespace model {
                 cluster.update(smoothStep);
             }
 
+            for (auto& cluster : m_clusters) {
+                cluster.buildSides();
+            }
+            for (auto& stoppedCluster : m_level.stoppedClusters()) {
+                stoppedCluster.buildSides();
+            }
             intersectWithLevel();
             intersectClusters();
         }
@@ -101,8 +107,12 @@ namespace model {
         }
         for (auto& cluster : m_clusters) {
             cluster.buildBoundingAlignedRectangle();
+            cluster.buildSides();
         }
         for (auto cluster1 = m_clusters.begin(); cluster1 != m_clusters.end(); ++cluster1) {
+            if (cluster1->phase() == PHASE::NONE) {
+                continue;
+            }
             for (auto cluster2 = std::next(cluster1); cluster2 != m_clusters.end(); ++cluster2) {
                 if (cluster1->intersects(*cluster2, app::BLOCK_SHRINK_IN_WORLD)) {
                     cluster1->kill();
@@ -129,7 +139,7 @@ namespace model {
         return std::find_if(D_IT(m_clusters), D_FUNC(cluster, cluster.contains(point)));
     }
 
-    std::vector<Cluster>::iterator Model::stoppedClusterContaining(const GridXy& point) {
+    std::vector<GridXyContainer>::iterator Model::stoppedClusterContaining(const GridXy& point) {
         return std::find_if(D_IT(m_level.stoppedClusters()), D_FUNC(cluster, cluster.contains(point)));
     }
 
@@ -160,6 +170,11 @@ namespace model {
             for (int j = 0; j != 10; ++j) {
                 m_level.addBlock(GridXy{i, j}, FLOOR_BLOCK_TYPE::LEVEL);
             }
+        }
+    }
+    void Model::buildClusterSides() {
+        for (auto& cluster : m_clusters) {
+            cluster.buildSides();
         }
     }
 } // namespace model

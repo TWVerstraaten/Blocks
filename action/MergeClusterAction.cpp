@@ -30,7 +30,7 @@ namespace action {
         assert(secondIt != m_model->clusters().end());
         auto targetIt = m_model->clusterWithIndex(m_target.index());
         assert(targetIt != m_model->clusters().end());
-        targetIt->appendGridXy(secondIt->gridXyVector());
+        targetIt->addGridXy(secondIt->gridXyVector());
         m_model->clusters().erase(secondIt);
         m_commandScrollArea->removeFromLayout(m_second.index());
     }

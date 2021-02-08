@@ -35,7 +35,7 @@ namespace contr {
         static void handleConwayFloorBlocks(model::Model& model);
         static void handleDynamicBlocks(const std::map<model::GridXy, model::DYNAMIC_BLOCK_TYPE>& dynamicBlocks,
                                         std::vector<model::Cluster>&                              clusters);
-        static std::map<model::Cluster*, std::vector<model::Cluster*>> buildGrabberMap(model::Model& model);
+        static std::map<model::GridXyContainer*, std::vector<model::Cluster*>> buildGrabberMap(model::Model& model);
     };
 
 } // namespace contr

@@ -46,7 +46,9 @@ namespace model {
         std::vector<Cluster>&          clusters();
         std::vector<Cluster>::iterator clusterWithIndex(size_t index);
         std::vector<Cluster>::iterator clusterContaining(const GridXy& point);
-        std::vector<Cluster>::iterator stoppedClusterContaining(const GridXy& point);
+        std::vector<GridXyContainer>::iterator stoppedClusterContaining(const GridXy& point);
+
+        void buildClusterSides();
 
       private:
         friend std::istream& io::operator>>(std::istream& in, model::Model& model);

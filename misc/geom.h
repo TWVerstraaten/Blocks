@@ -26,7 +26,9 @@ namespace geom {
     model::WorldXy               rotateAboutPivot(const model::WorldXy& point, const model::WorldXy& pivot, double angleInDegrees);
     model::WorldLineVector       getSidesFromGridXy(const model::GridXyVector& blocks);
     std::vector<model::Cluster*> neighbors(std::vector<model::Cluster>& clusters, model::GridXy point);
+    std::vector<model::GridXyContainer*> neighbors(std::vector<model::GridXyContainer>& clusters, model::GridXy point);
     std::vector<model::Cluster*> neighbors(std::vector<model::Cluster>& clusters, const model::Cluster& cluster);
+    std::vector<model::GridXyContainer*> neighbors(std::vector<model::GridXyContainer>& clusters, const model::GridXyContainer& cluster);
 } // namespace geom
 
 #endif // BLOCKS_GEOM_H

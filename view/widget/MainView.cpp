@@ -30,6 +30,7 @@ namespace view::widget {
     }
 
     void MainView::paintEvent(QPaintEvent* event) {
+        m_model->buildClusterSides();
         QPainter painter;
         painter.begin(this);
         m_mainViewPainter->paint(painter, event);
@@ -90,4 +91,4 @@ namespace view::widget {
         return m_viewPort;
     }
 
-} // namespace view
+} // namespace view::widget
