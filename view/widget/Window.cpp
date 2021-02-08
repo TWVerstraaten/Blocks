@@ -1,9 +1,9 @@
 #include "Window.h"
 
+#include "../../Io/SettingsManager.h"
 #include "../../audio/AudioManager.h"
 #include "CentralWidget.h"
 #include "MainMenuWidget.h"
-#include "SettingsWidget.h"
 
 #include <QEvent>
 #include <QFile>
@@ -21,7 +21,8 @@ namespace view::widget {
         assert(file.isOpen());
         setStyleSheet(QLatin1String(file.readAll()));
 
-        audio::AudioManager::init();
+        io::SettingsManager::initSettings();
+
 
         m_mainMenuWidget = new MainMenuWidget(this);
         m_mainMenuWidget->installEventFilter(this);

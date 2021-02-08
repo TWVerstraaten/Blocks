@@ -1,7 +1,7 @@
 Set max character count on CommandEdit
 
 Implement the following commands:
-    set var_name value_type
+    writeValueToFile var_name value_type
     var_name += value_type
     var_name -= value_type
     var_name *= value_type

@@ -5,6 +5,10 @@
 #ifndef BLOCKS_AUDIOSETTINGS_H
 #define BLOCKS_AUDIOSETTINGS_H
 
+namespace io {
+    class SettingsManager;
+}
+
 namespace audio {
 
     class AudioSettings {
@@ -17,6 +21,8 @@ namespace audio {
         static void setMusicVolume(int musicVolume);
 
       private:
+        friend class io::SettingsManager;
+
         inline static int s_soundEffectVolume = 40;
         inline static int s_musicVolume       = 40;
     };

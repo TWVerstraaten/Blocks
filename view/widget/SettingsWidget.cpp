@@ -21,36 +21,19 @@ namespace view::widget {
         io::SettingsManager::settings().setValue(nameInIni, value);
     }
 
-    double getValue(const QString& name) {
-        return io::SettingsManager::settings().value(name).toFloat();
-    }
-
     template <typename T>
-    T readOrWrite(const QString& name, const T fallBack, void (*f)(T)) {
-        if (io::SettingsManager::settings().contains(name)) {
-            const T t = getValue(name);
-            f(t);
-            return t;
-        } else {
-            set(fallBack, name);
-            assert(io::SettingsManager::settings().contains(name));
-            return fallBack;
-        }
-    }
-
-    template <typename T>
-    static void addSettingWithSlider(QFormLayout* m_layout, QWidget* parent, const QString& name, const T fallBack, T min, T max, void (*setter)(T)) {
+    static void addSettingWithSlider(QFormLayout* m_layout, QWidget* parent, const QString& name, const T value, T min, T max, void (*setter)(T)) {
         auto* label = new QLabel(name, parent);
         label->setFont(FontManager::font(FONT_ENUM::ANON_PRO_ITALIC, 13));
         auto* slider = new QSlider(Qt::Horizontal, parent);
         assert(slider->minimum() == 0);
         slider->setMaximum(100);
 
-        slider->setValue(100.0 * (min + readOrWrite(name, fallBack, setter)) / (max - min));
+        slider->setValue(100.0 * (min + value) / static_cast<double>(max - min));
         QWidget::connect(slider, &QSlider::valueChanged, [min, max, name, setter](int value) {
             T newValue = static_cast<T>(min + (value / 100.0) * (max - min));
             (*setter)(newValue);
-            set(newValue, name);
+            io::SettingsManager::writeValueToFile(newValue, name);
         });
         m_layout->addRow(label, slider);
     }
@@ -88,7 +71,7 @@ namespace view::widget {
 
     static void addDivider(QFormLayout* layout, QWidget* parent, const QString& string) {
         auto* l = new QLabel(string, parent);
-        l->setFont(FontManager::font(FONT_ENUM::ANON_PRO_ITALIC, 17));
+        l->setFont(FontManager::font(FONT_ENUM::UBUNTU_MONO_ITALIC, 17));
         layout->addRow(l, new QWidget(parent));
     }
 

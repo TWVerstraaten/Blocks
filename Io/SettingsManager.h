@@ -14,7 +14,15 @@ namespace io {
       public:
         static QSettings& settings();
 
+        static void initSettings();
+
+        template <typename T>
+        static void writeValueToFile(const T& value, const QString& nameInIni) {
+            io::SettingsManager::settings().setValue(nameInIni, value);
+        }
+
       private:
+        inline static bool      s_isInitialized = false;
         inline static QSettings m_settings{"dat/settings/settings.ini", QSettings::IniFormat};
     };
 

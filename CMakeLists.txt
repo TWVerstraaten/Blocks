@@ -12,7 +12,7 @@ if (WIN32)
 endif (WIN32)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
 #add_definitions(-DNDEBUG)
 add_definitions(-DDEBUG)
 

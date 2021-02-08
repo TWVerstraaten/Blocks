@@ -51,6 +51,6 @@ namespace audio {
 
     void AudioManager::setMusicVolume(int musicVolume) {
         assert(s_isInitialized);
-//        s_music->setVolume(musicVolume);
+        s_music->setVolume(musicVolume);
     }
 } // namespace audio

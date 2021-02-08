@@ -13,16 +13,22 @@
 #include <map>
 #include <memory>
 
+namespace io {
+    class SettingsManager;
+}
+
 namespace audio {
 
     class AudioManager {
 
       public:
-        static void init();
         static void play(SOUNDS sound);
 
       private:
         friend class AudioSettings;
+        friend class io::SettingsManager;
+
+        static void init();
 
         static void setSoundEffectVolume(double soundEffectVolume);
         static void setMusicVolume(int musicVolume);
