@@ -4,7 +4,6 @@
 
 #include "MainInterface.h"
 
-#include "../action/RemoveBlockFromClusterAction.h"
 #include "../misc/defines.h"
 #include "../misc/geom.h"
 #include "../model/Model.h"

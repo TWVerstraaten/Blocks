@@ -10,7 +10,6 @@
 #include "../misc/geom.h"
 
 #include <QDebug>
-#include <QElapsedTimer>
 #include <cassert>
 
 namespace model {
@@ -23,10 +22,10 @@ namespace model {
         return m_clusters;
     }
 
-    void Model::intersectWithLevel() {
+    void Model::intersectClustersWithLevel() {
         for (auto& cluster : m_clusters) {
             if (cluster.isAlive()) {
-                cluster.collideWithLevel(m_level, app::BLOCK_SHRINK_IN_WORLD);
+                cluster.intersectWithLevel(m_level, app::BLOCK_SHRINK_IN_WORLD);
             }
         }
     }
@@ -96,7 +95,7 @@ namespace model {
             for (auto& stoppedCluster : m_level.stoppedClusters()) {
                 stoppedCluster.buildSides();
             }
-            intersectWithLevel();
+            intersectClustersWithLevel();
             intersectClusters();
         }
     }

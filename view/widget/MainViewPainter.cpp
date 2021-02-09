@@ -83,7 +83,7 @@ namespace view::widget {
         QPainter painter(&result);
         painter.setBrush(color);
         for (const auto block : blocks) {
-            const auto positionInWorld = block - GridXy{minX, minY} + WorldXy{app::BLOCK_SHRINK_IN_WORLD, app::BLOCK_SHRINK_IN_WORLD};
+            const auto positionInWorld = WorldXy{block - GridXy{minX, minY}} + WorldXy{app::BLOCK_SHRINK_IN_WORLD, app::BLOCK_SHRINK_IN_WORLD};
             const auto position        = ScreenXy{viewPort.worldToScreen(positionInWorld.x()), viewPort.worldToScreen(positionInWorld.y())};
             painter.fillRect(QRect{position.x(), position.y(), shrunkSize, shrunkSize}, QBrush{color});
 

@@ -10,7 +10,6 @@
 #include "../FontManager.h"
 
 #include <QComboBox>
-#include <QDebug>
 #include <QFormLayout>
 #include <QLabel>
 

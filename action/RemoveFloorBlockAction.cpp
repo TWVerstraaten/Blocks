@@ -5,8 +5,8 @@
 #include "RemoveFloorBlockAction.h"
 
 namespace action {
-    RemoveFloorBlockAction::RemoveFloorBlockAction(model::Model* model, model::FLOOR_BLOCK_TYPE type, const model::GridXy& gridXy)
-        : AddFloorBlockAction(model, type, gridXy) {
+    RemoveFloorBlockAction::RemoveFloorBlockAction(model::Level* level, model::FLOOR_BLOCK_TYPE type, const model::GridXy& gridXy)
+        : AddFloorBlockAction(level, type, gridXy) {
     }
 
     void RemoveFloorBlockAction::undo() {

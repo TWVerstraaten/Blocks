@@ -105,7 +105,7 @@ namespace model {
         return str;
     }
 
-    void Cluster::collideWithLevel(const Level& level, int shrinkInWorld) {
+    void Cluster::intersectWithLevel(const Level& level, int shrinkInWorld) {
         assert(noDuplicates());
         if (geom::intersect(sides(shrinkInWorld), level.sides())) {
             kill();
@@ -122,19 +122,19 @@ namespace model {
     PhaseTransformation Cluster::phaseTransformation() const {
         switch (m_phase) {
             case PHASE::NONE:
-                return [](const WorldXy& b) { return b; };
+                return static_cast<PhaseTransformation>([](const WorldXy& b) { return b; });
             case PHASE::TRANSLATING: {
                 const WorldXy offset = dynamicWorldOffset();
-                return [offset](const WorldXy& b) { return b + offset; };
+                return static_cast<PhaseTransformation>([offset](const WorldXy& b) { return b + offset; });
             }
             case PHASE::ROTATING: {
                 const WorldXy center = WorldXy(m_rotationPivot) + app::HALF_BLOCK_IN_WORLD;
                 const double  theta  = -angle();
-                return [center, theta](const WorldXy& b) { return geom::rotateAboutPivot(b, center, theta); };
+                return static_cast<PhaseTransformation>([center, theta](const WorldXy& b) { return geom::rotateAboutPivot(b, center, theta); });
             }
         }
         assert(false);
-        return [](const WorldXy& b) { return b; };
+        return idTransformation;
     }
 
     bool Cluster::intersects(const Cluster& other, int shrinkInWorld) const {

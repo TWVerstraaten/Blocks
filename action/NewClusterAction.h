@@ -12,15 +12,18 @@
 
 namespace view::widget {
     class CommandScroll;
-    class CentralWidget;
 } // namespace view::widget
+
+namespace model {
+    class Model;
+}
 
 namespace action {
 
     class NewClusterAction : public Action {
 
       public:
-        NewClusterAction(view::widget::CentralWidget* centralWidget, model::Cluster cluster);
+        NewClusterAction(model::Model* model, view::widget::CommandScroll* commandScroll, model::Cluster cluster);
 
         void                      undo() override;
         void                      redo() override;
@@ -30,7 +33,8 @@ namespace action {
         model::Cluster m_cluster;
 
       private:
-        view::widget::CentralWidget* m_centralWidget;
+        model::Model*                m_model;
+        view::widget::CommandScroll* m_commandScroll;
     };
 } // namespace action
 

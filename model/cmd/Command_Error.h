@@ -7,6 +7,6 @@
 
 namespace model {
     struct Command_Error {};
-} // namespace m_model
+} // namespace m_level
 
 #endif // BLOCKS_COMMAND_ERROR_H

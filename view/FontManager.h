@@ -15,15 +15,15 @@ namespace view {
     class FontManager {
 
       public:
-        static const QFont& font(FONT_ENUM fontEnum, size_t size);
+        static const QFont& font(FONT_ENUM fontEnum, uint16_t size);
 
       private:
         FontManager() = default;
 
-        static void build(FONT_ENUM fontEnum, int size);
+        static void build(FONT_ENUM fontEnum, uint16_t size);
 
-        inline static std::map<FONT_ENUM, int>                            s_ids;
-        inline static std::map<std::pair<FONT_ENUM, size_t>, const QFont> s_fonts;
+        inline static std::map<FONT_ENUM, uint16_t>                         s_ids;
+        inline static std::map<std::pair<FONT_ENUM, uint16_t>, const QFont> s_fonts;
     };
 
 } // namespace view

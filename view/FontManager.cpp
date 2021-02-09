@@ -4,12 +4,11 @@
 
 #include "FontManager.h"
 
-#include <QDebug>
 #include <QFontDatabase>
 
 namespace view {
 
-    const QFont& FontManager::font(FONT_ENUM fontEnum, size_t size) {
+    const QFont& FontManager::font(FONT_ENUM fontEnum, uint16_t size) {
         if (s_fonts.find({fontEnum, size}) == s_fonts.end()) {
             build(fontEnum, size);
         }
@@ -39,16 +38,14 @@ namespace view {
         return "";
     }
 
-    void FontManager::build(FONT_ENUM fontEnum, int size) {
+    void FontManager::build(FONT_ENUM fontEnum, uint16_t size) {
         if (s_ids.find(fontEnum) == s_ids.end()) {
             int id = QFontDatabase::addApplicationFont(fromEnum(fontEnum));
             assert(id >= 0);
             s_ids.emplace(fontEnum, id);
         }
-        const auto family = QFontDatabase::applicationFontFamilies(s_ids[fontEnum]).at(0);
-        auto       font   = QFont(family, size);
-
-        s_fonts.emplace(std::make_pair(fontEnum, size), font);
+        const auto& family = QFontDatabase::applicationFontFamilies(s_ids[fontEnum]).at(0);
+        s_fonts.emplace(std::make_pair(fontEnum, size), QFont(family, size));
     }
 
 } // namespace view

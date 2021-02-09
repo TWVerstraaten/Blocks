@@ -17,7 +17,6 @@ namespace model {
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
         CommandVector() = default;
-        explicit CommandVector(const std::vector<std::string>& strings);
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] size_t                          commandIndex() const;
@@ -60,6 +59,6 @@ namespace model {
         std::vector<std::string> m_strings;
     };
 
-} // namespace m_model
+} // namespace m_level
 
 #endif // BLOCKS_COMMANDVECTOR_H

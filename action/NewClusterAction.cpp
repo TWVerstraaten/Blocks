@@ -5,30 +5,28 @@
 #include "NewClusterAction.h"
 
 #include "../model/Model.h"
-#include "../view/widget/CentralWidget.h"
+#include "../view/widget/CommandScroll.h"
 
 namespace action {
 
-    NewClusterAction::NewClusterAction(view::widget::CentralWidget* centralWidget, model::Cluster cluster)
-        : m_cluster(std::move(cluster)), m_centralWidget(centralWidget) {
+    NewClusterAction::NewClusterAction(model::Model* model, view::widget::CommandScroll* commandScroll, model::Cluster cluster)
+        : m_cluster(std::move(cluster)), m_model(model), m_commandScroll(commandScroll) {
         setText(QString("Creating cluster %1").arg(m_cluster.index()));
     }
 
     void NewClusterAction::undo() {
-        auto* model = m_centralWidget->mainView()->model();
-        auto  it    = model->clusterWithIndex(m_cluster.index());
-        assert(it != model->clusters().end());
-        model->clusters().erase(it);
-        m_centralWidget->commandScrollArea()->removeFromLayout(m_cluster.index());
+        auto it = m_model->clusterWithIndex(m_cluster.index());
+        assert(it != m_model->clusters().end());
+        m_model->clusters().erase(it);
+        m_commandScroll->removeFromLayout(m_cluster.index());
     }
 
     void NewClusterAction::redo() {
         if (not m_blockInitial) {
-            auto* model = m_centralWidget->mainView()->model();
-            assert(model->clusterWithIndex(m_cluster.index()) == model->clusters().end());
-            model->clusters().push_back(m_cluster);
+            assert(m_model->clusterWithIndex(m_cluster.index()) == m_model->clusters().end());
+            m_model->clusters().push_back(m_cluster);
 
-            m_centralWidget->commandScrollArea()->addNeeded(model->clusters());
+            m_commandScroll->addNeeded(m_model->clusters());
         }
         m_blockInitial = false;
     }

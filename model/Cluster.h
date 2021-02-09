@@ -60,7 +60,7 @@ namespace model {
         void                 update(double phaseFraction);
         void                 kill();
         void                 incrementCommandIndex();
-        void                 collideWithLevel(const Level& level, int shrinkInWorld);
+        void                 intersectWithLevel(const Level& level, int shrinkInWorld);
         void                 handleDynamicBlock(const GridXy& point, DYNAMIC_BLOCK_TYPE type);
         void                 setState(CLUSTER_STATE state);
         void                 setWorldOffset(const WorldXy& worldOffset);
@@ -71,8 +71,8 @@ namespace model {
         CommandVector&       commandVector();
         std::vector<Cluster> collectAllButFirstComponent();
 
-        static size_t maxClusterIndex();
         static void   setMaxClusterIndex(size_t maxClusterIndex);
+        static size_t maxClusterIndex();
 
         /****** FRIENDS  ******/
         friend void handleCommand(const Command_Simple& command, Cluster& cluster, Level& level);

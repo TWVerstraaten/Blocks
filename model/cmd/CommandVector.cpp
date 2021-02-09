@@ -13,10 +13,6 @@
 
 namespace model {
 
-    CommandVector::CommandVector(const std::vector<std::string>& strings) {
-        set(strings);
-    }
-
     bool CommandVector::wellFormed() const {
         return std::all_of(D_CIT(m_commands), [](const Command& command) { return not std::holds_alternative<Command_Error>(command); });
     }

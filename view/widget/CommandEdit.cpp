@@ -3,6 +3,8 @@
 #include "../../model/Model.h"
 #include "../FontManager.h"
 #include "CentralWidget.h"
+#include "CommandScroll.h"
+#include "MainView.h"
 #include "TextEdit.h"
 #include "TextEditSideBar.h"
 
@@ -97,7 +99,9 @@ namespace view::widget {
     }
 
     void CommandEdit::connectSignals() {
-        connect(m_textEdit, &TextEdit::textChanged, [this]() { m_lineWidget->fillLineNumbers(static_cast<size_t>(m_textEdit->document()->blockCount())); });
+        connect(m_textEdit, &TextEdit::textChanged, [this]() {
+            m_lineWidget->fillLineNumbers(static_cast<size_t>(m_textEdit->document()->blockCount()));
+        });
         m_textEdit->connectSignals();
         connect(m_textEdit, &TextEdit::textChanged, this, &CommandEdit::updateCommandVector);
     }

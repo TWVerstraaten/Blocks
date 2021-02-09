@@ -10,7 +10,7 @@
 #include "Action.h"
 
 namespace model {
-    class Model;
+    class Level;
 }
 
 namespace action {
@@ -18,7 +18,7 @@ namespace action {
     class AddFloorBlockAction : public Action {
 
       public:
-        AddFloorBlockAction(model::Model* model, model::FLOOR_BLOCK_TYPE type, const model::GridXy& gridXy);
+        AddFloorBlockAction(model::Level* level, model::FLOOR_BLOCK_TYPE type, const model::GridXy& gridXy);
 
         void                      undo() override;
         void                      redo() override;
@@ -27,7 +27,7 @@ namespace action {
       private:
         model::FLOOR_BLOCK_TYPE m_type;
         model::GridXy           m_gridXy;
-        model::Model*           m_model;
+        model::Level*           m_level;
     };
 
 } // namespace action

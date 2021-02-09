@@ -5,11 +5,11 @@
 #include "../../view/FontManager.h"
 #include "../../view/color.h"
 #include "CentralWidget.h"
+#include "CommandScroll.h"
 #include "SyntaxHighlighter.h"
 #include "Window.h"
 
 #include <QApplication>
-#include <QDebug>
 
 namespace view::widget {
 

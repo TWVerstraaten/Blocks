@@ -5,12 +5,12 @@
 #include "RemoveLevelBlockAction.h"
 
 namespace action {
-    RemoveLevelBlockAction::RemoveLevelBlockAction(model::Model* model, model::DYNAMIC_BLOCK_TYPE type, const model::GridXy& gridXy)
-        : AddLevelBlockAction(model, type, gridXy) {
+    RemoveLevelBlockAction::RemoveLevelBlockAction(model::Level* level, model::DYNAMIC_BLOCK_TYPE type, const model::GridXy& gridXy)
+        : AddLevelBlockAction(level, type, gridXy) {
     }
 
-    RemoveLevelBlockAction::RemoveLevelBlockAction(model::Model* model, model::INSTANT_BLOCK_TYPE type, const model::GridXy& gridXy)
-        : AddLevelBlockAction(model, type, gridXy) {
+    RemoveLevelBlockAction::RemoveLevelBlockAction(model::Level* level, model::INSTANT_BLOCK_TYPE type, const model::GridXy& gridXy)
+        : AddLevelBlockAction(level, type, gridXy) {
     }
 
     void RemoveLevelBlockAction::undo() {

@@ -1,7 +1,6 @@
 #ifndef BLOCKS_MAINVIEW_H
 #define BLOCKS_MAINVIEW_H
 
-#include "../../model/Model.h"
 #include "../../view/ViewPort.h"
 
 #include <QWidget>

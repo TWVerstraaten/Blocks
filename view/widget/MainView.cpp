@@ -1,7 +1,9 @@
 #include "MainView.h"
 
 #include "../../contr/MainViewMouseManager.h"
+#include "../../model/Model.h"
 #include "CentralWidget.h"
+#include "CommandScroll.h"
 #include "MainViewPainter.h"
 
 #include <QDebug>

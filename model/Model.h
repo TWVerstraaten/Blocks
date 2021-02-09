@@ -20,10 +20,7 @@ namespace model {
 
       public:
         /****** CONSTRUCTORS / DESTRUCTORS  ******/
-        Model()                   = default;
-        Model(const Model& other) = default;
-        Model(Model&& other)      = default;
-        Model& operator=(const Model& other) = default;
+        Model() = default;
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] const Level&                level() const;
@@ -33,19 +30,19 @@ namespace model {
         [[nodiscard]] bool noLiveOrStoppedClusterOnBlock(const GridXy& gridXy) const;
 
         /****** NON CONST FUNCTIONS  ******/
-        void                           initEmpty();
-        void                           init(const std::string& path);
-        void                           clear();
-        void                           resetPhase();
-        void                           update(double dPhase);
-        void                           clearEmpty();
-        void                           clearStopped();
-        void                           handleStoppedAndSplitClusters();
-        void                           splitDisconnectedClusters();
-        Level&                         level();
-        std::vector<Cluster>&          clusters();
-        std::vector<Cluster>::iterator clusterWithIndex(size_t index);
-        std::vector<Cluster>::iterator clusterContaining(const GridXy& point);
+        void                                   initEmpty();
+        void                                   init(const std::string& path);
+        void                                   clear();
+        void                                   resetPhase();
+        void                                   update(double dPhase);
+        void                                   clearEmpty();
+        void                                   clearStopped();
+        void                                   handleStoppedAndSplitClusters();
+        void                                   splitDisconnectedClusters();
+        Level&                                 level();
+        std::vector<Cluster>&                  clusters();
+        std::vector<Cluster>::iterator         clusterWithIndex(size_t index);
+        std::vector<Cluster>::iterator         clusterContaining(const GridXy& point);
         std::vector<GridXyContainer>::iterator stoppedClusterContaining(const GridXy& point);
 
         void buildClusterSides();
@@ -54,7 +51,7 @@ namespace model {
         friend std::istream& io::operator>>(std::istream& in, model::Model& model);
 
         /****** PRIVATE NON CONST FUNCTIONS  ******/
-        void intersectWithLevel();
+        void intersectClustersWithLevel();
         void intersectClusters();
         void updateInternal(double dPhase);
 

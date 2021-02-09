@@ -5,8 +5,8 @@
 #include "DeleteClusterAction.h"
 
 namespace action {
-    DeleteClusterAction::DeleteClusterAction(view::widget::CentralWidget* centralWidget, const model::Cluster& cluster)
-        : NewClusterAction(centralWidget, cluster) {
+    DeleteClusterAction::DeleteClusterAction(model::Model* model, view::widget::CommandScroll* commandScroll, model::Cluster cluster)
+        : NewClusterAction(model, commandScroll, std::move(cluster)) {
         setText(QString("Deleting cluster %1").arg(m_cluster.index()));
         m_blockInitial = false;
     }

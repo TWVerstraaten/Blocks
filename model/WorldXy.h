@@ -24,7 +24,7 @@ namespace model {
       public:
         /****** PUBLIC ENUMS / TYPEDEFS  ******/
         WorldXy(int x, int y) noexcept;
-        WorldXy(const model::GridXy& gridXy);
+        explicit WorldXy(const model::GridXy& gridXy);
 
         /****** CONST GETTERS  ******/
         [[nodiscard]] int x() const;

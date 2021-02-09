@@ -12,7 +12,7 @@ namespace action {
     class DeleteClusterAction : public NewClusterAction {
 
       public:
-        DeleteClusterAction(view::widget::CentralWidget* centralWidget, const model::Cluster& cluster);
+        DeleteClusterAction(model::Model* model, view::widget::CommandScroll* commandScroll, model::Cluster cluster);
 
         void                      undo() override;
         void                      redo() override;

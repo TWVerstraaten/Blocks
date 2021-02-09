@@ -6,8 +6,11 @@
 #include "../../contr/MainInterface.h"
 #include "../../contr/MainViewMouseManager.h"
 #include "../../misc/defines.h"
+#include "../../model/Model.h"
 #include "../View_constants.h"
 #include "BlockSelectWidget.h"
+#include "CommandScroll.h"
+#include "MainView.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -287,7 +290,7 @@ namespace view::widget {
         m_frameRateTimer.restart();
     }
 
-    void CentralWidget::saveLevel() {
+    void CentralWidget::saveLevel() const {
         using namespace io;
 
         std::ofstream levelFile;

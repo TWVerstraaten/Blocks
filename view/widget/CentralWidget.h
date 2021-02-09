@@ -5,8 +5,6 @@
 #include "../../datstr/CircularBuffer.h"
 #include "../../datstr/Stash.h"
 #include "CentralWidget_enums.h"
-#include "CommandScroll.h"
-#include "MainView.h"
 
 #include <QElapsedTimer>
 #include <QGridLayout>
@@ -25,7 +23,9 @@ namespace action {
 }
 
 namespace view::widget {
+
     class Window;
+    class MainView;
     class CommandScroll;
     class BlockSelectWidget;
 
@@ -72,7 +72,7 @@ namespace view::widget {
         void startInteractPhase();
         void moveLoop(size_t elapsed);
         void interactLoop(size_t elapsed);
-        void saveLevel();
+        void saveLevel() const;
 
         enum class MODE { EDITING, RUNNING };
 

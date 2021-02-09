@@ -9,7 +9,10 @@
 
 namespace action {
 
-    MergeClusterAction::MergeClusterAction(model::Model* model, model::Cluster target, model::Cluster second, view::widget::CommandScroll* commandScrollArea)
+    MergeClusterAction::MergeClusterAction(model::Model*                model,
+                                           model::Cluster               target,
+                                           model::Cluster               second,
+                                           view::widget::CommandScroll* commandScrollArea)
         : m_model(model), m_target(std::move(target)), m_second(std::move(second)), m_commandScrollArea(commandScrollArea) {
         setText(QString("Merging clusters %1 and %2").arg(m_target.index()).arg(m_second.index()));
     }

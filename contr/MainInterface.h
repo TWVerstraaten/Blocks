@@ -5,15 +5,16 @@
 #ifndef BLOCKS_MAININTERFACE_H
 #define BLOCKS_MAININTERFACE_H
 
-#include "../model/Cluster.h"
-#include "../model/GridXy.h"
 #include "../model/Level_enums.h"
 
 #include <map>
 
 namespace model {
     class Model;
-}
+    class Cluster;
+    class GridXy;
+    class GridXyContainer;
+} // namespace model
 
 namespace view::widget {
     class CommandScroll;
@@ -30,7 +31,6 @@ namespace contr {
       private:
         static void handleStopAndSplice(model::Model& model);
         static void handleGrabs(model::Model& model);
-
         static void handleKillBlocks(const std::map<model::GridXy, model::INSTANT_BLOCK_TYPE>& instantBlocks, std::vector<model::Cluster>& clusters);
         static void handleConwayFloorBlocks(model::Model& model);
         static void handleDynamicBlocks(const std::map<model::GridXy, model::DYNAMIC_BLOCK_TYPE>& dynamicBlocks,

@@ -12,10 +12,10 @@ namespace action {
     class RemoveFloorBlockAction : public AddFloorBlockAction {
 
       public:
-        RemoveFloorBlockAction(model::Model* model, model::FLOOR_BLOCK_TYPE type, const model::GridXy& gridXy);
+        RemoveFloorBlockAction(model::Level* level, model::FLOOR_BLOCK_TYPE type, const model::GridXy& gridXy);
 
-        void        undo() override;
-        void        redo() override;
+        void                      undo() override;
+        void                      redo() override;
         [[nodiscard]] ACTION_TYPE type() const override;
     };
 } // namespace action

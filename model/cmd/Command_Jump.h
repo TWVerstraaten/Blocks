@@ -13,6 +13,6 @@ namespace model {
         std::string label;
     };
 
-} // namespace m_model
+} // namespace m_level
 
 #endif // BLOCKS_COMMAND_JUMP_H
