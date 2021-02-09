@@ -5,7 +5,6 @@
 #ifndef BLOCKS_SERIALIZER_H
 #define BLOCKS_SERIALIZER_H
 
-#include <fstream>
 #include <ostream>
 
 namespace model {

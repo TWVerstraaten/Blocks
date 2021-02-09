@@ -16,6 +16,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <QUndoView>
+#include <fstream>
 
 namespace view::widget {
 

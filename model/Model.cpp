@@ -11,6 +11,7 @@
 
 #include <QDebug>
 #include <cassert>
+#include <fstream>
 
 namespace model {
 

@@ -4,6 +4,7 @@
 
 #include "geom.h"
 
+#include "../model/Cluster.h"
 #include "defines.h"
 
 #include <QDebug>
@@ -63,7 +64,7 @@ namespace geom {
         assert(cornerPoints.size() % 2 == 0);
         std::sort(D_IT(cornerPoints), D_FUNC_2(lhs, rhs, lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x()));
         for (auto it = cornerPoints.begin(); it != cornerPoints.end(); it += 2) {
-            result.emplace_back(WorldLine{WorldXy{ *it}, WorldXy{*std::next(it)}});
+            result.emplace_back(WorldLine{WorldXy{*it}, WorldXy{*std::next(it)}});
         }
         return result;
     }
